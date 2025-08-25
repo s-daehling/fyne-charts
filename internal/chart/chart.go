@@ -823,7 +823,7 @@ func (base *BaseChart) updateSeriesVariables() {
 			}
 		} else if sbs, ok := base.series[i].(*series.StackedBarSeries); ok {
 			if base.fromType == Categorical {
-				sbs.SetWidthAndOffset(barWidth, barOffset)
+				sbs.SetNumericalWidthAndOffset(barWidth, barOffset)
 				barOffset += barWidth
 			}
 			sbs.UpdateValOffset()

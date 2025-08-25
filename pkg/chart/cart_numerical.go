@@ -113,6 +113,19 @@ func (numChart *CartesianNumericalChart) AddBarSeries(name string, points []data
 	return
 }
 
+// AddStackedBarSeries adds a series of data which is visualized as stacked bar chart.
+// The series can be accessed via the name later, it must be unique throughout the chart.
+// An error is returned,if another series with the same name exists.
+// The method does not check for duplicates (i.e. data points with same X).
+// The range of X is not restricted. The range of Val is restricted to Val>=0.
+// The bars are centered around their X value of the data points. barWidth is the width of the bars.
+// An error is returned if barWidth < 0
+func (numChart *CartesianNumericalChart) AddStackedBarSeries(name string,
+	points []data.NumericalDataSeries, barWidth float64) (nss NumericalStackedBarSeries, err error) {
+	nss.ser, err = numChart.base.AddNumericalStackedBarSeries(name, points, barWidth)
+	return
+}
+
 // DeleteSeries deletes the series with the specified name if it exists
 func (numChart *CartesianNumericalChart) DeleteSeries(name string) {
 	numChart.base.DeleteSeries(name)

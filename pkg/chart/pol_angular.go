@@ -91,6 +91,19 @@ func (angChart *PolarAngularChart) AddBarSeries(name string, points []data.Angul
 	return
 }
 
+// AddStackedBarSeries adds a series of data which is visualized as stacked bar chart.
+// The series can be accessed via the name later, it must be unique throughout the chart.
+// An error is returned,if another series with the same name exists.
+// The method does not check for duplicates (i.e. data points with same A).
+// The range of A and Val is restricted (0<=A<=2pi; Val>0)
+// The bars are centered around their A value of the data points. barWidth is the width of the bars.
+// An error is returned if barWidth < 0
+func (polChart *PolarAngularChart) AddStackedBarSeries(name string,
+	points []data.AngularDataSeries, barWidth float64) (ass AngularStackedBarSeries, err error) {
+	ass.ser, err = polChart.base.AddAngularStackedBarSeries(name, points, barWidth)
+	return
+}
+
 // DeleteSeries deletes the series with the specified name if it exists
 func (angChart *PolarAngularChart) DeleteSeries(name string) {
 	angChart.base.DeleteSeries(name)

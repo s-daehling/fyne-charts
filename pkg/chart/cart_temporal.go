@@ -108,9 +108,22 @@ func (tempChart *CartesianTemporalChart) AddAreaSeries(name string, points []dat
 // The range of T and Val is not restricted
 // The bars are centered around their T value of the data points. barWidth is the width of the bars.
 // An error is returned if barWidth < 0
-func (numChart *CartesianTemporalChart) AddBarSeries(name string, points []data.TemporalDataPoint,
+func (tempChart *CartesianTemporalChart) AddBarSeries(name string, points []data.TemporalDataPoint,
 	barWidth time.Duration, color color.Color) (tbs TemporalBarSeries, err error) {
-	tbs.ser, err = numChart.base.AddTemporalBarSeries(name, points, barWidth, color)
+	tbs.ser, err = tempChart.base.AddTemporalBarSeries(name, points, barWidth, color)
+	return
+}
+
+// AddStackedBarSeries adds a series of data which is visualized as stacked bar chart.
+// The series can be accessed via the name later, it must be unique throughout the chart.
+// An error is returned,if another series with the same name exists.
+// The method does not check for duplicates (i.e. data points with same T).
+// The range of T is not restricted. The range of Val is restricted to Val>=0.
+// The bars are centered around their T value of the data points. barWidth is the width of the bars.
+// An error is returned if barWidth < 0
+func (tempChart *CartesianTemporalChart) AddStackedBarSeries(name string,
+	points []data.TemporalDataSeries, barWidth time.Duration) (tss TemporalStackedBarSeries, err error) {
+	tss.ser, err = tempChart.base.AddTemporalStackedBarSeries(name, points, barWidth)
 	return
 }
 

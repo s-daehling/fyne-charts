@@ -30,7 +30,7 @@ Following list gives an overview of the widgets and supported series types.
 |Box|x|x|x||||||
 |Candlestick|x|x|||||||
 |Bar|x|x|x||x|x|x||
-|Stacked Bar|||x||||x||
+|Stacked Bar|x|x|x||x|x|x||
 |Proportion||||x||||x|
 
 ![example](docs/example.png "Example")

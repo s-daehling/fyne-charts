@@ -1,5 +1,7 @@
 package data
 
+import "image/color"
+
 // AngularDataPoint represents one data point with an angular coordinate
 type AngularDataPoint struct {
 	A   float64
@@ -17,6 +19,13 @@ func (m DpByAValue) Less(i, j int) bool { return m[i].A < m[j].A }
 
 // Swap swaps the points on positions i and j
 func (m DpByAValue) Swap(i, j int) { m[i], m[j] = m[j], m[i] }
+
+// AngularDataSeries represents a series of data points with an angular coordinate
+type AngularDataSeries struct {
+	Name   string
+	Col    color.Color
+	Points []AngularDataPoint
+}
 
 // AngularTick represents one tick on a angular axis
 type AngularTick struct {

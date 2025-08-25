@@ -3,6 +3,8 @@ package series
 import (
 	"errors"
 	"image/color"
+	"math"
+	"time"
 
 	"github.com/s-daehling/fyne-charts/pkg/data"
 )
@@ -124,12 +126,31 @@ func (ser *StackedBarSeries) LegendEntries() (les []LegendEntry) {
 }
 
 // setWidthAndOffset sets width of bars and offset from x coordinate for this series
-func (ser *StackedBarSeries) SetWidthAndOffset(width float64, offset float64) {
+func (ser *StackedBarSeries) SetNumericalWidthAndOffset(width float64, offset float64) (err error) {
 	ser.mutex.Lock()
 	for i := range ser.stack {
-		ser.stack[i].SetNumericalWidthAndOffset(width, offset)
+		err = ser.stack[i].SetNumericalWidthAndOffset(width, offset)
+		if err != nil {
+			ser.mutex.Unlock()
+			return
+		}
 	}
 	ser.mutex.Unlock()
+	return
+}
+
+// setWidthAndOffset sets width of bars and offset from x coordinate for this series
+func (ser *StackedBarSeries) SetTemporalWidthAndOffset(width time.Duration, offset time.Duration) (err error) {
+	ser.mutex.Lock()
+	for i := range ser.stack {
+		err = ser.stack[i].SetTemporalWidthAndOffset(width, offset)
+		if err != nil {
+			ser.mutex.Unlock()
+			return
+		}
+	}
+	ser.mutex.Unlock()
+	return
 }
 
 func (ser *StackedBarSeries) UpdateValOffset() {
@@ -170,6 +191,160 @@ func (ser *StackedBarSeries) toggleView() {
 	if ser.polar {
 		ser.chart.RasterVisibilityChange()
 	}
+}
+
+// DeleteDataInRange deletes all data points with one of the given category
+// The return value gives the number of data points that have been removed
+func (ser *StackedBarSeries) DeleteNumericalDataInRange(min float64, max float64) (c int, err error) {
+	c = 0
+	if min > max {
+		err = errors.New("invald range")
+		return
+	}
+	ser.mutex.Lock()
+	for i := range ser.stack {
+		var cs int
+		cs, err = ser.stack[i].DeleteNumericalDataInRange(min, max)
+		if err != nil {
+			ser.mutex.Unlock()
+			return
+		}
+		c += cs
+	}
+	ser.mutex.Unlock()
+	return
+}
+
+// AddData adds data points to the stacked series.
+// If the single series exists, the data points will be added to it
+// If the single series does not exist, nothing is done
+func (ser *StackedBarSeries) AddNumericalData(series string, input []data.NumericalDataPoint) (err error) {
+	for i := range input {
+		if input[i].Val < 0 {
+			err = errors.New("invalid data")
+			return
+		}
+	}
+	ser.mutex.Lock()
+	for i := range ser.stack {
+		if ser.stack[i].name == series {
+			err = ser.stack[i].AddNumericalData(input)
+			break
+		}
+	}
+	ser.mutex.Unlock()
+	return
+}
+
+// AddSeries adds a new single series to the stacked bar series.
+// If the single series already exists, nothing will be done.
+func (ser *StackedBarSeries) AddNumericalSeries(series data.NumericalDataSeries) (err error) {
+	serExist := false
+	ser.mutex.Lock()
+	for i := range ser.stack {
+		if ser.stack[i].name == series.Name {
+			serExist = true
+			break
+		}
+	}
+	ser.mutex.Unlock()
+	if serExist {
+		err = errors.New("series already exists")
+		return
+	}
+	for i := range series.Points {
+		if series.Points[i].Val < 0 {
+			err = errors.New("invalid data")
+			return
+		}
+	}
+	ser.mutex.Lock()
+	bs := EmptyBarSeries(ser.chart, series.Name, series.Col, ser.polar)
+	err = bs.AddNumericalData(series.Points)
+	if err != nil {
+		ser.mutex.Unlock()
+		return
+	}
+	ser.stack = append(ser.stack, bs)
+	ser.mutex.Unlock()
+	return
+}
+
+// DeleteDataInRange deletes all data points with one of the given category
+// The return value gives the number of data points that have been removed
+func (ser *StackedBarSeries) DeleteTemporalDataInRange(min time.Time, max time.Time) (c int, err error) {
+	c = 0
+	if min.After(max) {
+		err = errors.New("invald range")
+		return
+	}
+	ser.mutex.Lock()
+	for i := range ser.stack {
+		var cs int
+		cs, err = ser.stack[i].DeleteTemporalDataInRange(min, max)
+		if err != nil {
+			ser.mutex.Unlock()
+			return
+		}
+		c += cs
+	}
+	ser.mutex.Unlock()
+	return
+}
+
+// AddData adds data points to the stacked series.
+// If the single series exists, the data points will be added to it
+// If the single series does not exist, nothing is done
+func (ser *StackedBarSeries) AddTemporalData(series string, input []data.TemporalDataPoint) (err error) {
+	for i := range input {
+		if input[i].Val < 0 {
+			err = errors.New("invalid data")
+			return
+		}
+	}
+	ser.mutex.Lock()
+	for i := range ser.stack {
+		if ser.stack[i].name == series {
+			err = ser.stack[i].AddTemporalData(input)
+			break
+		}
+	}
+	ser.mutex.Unlock()
+	return
+}
+
+// AddSeries adds a new single series to the stacked bar series.
+// If the single series already exists, nothing will be done.
+func (ser *StackedBarSeries) AddTemporalSeries(series data.TemporalDataSeries) (err error) {
+	serExist := false
+	ser.mutex.Lock()
+	for i := range ser.stack {
+		if ser.stack[i].name == series.Name {
+			serExist = true
+			break
+		}
+	}
+	ser.mutex.Unlock()
+	if serExist {
+		err = errors.New("series already exists")
+		return
+	}
+	for i := range series.Points {
+		if series.Points[i].Val < 0 {
+			err = errors.New("invalid data")
+			return
+		}
+	}
+	ser.mutex.Lock()
+	bs := EmptyBarSeries(ser.chart, series.Name, series.Col, ser.polar)
+	err = bs.AddTemporalData(series.Points)
+	if err != nil {
+		ser.mutex.Unlock()
+		return
+	}
+	ser.stack = append(ser.stack, bs)
+	ser.mutex.Unlock()
+	return
 }
 
 // DeleteDataInRange deletes all data points with one of the given category
@@ -244,6 +419,83 @@ func (ser *StackedBarSeries) AddCategoricalSeries(series data.CategoricalDataSer
 	ser.mutex.Lock()
 	bs := EmptyBarSeries(ser.chart, series.Name, series.Col, ser.polar)
 	err = bs.AddCategoricalData(series.Points)
+	if err != nil {
+		ser.mutex.Unlock()
+		return
+	}
+	ser.stack = append(ser.stack, bs)
+	ser.mutex.Unlock()
+	return
+}
+
+// DeleteDataInRange deletes all data points with one of the given category
+// The return value gives the number of data points that have been removed
+func (ser *StackedBarSeries) DeleteAngularDataInRange(min float64, max float64) (c int, err error) {
+	c = 0
+	if min > max {
+		err = errors.New("invald range")
+		return
+	}
+	ser.mutex.Lock()
+	for i := range ser.stack {
+		var cs int
+		cs, err = ser.stack[i].DeleteAngularDataInRange(min, max)
+		if err != nil {
+			ser.mutex.Unlock()
+			return
+		}
+		c += cs
+	}
+	ser.mutex.Unlock()
+	return
+}
+
+// AddData adds data points to the stacked series.
+// If the single series exists, the data points will be added to it
+// If the single series does not exist, nothing is done
+func (ser *StackedBarSeries) AddAngularData(series string, input []data.AngularDataPoint) (err error) {
+	for i := range input {
+		if input[i].Val < 0 || input[i].A < 0 || input[i].A > 2*math.Pi {
+			err = errors.New("invalid data")
+			return
+		}
+	}
+	ser.mutex.Lock()
+	for i := range ser.stack {
+		if ser.stack[i].name == series {
+			err = ser.stack[i].AddAngularData(input)
+			break
+		}
+	}
+	ser.mutex.Unlock()
+	return
+}
+
+// AddSeries adds a new single series to the stacked bar series.
+// If the single series already exists, nothing will be done.
+func (ser *StackedBarSeries) AddAngularSeries(series data.AngularDataSeries) (err error) {
+	serExist := false
+	ser.mutex.Lock()
+	for i := range ser.stack {
+		if ser.stack[i].name == series.Name {
+			serExist = true
+			break
+		}
+	}
+	ser.mutex.Unlock()
+	if serExist {
+		err = errors.New("series already exists")
+		return
+	}
+	for i := range series.Points {
+		if series.Points[i].Val < 0 || series.Points[i].A < 0 || series.Points[i].A > 2*math.Pi {
+			err = errors.New("invalid data")
+			return
+		}
+	}
+	ser.mutex.Lock()
+	bs := EmptyBarSeries(ser.chart, series.Name, series.Col, ser.polar)
+	err = bs.AddAngularData(series.Points)
 	if err != nil {
 		ser.mutex.Unlock()
 		return
