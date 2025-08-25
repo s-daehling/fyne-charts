@@ -78,9 +78,9 @@ func (nss NumericalStackedBarSeries) AddSeries(series data.NumericalDataSeries) 
 	return
 }
 
-// SetWidth sets the width of the bars. The bars are centered around their X value of the data points
+// SetBarWidth sets the width of the bars. The bars are centered around their X value of the data points
 // An error is returned in w < 0
-func (nss NumericalStackedBarSeries) SetWidth(w float64) (err error) {
+func (nss NumericalStackedBarSeries) SetBarWidth(w float64) (err error) {
 	if nss.ser == nil {
 		return
 	}
@@ -129,9 +129,9 @@ func (tss TemporalStackedBarSeries) AddSeries(series data.TemporalDataSeries) (e
 	return
 }
 
-// SetWidth sets the width of the bars. The bars are centered around their X value of the data points
+// SetBarWidth sets the width of the bars. The bars are centered around their X value of the data points
 // An error is returned in w < 0
-func (tss TemporalStackedBarSeries) SetWidth(w time.Duration) (err error) {
+func (tss TemporalStackedBarSeries) SetBarWidth(w time.Duration) (err error) {
 	if tss.ser == nil {
 		return
 	}
@@ -223,9 +223,9 @@ func (ass AngularStackedBarSeries) AddSeries(series data.AngularDataSeries) (err
 	return
 }
 
-// SetWidth sets the width of the bars. The bars are centered around their X value of the data points
+// SetBarWidth sets the width of the bars. The bars are centered around their X value of the data points
 // An error is returned if w < 0 or w > 2pi
-func (ass AngularStackedBarSeries) SetWidth(w float64) (err error) {
+func (ass AngularStackedBarSeries) SetBarWidth(w float64) (err error) {
 	if ass.ser == nil {
 		return
 	}

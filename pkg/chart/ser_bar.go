@@ -73,9 +73,9 @@ func (nbs NumericalBarSeries) AddData(input []data.NumericalDataPoint) (err erro
 	return
 }
 
-// SetWidth sets the width of the bars. The bars are centered around their X value of the data points
+// SetBarWidth sets the width of the bars. The bars are centered around their X value of the data points
 // An error is returned in w < 0
-func (nbs NumericalBarSeries) SetWidth(w float64) (err error) {
+func (nbs NumericalBarSeries) SetBarWidth(w float64) (err error) {
 	if nbs.ser == nil {
 		return
 	}
@@ -110,9 +110,9 @@ func (tbs TemporalBarSeries) AddData(input []data.TemporalDataPoint) (err error)
 	return
 }
 
-// SetWidth sets the width of the bars. The bars are centered around their T value of the data points
+// SetBarWidth sets the width of the bars. The bars are centered around their T value of the data points
 // An error is returned in w < 0
-func (tbs TemporalBarSeries) SetWidth(w time.Duration) (err error) {
+func (tbs TemporalBarSeries) SetBarWidth(w time.Duration) (err error) {
 	if tbs.ser == nil {
 		return
 	}
@@ -175,9 +175,9 @@ func (abs AngularBarSeries) AddData(input []data.AngularDataPoint) (err error) {
 	return
 }
 
-// SetWidth sets the width of the bars. The bars are centered around their X value of the data points
+// SetBarWidth sets the width of the bars. The bars are centered around their X value of the data points
 // An error is returned if w < 0 or w > 2pi
-func (abs AngularBarSeries) SetWidth(w float64) (err error) {
+func (abs AngularBarSeries) SetBarWidth(w float64) (err error) {
 	if abs.ser == nil {
 		return
 	}

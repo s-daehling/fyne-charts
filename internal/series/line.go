@@ -3,7 +3,6 @@ package series
 import (
 	"errors"
 	"image/color"
-	"math"
 	"sort"
 	"time"
 
@@ -388,8 +387,8 @@ func (ser *LineSeries) DeleteNumericalDataInRange(min float64, max float64) (c i
 }
 
 func (ser *LineSeries) AddNumericalData(input []data.NumericalDataPoint) (err error) {
-	if len(input) == 0 {
-		err = errors.New("no input data")
+	err = numericalDataPointRangeCheck(input, ser.polar, ser.polar)
+	if err != nil {
 		return
 	}
 	ser.mutex.Lock()
@@ -450,17 +449,9 @@ func (ser *LineSeries) DeleteTemporalDataInRange(min time.Time, max time.Time) (
 }
 
 func (ser *LineSeries) AddTemporalData(input []data.TemporalDataPoint) (err error) {
-	if len(input) == 0 {
-		err = errors.New("no input data")
+	err = temporalDataPointRangeCheck(input, ser.polar)
+	if err != nil {
 		return
-	}
-	if ser.polar {
-		for i := range input {
-			if input[i].Val < 0 {
-				err = errors.New("invalid data")
-				return
-			}
-		}
 	}
 	ser.mutex.Lock()
 	if ser.chart == nil {
@@ -488,71 +479,11 @@ func (ser *LineSeries) AddTemporalData(input []data.TemporalDataPoint) (err erro
 }
 
 func (ser *LineSeries) DeleteAngularDataInRange(min float64, max float64) (c int, err error) {
-	c = 0
-	if min > max {
-		err = errors.New("invalid range")
-		return
-	}
-	finalData := []*linePoint{}
-	ser.mutex.Lock()
-	if ser.chart == nil {
-		err = errors.New("series is not part of any chart")
-		ser.mutex.Unlock()
-		return
-	}
-	chart := ser.chart
-	for i := range ser.data {
-		if ser.data[i].n > min && ser.data[i].n < max {
-			c++
-		} else {
-			finalData = append(finalData, ser.data[i])
-		}
-	}
-	if c == 0 {
-		ser.mutex.Unlock()
-		return
-	}
-	ser.data = nil
-	ser.data = finalData
-	ser.mutex.Unlock()
-	chart.DataChange()
+	c, err = ser.DeleteNumericalDataInRange(min, max)
 	return
 }
 
 func (ser *LineSeries) AddAngularData(input []data.AngularDataPoint) (err error) {
-	if len(input) == 0 {
-		err = errors.New("no input data")
-		return
-	}
-
-	for i := range input {
-		if input[i].Val < 0 || input[i].A < 0 || input[i].A > 2*math.Pi {
-			err = errors.New("invalid data")
-			return
-		}
-	}
-
-	ser.mutex.Lock()
-	if ser.chart == nil {
-		err = errors.New("series is not part of any chart")
-		ser.mutex.Unlock()
-		return
-	}
-	chart := ser.chart
-	newData := append(make([]data.AngularDataPoint, 0, len(input)), input...)
-	for i := range ser.data {
-		newData = append(newData, data.AngularDataPoint{A: ser.data[i].n, Val: ser.data[i].val})
-	}
-	sort.Sort(data.DpByAValue(newData))
-	ser.data = nil
-
-	for i := range newData {
-		lPoint := emptyLinePoint(ser.showDots, ser.color)
-		lPoint.n = newData[i].A
-		lPoint.val = newData[i].Val
-		ser.data = append(ser.data, lPoint)
-	}
-	ser.mutex.Unlock()
-	chart.DataChange()
+	err = ser.AddNumericalData(angularToNumerical(input))
 	return
 }

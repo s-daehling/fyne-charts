@@ -3,7 +3,6 @@ package series
 import (
 	"errors"
 	"image/color"
-	"math"
 	"time"
 
 	"github.com/s-daehling/fyne-charts/pkg/data"
@@ -338,8 +337,8 @@ func (ser *ScatterSeries) DeleteNumericalDataInRange(min float64, max float64) (
 }
 
 func (ser *ScatterSeries) AddNumericalData(input []data.NumericalDataPoint) (err error) {
-	if len(input) == 0 {
-		err = errors.New("no input data")
+	err = numericalDataPointRangeCheck(input, ser.polar, ser.polar)
+	if err != nil {
 		return
 	}
 	ser.mutex.Lock()
@@ -393,17 +392,9 @@ func (ser *ScatterSeries) DeleteTemporalDataInRange(min time.Time, max time.Time
 }
 
 func (ser *ScatterSeries) AddTemporalData(input []data.TemporalDataPoint) (err error) {
-	if len(input) == 0 {
-		err = errors.New("no input data")
+	err = temporalDataPointRangeCheck(input, ser.polar)
+	if err != nil {
 		return
-	}
-	if ser.polar {
-		for i := range input {
-			if input[i].Val < 0 {
-				err = errors.New("invalid data")
-				return
-			}
-		}
 	}
 	ser.mutex.Lock()
 	if ser.chart == nil {
@@ -463,17 +454,9 @@ func (ser *ScatterSeries) DeleteCategoricalDataInRange(cat []string) (c int, err
 }
 
 func (ser *ScatterSeries) AddCategoricalData(input []data.CategoricalDataPoint) (err error) {
-	if len(input) == 0 {
-		err = errors.New("no input data")
+	err = categoricalDataPointRangeCheck(input, ser.polar)
+	if err != nil {
 		return
-	}
-	if ser.polar {
-		for i := range input {
-			if input[i].Val < 0 {
-				err = errors.New("invalid data")
-				return
-			}
-		}
 	}
 	ser.mutex.Lock()
 	if ser.chart == nil {
@@ -504,63 +487,11 @@ func (ser *ScatterSeries) AddCategoricalData(input []data.CategoricalDataPoint) 
 }
 
 func (ser *ScatterSeries) DeleteAngularDataInRange(min float64, max float64) (c int, err error) {
-	c = 0
-	if min > max {
-		err = errors.New("invalid range")
-		return
-	}
-	finalData := []*scatterPoint{}
-	ser.mutex.Lock()
-	if ser.chart == nil {
-		err = errors.New("series is not part of any chart")
-		ser.mutex.Unlock()
-		return
-	}
-	chart := ser.chart
-	for i := range ser.data {
-		if ser.data[i].n > min && ser.data[i].n < max {
-			c++
-		} else {
-			finalData = append(finalData, ser.data[i])
-		}
-	}
-	if c == 0 {
-		ser.mutex.Unlock()
-		return
-	}
-	ser.data = nil
-	ser.data = finalData
-	ser.mutex.Unlock()
-	chart.DataChange()
+	c, err = ser.DeleteNumericalDataInRange(min, max)
 	return
 }
 
 func (ser *ScatterSeries) AddAngularData(input []data.AngularDataPoint) (err error) {
-	if len(input) == 0 {
-		err = errors.New("no input data")
-		return
-	}
-
-	for i := range input {
-		if input[i].Val < 0 || input[i].A < 0 || input[i].A > 2*math.Pi {
-			err = errors.New("invalid data")
-			return
-		}
-	}
-	ser.mutex.Lock()
-	if ser.chart == nil {
-		err = errors.New("series is not part of any chart")
-		ser.mutex.Unlock()
-		return
-	}
-	chart := ser.chart
-	for i := range input {
-		lPoint := emptyScatterPoint(ser.color)
-		lPoint.n = input[i].A
-		lPoint.val = input[i].Val
-		ser.data = append(ser.data, lPoint)
-	}
-	ser.mutex.Unlock()
-	chart.DataChange()
+	err = ser.AddNumericalData(angularToNumerical(input))
 	return
 }

@@ -309,8 +309,8 @@ func (ser *BarSeries) DeleteNumericalDataInRange(min float64, max float64) (c in
 }
 
 func (ser *BarSeries) AddNumericalData(input []data.NumericalDataPoint) (err error) {
-	if len(input) == 0 {
-		err = errors.New("no input data")
+	err = numericalDataPointRangeCheck(input, ser.polar, ser.polar)
+	if err != nil {
 		return
 	}
 	ser.mutex.Lock()
@@ -370,6 +370,39 @@ func (ser *BarSeries) DeleteCategoricalDataInRange(cat []string) (c int, err err
 	return
 }
 
+func (ser *BarSeries) AddCategoricalData(input []data.CategoricalDataPoint) (err error) {
+	err = categoricalDataPointRangeCheck(input, ser.polar)
+	if err != nil {
+		return
+	}
+	ser.mutex.Lock()
+	if ser.chart == nil {
+		err = errors.New("series is not part of any chart")
+		ser.mutex.Unlock()
+		return
+	}
+	chart := ser.chart
+	for i := range input {
+		catExist := false
+		for j := range ser.data {
+			if input[i].C == ser.data[j].c {
+				catExist = true
+				break
+			}
+		}
+		if catExist {
+			continue
+		}
+		bPoint := emptyBarPoint(ser.color)
+		bPoint.c = input[i].C
+		bPoint.val = input[i].Val
+		ser.data = append(ser.data, bPoint)
+	}
+	ser.mutex.Unlock()
+	chart.DataChange()
+	return
+}
+
 func (ser *BarSeries) DeleteTemporalDataInRange(min time.Time, max time.Time) (c int, err error) {
 	c = 0
 	if min.After(max) {
@@ -403,17 +436,9 @@ func (ser *BarSeries) DeleteTemporalDataInRange(min time.Time, max time.Time) (c
 }
 
 func (ser *BarSeries) AddTemporalData(input []data.TemporalDataPoint) (err error) {
-	if len(input) == 0 {
-		err = errors.New("no input data")
+	err = temporalDataPointRangeCheck(input, ser.polar)
+	if err != nil {
 		return
-	}
-	if ser.polar {
-		for i := range input {
-			if input[i].Val < 0 {
-				err = errors.New("invalid data")
-				return
-			}
-		}
 	}
 	ser.mutex.Lock()
 	if ser.chart == nil {
@@ -433,105 +458,12 @@ func (ser *BarSeries) AddTemporalData(input []data.TemporalDataPoint) (err error
 	return
 }
 
-func (ser *BarSeries) AddCategoricalData(input []data.CategoricalDataPoint) (err error) {
-	if len(input) == 0 {
-		err = errors.New("no input data")
-		return
-	}
-	if ser.polar {
-		for i := range input {
-			if input[i].Val < 0 {
-				err = errors.New("invalid data")
-				return
-			}
-		}
-	}
-	ser.mutex.Lock()
-	if ser.chart == nil {
-		err = errors.New("series is not part of any chart")
-		ser.mutex.Unlock()
-		return
-	}
-	chart := ser.chart
-	for i := range input {
-		catExist := false
-		for j := range ser.data {
-			if input[i].C == ser.data[j].c {
-				catExist = true
-				break
-			}
-		}
-		if catExist {
-			continue
-		}
-		bPoint := emptyBarPoint(ser.color)
-		bPoint.c = input[i].C
-		bPoint.val = input[i].Val
-		ser.data = append(ser.data, bPoint)
-	}
-	ser.mutex.Unlock()
-	chart.DataChange()
-	return
-}
-
 func (ser *BarSeries) DeleteAngularDataInRange(min float64, max float64) (c int, err error) {
-	c = 0
-	if min > max {
-		err = errors.New("invalid range")
-		return
-	}
-	finalData := []*barPoint{}
-	ser.mutex.Lock()
-	if ser.chart == nil {
-		err = errors.New("series is not part of any chart")
-		ser.mutex.Unlock()
-		return
-	}
-	chart := ser.chart
-	for i := range ser.data {
-		if ser.data[i].n > min && ser.data[i].n < max {
-			c++
-		} else {
-			finalData = append(finalData, ser.data[i])
-		}
-	}
-	if c == 0 {
-		ser.mutex.Unlock()
-		return
-	}
-	ser.data = nil
-	ser.data = finalData
-	ser.mutex.Unlock()
-	chart.DataChange()
+	c, err = ser.DeleteNumericalDataInRange(min, max)
 	return
 }
 
 func (ser *BarSeries) AddAngularData(input []data.AngularDataPoint) (err error) {
-	if len(input) == 0 {
-		err = errors.New("no input data")
-		return
-	}
-
-	for i := range input {
-		if input[i].Val < 0 || input[i].A < 0 || input[i].A > 2*math.Pi {
-			err = errors.New("invalid data")
-			return
-		}
-	}
-	ser.mutex.Lock()
-	if ser.chart == nil {
-		err = errors.New("series is not part of any chart")
-		ser.mutex.Unlock()
-		return
-	}
-	chart := ser.chart
-	for i := range input {
-		bPoint := emptyBarPoint(ser.color)
-		bPoint.n = input[i].A
-		bPoint.val = input[i].Val
-		ser.data = append(ser.data, bPoint)
-	}
-	ser.mutex.Unlock()
-	chart.DataChange()
+	err = ser.AddNumericalData(angularToNumerical(input))
 	return
 }
