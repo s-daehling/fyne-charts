@@ -7,13 +7,6 @@ import (
 	"github.com/s-daehling/fyne-charts/pkg/data"
 )
 
-func angularToNumerical(input []data.AngularDataPoint) (output []data.NumericalDataPoint) {
-	for i := range input {
-		output = append(output, data.NumericalDataPoint{X: input[i].A, Val: input[i].Val})
-	}
-	return
-}
-
 func numericalDataPointRangeCheck(input []data.NumericalDataPoint, noNegativeVal bool, isPolar bool) (err error) {
 	if len(input) == 0 {
 		err = errors.New("no input data")
@@ -21,7 +14,7 @@ func numericalDataPointRangeCheck(input []data.NumericalDataPoint, noNegativeVal
 	}
 	if isPolar || noNegativeVal {
 		for i := range input {
-			if (isPolar && (input[i].X < 0 || input[i].X > 2*math.Pi)) ||
+			if (isPolar && (input[i].N < 0 || input[i].N > 2*math.Pi)) ||
 				(noNegativeVal && input[i].Val < 0) {
 				err = errors.New("invalid data")
 				return

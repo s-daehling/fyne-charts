@@ -235,15 +235,15 @@ func cartPropChart() (propChart *chart.CartesianProportionalChart) {
 	return
 }
 
-func polAngChart() (angChart *chart.PolarAngularChart) {
-	angChart = chart.NewPolarAngularChart()
-	data1 := make([]data.AngularDataPoint, 0)
+func polAngChart() (angChart *chart.PolarNumericalChart) {
+	angChart = chart.NewPolarNumericalChart()
+	data1 := make([]data.NumericalDataPoint, 0)
 	for range 100 {
 		data1 = append(data1, randomAngularDataPoint(63.777))
 	}
 	angChart.AddBarSeries("area", data1, 0.01*2*math.Pi, color.RGBA{R: 0xff, G: 0x00, B: 0x00, A: 0xff})
 
-	data2 := make([]data.AngularDataPoint, 0)
+	data2 := make([]data.NumericalDataPoint, 0)
 	for range 150 {
 		data2 = append(data2, randomSineAngularDataPoint(63.777))
 	}
@@ -253,7 +253,7 @@ func polAngChart() (angChart *chart.PolarAngularChart) {
 	angChart.SetOrigin(0, 64)
 	angChart.SetPhiAxisLabel("Phi axis")
 	angChart.SetRAxisLabel("R axis")
-	angChart.SetTitle("Polar Angular Chart")
+	angChart.SetTitle("Polar Numerical Chart")
 	return
 }
 
@@ -381,14 +381,14 @@ func polPropChart() (propChart *chart.PolarProportionalChart) {
 
 func randomNumericalDataPoint(xMin float64, xMax float64, valMin float64,
 	valMax float64) (ndp data.NumericalDataPoint) {
-	ndp.X = xMin + (rand.Float64() * (xMax - xMin))
+	ndp.N = xMin + (rand.Float64() * (xMax - xMin))
 	ndp.Val = valMin + (rand.Float64() * (valMax - valMin))
 	return
 }
 
 func randomSineNumericalDataPoint(l float64, amp float64) (ndp data.NumericalDataPoint) {
-	ndp.X = (-l / 2) + (rand.Float64() * l)
-	ndp.Val = amp * math.Sin((ndp.X/(l))*2*math.Pi)
+	ndp.N = (-l / 2) + (rand.Float64() * l)
+	ndp.Val = amp * math.Sin((ndp.N/(l))*2*math.Pi)
 	return
 }
 
@@ -411,14 +411,14 @@ func randomTemporalCandleStick(tStart time.Time, span time.Duration,
 	return
 }
 
-func randomAngularDataPoint(valMax float64) (adp data.AngularDataPoint) {
-	adp.A = rand.Float64() * 2 * math.Pi
+func randomAngularDataPoint(valMax float64) (adp data.NumericalDataPoint) {
+	adp.N = rand.Float64() * 2 * math.Pi
 	adp.Val = rand.Float64() * valMax
 	return
 }
 
-func randomSineAngularDataPoint(amp float64) (adp data.AngularDataPoint) {
-	adp.A = rand.Float64() * 2 * math.Pi
-	adp.Val = amp + (amp * math.Sin(adp.A))
+func randomSineAngularDataPoint(amp float64) (adp data.NumericalDataPoint) {
+	adp.N = rand.Float64() * 2 * math.Pi
+	adp.Val = amp + (amp * math.Sin(adp.N))
 	return
 }

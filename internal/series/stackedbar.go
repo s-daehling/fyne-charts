@@ -388,29 +388,6 @@ func (ser *StackedBarSeries) AddCategoricalSeries(series data.CategoricalDataSer
 	return
 }
 
-// DeleteDataInRange deletes all data points with one of the given category
-// The return value gives the number of data points that have been removed
-func (ser *StackedBarSeries) DeleteAngularDataInRange(min float64, max float64) (c int, err error) {
-	c, err = ser.DeleteNumericalDataInRange(min, max)
-	return
-}
-
-// AddData adds data points to the stacked series.
-// If the single series exists, the data points will be added to it
-// If the single series does not exist, nothing is done
-func (ser *StackedBarSeries) AddAngularData(series string, input []data.AngularDataPoint) (err error) {
-	err = ser.AddNumericalData(series, angularToNumerical(input))
-	return
-}
-
-// AddSeries adds a new single series to the stacked bar series.
-// If the single series already exists, nothing will be done.
-func (ser *StackedBarSeries) AddAngularSeries(series data.AngularDataSeries) (err error) {
-	numSer := data.NumericalDataSeries{Name: series.Name, Col: series.Col, Points: angularToNumerical(series.Points)}
-	err = ser.AddNumericalSeries(numSer)
-	return
-}
-
 func (ser *StackedBarSeries) seriesExist(name string) (exist bool) {
 	exist = false
 	ser.mutex.Lock()

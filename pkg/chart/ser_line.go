@@ -117,31 +117,3 @@ func (ls TemporalLineSeries) AddData(input []data.TemporalDataPoint) (err error)
 	err = ls.ser.AddTemporalData(input)
 	return
 }
-
-// AngularLineSeries represents a line series over an angular phi-axis
-type AngularLineSeries struct {
-	lineSeries
-}
-
-// DeleteDataInRange deletes all data points with an a-coordinate greater than min and smaller than max
-// The return value gives the number of data points that have been removed
-// An error is returned if min>max
-func (als AngularLineSeries) DeleteDataInRange(min float64, max float64) (c int, err error) {
-	if als.ser == nil {
-		return
-	}
-	c, err = als.ser.DeleteAngularDataInRange(min, max)
-	return
-}
-
-// AddData adds data points to the series.
-// data does not need to be sorted. It will be sorted by A by the method.
-// The method does not check for duplicates (i.e. data points with same A)
-// The range of A and Val is restricted (0<=A<=2pi; Val>0)
-func (als AngularLineSeries) AddData(input []data.AngularDataPoint) (err error) {
-	if als.ser == nil {
-		return
-	}
-	err = als.ser.AddAngularData(input)
-	return
-}

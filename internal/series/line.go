@@ -400,14 +400,14 @@ func (ser *LineSeries) AddNumericalData(input []data.NumericalDataPoint) (err er
 	chart := ser.chart
 	newData := append(make([]data.NumericalDataPoint, 0, len(input)), input...)
 	for i := range ser.data {
-		newData = append(newData, data.NumericalDataPoint{X: ser.data[i].n, Val: ser.data[i].val})
+		newData = append(newData, data.NumericalDataPoint{N: ser.data[i].n, Val: ser.data[i].val})
 	}
 	sort.Sort(data.DpByNValue(newData))
 	ser.data = nil
 
 	for i := range newData {
 		lPoint := emptyLinePoint(ser.showDots, ser.color)
-		lPoint.n = newData[i].X
+		lPoint.n = newData[i].N
 		lPoint.val = newData[i].Val
 		ser.data = append(ser.data, lPoint)
 	}
@@ -475,15 +475,5 @@ func (ser *LineSeries) AddTemporalData(input []data.TemporalDataPoint) (err erro
 	}
 	ser.mutex.Unlock()
 	chart.DataChange()
-	return
-}
-
-func (ser *LineSeries) DeleteAngularDataInRange(min float64, max float64) (c int, err error) {
-	c, err = ser.DeleteNumericalDataInRange(min, max)
-	return
-}
-
-func (ser *LineSeries) AddAngularData(input []data.AngularDataPoint) (err error) {
-	err = ser.AddNumericalData(angularToNumerical(input))
 	return
 }

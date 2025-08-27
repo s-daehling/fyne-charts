@@ -27,7 +27,6 @@ type FromType string
 
 const (
 	Numerical    FromType = "Numerical"
-	Angular      FromType = "Angular"
 	Temporal     FromType = "Temporal"
 	Categorical  FromType = "Categorical"
 	Proportional FromType = "Proportional"
@@ -573,14 +572,14 @@ func (base *BaseChart) SetFromNTicks(ts []data.NumericalTick) {
 		return
 	}
 	base.fromAx.SetManualTicks()
-	min := ts[0].X
-	max := ts[0].X
+	min := ts[0].N
+	max := ts[0].N
 	for i := range ts {
-		if ts[i].X < min {
-			min = ts[i].X
+		if ts[i].N < min {
+			min = ts[i].N
 		}
-		if ts[i].X > max {
-			max = ts[1].X
+		if ts[i].N > max {
+			max = ts[1].N
 		}
 	}
 	r := max - min
@@ -602,14 +601,6 @@ func (base *BaseChart) SetFromTTicks(ts []data.TemporalTick, format string) {
 	base.DataChange()
 }
 
-func (base *BaseChart) SetFromATicks(ts []data.AngularTick) {
-	ns := make([]data.NumericalTick, 0)
-	for i := range ts {
-		ns = append(ns, data.NumericalTick{X: ts[i].A, SupportLine: ts[i].SupportLine})
-	}
-	base.SetFromNTicks(ns)
-}
-
 func (base *BaseChart) SetAutoFromTicks(autoSupport bool) {
 	base.fromAx.SetAutoTicks(autoSupport)
 	base.DataChange()
@@ -620,14 +611,14 @@ func (base *BaseChart) SetToTicks(ts []data.NumericalTick) {
 		return
 	}
 	base.toAx.SetManualTicks()
-	min := ts[0].X
-	max := ts[0].X
+	min := ts[0].N
+	max := ts[0].N
 	for i := range ts {
-		if ts[i].X < min {
-			min = ts[i].X
+		if ts[i].N < min {
+			min = ts[i].N
 		}
-		if ts[i].X > max {
-			max = ts[1].X
+		if ts[i].N > max {
+			max = ts[1].N
 		}
 	}
 	r := max - min
@@ -728,15 +719,8 @@ func (base *BaseChart) updateRangeAndOrigin() {
 		if base.autoToRange {
 			base.calculateAutoToRange()
 		}
-		if base.autoFromRange {
+		if base.autoFromRange || base.planeType == CartesianPlane {
 			base.calculateAutoFromNRange()
-		}
-		if base.autoOrigin {
-			base.calculateAutoNOrigin()
-		}
-	case Angular:
-		if base.autoToRange {
-			base.calculateAutoToRange()
 		}
 		if base.autoOrigin {
 			base.calculateAutoNOrigin()
@@ -771,8 +755,6 @@ func (base *BaseChart) updateRangeAndOrigin() {
 func (base *BaseChart) updateAxTicks() {
 	switch base.fromType {
 	case Numerical:
-		base.fromAx.AutoNTicks()
-	case Angular:
 		base.fromAx.AutoNTicks()
 	case Temporal:
 		base.fromAx.AutoTTicks()

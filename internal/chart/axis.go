@@ -472,14 +472,14 @@ func (ax *Axis) SetNTicks(ns []data.NumericalTick, orderOfMagn int) {
 	}
 	ax.mutex.Lock()
 	for i := range ns {
-		ax.ticks[i].n = ns[i].X
-		ax.ticks[i].nLabel = ns[i].X
-		ax.ticks[i].nLine = ns[i].X
+		ax.ticks[i].n = ns[i].N
+		ax.ticks[i].nLabel = ns[i].N
+		ax.ticks[i].nLine = ns[i].N
 		ax.ticks[i].hasSupportLine = ns[i].SupportLine
 		if ax.typ == PolarPhiAxis {
-			ax.ticks[i].label.Text = strconv.FormatFloat(ns[i].X/math.Pi, 'f', 2, 64) + " pi"
+			ax.ticks[i].label.Text = strconv.FormatFloat(ns[i].N/math.Pi, 'f', 2, 64) + " pi"
 		} else {
-			ax.ticks[i].label.Text = strconv.FormatFloat(ns[i].X, 'f', prec, 64)
+			ax.ticks[i].label.Text = strconv.FormatFloat(ns[i].N, 'f', prec, 64)
 		}
 	}
 	ax.mutex.Unlock()
@@ -645,7 +645,7 @@ func calculateNTicks(space float32, min float64, max float64,
 		if coord > max+0.001*math.Pow10(orderOfMagn) {
 			break
 		}
-		ns = append(ns, data.NumericalTick{X: coord, SupportLine: supLine})
+		ns = append(ns, data.NumericalTick{N: coord, SupportLine: supLine})
 		i += 1
 	}
 	return
@@ -655,35 +655,35 @@ func calculatePhiTicks(supLine bool) (as []data.NumericalTick) {
 	// as, _ = calculateNTicks(space, min, max)
 	as = []data.NumericalTick{
 		{
-			X:           0,
+			N:           0,
 			SupportLine: supLine,
 		},
 		{
-			X:           math.Pi / 4,
+			N:           math.Pi / 4,
 			SupportLine: supLine,
 		},
 		{
-			X:           math.Pi / 2,
+			N:           math.Pi / 2,
 			SupportLine: supLine,
 		},
 		{
-			X:           3 * math.Pi / 4,
+			N:           3 * math.Pi / 4,
 			SupportLine: supLine,
 		},
 		{
-			X:           math.Pi,
+			N:           math.Pi,
 			SupportLine: supLine,
 		},
 		{
-			X:           5 * math.Pi / 4,
+			N:           5 * math.Pi / 4,
 			SupportLine: supLine,
 		},
 		{
-			X:           3 * math.Pi / 2,
+			N:           3 * math.Pi / 2,
 			SupportLine: supLine,
 		},
 		{
-			X:           7 * math.Pi / 4,
+			N:           7 * math.Pi / 4,
 			SupportLine: supLine,
 		},
 	}

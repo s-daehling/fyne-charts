@@ -470,7 +470,7 @@ func (ser *BoxSeries) AddNumericalData(input []data.NumericalBox) (err error) {
 	chart := ser.chart
 	for i := range input {
 		bPoint := emptyBoxPoint(len(input[i].Outlier), ser.color)
-		bPoint.n = input[i].X
+		bPoint.n = input[i].N
 		bPoint.max = input[i].Maximum
 		bPoint.thirdQuart = input[i].ThirdQuartile
 		bPoint.median = input[i].Median

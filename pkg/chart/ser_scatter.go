@@ -135,30 +135,3 @@ func (css CategoricalScatterSeries) AddData(input []data.CategoricalDataPoint) (
 	err = css.ser.AddCategoricalData(input)
 	return
 }
-
-// AngularScatterSeries is a scatter series in a chart with angular phi-axis
-type AngularScatterSeries struct {
-	scatterSeries
-}
-
-// DeleteDataInRange deletes all data points with an a-coordinate greater than min and smaller than max
-// The return value gives the number of data points that have been removed
-// An error is returned if min>max
-func (ass AngularScatterSeries) DeleteDataInRange(min float64, max float64) (c int, err error) {
-	if ass.ser == nil {
-		return
-	}
-	c, err = ass.ser.DeleteAngularDataInRange(min, max)
-	return
-}
-
-// AddData adds data points to the series.
-// The method does not check for duplicates (i.e. data points with same A)
-// The range of A and Val is restricted (0<=A<=2pi; Val>0)
-func (ass AngularScatterSeries) AddData(input []data.AngularDataPoint) (err error) {
-	if ass.ser == nil {
-		return
-	}
-	err = ass.ser.AddAngularData(input)
-	return
-}

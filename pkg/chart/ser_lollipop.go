@@ -143,30 +143,3 @@ func (cls CategoricalLollipopSeries) AddData(input []data.CategoricalDataPoint) 
 	err = cls.ser.AddCategoricalData(input)
 	return
 }
-
-// AngularLollipopSeries represents a lollipop series over an angular phi-axis
-type AngularLollipopSeries struct {
-	lollipopSeries
-}
-
-// DeleteDataInRange deletes all data points with an a-coordinate greater than min and smaller than max
-// The return value gives the number of data points that have been removed
-// An error os returned if min>max
-func (als AngularLollipopSeries) DeleteDataInRange(min float64, max float64) (c int, err error) {
-	if als.ser == nil {
-		return
-	}
-	c, err = als.ser.DeleteAngularDataInRange(min, max)
-	return
-}
-
-// AddData adds data points to the series.
-// The method does not check for duplicates (i.e. data points with same A)
-// The range of A and Val is restricted (0<=A<=2pi; Val>0)
-func (als AngularLollipopSeries) AddData(input []data.AngularDataPoint) (err error) {
-	if als.ser == nil {
-		return
-	}
-	err = als.ser.AddAngularData(input)
-	return
-}

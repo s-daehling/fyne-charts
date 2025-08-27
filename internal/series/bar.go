@@ -322,7 +322,7 @@ func (ser *BarSeries) AddNumericalData(input []data.NumericalDataPoint) (err err
 	chart := ser.chart
 	for i := range input {
 		lPoint := emptyBarPoint(ser.color)
-		lPoint.n = input[i].X
+		lPoint.n = input[i].N
 		lPoint.val = input[i].Val
 		ser.data = append(ser.data, lPoint)
 	}
@@ -455,15 +455,5 @@ func (ser *BarSeries) AddTemporalData(input []data.TemporalDataPoint) (err error
 	}
 	ser.mutex.Unlock()
 	chart.DataChange()
-	return
-}
-
-func (ser *BarSeries) DeleteAngularDataInRange(min float64, max float64) (c int, err error) {
-	c, err = ser.DeleteNumericalDataInRange(min, max)
-	return
-}
-
-func (ser *BarSeries) AddAngularData(input []data.AngularDataPoint) (err error) {
-	err = ser.AddNumericalData(angularToNumerical(input))
 	return
 }

@@ -117,31 +117,3 @@ func (tas TemporalAreaSeries) AddData(input []data.TemporalDataPoint) (err error
 	err = tas.ser.AddTemporalData(input)
 	return
 }
-
-// AngularAreaSeries represents an area series over an angular phi-axis
-type AngularAreaSeries struct {
-	areaSeries
-}
-
-// DeleteDataInRange deletes all data points with a a-coordinate greater than min and smaller than max
-// The return value gives the number of data points that have been removed
-// Ann error is returned if min>max
-func (aas AngularAreaSeries) DeleteDataInRange(min float64, max float64) (c int, err error) {
-	if aas.ser == nil {
-		return
-	}
-	c, err = aas.ser.DeleteAngularDataInRange(min, max)
-	return
-}
-
-// AddData adds data points to the series.
-// data does not need to be sorted. It will be sorted by A by the method.
-// The method does not check for duplicates (i.e. data points with same A)
-// The range of A and Val is restricted (0<=A<=2pi; Val>0)
-func (aas AngularAreaSeries) AddData(input []data.AngularDataPoint) (err error) {
-	if aas.ser == nil {
-		return
-	}
-	err = aas.ser.AddAngularData(input)
-	return
-}

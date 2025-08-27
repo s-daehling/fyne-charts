@@ -11,24 +11,24 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-// PolarAngularChart implements a polar plane with one angular phi-axis and one numerical r-axis
-type PolarAngularChart struct {
+// PolarNumericalChart implements a polar plane with one numerical phi-axis and one numerical r-axis
+type PolarNumericalChart struct {
 	base *chart.BaseChart
 	widget.BaseWidget
 }
 
-// NewPolarAngularChart returns an initialized PolarAngularChart
-func NewPolarAngularChart() (angChart *PolarAngularChart) {
-	angChart = &PolarAngularChart{
-		base: chart.EmptyBaseChart(chart.PolarPlane, chart.Angular),
+// NewPolarNumericalChart returns an initialized PolarNumericalChart
+func NewPolarNumericalChart() (numChart *PolarNumericalChart) {
+	numChart = &PolarNumericalChart{
+		base: chart.EmptyBaseChart(chart.PolarPlane, chart.Numerical),
 	}
-	angChart.ExtendBaseWidget(angChart)
+	numChart.ExtendBaseWidget(numChart)
 	return
 }
 
 // CreateRenderer creates the renderer of the widget
-func (angChart *PolarAngularChart) CreateRenderer() fyne.WidgetRenderer {
-	r := chart.EmptyPolarRenderer(angChart.base)
+func (numChart *PolarNumericalChart) CreateRenderer() fyne.WidgetRenderer {
+	r := chart.EmptyPolarRenderer(numChart.base)
 	return r
 }
 
@@ -38,9 +38,9 @@ func (angChart *PolarAngularChart) CreateRenderer() fyne.WidgetRenderer {
 // data does not need to be sorted. It will be sorted by A by the method.
 // The method does not check for duplicates (i.e. data points with same A)
 // The range of A and Val is restricted (0<=A<=2pi; Val>0)
-func (angChart *PolarAngularChart) AddLineSeries(name string, points []data.AngularDataPoint, showDots bool,
-	color color.Color) (als AngularLineSeries, err error) {
-	als.ser, err = angChart.base.AddAngularLineSeries(name, points, showDots, color)
+func (numChart *PolarNumericalChart) AddLineSeries(name string, points []data.NumericalDataPoint, showDots bool,
+	color color.Color) (nls NumericalLineSeries, err error) {
+	nls.ser, err = numChart.base.AddNumericalLineSeries(name, points, showDots, color)
 	return
 }
 
@@ -49,9 +49,9 @@ func (angChart *PolarAngularChart) AddLineSeries(name string, points []data.Angu
 // An error is returned,if another series with the same name exists.
 // The method does not check for duplicates (i.e. data points with same A)
 // The range of A and Val is restricted (0<=A<=2pi; Val>0)
-func (angChart *PolarAngularChart) AddScatterSeries(name string, points []data.AngularDataPoint,
-	color color.Color) (ass AngularScatterSeries, err error) {
-	ass.ser, err = angChart.base.AddAngularScatterSeries(name, points, color)
+func (numChart *PolarNumericalChart) AddScatterSeries(name string, points []data.NumericalDataPoint,
+	color color.Color) (nss NumericalScatterSeries, err error) {
+	nss.ser, err = numChart.base.AddNumericalScatterSeries(name, points, color)
 	return
 }
 
@@ -60,9 +60,9 @@ func (angChart *PolarAngularChart) AddScatterSeries(name string, points []data.A
 // An error is returned,if another series with the same name exists.
 // The method does not check for duplicates (i.e. data points with same A)
 // The range of A and Val is restricted (0<=A<=2pi; Val>0)
-func (angChart *PolarAngularChart) AddLollipopSeries(name string, points []data.AngularDataPoint,
-	color color.Color) (als AngularLollipopSeries, err error) {
-	als.ser, err = angChart.base.AddAngularLollipopSeries(name, points, color)
+func (numChart *PolarNumericalChart) AddLollipopSeries(name string, points []data.NumericalDataPoint,
+	color color.Color) (nls NumericalLollipopSeries, err error) {
+	nls.ser, err = numChart.base.AddNumericalLollipopSeries(name, points, color)
 	return
 }
 
@@ -72,9 +72,9 @@ func (angChart *PolarAngularChart) AddLollipopSeries(name string, points []data.
 // data does not need to be sorted. It will be sorted by A by the method.
 // The method does not check for duplicates (i.e. data points with same A).
 // The range of A and Val is restricted (0<=A<=2pi; Val>0)
-func (angChart *PolarAngularChart) AddAreaSeries(name string, points []data.AngularDataPoint, showDots bool,
-	color color.Color) (aas AngularAreaSeries, err error) {
-	aas.ser, err = angChart.base.AddAngularAreaSeries(name, points, showDots, color)
+func (numChart *PolarNumericalChart) AddAreaSeries(name string, points []data.NumericalDataPoint, showDots bool,
+	color color.Color) (nas NumericalAreaSeries, err error) {
+	nas.ser, err = numChart.base.AddNumericalAreaSeries(name, points, showDots, color)
 	return
 }
 
@@ -85,9 +85,9 @@ func (angChart *PolarAngularChart) AddAreaSeries(name string, points []data.Angu
 // The range of A and Val is restricted (0<=A<=2pi; Val>0)
 // The bars are centered around their A value of the data points. barWidth is the width of the bars.
 // An error is returned if barWidth < 0
-func (angChart *PolarAngularChart) AddBarSeries(name string, points []data.AngularDataPoint,
-	barWidth float64, color color.Color) (abs AngularBarSeries, err error) {
-	abs.ser, err = angChart.base.AddAngularBarSeries(name, points, barWidth, color)
+func (numChart *PolarNumericalChart) AddBarSeries(name string, points []data.NumericalDataPoint,
+	barWidth float64, color color.Color) (nbs NumericalBarSeries, err error) {
+	nbs.ser, err = numChart.base.AddNumericalBarSeries(name, points, barWidth, color)
 	return
 }
 
@@ -98,82 +98,82 @@ func (angChart *PolarAngularChart) AddBarSeries(name string, points []data.Angul
 // The range of A and Val is restricted (0<=A<=2pi; Val>0)
 // The bars are centered around their A value of the data points. barWidth is the width of the bars.
 // An error is returned if barWidth < 0
-func (polChart *PolarAngularChart) AddStackedBarSeries(name string,
-	points []data.AngularDataSeries, barWidth float64) (ass AngularStackedBarSeries, err error) {
-	ass.ser, err = polChart.base.AddAngularStackedBarSeries(name, points, barWidth)
+func (numChart *PolarNumericalChart) AddStackedBarSeries(name string,
+	points []data.NumericalDataSeries, barWidth float64) (nss NumericalStackedBarSeries, err error) {
+	nss.ser, err = numChart.base.AddNumericalStackedBarSeries(name, points, barWidth)
 	return
 }
 
 // DeleteSeries deletes the series with the specified name if it exists
-func (angChart *PolarAngularChart) DeleteSeries(name string) {
-	angChart.base.DeleteSeries(name)
+func (numChart *PolarNumericalChart) DeleteSeries(name string) {
+	numChart.base.DeleteSeries(name)
 }
 
 // SetTitle sets the title of the chart, which will be displayed at the top
-func (angChart *PolarAngularChart) SetTitle(l string) {
-	angChart.base.SetTitle(l)
+func (numChart *PolarNumericalChart) SetTitle(l string) {
+	numChart.base.SetTitle(l)
 }
 
 // HideLegend hides the legend and uses the full space for the chart
-func (angChart *PolarAngularChart) HideLegend() {
-	angChart.base.HideLegend()
+func (numChart *PolarNumericalChart) HideLegend() {
+	numChart.base.HideLegend()
 }
 
 // ShowLegend shows the legend on the right side
-func (angChart *PolarAngularChart) ShowLegend() {
-	angChart.base.ShowLegend()
+func (numChart *PolarNumericalChart) ShowLegend() {
+	numChart.base.ShowLegend()
 }
 
 // SetRAxisLabel sets the label of the r-axis, which will be displayed at the bottom-right
-func (angChart *PolarAngularChart) SetRAxisLabel(l string) {
-	angChart.base.SetToAxisLabel(l)
+func (numChart *PolarNumericalChart) SetRAxisLabel(l string) {
+	numChart.base.SetToAxisLabel(l)
 }
 
 // SetRRange sets a user defined range for the r-axis;
 // an error is returned if max<0 or if the origin has been defined by the user before and is outside the given range
-func (angChart *PolarAngularChart) SetRRange(max float64) (err error) {
-	err = angChart.base.SetToRange(0.0, max)
+func (numChart *PolarNumericalChart) SetRRange(max float64) (err error) {
+	err = numChart.base.SetToRange(0.0, max)
 	return
 }
 
 // SetAutoRRange overrides a previously user defined range and lets the range be calculated automatically
-func (angChart *PolarAngularChart) SetAutoRRange() {
-	angChart.base.SetAutoToRange()
+func (numChart *PolarNumericalChart) SetAutoRRange() {
+	numChart.base.SetAutoToRange()
 }
 
 // SetRTicks sets the list of user defined ticks to be shown on the r-axis
-func (angChart *PolarAngularChart) SetRTicks(ts []data.NumericalTick) {
-	angChart.base.SetToTicks(ts)
+func (numChart *PolarNumericalChart) SetRTicks(ts []data.NumericalTick) {
+	numChart.base.SetToTicks(ts)
 }
 
 // SetAutoRTicks overrides a previously user defined set of r-axis ticks and lets the ticks be calculated automatically
-func (angChart *PolarAngularChart) SetAutoRTicks(autoSupportLine bool) {
-	angChart.base.SetAutoToTicks(autoSupportLine)
+func (numChart *PolarNumericalChart) SetAutoRTicks(autoSupportLine bool) {
+	numChart.base.SetAutoToTicks(autoSupportLine)
 }
 
 // SetOrigin sets a user defined origin (crossing of phi and r axis).
 // An error is returned, if a range has been defined before and at least one coordinate is outside the range.
-func (angChart *PolarAngularChart) SetOrigin(phi float64, r float64) (err error) {
-	err = angChart.base.SetNOrigin(phi, r)
+func (numChart *PolarNumericalChart) SetOrigin(phi float64, r float64) (err error) {
+	err = numChart.base.SetNOrigin(phi, r)
 	return
 }
 
 // SetAutoOrigin resets a previously user defined origin and allows the chart to calculate the ideal origin automatically
-func (angChart *PolarAngularChart) SetAutoOrigin() {
-	angChart.base.SetAutoOrigin()
+func (numChart *PolarNumericalChart) SetAutoOrigin() {
+	numChart.base.SetAutoOrigin()
 }
 
 // SetPhiAxisLabel sets the label of the phi-axis, which will be displayed at the left side
-func (angChart *PolarAngularChart) SetPhiAxisLabel(l string) {
-	angChart.base.SetFromAxisLabel(l)
+func (numChart *PolarNumericalChart) SetPhiAxisLabel(l string) {
+	numChart.base.SetFromAxisLabel(l)
 }
 
 // SetPhiTicks sets the list of user defined ticks to be shown on the phi-axis
-func (angChart *PolarAngularChart) SetPhiTicks(ts []data.AngularTick) {
-	angChart.base.SetFromATicks(ts)
+func (numChart *PolarNumericalChart) SetPhiTicks(ts []data.NumericalTick) {
+	numChart.base.SetFromNTicks(ts)
 }
 
 // SetAutoPhiTicks overrides a previously user defined set of phi-axis ticks and lets the ticks be calculated automatically
-func (angChart *PolarAngularChart) SetAutoPhiTicks(autoSupportLine bool) {
-	angChart.base.SetAutoFromTicks(autoSupportLine)
+func (numChart *PolarNumericalChart) SetAutoPhiTicks(autoSupportLine bool) {
+	numChart.base.SetAutoFromTicks(autoSupportLine)
 }

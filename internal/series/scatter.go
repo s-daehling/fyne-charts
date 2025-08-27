@@ -350,7 +350,7 @@ func (ser *ScatterSeries) AddNumericalData(input []data.NumericalDataPoint) (err
 	chart := ser.chart
 	for i := range input {
 		lPoint := emptyScatterPoint(ser.color)
-		lPoint.n = input[i].X
+		lPoint.n = input[i].N
 		lPoint.val = input[i].Val
 		ser.data = append(ser.data, lPoint)
 	}
@@ -483,15 +483,5 @@ func (ser *ScatterSeries) AddCategoricalData(input []data.CategoricalDataPoint) 
 	}
 	ser.mutex.Unlock()
 	chart.DataChange()
-	return
-}
-
-func (ser *ScatterSeries) DeleteAngularDataInRange(min float64, max float64) (c int, err error) {
-	c, err = ser.DeleteNumericalDataInRange(min, max)
-	return
-}
-
-func (ser *ScatterSeries) AddAngularData(input []data.AngularDataPoint) (err error) {
-	err = ser.AddNumericalData(angularToNumerical(input))
 	return
 }

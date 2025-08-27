@@ -301,7 +301,7 @@ func (ser *CandleStickSeries) AddNumericalData(input []data.NumericalCandleStick
 		return
 	}
 	for i := range input {
-		if input[i].XEnd < input[i].XStart || input[i].Low > input[i].High {
+		if input[i].NEnd < input[i].NStart || input[i].Low > input[i].High {
 			err = errors.New("invalid data")
 			return
 		}
@@ -315,8 +315,8 @@ func (ser *CandleStickSeries) AddNumericalData(input []data.NumericalCandleStick
 	chart := ser.chart
 	for i := range input {
 		csPoint := emptyCandleStickPoint()
-		csPoint.nStart = input[i].XStart
-		csPoint.nEnd = input[i].XEnd
+		csPoint.nStart = input[i].NStart
+		csPoint.nEnd = input[i].NEnd
 		csPoint.open = input[i].Open
 		csPoint.close = input[i].Close
 		csPoint.high = input[i].High

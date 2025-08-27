@@ -20,18 +20,20 @@ Depending on the widget type different types of data series are possible.
 
 Following list gives an overview of the widgets and supported series types.
 
-||Cartesian Numerical|Cartesian Temporal|Cartesian Categorical|Cartesian Proportional|Polar Angular|Polar Temporal| Polar Categorical|Polar Proportional|
-|-|-|-|-|-|-|-|-|-|
-|Data Range|x(float64) -> y(float64)|t(time.Time) -> y(float64)|c(string) -> y(float64)|c(string) -> p(float64(>=0))|phi(float64[0,2pi]) -> r(float64(>=0))|t(time.Time) -> r(float64(>=0))|c(string) -> r(float64(>=0))|c(string) -> p(float64(>0))|
-|Line|x|x|||x|x|||
-|Area|x|x|||x|x|||
-|Scatter|x|x|x||x|x|x||
-|Lollipop|x|x|x||x|x|x||
-|Box|x|x|x||||||
-|Candlestick|x|x|||||||
-|Bar|x|x|x||x|x|x||
-|Stacked Bar|x|x|x||x|x|x||
-|Proportion||||x||||x|
+||Numerical|Temporal|Categorical|Proportional|
+|-|-|-|-|-|
+|Cartesian Data Range|x(float64) -> y(float64)|t(time.Time) -> y(float64)|c(string) -> y(float64)|c(string) -> p(float64(>=0))|
+|Polar Data Range|phi(float64[0,2pi]) -> r(float64(>=0))|t(time.Time) -> r(float64(>=0))|c(string) -> r(float64(>=0))|c(string) -> p(float64(>0))|
+|available Series (Cartesian/Polar)|||||
+|Line|x / x|x / x|- / -|- / -|
+|Area|x / x|x / x|- / -|- / -|
+|Scatter|x / x|x / x|x / x|- / -|
+|Lollipop|x / x|x / x|x / x|- / -|
+|Box|x / -|x / -|x / -|- / -|
+|Candlestick|x / -|x / -|- / -|- / -|
+|Bar|x / x|x / x|x / x|- / -|
+|Stacked Bar|x / x|x / x|x / x|- / -|
+|Proportion|- / -|- / -|- / -|x / x|
 
 ![example](docs/example.png "Example")
 
