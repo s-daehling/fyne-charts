@@ -35,12 +35,16 @@ func emptyLinePoint(showDots bool, color color.Color) (point *linePoint) {
 }
 
 func (point *linePoint) hide() {
-	point.dot.Hide()
+	if point.dot != nil {
+		point.dot.Hide()
+	}
 	point.fromPrev.Hide()
 }
 
 func (point *linePoint) show() {
-	point.dot.Show()
+	if point.dot != nil {
+		point.dot.Show()
+	}
 	point.fromPrev.Show()
 }
 
