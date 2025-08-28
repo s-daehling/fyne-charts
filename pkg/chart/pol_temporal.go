@@ -92,19 +92,6 @@ func (numChart *PolarTemporalChart) AddBarSeries(name string, points []data.Temp
 	return
 }
 
-// AddStackedBarSeries adds a series of data which is visualized as stacked bar chart.
-// The series can be accessed via the name later, it must be unique throughout the chart.
-// An error is returned,if another series with the same name exists.
-// The method does not check for duplicates (i.e. data points with same T).
-// The range of T is not restricted. The range of Val is restricted to Val>=0.
-// The bars are centered around their T value of the data points. barWidth is the width of the bars.
-// An error is returned if barWidth < 0
-func (tempChart *PolarTemporalChart) AddStackedBarSeries(name string,
-	points []data.TemporalDataSeries, barWidth time.Duration) (tss TemporalStackedBarSeries, err error) {
-	tss.ser, err = tempChart.base.AddTemporalStackedBarSeries(name, points, barWidth)
-	return
-}
-
 // DeleteSeries deletes the series with the specified name if it exists
 func (tempChart *PolarTemporalChart) DeleteSeries(name string) {
 	tempChart.base.DeleteSeries(name)

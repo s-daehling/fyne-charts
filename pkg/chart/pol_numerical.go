@@ -91,19 +91,6 @@ func (numChart *PolarNumericalChart) AddBarSeries(name string, points []data.Num
 	return
 }
 
-// AddStackedBarSeries adds a series of data which is visualized as stacked bar chart.
-// The series can be accessed via the name later, it must be unique throughout the chart.
-// An error is returned,if another series with the same name exists.
-// The method does not check for duplicates (i.e. data points with same A).
-// The range of A and Val is restricted (0<=A<=2pi; Val>0)
-// The bars are centered around their A value of the data points. barWidth is the width of the bars.
-// An error is returned if barWidth < 0
-func (numChart *PolarNumericalChart) AddStackedBarSeries(name string,
-	points []data.NumericalDataSeries, barWidth float64) (nss NumericalStackedBarSeries, err error) {
-	nss.ser, err = numChart.base.AddNumericalStackedBarSeries(name, points, barWidth)
-	return
-}
-
 // DeleteSeries deletes the series with the specified name if it exists
 func (numChart *PolarNumericalChart) DeleteSeries(name string) {
 	numChart.base.DeleteSeries(name)

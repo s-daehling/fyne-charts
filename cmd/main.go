@@ -241,7 +241,7 @@ func polAngChart() (angChart *chart.PolarNumericalChart) {
 	for range 100 {
 		data1 = append(data1, randomAngularDataPoint(63.777))
 	}
-	angChart.AddBarSeries("area", data1, 0.01*2*math.Pi, color.RGBA{R: 0xff, G: 0x00, B: 0x00, A: 0xff})
+	angChart.AddAreaSeries("area", data1, true, color.RGBA{R: 0xff, G: 0x00, B: 0x00, A: 0xff})
 
 	data2 := make([]data.NumericalDataPoint, 0)
 	for range 150 {
@@ -269,7 +269,7 @@ func polTempChart() (tempChart *chart.PolarTemporalChart) {
 	for range 25 {
 		data2 = append(data2, randomTemporalDataPoint(time.Now(), time.Now().Add(time.Hour*50), 0, 111))
 	}
-	tempChart.AddBarSeries("scatter", data2, time.Minute*15, color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff})
+	tempChart.AddScatterSeries("scatter", data2, color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff})
 
 	tempChart.SetOrigin(time.Now().Add(time.Hour*10), 120)
 	tempChart.SetTAxisLabel("T axis")

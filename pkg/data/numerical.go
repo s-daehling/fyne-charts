@@ -1,7 +1,5 @@
 package data
 
-import "image/color"
-
 // NumericalDataPoint represents one data point with a numerical coordinate
 type NumericalDataPoint struct {
 	N   float64
@@ -19,13 +17,6 @@ func (m DpByNValue) Less(i, j int) bool { return m[i].N < m[j].N }
 
 // Swap swaps the points on positions i and j
 func (m DpByNValue) Swap(i, j int) { m[i], m[j] = m[j], m[i] }
-
-// NumericalDataSeries represents a series of data points with a numerical coordinate
-type NumericalDataSeries struct {
-	Name   string
-	Col    color.Color
-	Points []NumericalDataPoint
-}
 
 // NumericalCandleStick represents one canlde in a candlestick series over a numerical axis
 type NumericalCandleStick struct {

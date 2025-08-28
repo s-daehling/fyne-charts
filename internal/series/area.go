@@ -26,6 +26,7 @@ func (ser *AreaSeries) RasterColorCartesian(x float64, y float64) (col color.Col
 		return
 	}
 	// find first data point with x higher
+	ser.mutex.Lock()
 	for i := range ser.data {
 		if ser.data[i].n > x {
 			if i == 0 {
@@ -48,6 +49,7 @@ func (ser *AreaSeries) RasterColorCartesian(x float64, y float64) (col color.Col
 			break
 		}
 	}
+	ser.mutex.Unlock()
 	return
 }
 
@@ -58,6 +60,7 @@ func (ser *AreaSeries) RasterColorPolar(phi float64, r float64, x float64, y flo
 	}
 	red, green, blue, _ := ser.color.RGBA()
 	colArea := color.RGBA64{R: uint16(red), G: uint16(green), B: uint16(blue), A: 0x8888}
+	ser.mutex.Lock()
 	// find first data point with x higher
 	for i := range ser.data {
 		if ser.data[i].n > phi {
@@ -75,6 +78,7 @@ func (ser *AreaSeries) RasterColorPolar(phi float64, r float64, x float64, y flo
 			break
 		}
 	}
+	ser.mutex.Unlock()
 	return
 }
 

@@ -303,48 +303,6 @@ func (base *BaseChart) AddCategoricalBarSeries(name string, points []data.Catego
 	return
 }
 
-func (base *BaseChart) AddNumericalStackedBarSeries(name string,
-	dataSeries []data.NumericalDataSeries, barWidth float64) (ser *series.StackedBarSeries, err error) {
-	sbSeries := series.EmptyStackedBarSeries(base, name, base.planeType == PolarPlane)
-	for i := range dataSeries {
-		err = sbSeries.AddNumericalSeries(dataSeries[i])
-		if err != nil {
-			return
-		}
-	}
-	err = sbSeries.SetNumericalWidthAndOffset(barWidth, 0)
-	if err != nil {
-		return
-	}
-	err = base.addSeriesIfNotExist(sbSeries)
-	if err != nil {
-		return
-	}
-	ser = sbSeries
-	return
-}
-
-func (base *BaseChart) AddTemporalStackedBarSeries(name string,
-	dataSeries []data.TemporalDataSeries, barWidth time.Duration) (ser *series.StackedBarSeries, err error) {
-	sbSeries := series.EmptyStackedBarSeries(base, name, base.planeType == PolarPlane)
-	for i := range dataSeries {
-		err = sbSeries.AddTemporalSeries(dataSeries[i])
-		if err != nil {
-			return
-		}
-	}
-	err = sbSeries.SetTemporalWidthAndOffset(barWidth, 0)
-	if err != nil {
-		return
-	}
-	err = base.addSeriesIfNotExist(sbSeries)
-	if err != nil {
-		return
-	}
-	ser = sbSeries
-	return
-}
-
 func (base *BaseChart) AddCategoricalStackedBarSeries(name string,
 	dataSeries []data.CategoricalDataSeries) (ser *series.StackedBarSeries, err error) {
 	sbSeries := series.EmptyStackedBarSeries(base, name, base.planeType == PolarPlane)

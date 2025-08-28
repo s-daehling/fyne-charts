@@ -1,7 +1,6 @@
 package data
 
 import (
-	"image/color"
 	"time"
 )
 
@@ -22,13 +21,6 @@ func (m DpByTValue) Less(i, j int) bool { return m[i].T.Before(m[i].T) }
 
 // Swap swaps the points on positions i and j
 func (m DpByTValue) Swap(i, j int) { m[i], m[j] = m[j], m[i] }
-
-// TemporalDataSeries represents a series of data points with a temporal coordinate
-type TemporalDataSeries struct {
-	Name   string
-	Col    color.Color
-	Points []TemporalDataPoint
-}
 
 // TemporalCandleStick represents one canlde in a candlestick series over a temoral axis
 type TemporalCandleStick struct {

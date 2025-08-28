@@ -20,7 +20,7 @@ Depending on the widget type different types of data series are possible.
 
 Following list gives an overview of the widgets and supported series types.
 
-||Numerical|Temporal|Categorical|Proportional|
+|Chart Type|Numerical|Temporal|Categorical|Proportional|
 |-|-|-|-|-|
 |Cartesian Data Range|x(float64) -> y(float64)|t(time.Time) -> y(float64)|c(string) -> y(float64)|c(string) -> p(float64(>=0))|
 |Polar Data Range|phi(float64[0,2pi]) -> r(float64(>=0))|t(time.Time) -> r(float64(>=0))|c(string) -> r(float64(>=0))|c(string) -> p(float64(>0))|
@@ -32,7 +32,7 @@ Following list gives an overview of the widgets and supported series types.
 |Box|x / -|x / -|x / -|- / -|
 |Candlestick|x / -|x / -|- / -|- / -|
 |Bar|x / x|x / x|x / x|- / -|
-|Stacked Bar|x / x|x / x|x / x|- / -|
+|Stacked Bar|- / -|- / -|x / x|- / -|
 |Proportion|- / -|- / -|- / -|x / x|
 
 ![example](docs/example.png "Example")
