@@ -40,19 +40,22 @@ func (point *proportionPoint) toggleView() {
 	} else {
 		point.show()
 	}
-	if point.ser != nil {
-		point.ser.pointVisibilityUpdate()
-	}
 }
 
 func (point *proportionPoint) hide() {
 	point.rect.Hide()
 	point.visible = false
+	if point.ser != nil {
+		point.ser.pointVisibilityUpdate(-point.val)
+	}
 }
 
 func (point *proportionPoint) show() {
 	point.rect.Show()
 	point.visible = true
+	if point.ser != nil {
+		point.ser.pointVisibilityUpdate(point.val)
+	}
 }
 
 // func (point *proportionPoint) setColor(col color.Color) {
@@ -152,7 +155,9 @@ func (ser *ProportionalSeries) ConvertPtoN(pToN func(p float64) (n float64)) {
 	for i := range ser.data {
 		ser.data[i].n = pToN(ser.data[i].val / ser.tot)
 		ser.data[i].valOffset = valOffset
-		valOffset += ser.data[i].n
+		if ser.data[i].visible {
+			valOffset += ser.data[i].n
+		}
 	}
 	ser.mutex.Unlock()
 }
@@ -216,7 +221,11 @@ func (ser *ProportionalSeries) toggleView() {
 	}
 }
 
-func (ser *ProportionalSeries) pointVisibilityUpdate() {
+func (ser *ProportionalSeries) pointVisibilityUpdate(totChange float64) {
+	ser.mutex.Lock()
+	ser.tot += totChange
+	ser.mutex.Unlock()
+	ser.chart.DataChange()
 	if ser.polar {
 		ser.chart.RasterVisibilityChange()
 	}

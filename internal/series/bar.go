@@ -241,6 +241,9 @@ func (ser *BarSeries) Show() {
 		ser.data[i].show()
 	}
 	ser.mutex.Unlock()
+	if ser.polar {
+		ser.chart.RasterVisibilityChange()
+	}
 }
 
 // Hide hides the bars of the series
@@ -251,6 +254,9 @@ func (ser *BarSeries) Hide() {
 		ser.data[i].hide()
 	}
 	ser.mutex.Unlock()
+	if ser.polar {
+		ser.chart.RasterVisibilityChange()
+	}
 }
 
 func (ser *BarSeries) toggleView() {
@@ -258,9 +264,6 @@ func (ser *BarSeries) toggleView() {
 		ser.Hide()
 	} else {
 		ser.Show()
-	}
-	if ser.polar {
-		ser.chart.RasterVisibilityChange()
 	}
 }
 
