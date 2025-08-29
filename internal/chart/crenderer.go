@@ -221,6 +221,19 @@ func (r *cartesianRenderer) Layout(size fyne.Size) {
 		}
 	}
 
+	// place texts
+	ts := r.chart.cartesianTexts()
+	for i := range ts {
+		if r.transposed {
+
+		} else {
+			tPos := cartesianCoordinatesToPosition(ts[i].X, ts[i].Y, area)
+			tPos = tPos.SubtractXY(0, ts[i].Text.MinSize().Height/2)
+			ts[i].Text.Move(tPos)
+			ts[i].Text.Alignment = fyne.TextAlignCenter
+		}
+	}
+
 	// place raster
 	rs := r.chart.chartRaster()
 	rs.Move(fyne.NewPos(area.minPos.X, area.maxPos.Y))

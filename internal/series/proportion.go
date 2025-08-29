@@ -3,6 +3,8 @@ package series
 import (
 	"errors"
 	"image/color"
+	"math"
+	"strconv"
 
 	"github.com/s-daehling/fyne-charts/pkg/data"
 
@@ -18,19 +20,23 @@ type proportionPoint struct {
 	hOffset      float64
 	valOffset    float64
 	rect         *canvas.Rectangle
+	text         *canvas.Text
 	visible      bool
 	legendButton *LegendBox
 	legendLabel  *canvas.Text
 	ser          *ProportionalSeries
 }
 
-func emptyProportionPoint(col color.Color) (point *proportionPoint) {
+func emptyProportionPoint(showText bool, col color.Color) (point *proportionPoint) {
 	point = &proportionPoint{
 		rect:        canvas.NewRectangle(col),
 		legendLabel: canvas.NewText("", theme.Color(theme.ColorNameForeground)),
 		visible:     true,
 	}
 	point.legendButton = NewLegendBox(col, point.toggleView)
+	if showText {
+		point.text = canvas.NewText("", color.Black)
+	}
 	return
 }
 
@@ -44,6 +50,9 @@ func (point *proportionPoint) toggleView() {
 
 func (point *proportionPoint) hide() {
 	point.rect.Hide()
+	if point.text != nil {
+		point.text.Hide()
+	}
 	point.visible = false
 	if point.ser != nil {
 		point.ser.pointVisibilityUpdate(-point.val)
@@ -52,6 +61,9 @@ func (point *proportionPoint) hide() {
 
 func (point *proportionPoint) show() {
 	point.rect.Show()
+	if point.text != nil {
+		point.text.Show()
+	}
 	point.visible = true
 	if point.ser != nil {
 		point.ser.pointVisibilityUpdate(point.val)
@@ -91,6 +103,27 @@ func (point *proportionPoint) cartesianRects(xMin float64, xMax float64, yMin fl
 	return
 }
 
+func (point *proportionPoint) cartesianTexts(xMin float64, xMax float64, yMin float64,
+	yMax float64) (ts []CartesianText) {
+	if point.text == nil {
+		return
+	}
+	if point.valOffset+point.n < xMin || point.valOffset > xMax {
+		return
+	}
+	if point.hOffset+point.height < yMin || point.hOffset > yMax {
+		return
+	}
+	point.text.Text = strconv.FormatFloat(point.n, 'f', 0, 64) + "%"
+	t := CartesianText{
+		X:    point.valOffset + (point.n / 2),
+		Y:    point.hOffset + (point.height / 2),
+		Text: point.text,
+	}
+	ts = append(ts, t)
+	return
+}
+
 func (point *proportionPoint) RasterColorPolar(phi float64, r float64, x float64, y float64) (col color.Color) {
 	col = color.RGBA{0x00, 0x00, 0x00, 0x00}
 	if !point.visible {
@@ -105,14 +138,36 @@ func (point *proportionPoint) RasterColorPolar(phi float64, r float64, x float64
 	return
 }
 
+func (point *proportionPoint) polarTexts(phiMin float64, phiMax float64, rMin float64,
+	rMax float64) (ts []PolarText) {
+	if point.text == nil {
+		return
+	}
+	if point.valOffset+point.n < phiMin || point.valOffset > phiMax {
+		return
+	}
+	if point.hOffset+point.height < rMin || point.hOffset > rMax {
+		return
+	}
+	point.text.Text = strconv.FormatFloat(100*(point.n/(2*math.Pi)), 'f', 0, 64) + "%"
+	t := PolarText{
+		Phi:  point.valOffset + (point.n / 2),
+		R:    point.hOffset + (point.height / 2),
+		Text: point.text,
+	}
+	ts = append(ts, t)
+	return
+}
+
 type ProportionalSeries struct {
 	baseSeries
-	data []*proportionPoint
-	tot  float64
+	showText bool
+	data     []*proportionPoint
+	tot      float64
 }
 
 func EmptyProportionalSeries(chart chart, name string, polar bool) (ser *ProportionalSeries) {
-	ser = &ProportionalSeries{}
+	ser = &ProportionalSeries{showText: true}
 	ser.baseSeries = emptyBaseSeries(chart, name, color.Black, polar, ser.toggleView)
 	return
 }
@@ -172,6 +227,16 @@ func (ser *ProportionalSeries) CartesianRects(xMin float64, xMax float64, yMin f
 	return
 }
 
+func (ser *ProportionalSeries) CartesianTexts(xMin float64, xMax float64, yMin float64,
+	yMax float64) (ts []CartesianText) {
+	ser.mutex.Lock()
+	for i := range ser.data {
+		ts = append(ts, ser.data[i].cartesianTexts(xMin, xMax, yMin, yMax)...)
+	}
+	ser.mutex.Unlock()
+	return
+}
+
 func (ser *ProportionalSeries) RasterColorPolar(phi float64, r float64, x float64, y float64) (col color.Color) {
 	col = ser.baseSeries.RasterColorPolar(phi, r, x, y)
 	if !ser.visible {
@@ -185,6 +250,16 @@ func (ser *ProportionalSeries) RasterColorPolar(phi float64, r float64, x float6
 			col = pCol
 			break
 		}
+	}
+	ser.mutex.Unlock()
+	return
+}
+
+func (ser *ProportionalSeries) PolarTexts(phiMin float64, phiMax float64, rMin float64,
+	rMax float64) (ts []PolarText) {
+	ser.mutex.Lock()
+	for i := range ser.data {
+		ts = append(ts, ser.data[i].polarTexts(phiMin, phiMax, rMin, rMax)...)
 	}
 	ser.mutex.Unlock()
 	return
@@ -322,7 +397,7 @@ func (ser *ProportionalSeries) AddData(input []data.ProportionalDataPoint) (err 
 		if catExist {
 			continue
 		}
-		pPoint := emptyProportionPoint(input[i].Col)
+		pPoint := emptyProportionPoint(ser.showText, input[i].Col)
 		pPoint.c = input[i].C
 		pPoint.legendLabel.Text = input[i].C
 		pPoint.val = input[i].Val

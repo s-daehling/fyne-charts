@@ -248,6 +248,15 @@ func (r *polarRenderer) Layout(size fyne.Size) {
 		es[i].Line.Position2 = polarCoordinatesToPosition(es[i].Phi2, es[i].R2, area)
 	}
 
+	// place texts
+	ts := r.chart.polarTexts()
+	for i := range ts {
+		tPos := polarCoordinatesToPosition(ts[i].Phi, ts[i].R, area)
+		tPos = tPos.SubtractXY(0, ts[i].Text.MinSize().Height/2)
+		ts[i].Text.Move(tPos)
+		ts[i].Text.Alignment = fyne.TextAlignCenter
+	}
+
 	// place raster
 	rs := r.chart.chartRaster()
 	rs.Move(fyne.NewPos(area.zeroPos.X-area.radius, area.zeroPos.Y-area.radius))

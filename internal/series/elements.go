@@ -32,6 +32,12 @@ type CartesianRect struct {
 	Rect *canvas.Rectangle
 }
 
+type CartesianText struct {
+	X    float64
+	Y    float64
+	Text *canvas.Text
+}
+
 type PolarNode struct {
 	Phi float64
 	R   float64
@@ -44,6 +50,12 @@ type PolarEdge struct {
 	Phi2 float64
 	R2   float64
 	Line *canvas.Line
+}
+
+type PolarText struct {
+	Phi  float64
+	R    float64
+	Text *canvas.Text
 }
 
 type LegendBox struct {

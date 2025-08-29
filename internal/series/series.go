@@ -91,11 +91,19 @@ func (ser *baseSeries) CartesianRects(xMin float64, xMax float64, yMin float64, 
 	return
 }
 
+func (ser *baseSeries) CartesianTexts(xMin float64, xMax float64, yMin float64, yMax float64) (fs []CartesianText) {
+	return
+}
+
 func (ser *baseSeries) PolarNodes(phiMin float64, phiMax float64, rMin float64, rMax float64) (ns []PolarNode) {
 	return
 }
 
 func (ser *baseSeries) PolarEdges(phiMin float64, phiMax float64, rMin float64, rMax float64) (es []PolarEdge) {
+	return
+}
+
+func (ser *baseSeries) PolarTexts(phiMin float64, phiMax float64, rMin float64, rMax float64) (es []PolarText) {
 	return
 }
 
@@ -125,8 +133,10 @@ type Series interface {
 	CartesianNodes(xMin float64, xMax float64, yMin float64, yMax float64) (ns []CartesianNode)
 	CartesianEdges(xMin float64, xMax float64, yMin float64, yMax float64) (es []CartesianEdge)
 	CartesianRects(xMin float64, xMax float64, yMin float64, yMax float64) (fs []CartesianRect)
+	CartesianTexts(xMin float64, xMax float64, yMin float64, yMax float64) (ts []CartesianText)
 	PolarNodes(phiMin float64, phiMax float64, rMin float64, rMax float64) (ns []PolarNode)
 	PolarEdges(phiMin float64, phiMax float64, rMin float64, rMax float64) (es []PolarEdge)
+	PolarTexts(phiMin float64, phiMax float64, rMin float64, rMax float64) (es []PolarText)
 	RasterColorCartesian(x float64, y float64) (col color.Color)
 	RasterColorPolar(phi float64, r float64, x float64, y float64) (col color.Color)
 }
