@@ -41,6 +41,7 @@ func (numChart *PolarNumericalChart) CreateRenderer() fyne.WidgetRenderer {
 func (numChart *PolarNumericalChart) AddLineSeries(name string, points []data.NumericalDataPoint, showDots bool,
 	color color.Color) (nls NumericalLineSeries, err error) {
 	nls.ser, err = numChart.base.AddNumericalLineSeries(name, points, showDots, color)
+	nls.wid = &numChart.BaseWidget
 	return
 }
 
@@ -52,6 +53,7 @@ func (numChart *PolarNumericalChart) AddLineSeries(name string, points []data.Nu
 func (numChart *PolarNumericalChart) AddScatterSeries(name string, points []data.NumericalDataPoint,
 	color color.Color) (nss NumericalScatterSeries, err error) {
 	nss.ser, err = numChart.base.AddNumericalScatterSeries(name, points, color)
+	nss.wid = &numChart.BaseWidget
 	return
 }
 
@@ -63,6 +65,7 @@ func (numChart *PolarNumericalChart) AddScatterSeries(name string, points []data
 func (numChart *PolarNumericalChart) AddLollipopSeries(name string, points []data.NumericalDataPoint,
 	color color.Color) (nls NumericalLollipopSeries, err error) {
 	nls.ser, err = numChart.base.AddNumericalLollipopSeries(name, points, color)
+	nls.wid = &numChart.BaseWidget
 	return
 }
 
@@ -75,6 +78,7 @@ func (numChart *PolarNumericalChart) AddLollipopSeries(name string, points []dat
 func (numChart *PolarNumericalChart) AddAreaSeries(name string, points []data.NumericalDataPoint, showDots bool,
 	color color.Color) (nas NumericalAreaSeries, err error) {
 	nas.ser, err = numChart.base.AddNumericalAreaSeries(name, points, showDots, color)
+	nas.wid = &numChart.BaseWidget
 	return
 }
 
@@ -88,6 +92,7 @@ func (numChart *PolarNumericalChart) AddAreaSeries(name string, points []data.Nu
 func (numChart *PolarNumericalChart) AddBarSeries(name string, points []data.NumericalDataPoint,
 	barWidth float64, color color.Color) (nbs NumericalBarSeries, err error) {
 	nbs.ser, err = numChart.base.AddNumericalBarSeries(name, points, barWidth, color)
+	nbs.wid = &numChart.BaseWidget
 	return
 }
 

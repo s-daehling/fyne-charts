@@ -4,6 +4,7 @@ import (
 	"image/color"
 	"time"
 
+	"fyne.io/fyne/v2/widget"
 	"github.com/s-daehling/fyne-charts/internal/series"
 
 	"github.com/s-daehling/fyne-charts/pkg/data"
@@ -11,6 +12,7 @@ import (
 
 type scatterSeries struct {
 	ser *series.ScatterSeries
+	wid *widget.BaseWidget
 }
 
 // Name returns the name of the series
@@ -63,10 +65,14 @@ type NumericalScatterSeries struct {
 // The return value gives the number of data points that have been removed
 // An error is returned if min>max
 func (nss NumericalScatterSeries) DeleteDataInRange(min float64, max float64) (c int, err error) {
-	if nss.ser == nil {
+	if nss.ser == nil || nss.wid == nil {
 		return
 	}
 	c, err = nss.ser.DeleteNumericalDataInRange(min, max)
+	if err != nil {
+		return
+	}
+	nss.wid.Refresh()
 	return
 }
 
@@ -74,10 +80,14 @@ func (nss NumericalScatterSeries) DeleteDataInRange(min float64, max float64) (c
 // The method does not check for duplicates (i.e. data points with same X)
 // The range of X and Val is not restricted
 func (nss NumericalScatterSeries) AddData(input []data.NumericalDataPoint) (err error) {
-	if nss.ser == nil {
+	if nss.ser == nil || nss.wid == nil {
 		return
 	}
 	err = nss.ser.AddNumericalData(input)
+	if err != nil {
+		return
+	}
+	nss.wid.Refresh()
 	return
 }
 
@@ -90,10 +100,14 @@ type TemporalScatterSeries struct {
 // The return value gives the number of data points that have been removed
 // An error is returned if min after max
 func (tss TemporalScatterSeries) DeleteDataInRange(min time.Time, max time.Time) (c int, err error) {
-	if tss.ser == nil {
+	if tss.ser == nil || tss.wid == nil {
 		return
 	}
 	c, err = tss.ser.DeleteTemporalDataInRange(min, max)
+	if err != nil {
+		return
+	}
+	tss.wid.Refresh()
 	return
 }
 
@@ -101,10 +115,14 @@ func (tss TemporalScatterSeries) DeleteDataInRange(min time.Time, max time.Time)
 // The method does not check for duplicates (i.e. data points with same T)
 // The range of T is not restricted. The range of Val is not restricted in a cartesian chart, but Val>=0 in a polar chart
 func (tss TemporalScatterSeries) AddData(input []data.TemporalDataPoint) (err error) {
-	if tss.ser == nil {
+	if tss.ser == nil || tss.wid == nil {
 		return
 	}
 	err = tss.ser.AddTemporalData(input)
+	if err != nil {
+		return
+	}
+	tss.wid.Refresh()
 	return
 }
 
@@ -117,10 +135,14 @@ type CategoricalScatterSeries struct {
 // The return value gives the number of data points that have been removed
 // An error is returned if cat is empty
 func (css CategoricalScatterSeries) DeleteDataInRange(cat []string) (c int, err error) {
-	if css.ser == nil {
+	if css.ser == nil || css.wid == nil {
 		return
 	}
 	c, err = css.ser.DeleteCategoricalDataInRange(cat)
+	if err != nil {
+		return
+	}
+	css.wid.Refresh()
 	return
 }
 
@@ -129,9 +151,13 @@ func (css CategoricalScatterSeries) DeleteDataInRange(cat []string) (c int, err 
 // Data points with a C that already exists, will be ignored.
 // The range of C is not restricted. The range of Val is not restricted in a cartesian chart, but Val>=0 in a polar chart
 func (css CategoricalScatterSeries) AddData(input []data.CategoricalDataPoint) (err error) {
-	if css.ser == nil {
+	if css.ser == nil || css.wid == nil {
 		return
 	}
 	err = css.ser.AddCategoricalData(input)
+	if err != nil {
+		return
+	}
+	css.wid.Refresh()
 	return
 }

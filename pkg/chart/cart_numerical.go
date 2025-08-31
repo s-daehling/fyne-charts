@@ -41,6 +41,7 @@ func (numChart *CartesianNumericalChart) CreateRenderer() fyne.WidgetRenderer {
 func (numChart *CartesianNumericalChart) AddLineSeries(name string, points []data.NumericalDataPoint,
 	showDots bool, color color.Color) (nls NumericalLineSeries, err error) {
 	nls.ser, err = numChart.base.AddNumericalLineSeries(name, points, showDots, color)
+	nls.wid = &numChart.BaseWidget
 	return
 }
 
@@ -52,6 +53,7 @@ func (numChart *CartesianNumericalChart) AddLineSeries(name string, points []dat
 func (numChart *CartesianNumericalChart) AddScatterSeries(name string, points []data.NumericalDataPoint,
 	color color.Color) (nss NumericalScatterSeries, err error) {
 	nss.ser, err = numChart.base.AddNumericalScatterSeries(name, points, color)
+	nss.wid = &numChart.BaseWidget
 	return
 }
 
@@ -63,6 +65,7 @@ func (numChart *CartesianNumericalChart) AddScatterSeries(name string, points []
 func (numChart *CartesianNumericalChart) AddLollipopSeries(name string, points []data.NumericalDataPoint,
 	color color.Color) (nls NumericalLollipopSeries, err error) {
 	nls.ser, err = numChart.base.AddNumericalLollipopSeries(name, points, color)
+	nls.wid = &numChart.BaseWidget
 	return
 }
 
@@ -74,6 +77,7 @@ func (numChart *CartesianNumericalChart) AddLollipopSeries(name string, points [
 func (numChart *CartesianNumericalChart) AddCandleStickSeries(name string,
 	points []data.NumericalCandleStick) (ncs NumericalCandleStickSeries, err error) {
 	ncs.ser, err = numChart.base.AddNumericalCandleStickSeries(name, points)
+	ncs.wid = &numChart.BaseWidget
 	return
 }
 
@@ -85,6 +89,7 @@ func (numChart *CartesianNumericalChart) AddCandleStickSeries(name string,
 func (numChart *CartesianNumericalChart) AddBoxSeries(name string,
 	points []data.NumericalBox, col color.Color) (nbs NumericalBoxSeries, err error) {
 	nbs.ser, err = numChart.base.AddNumericalBoxSeries(name, points, col)
+	nbs.wid = &numChart.BaseWidget
 	return
 }
 
@@ -97,6 +102,7 @@ func (numChart *CartesianNumericalChart) AddBoxSeries(name string,
 func (numChart *CartesianNumericalChart) AddAreaSeries(name string, points []data.NumericalDataPoint, showDots bool,
 	color color.Color) (nas NumericalAreaSeries, err error) {
 	nas.ser, err = numChart.base.AddNumericalAreaSeries(name, points, showDots, color)
+	nas.wid = &numChart.BaseWidget
 	return
 }
 
@@ -110,6 +116,7 @@ func (numChart *CartesianNumericalChart) AddAreaSeries(name string, points []dat
 func (numChart *CartesianNumericalChart) AddBarSeries(name string, points []data.NumericalDataPoint,
 	barWidth float64, color color.Color) (nbs NumericalBarSeries, err error) {
 	nbs.ser, err = numChart.base.AddNumericalBarSeries(name, points, barWidth, color)
+	nbs.wid = &numChart.BaseWidget
 	return
 }
 

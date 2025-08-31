@@ -4,6 +4,7 @@ import (
 	"image/color"
 	"time"
 
+	"fyne.io/fyne/v2/widget"
 	"github.com/s-daehling/fyne-charts/internal/series"
 
 	"github.com/s-daehling/fyne-charts/pkg/data"
@@ -11,6 +12,7 @@ import (
 
 type barSeries struct {
 	ser *series.BarSeries
+	wid *widget.BaseWidget
 }
 
 // Name returns the name of the series
@@ -55,10 +57,14 @@ type NumericalBarSeries struct {
 // The return value gives the number of data points that have been removed
 // An error is returned if min>max
 func (nbs NumericalBarSeries) DeleteDataInRange(min float64, max float64) (c int, err error) {
-	if nbs.ser == nil {
+	if nbs.ser == nil || nbs.wid == nil {
 		return
 	}
 	c, err = nbs.ser.DeleteNumericalDataInRange(min, max)
+	if err != nil {
+		return
+	}
+	nbs.wid.Refresh()
 	return
 }
 
@@ -66,20 +72,28 @@ func (nbs NumericalBarSeries) DeleteDataInRange(min float64, max float64) (c int
 // The method does not check for duplicates (i.e. data points with same X)
 // The range of X and Val is not restricted
 func (nbs NumericalBarSeries) AddData(input []data.NumericalDataPoint) (err error) {
-	if nbs.ser == nil {
+	if nbs.ser == nil || nbs.wid == nil {
 		return
 	}
 	err = nbs.ser.AddNumericalData(input)
+	if err != nil {
+		return
+	}
+	nbs.wid.Refresh()
 	return
 }
 
 // SetBarWidth sets the width of the bars. The bars are centered around their X value of the data points
 // An error is returned in w < 0
 func (nbs NumericalBarSeries) SetBarWidth(w float64) (err error) {
-	if nbs.ser == nil {
+	if nbs.ser == nil || nbs.wid == nil {
 		return
 	}
-	nbs.ser.SetNumericalWidthAndOffset(w, 0)
+	err = nbs.ser.SetNumericalWidthAndOffset(w, 0)
+	if err != nil {
+		return
+	}
+	nbs.wid.Refresh()
 	return
 }
 
@@ -92,10 +106,14 @@ type TemporalBarSeries struct {
 // The return value gives the number of data points that have been removed
 // An error is returned if min after max
 func (tbs TemporalBarSeries) DeleteDataInRange(min time.Time, max time.Time) (c int, err error) {
-	if tbs.ser == nil {
+	if tbs.ser == nil || tbs.wid == nil {
 		return
 	}
 	c, err = tbs.ser.DeleteTemporalDataInRange(min, max)
+	if err != nil {
+		return
+	}
+	tbs.wid.Refresh()
 	return
 }
 
@@ -103,20 +121,28 @@ func (tbs TemporalBarSeries) DeleteDataInRange(min time.Time, max time.Time) (c 
 // The method does not check for duplicates (i.e. data points with same T)
 // The range of T is not restricted. The range of Val is not restricted in a cartesian chart, but Val>=0 in a polar chart
 func (tbs TemporalBarSeries) AddData(input []data.TemporalDataPoint) (err error) {
-	if tbs.ser == nil {
+	if tbs.ser == nil || tbs.wid == nil {
 		return
 	}
 	err = tbs.ser.AddTemporalData(input)
+	if err != nil {
+		return
+	}
+	tbs.wid.Refresh()
 	return
 }
 
 // SetBarWidth sets the width of the bars. The bars are centered around their T value of the data points
 // An error is returned in w < 0
 func (tbs TemporalBarSeries) SetBarWidth(w time.Duration) (err error) {
-	if tbs.ser == nil {
+	if tbs.ser == nil || tbs.wid == nil {
 		return
 	}
-	tbs.ser.SetTemporalWidthAndOffset(w, 0)
+	err = tbs.ser.SetTemporalWidthAndOffset(w, 0)
+	if err != nil {
+		return
+	}
+	tbs.wid.Refresh()
 	return
 }
 
@@ -129,10 +155,14 @@ type CategoricalBarSeries struct {
 // The return value gives the number of data points that have been removed
 // An error is returned if cat is empty
 func (cbs CategoricalBarSeries) DeleteDataInRange(cat []string) (c int, err error) {
-	if cbs.ser == nil {
+	if cbs.ser == nil || cbs.wid == nil {
 		return
 	}
 	c, err = cbs.ser.DeleteCategoricalDataInRange(cat)
+	if err != nil {
+		return
+	}
+	cbs.wid.Refresh()
 	return
 }
 
@@ -141,9 +171,13 @@ func (cbs CategoricalBarSeries) DeleteDataInRange(cat []string) (c int, err erro
 // Data points with a C that already exists, will be ignored.
 // The range of C is not restricted. The range of Val is not restricted in a cartesian chart, but Val>=0 in a polar chart
 func (cbs CategoricalBarSeries) AddData(input []data.CategoricalDataPoint) (err error) {
-	if cbs.ser == nil {
+	if cbs.ser == nil || cbs.wid == nil {
 		return
 	}
 	err = cbs.ser.AddCategoricalData(input)
+	if err != nil {
+		return
+	}
+	cbs.wid.Refresh()
 	return
 }

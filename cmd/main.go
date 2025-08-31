@@ -66,6 +66,15 @@ func cartNumChart() (numChart *chart.CartesianNumericalChart) {
 	ls, _ := numChart.AddLineSeries("line", data2, true, color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff})
 	ls.SetColor(color.RGBA{R: 0x00, G: 0xff, B: 0xff, A: 0xff})
 
+	go func() {
+		data2a := data.NumericalDataPoint{
+			N:   150,
+			Val: 150,
+		}
+		time.Sleep(time.Second * 5)
+		ls.AddData([]data.NumericalDataPoint{data2a})
+	}()
+
 	data3 := make([]data.NumericalDataPoint, 0)
 	for range 50 {
 		data3 = append(data3, randomNumericalDataPoint(-110, 110, -110, 110))

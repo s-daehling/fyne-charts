@@ -1,6 +1,7 @@
 package chart
 
 import (
+	"fyne.io/fyne/v2/widget"
 	"github.com/s-daehling/fyne-charts/internal/series"
 
 	"github.com/s-daehling/fyne-charts/pkg/data"
@@ -8,6 +9,7 @@ import (
 
 type stackedBarSeries struct {
 	ser *series.StackedBarSeries
+	wid *widget.BaseWidget
 }
 
 // Name returns the name of the series
@@ -44,10 +46,14 @@ type CategoricalStackedBarSeries struct {
 // The return value gives the number of data points that have been removed
 // An error iis returned if cat is empty
 func (css CategoricalStackedBarSeries) DeleteDataInRange(cat []string) (c int, err error) {
-	if css.ser == nil {
+	if css.ser == nil || css.wid == nil {
 		return
 	}
 	c, err = css.ser.DeleteCategoricalDataInRange(cat)
+	if err != nil {
+		return
+	}
+	css.wid.Refresh()
 	return
 }
 
@@ -58,10 +64,14 @@ func (css CategoricalStackedBarSeries) DeleteDataInRange(cat []string) (c int, e
 // Data points with a C that already exists, will be ignored.
 // The range of C is not restricted. The range of Val is restricted to Val>=0
 func (css CategoricalStackedBarSeries) AddData(series string, input []data.CategoricalDataPoint) (err error) {
-	if css.ser == nil {
+	if css.ser == nil || css.wid == nil {
 		return
 	}
 	err = css.ser.AddCategoricalData(series, input)
+	if err != nil {
+		return
+	}
+	css.wid.Refresh()
 	return
 }
 
@@ -71,9 +81,13 @@ func (css CategoricalStackedBarSeries) AddData(series string, input []data.Categ
 // Data points with a C that already exists, will be ignored.
 // The range of C is not restricted. The range of Val is restricted to Val>=0
 func (css CategoricalStackedBarSeries) AddSeries(series data.CategoricalDataSeries) (err error) {
-	if css.ser == nil {
+	if css.ser == nil || css.wid == nil {
 		return
 	}
 	err = css.ser.AddCategoricalSeries(series)
+	if err != nil {
+		return
+	}
+	css.wid.Refresh()
 	return
 }

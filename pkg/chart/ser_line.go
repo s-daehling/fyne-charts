@@ -4,6 +4,7 @@ import (
 	"image/color"
 	"time"
 
+	"fyne.io/fyne/v2/widget"
 	"github.com/s-daehling/fyne-charts/internal/series"
 
 	"github.com/s-daehling/fyne-charts/pkg/data"
@@ -11,6 +12,7 @@ import (
 
 type lineSeries struct {
 	ser *series.LineSeries
+	wid *widget.BaseWidget
 }
 
 // Name returns the name of the series
@@ -70,11 +72,16 @@ type NumericalLineSeries struct {
 // DeleteDataInRange deletes all data points with a x-coordinate greater than min and smaller than max
 // The return value gives the number of data points that have been removed
 // An error is returned if min>max
-func (ls NumericalLineSeries) DeleteDataInRange(min float64, max float64) (c int, err error) {
-	if ls.ser == nil {
+func (nls NumericalLineSeries) DeleteDataInRange(min float64, max float64) (c int, err error) {
+	if nls.ser == nil || nls.wid == nil {
 		return
 	}
-	c, err = ls.ser.DeleteNumericalDataInRange(min, max)
+	c, err = nls.ser.DeleteNumericalDataInRange(min, max)
+	if err != nil {
+		return
+	}
+
+	nls.wid.Refresh()
 	return
 }
 
@@ -82,11 +89,15 @@ func (ls NumericalLineSeries) DeleteDataInRange(min float64, max float64) (c int
 // data does not need to be sorted. It will be sorted by X by the method.
 // The method does not check for duplicates (i.e. data points with same X)
 // The range of X and Val is not restricted
-func (ls NumericalLineSeries) AddData(input []data.NumericalDataPoint) (err error) {
-	if ls.ser == nil {
+func (nls NumericalLineSeries) AddData(input []data.NumericalDataPoint) (err error) {
+	if nls.ser == nil || nls.wid == nil {
 		return
 	}
-	err = ls.ser.AddNumericalData(input)
+	err = nls.ser.AddNumericalData(input)
+	if err != nil {
+		return
+	}
+	nls.wid.Refresh()
 	return
 }
 
@@ -98,11 +109,15 @@ type TemporalLineSeries struct {
 // DeleteDataInRange deletes all data points with a t-coordinate after min and before max.
 // The return value gives the number of data points that have been removed
 // An error is returned if min after max
-func (ls TemporalLineSeries) DeleteDataInRange(min time.Time, max time.Time) (c int, err error) {
-	if ls.ser == nil {
+func (tls TemporalLineSeries) DeleteDataInRange(min time.Time, max time.Time) (c int, err error) {
+	if tls.ser == nil || tls.wid == nil {
 		return
 	}
-	c, err = ls.ser.DeleteTemporalDataInRange(min, max)
+	c, err = tls.ser.DeleteTemporalDataInRange(min, max)
+	if err != nil {
+		return
+	}
+	tls.wid.Refresh()
 	return
 }
 
@@ -110,10 +125,14 @@ func (ls TemporalLineSeries) DeleteDataInRange(min time.Time, max time.Time) (c 
 // data does not need to be sorted. It will be sorted by T by the method.
 // The method does not check for duplicates (i.e. data points with same T)
 // The range of T is not restricted. The range of Val is not restricted in a cartesian chart, but Val>=0 in a polar chart
-func (ls TemporalLineSeries) AddData(input []data.TemporalDataPoint) (err error) {
-	if ls.ser == nil {
+func (tls TemporalLineSeries) AddData(input []data.TemporalDataPoint) (err error) {
+	if tls.ser == nil || tls.wid == nil {
 		return
 	}
-	err = ls.ser.AddTemporalData(input)
+	err = tls.ser.AddTemporalData(input)
+	if err != nil {
+		return
+	}
+	tls.wid.Refresh()
 	return
 }

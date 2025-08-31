@@ -4,6 +4,7 @@ import (
 	"image/color"
 	"time"
 
+	"fyne.io/fyne/v2/widget"
 	"github.com/s-daehling/fyne-charts/internal/series"
 
 	"github.com/s-daehling/fyne-charts/pkg/data"
@@ -11,6 +12,7 @@ import (
 
 type boxSeries struct {
 	ser *series.BoxSeries
+	wid *widget.BaseWidget
 }
 
 // Name returns the name of the series
@@ -71,10 +73,14 @@ type NumericalBoxSeries struct {
 // The return value gives the number of data points that have been removed
 // An error is returned if min>max
 func (nbs NumericalBoxSeries) DeleteDataInRange(min float64, max float64) (c int, err error) {
-	if nbs.ser == nil {
+	if nbs.ser == nil || nbs.wid == nil {
 		return
 	}
 	c, err = nbs.ser.DeleteNumericalDataInRange(min, max)
+	if err != nil {
+		return
+	}
+	nbs.wid.Refresh()
 	return
 }
 
@@ -82,10 +88,14 @@ func (nbs NumericalBoxSeries) DeleteDataInRange(min float64, max float64) (c int
 // The method does not check for duplicates (i.e. data points with same X)
 // The range of X and Val is not restricted
 func (nbs NumericalBoxSeries) AddData(input []data.NumericalBox) (err error) {
-	if nbs.ser == nil {
+	if nbs.ser == nil || nbs.wid == nil {
 		return
 	}
 	err = nbs.ser.AddNumericalData(input)
+	if err != nil {
+		return
+	}
+	nbs.wid.Refresh()
 	return
 }
 
@@ -98,10 +108,14 @@ type TemporalBoxSeries struct {
 // The return value gives the number of data points that have been removed
 // An error is returned if min after max
 func (tbs TemporalBoxSeries) DeleteDataInRange(min time.Time, max time.Time) (c int, err error) {
-	if tbs.ser == nil {
+	if tbs.ser == nil || tbs.wid == nil {
 		return
 	}
 	c, err = tbs.ser.DeleteTemporalDataInRange(min, max)
+	if err != nil {
+		return
+	}
+	tbs.wid.Refresh()
 	return
 }
 
@@ -109,10 +123,14 @@ func (tbs TemporalBoxSeries) DeleteDataInRange(min time.Time, max time.Time) (c 
 // The method does not check for duplicates (i.e. data points with same T)
 // The range of T and values is not restricted
 func (tbs TemporalBoxSeries) AddData(input []data.TemporalBox) (err error) {
-	if tbs.ser == nil {
+	if tbs.ser == nil || tbs.wid == nil {
 		return
 	}
 	err = tbs.ser.AddTemporalData(input)
+	if err != nil {
+		return
+	}
+	tbs.wid.Refresh()
 	return
 }
 
@@ -125,10 +143,14 @@ type CategoricalBoxSeries struct {
 // The return value gives the number of data points that have been removed
 // An error is returned if cat is empty
 func (cbs CategoricalBoxSeries) DeleteDataInRange(cat []string) (c int, err error) {
-	if cbs.ser == nil {
+	if cbs.ser == nil || cbs.wid == nil {
 		return
 	}
 	c, err = cbs.ser.DeleteCategoricalDataInRange(cat)
+	if err != nil {
+		return
+	}
+	cbs.wid.Refresh()
 	return
 }
 
@@ -137,9 +159,13 @@ func (cbs CategoricalBoxSeries) DeleteDataInRange(cat []string) (c int, err erro
 // Data points with a C that already exists, will be ignored.
 // The range of C and values is not restricted.
 func (cbs CategoricalBoxSeries) AddData(input []data.CategoricalBox) (err error) {
-	if cbs.ser == nil {
+	if cbs.ser == nil || cbs.wid == nil {
 		return
 	}
 	err = cbs.ser.AddCategoricalData(input)
+	if err != nil {
+		return
+	}
+	cbs.wid.Refresh()
 	return
 }
