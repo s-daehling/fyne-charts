@@ -117,16 +117,6 @@ func (base *BaseChart) DeleteSeries(name string) {
 	base.DataChange()
 }
 
-func (base *BaseChart) fixedFromTicks() (f bool) {
-	f = !base.fromAx.AutoTicks()
-	return
-}
-
-func (base *BaseChart) fixedToTicks() (f bool) {
-	f = !base.toAx.AutoTicks()
-	return
-}
-
 func (base *BaseChart) fromAxis() (from *Axis) {
 	from = base.fromAx
 	return

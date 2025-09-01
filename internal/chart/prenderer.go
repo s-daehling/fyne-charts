@@ -85,7 +85,7 @@ func (r *polarRenderer) Layout(size fyne.Size) {
 	les := r.chart.legendEntries()
 	legendWidth := float32(0.0)
 	if legendVisible {
-		legendWidth = series.LegendWidth(les)
+		legendWidth, _ = series.LegendSize(les)
 	}
 	phiTickWidth := phiAx.MaxTickWidth()
 	phiTickHeight := phiAx.MaxTickHeight()

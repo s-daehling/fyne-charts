@@ -42,12 +42,44 @@ func (r *cartesianRenderer) Destroy() {}
 // Layout is responsible for redrawing the chart widget; here the horizontal and vertical numerical coordinates are converted to fyne positions and objects are placed accordingly
 func (r *cartesianRenderer) Layout(size fyne.Size) {
 	r.chart.resize(size.Width, size.Height)
+
 	// todo: should chart be locked from this point on?
+
+	titleWidth := float32(0.0)
+	titleHeight := float32(0.0)
+	legendWidth := float32(0.0)
+	legendHeight := float32(0.0)
+	vAxisLabelWidth := float32(0.0)
+	hAxisLabelHeight := float32(0.0)
+	vAxisTickLabelWidth := float32(0.0)
+	hAxisTickLabelHeight := float32(0.0)
+
+	// place title
 	ct := r.chart.title()
 	if ct.Name != "" {
 		ct.Label.Text = ct.Name
-		ct.Label.Move(fyne.NewPos(size.Width/2-ct.Label.MinSize().Width/2, r.margin))
+		titleWidth = ct.Label.MinSize().Width
+		titleHeight = ct.Label.MinSize().Height
+		ct.Label.Move(fyne.NewPos(size.Width/2-titleWidth/2, r.margin))
 	}
+
+	// place legend
+	legendVisible := r.chart.legendVisibility()
+	if legendVisible {
+		les := r.chart.legendEntries()
+		legendWidth, legendHeight = series.LegendSize(les)
+		yLegend := (size.Height - legendHeight) / 2.0
+		for i := range les {
+			subOffset := float32(0.0)
+			if les[i].IsSub {
+				subOffset = 20
+			}
+			les[i].Button.Resize(fyne.NewSize(15, 15))
+			les[i].Button.Move(fyne.NewPos(size.Width-r.margin-legendWidth+5+subOffset, yLegend+20*float32(i)))
+			les[i].Label.Move(fyne.NewPos(size.Width-r.margin-legendWidth+25+subOffset, yLegend+20*float32(i)))
+		}
+	}
+
 	var vAxis, hAxis *Axis
 	if r.transposed {
 		vAxis = r.chart.fromAxis()
@@ -56,15 +88,18 @@ func (r *cartesianRenderer) Layout(size fyne.Size) {
 		vAxis = r.chart.toAxis()
 		hAxis = r.chart.fromAxis()
 	}
+	hAxisTickLabelHeight = hAxis.MaxTickHeight()
+	vAxisTickLabelWidth = vAxis.MaxTickWidth()
+
 	hAxLabel, hAxText := hAxis.Label()
 	if hAxText.Text != "" {
-		// l := canvas.NewText(hAxis.name, color.Black)
 		c := software.NewTransparentCanvas()
 		c.SetPadded(false)
 		c.SetContent(hAxText)
 		hAxLabel.Image = c.Capture()
 		hAxLabel.Resize(hAxText.MinSize())
 		hAxLabel.SetMinSize(hAxText.MinSize())
+		hAxisLabelHeight = hAxLabel.MinSize().Height
 	}
 
 	vAxLabel, vAxText := vAxis.Label()
@@ -77,45 +112,27 @@ func (r *cartesianRenderer) Layout(size fyne.Size) {
 		vAxLabel.Image = imaging.Rotate90(img)
 		vAxLabel.Resize(fyne.NewSize(vAxText.MinSize().Height, vAxText.MinSize().Width))
 		vAxLabel.SetMinSize(fyne.NewSize(vAxText.MinSize().Height, vAxText.MinSize().Width))
-	}
-
-	legendVisible := r.chart.legendVisibility()
-	les := r.chart.legendEntries()
-	legendWidth := float32(0.0)
-	if legendVisible {
-		legendWidth = series.LegendWidth(les)
+		vAxisLabelWidth = vAxLabel.MinSize().Width
 	}
 
 	// determine the chart area
 	var area cartDrawingArea
 	area.hmin = hAxis.nMin
 	area.vmin = vAxis.nMin
-
-	vLabelWidth := r.maxVertLabelWidth()
-	area.minPos.X = r.margin + r.tickLength + vLabelWidth -
-		((size.Width - (r.tickLength + vLabelWidth)) *
+	area.minPos.X = r.margin + vAxisLabelWidth + vAxisTickLabelWidth + r.tickLength -
+		((size.Width - (r.tickLength + vAxisTickLabelWidth)) *
 			float32((hAxis.nOrigin-hAxis.nMin)/(hAxis.nMax-hAxis.nMin)))
-	if area.minPos.X < r.margin {
-		area.minPos.X = r.margin
+	if area.minPos.X < r.margin+vAxisLabelWidth {
+		area.minPos.X = r.margin + vAxisLabelWidth
 	}
-	if vAxis.name != "" {
-		area.minPos.X += vAxis.label.MinSize().Width
-	}
-	hLabelHeight := r.maxHorLabelHeight()
-	area.minPos.Y = size.Height - (r.margin + r.tickLength + hLabelHeight -
-		((size.Height - (r.tickLength + hLabelHeight)) *
+	area.minPos.Y = size.Height - (r.margin + hAxisLabelHeight + hAxisTickLabelHeight + r.tickLength -
+		((size.Height - (r.tickLength + hAxisTickLabelHeight)) *
 			float32((vAxis.nOrigin-vAxis.nMin)/(vAxis.nMax-vAxis.nMin))))
-	if area.minPos.Y > size.Height-r.margin {
-		area.minPos.Y = size.Height - r.margin
-	}
-	if hAxis.name != "" {
-		area.minPos.Y -= hAxis.label.MinSize().Height
+	if area.minPos.Y > size.Height-r.margin-hAxisLabelHeight {
+		area.minPos.Y = size.Height - r.margin - hAxisLabelHeight
 	}
 	area.maxPos.X = size.Width - r.margin - legendWidth
-	area.maxPos.Y = r.margin
-	if ct.Name != "" {
-		area.maxPos.Y += ct.Label.MinSize().Height
-	}
+	area.maxPos.Y = r.margin + titleHeight
 
 	// calculate conversion factors from ccordinates to positions
 	area.hCoordToPos = (area.maxPos.X - area.minPos.X) / float32(hAxis.nMax-hAxis.nMin)
@@ -238,53 +255,63 @@ func (r *cartesianRenderer) Layout(size fyne.Size) {
 	rs := r.chart.chartRaster()
 	rs.Move(fyne.NewPos(area.minPos.X, area.maxPos.Y))
 	rs.Resize(fyne.NewSize(area.maxPos.X-area.minPos.X, area.minPos.Y-area.maxPos.Y))
-
-	// place legend entries
-	if legendVisible {
-		yLegend := (size.Height - float32(len(les)*20)) / 2.0
-		for i := range les {
-			subOffset := float32(0.0)
-			if les[i].IsSub {
-				subOffset = 20
-			}
-			les[i].Button.Resize(fyne.NewSize(15, 15))
-			les[i].Button.Move(fyne.NewPos(area.maxPos.X+5+subOffset, yLegend+20*float32(i)))
-			les[i].Label.Move(fyne.NewPos(area.maxPos.X+25+subOffset, yLegend+20*float32(i)))
-		}
-	}
 }
 
 // MinSize calculates the minimum space required to display the chart
 func (r *cartesianRenderer) MinSize() fyne.Size {
-	legendWidth := float32(0)
-	if r.chart.legendVisibility() {
-		legendWidth = series.LegendWidth(r.chart.legendEntries())
-	}
-	minWidth := 2*r.margin + r.maxVertLabelWidth() + legendWidth
+	titleWidth := float32(0.0)
+	titleHeight := float32(0.0)
+	legendWidth := float32(0.0)
+	legendHeight := float32(0.0)
+	vAxisLabelWidth := float32(0.0)
+	vAxisLabelHeight := float32(0)
+	hAxisLabelWidth := float32(0)
+	hAxisLabelHeight := float32(0.0)
 
-	if !r.transposed && r.chart.fixedFromTicks() {
-		ts := r.chart.fromAxis().Ticks()
-		for i := range ts {
-			minWidth += ts[i].Label.MinSize().Width
-		}
-	} else if r.transposed && r.chart.fixedToTicks() {
-		ts := r.chart.toAxis().Ticks()
-		for i := range ts {
-			minWidth += ts[i].Label.MinSize().Width
-		}
+	ct := r.chart.title()
+	if ct.Name != "" {
+		titleWidth = ct.Label.MinSize().Width
+		titleHeight = ct.Label.MinSize().Height
 	}
-	minHeight := 2*r.margin + r.maxHorLabelHeight()
-	if !r.transposed && r.chart.fixedToTicks() {
-		ts := r.chart.toAxis().Ticks()
-		for i := range ts {
-			minHeight += ts[i].Label.MinSize().Height
-		}
-	} else if r.transposed && r.chart.fixedFromTicks() {
-		ts := r.chart.fromAxis().Ticks()
-		for i := range ts {
-			minHeight += ts[i].Label.MinSize().Height
-		}
+
+	if r.chart.legendVisibility() {
+		les := r.chart.legendEntries()
+		legendWidth, legendHeight = series.LegendSize(les)
 	}
+
+	var vAxis, hAxis *Axis
+	if r.transposed {
+		vAxis = r.chart.fromAxis()
+		hAxis = r.chart.toAxis()
+	} else {
+		vAxis = r.chart.toAxis()
+		hAxis = r.chart.fromAxis()
+	}
+	hAxLabel, hAxText := hAxis.Label()
+	if hAxText.Text != "" {
+		hAxisLabelWidth = hAxLabel.MinSize().Width
+		hAxisLabelHeight = hAxLabel.MinSize().Height
+	}
+	vAxLabel, vAxText := vAxis.Label()
+	if vAxText.Text != "" {
+		vAxisLabelWidth = vAxLabel.MinSize().Width
+		vAxisLabelHeight = vAxLabel.MinSize().Height
+	}
+
+	minHeight := 2*r.margin + titleHeight
+	if legendHeight > 20+vAxisLabelHeight+hAxisLabelHeight {
+		minHeight += legendHeight
+	} else {
+		minHeight += 20 + vAxisLabelHeight + hAxisLabelHeight
+	}
+
+	minWidth := 2 * r.margin
+	if titleWidth > 20+vAxisLabelWidth+hAxisLabelWidth+legendWidth {
+		minWidth += titleWidth
+	} else {
+		minWidth += 20 + vAxisLabelWidth + hAxisLabelWidth + legendWidth
+	}
+
 	return fyne.NewSize(minWidth, minHeight)
 }
 
@@ -305,45 +332,9 @@ func (r *cartesianRenderer) Refresh() {
 	// }
 }
 
-// maxVertLabelWidth returns the maximum width of the vertical axis labels
-func (r *cartesianRenderer) maxVertLabelWidth() (maxWidth float32) {
-	var vAxis *Axis
-	if r.transposed {
-		vAxis = r.chart.fromAxis()
-	} else {
-		vAxis = r.chart.toAxis()
-	}
-	maxWidth = vAxis.MaxTickWidth()
-	return
-}
-
-// maxHorLabelHeight returns the maximum height of the horizontal axis labels
-func (r *cartesianRenderer) maxHorLabelHeight() (maxHeight float32) {
-	var hAxis *Axis
-	if r.transposed {
-		hAxis = r.chart.toAxis()
-	} else {
-		hAxis = r.chart.fromAxis()
-	}
-	maxHeight = hAxis.MaxTickHeight()
-	return
-}
-
 // cartesianCoordinatesToPosition converts a (h,v) coordinate to a fyne position
 func cartesianCoordinatesToPosition(h float64, v float64, area cartDrawingArea) (pos fyne.Position) {
 	pos.X = area.minPos.X + float32(h-area.hmin)*area.hCoordToPos
 	pos.Y = area.minPos.Y - float32(v-area.vmin)*area.vCoordToPos
 	return
 }
-
-// func positionToCartesianCoordinates(pX int, pY int, w int, h int, xMin float64, xMax float64,
-// 	yMin float64, yMax float64, trans bool) (x float64, y float64) {
-// 	if trans {
-// 		x = xMin + ((float64(h-pY) / float64(h)) * (xMax - xMin))
-// 		y = yMin + ((float64(pX) / float64(w)) * (yMax - yMin))
-// 	} else {
-// 		x = xMin + ((float64(pX) / float64(w)) * (xMax - xMin))
-// 		y = yMin + ((float64(h-pY) / float64(h)) * (yMax - yMin))
-// 	}
-// 	return
-// }

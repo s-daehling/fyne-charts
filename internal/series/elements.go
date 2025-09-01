@@ -108,8 +108,9 @@ type LegendEntry struct {
 	IsSub  bool
 }
 
-func LegendWidth(les []LegendEntry) (w float32) {
+func LegendSize(les []LegendEntry) (w float32, h float32) {
 	w = 0.0
+	h = 0.0
 	if len(les) == 0 {
 		return
 	}
@@ -126,5 +127,6 @@ func LegendWidth(les []LegendEntry) (w float32) {
 	if hasSubs {
 		w += 20
 	}
+	h = float32(len(les) * 20)
 	return
 }
