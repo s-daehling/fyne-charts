@@ -26,7 +26,7 @@ func NewPolarProportionalChart() (propChart *PolarProportionalChart) {
 
 // CreateRenderer creates the renderer of the widget
 func (propChart *PolarProportionalChart) CreateRenderer() fyne.WidgetRenderer {
-	r := chart.EmptyPolarRenderer(propChart.base)
+	r := propChart.base.GetRenderer()
 	return r
 }
 
@@ -38,7 +38,6 @@ func (propChart *PolarProportionalChart) CreateRenderer() fyne.WidgetRenderer {
 func (propChart *PolarProportionalChart) AddProportionalSeries(name string,
 	points []data.ProportionalDataPoint) (ps ProportionalSeries, err error) {
 	ps.ser, err = propChart.base.AddProportionalSeries(name, points)
-	ps.wid = &propChart.BaseWidget
 	return
 }
 

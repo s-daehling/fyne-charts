@@ -4,7 +4,6 @@ import (
 	"image/color"
 	"time"
 
-	"fyne.io/fyne/v2/widget"
 	"github.com/s-daehling/fyne-charts/internal/series"
 
 	"github.com/s-daehling/fyne-charts/pkg/data"
@@ -12,7 +11,6 @@ import (
 
 type lineSeries struct {
 	ser *series.LineSeries
-	wid *widget.BaseWidget
 }
 
 // Name returns the name of the series
@@ -73,15 +71,13 @@ type NumericalLineSeries struct {
 // The return value gives the number of data points that have been removed
 // An error is returned if min>max
 func (nls NumericalLineSeries) DeleteDataInRange(min float64, max float64) (c int, err error) {
-	if nls.ser == nil || nls.wid == nil {
+	if nls.ser == nil {
 		return
 	}
 	c, err = nls.ser.DeleteNumericalDataInRange(min, max)
 	if err != nil {
 		return
 	}
-
-	nls.wid.Refresh()
 	return
 }
 
@@ -90,14 +86,13 @@ func (nls NumericalLineSeries) DeleteDataInRange(min float64, max float64) (c in
 // The method does not check for duplicates (i.e. data points with same X)
 // The range of X and Val is not restricted
 func (nls NumericalLineSeries) AddData(input []data.NumericalDataPoint) (err error) {
-	if nls.ser == nil || nls.wid == nil {
+	if nls.ser == nil {
 		return
 	}
 	err = nls.ser.AddNumericalData(input)
 	if err != nil {
 		return
 	}
-	nls.wid.Refresh()
 	return
 }
 
@@ -110,14 +105,13 @@ type TemporalLineSeries struct {
 // The return value gives the number of data points that have been removed
 // An error is returned if min after max
 func (tls TemporalLineSeries) DeleteDataInRange(min time.Time, max time.Time) (c int, err error) {
-	if tls.ser == nil || tls.wid == nil {
+	if tls.ser == nil {
 		return
 	}
 	c, err = tls.ser.DeleteTemporalDataInRange(min, max)
 	if err != nil {
 		return
 	}
-	tls.wid.Refresh()
 	return
 }
 
@@ -126,13 +120,12 @@ func (tls TemporalLineSeries) DeleteDataInRange(min time.Time, max time.Time) (c
 // The method does not check for duplicates (i.e. data points with same T)
 // The range of T is not restricted. The range of Val is not restricted in a cartesian chart, but Val>=0 in a polar chart
 func (tls TemporalLineSeries) AddData(input []data.TemporalDataPoint) (err error) {
-	if tls.ser == nil || tls.wid == nil {
+	if tls.ser == nil {
 		return
 	}
 	err = tls.ser.AddTemporalData(input)
 	if err != nil {
 		return
 	}
-	tls.wid.Refresh()
 	return
 }

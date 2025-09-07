@@ -26,7 +26,7 @@ func NewCartesianProportionalChart() (propChart *CartesianProportionalChart) {
 
 // CreateRenderer creates the renderer of the widget
 func (propChart *CartesianProportionalChart) CreateRenderer() fyne.WidgetRenderer {
-	r := chart.EmptyCartesianRenderer(propChart.base)
+	r := propChart.base.GetRenderer()
 	return r
 }
 
@@ -38,7 +38,6 @@ func (propChart *CartesianProportionalChart) CreateRenderer() fyne.WidgetRendere
 func (propChart *CartesianProportionalChart) AddProportionalSeries(name string,
 	points []data.ProportionalDataPoint) (ps ProportionalSeries, err error) {
 	ps.ser, err = propChart.base.AddProportionalSeries(name, points)
-	ps.wid = &propChart.BaseWidget
 	return
 }
 

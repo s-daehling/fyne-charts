@@ -1,7 +1,6 @@
 package chart
 
 import (
-	"fyne.io/fyne/v2/widget"
 	"github.com/s-daehling/fyne-charts/internal/series"
 
 	"github.com/s-daehling/fyne-charts/pkg/data"
@@ -10,7 +9,6 @@ import (
 // ProportionalSeries represents a proportional series over a proportional axis
 type ProportionalSeries struct {
 	ser *series.ProportionalSeries
-	wid *widget.BaseWidget
 }
 
 // Name returns the name of the series
@@ -42,14 +40,13 @@ func (ps ProportionalSeries) Hide() {
 // The return value gives the number of data points that have been removed
 // An error is returned if cat is empty
 func (ps ProportionalSeries) DeleteDataInRange(cat []string) (c int, err error) {
-	if ps.ser == nil || ps.wid == nil {
+	if ps.ser == nil {
 		return
 	}
 	c, err = ps.ser.DeleteDataInRange(cat)
 	if err != nil {
 		return
 	}
-	ps.wid.Refresh()
 	return
 }
 
@@ -58,13 +55,12 @@ func (ps ProportionalSeries) DeleteDataInRange(cat []string) (c int, err error) 
 // Data points with a C that already exists, will be ignored.
 // The range of C is not restricted. The range of Val is restricted to Val>=0
 func (ps ProportionalSeries) AddData(input []data.ProportionalDataPoint) (err error) {
-	if ps.ser == nil || ps.wid == nil {
+	if ps.ser == nil {
 		return
 	}
 	err = ps.ser.AddData(input)
 	if err != nil {
 		return
 	}
-	ps.wid.Refresh()
 	return
 }

@@ -3,7 +3,6 @@ package chart
 import (
 	"time"
 
-	"fyne.io/fyne/v2/widget"
 	"github.com/s-daehling/fyne-charts/internal/series"
 
 	"github.com/s-daehling/fyne-charts/pkg/data"
@@ -11,7 +10,6 @@ import (
 
 type candleStickSeries struct {
 	ser *series.CandleStickSeries
-	wid *widget.BaseWidget
 }
 
 // Name returns the name of the series
@@ -56,14 +54,13 @@ type NumericalCandleStickSeries struct {
 // The return value gives the number of candles that have been removed
 // An error is returned if min>max
 func (ncs NumericalCandleStickSeries) DeleteDataInRange(min float64, max float64) (c int, err error) {
-	if ncs.ser == nil || ncs.wid == nil {
+	if ncs.ser == nil {
 		return
 	}
 	c, err = ncs.ser.DeleteNumericalDataInRange(min, max)
 	if err != nil {
 		return
 	}
-	ncs.wid.Refresh()
 	return
 }
 
@@ -71,14 +68,13 @@ func (ncs NumericalCandleStickSeries) DeleteDataInRange(min float64, max float64
 // The method does not check for duplicates (i.e. candles with same XStart or XEnd)
 // The range of XStart, XEnd and values is not restricted
 func (ncs NumericalCandleStickSeries) AddData(input []data.NumericalCandleStick) (err error) {
-	if ncs.ser == nil || ncs.wid == nil {
+	if ncs.ser == nil {
 		return
 	}
 	err = ncs.ser.AddNumericalData(input)
 	if err != nil {
 		return
 	}
-	ncs.wid.Refresh()
 	return
 }
 
@@ -91,14 +87,13 @@ type TemporalCandleStickSeries struct {
 // The return value gives the number of candles that have been removed
 // An error is returned if min after max
 func (tcs TemporalCandleStickSeries) DeleteDataInRange(min time.Time, max time.Time) (c int, err error) {
-	if tcs.ser == nil || tcs.wid == nil {
+	if tcs.ser == nil {
 		return
 	}
 	c, err = tcs.ser.DeleteTemporalDataInRange(min, max)
 	if err != nil {
 		return
 	}
-	tcs.wid.Refresh()
 	return
 }
 
@@ -106,13 +101,12 @@ func (tcs TemporalCandleStickSeries) DeleteDataInRange(min time.Time, max time.T
 // The method does not check for duplicates (i.e. candles with same TStart or TEnd)
 // The range of TStart, TEnd and values is not restricted
 func (tcs TemporalCandleStickSeries) AddData(input []data.TemporalCandleStick) (err error) {
-	if tcs.ser == nil || tcs.wid == nil {
+	if tcs.ser == nil {
 		return
 	}
 	err = tcs.ser.AddTemporalData(input)
 	if err != nil {
 		return
 	}
-	tcs.wid.Refresh()
 	return
 }

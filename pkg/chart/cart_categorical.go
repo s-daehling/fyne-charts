@@ -28,7 +28,7 @@ func NewCartesianCategoricalChart() (catChart *CartesianCategoricalChart) {
 
 // CreateRenderer creates the renderer of the widget
 func (catChart *CartesianCategoricalChart) CreateRenderer() fyne.WidgetRenderer {
-	r := chart.EmptyCartesianRenderer(catChart.base)
+	r := catChart.base.GetRenderer()
 	return r
 }
 
@@ -41,7 +41,6 @@ func (catChart *CartesianCategoricalChart) CreateRenderer() fyne.WidgetRenderer 
 func (catChart *CartesianCategoricalChart) AddScatterSeries(name string, points []data.CategoricalDataPoint,
 	color color.Color) (css CategoricalScatterSeries, err error) {
 	css.ser, err = catChart.base.AddCategoricalScatterSeries(name, points, color)
-	css.wid = &catChart.BaseWidget
 	return
 }
 
@@ -54,7 +53,6 @@ func (catChart *CartesianCategoricalChart) AddScatterSeries(name string, points 
 func (catChart *CartesianCategoricalChart) AddBarSeries(name string, points []data.CategoricalDataPoint,
 	color color.Color) (cbs CategoricalBarSeries, err error) {
 	cbs.ser, err = catChart.base.AddCategoricalBarSeries(name, points, color)
-	cbs.wid = &catChart.BaseWidget
 	return
 }
 
@@ -67,7 +65,6 @@ func (catChart *CartesianCategoricalChart) AddBarSeries(name string, points []da
 func (catChart *CartesianCategoricalChart) AddStackedBarSeries(name string,
 	points []data.CategoricalDataSeries) (css CategoricalStackedBarSeries, err error) {
 	css.ser, err = catChart.base.AddCategoricalStackedBarSeries(name, points)
-	css.wid = &catChart.BaseWidget
 	return
 }
 
@@ -80,7 +77,6 @@ func (catChart *CartesianCategoricalChart) AddStackedBarSeries(name string,
 func (catChart *CartesianCategoricalChart) AddLollipopSeries(name string, points []data.CategoricalDataPoint,
 	color color.Color) (cls CategoricalLollipopSeries, err error) {
 	cls.ser, err = catChart.base.AddCategoricalLollipopSeries(name, points, color)
-	cls.wid = &catChart.BaseWidget
 	return
 }
 
@@ -93,7 +89,6 @@ func (catChart *CartesianCategoricalChart) AddLollipopSeries(name string, points
 func (catChart *CartesianCategoricalChart) AddBoxSeries(name string,
 	points []data.CategoricalBox, col color.Color) (cbs CategoricalBoxSeries, err error) {
 	cbs.ser, err = catChart.base.AddCategoricalBoxSeries(name, points, col)
-	cbs.wid = &catChart.BaseWidget
 	return
 }
 

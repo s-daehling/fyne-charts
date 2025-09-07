@@ -41,8 +41,6 @@ func (r *cartesianRenderer) Destroy() {}
 
 // Layout is responsible for redrawing the chart widget; here the horizontal and vertical numerical coordinates are converted to fyne positions and objects are placed accordingly
 func (r *cartesianRenderer) Layout(size fyne.Size) {
-	r.chart.resize(size.Width, size.Height)
-
 	// todo: should chart be locked from this point on?
 
 	titleWidth := float32(0.0)
@@ -104,7 +102,6 @@ func (r *cartesianRenderer) Layout(size fyne.Size) {
 
 	vAxLabel, vAxText := vAxis.Label()
 	if vAxText.Text != "" {
-		// l := canvas.NewText(vAxis.name, color.Black)
 		c := software.NewTransparentCanvas()
 		c.SetPadded(false)
 		c.SetContent(vAxText)
@@ -133,6 +130,8 @@ func (r *cartesianRenderer) Layout(size fyne.Size) {
 	}
 	area.maxPos.X = size.Width - r.margin - legendWidth
 	area.maxPos.Y = r.margin + titleHeight
+
+	r.chart.resize(area.maxPos.X-area.minPos.X, area.minPos.Y-area.maxPos.Y)
 
 	// calculate conversion factors from ccordinates to positions
 	area.hCoordToPos = (area.maxPos.X - area.minPos.X) / float32(hAxis.nMax-hAxis.nMin)

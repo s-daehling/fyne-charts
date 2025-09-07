@@ -44,10 +44,38 @@ func (r *polarRenderer) Destroy() {}
 
 // Layout is responsible for redrawing the chart widget
 func (r *polarRenderer) Layout(size fyne.Size) {
+	titleWidth := float32(0.0)
+	titleHeight := float32(0.0)
+	legendWidth := float32(0.0)
+	legendHeight := float32(0.0)
+	rAxisLabelHeight := float32(0.0)
+	phiAxisLabelWidth := float32(0.0)
+	phiAxisTickLabelWidth := float32(0.0)
+	phiAxisTickLabelHeight := float32(0.0)
+
 	ct := r.chart.title()
 	if ct.Name != "" {
 		ct.Label.Text = ct.Name
-		ct.Label.Move(fyne.NewPos(size.Width/2-ct.Label.MinSize().Width/2, r.margin))
+		titleWidth = ct.Label.MinSize().Width
+		titleHeight = ct.Label.MinSize().Height
+		ct.Label.Move(fyne.NewPos(size.Width/2-titleWidth/2, r.margin))
+	}
+
+	// place legend
+	legendVisible := r.chart.legendVisibility()
+	if legendVisible {
+		les := r.chart.legendEntries()
+		legendWidth, legendHeight = series.LegendSize(les)
+		yLegend := (size.Height - legendHeight) / 2.0
+		for i := range les {
+			subOffset := float32(0.0)
+			if les[i].IsSub {
+				subOffset = 20
+			}
+			les[i].Button.Resize(fyne.NewSize(15, 15))
+			les[i].Button.Move(fyne.NewPos(size.Width-r.margin-legendWidth+5+subOffset, yLegend+20*float32(i)))
+			les[i].Label.Move(fyne.NewPos(size.Width-r.margin-legendWidth+25+subOffset, yLegend+20*float32(i)))
+		}
 	}
 
 	phiAx := r.chart.fromAxis()
@@ -56,10 +84,11 @@ func (r *polarRenderer) Layout(size fyne.Size) {
 	rAx := r.chart.toAxis()
 	_, rMax := rAx.NRange()
 	rOrigin := rAx.NOrigin()
+	phiAxisTickLabelWidth = phiAx.MaxTickWidth()
+	phiAxisTickLabelHeight = phiAx.MaxTickHeight()
 
 	phiAxLabel, phiAxText := phiAx.Label()
 	if phiAxText.Text != "" {
-		// l := canvas.NewText(hAxis.name, color.Black)
 		c := software.NewTransparentCanvas()
 		c.SetPadded(false)
 		c.SetContent(phiAxText)
@@ -67,47 +96,30 @@ func (r *polarRenderer) Layout(size fyne.Size) {
 		phiAxLabel.Image = imaging.Rotate90(img)
 		phiAxLabel.Resize(fyne.NewSize(phiAxText.MinSize().Height, phiAxText.MinSize().Width))
 		phiAxLabel.SetMinSize(fyne.NewSize(phiAxText.MinSize().Height, phiAxText.MinSize().Width))
+		phiAxisLabelWidth = phiAxLabel.MinSize().Width
 	}
 
 	rAxLabel, rAxText := rAx.Label()
 	if rAxText.Text != "" {
-		// l := canvas.NewText(hAxis.name, color.Black)
 		c := software.NewTransparentCanvas()
 		c.SetPadded(false)
 		c.SetContent(rAxText)
 		rAxLabel.Image = c.Capture()
 		rAxLabel.Resize(rAxText.MinSize())
 		rAxLabel.SetMinSize(rAxText.MinSize())
+		rAxisLabelHeight = rAxLabel.MinSize().Height
 	}
 
 	// determine the chart area
-	legendVisible := r.chart.legendVisibility()
-	les := r.chart.legendEntries()
-	legendWidth := float32(0.0)
-	if legendVisible {
-		legendWidth, _ = series.LegendSize(les)
-	}
-	phiTickWidth := phiAx.MaxTickWidth()
-	phiTickHeight := phiAx.MaxTickHeight()
 	area := polDrawingArea{
 		rot:     r.rot,
 		mathPos: r.mathPos,
 	}
-	availWidth := size.Width - (2 * r.margin) - legendWidth - (2 * phiTickWidth)
-	area.zeroPos.X = r.margin + phiTickWidth + (availWidth / 2)
-	if phiAxText.Text != "" {
-		availWidth -= phiAxLabel.MinSize().Width
-		area.zeroPos.X = r.margin + phiTickWidth + phiAxLabel.MinSize().Width + (availWidth / 2)
-	}
-	availHeight := size.Height - (2 * r.margin) - (2 * phiTickHeight)
-	area.zeroPos.Y = r.margin + phiTickHeight + (availHeight / 2)
-	if rAxText.Text != "" {
-		availHeight -= rAxLabel.MinSize().Height
-	}
-	if ct.Name != "" {
-		availHeight -= ct.Label.MinSize().Height
-		area.zeroPos.Y = r.margin + ct.Label.MinSize().Height + phiTickHeight + (availHeight / 2)
-	}
+	availWidth := size.Width - (2 * r.margin) - legendWidth - (2 * phiAxisTickLabelWidth) - phiAxisLabelWidth
+	area.zeroPos.X = r.margin + phiAxisLabelWidth + phiAxisTickLabelWidth + (availWidth / 2)
+
+	availHeight := size.Height - (2 * r.margin) - titleHeight - (2 * phiAxisTickLabelHeight) - rAxisLabelHeight
+	area.zeroPos.Y = r.margin + titleHeight + phiAxisTickLabelHeight + (availHeight / 2)
 
 	area.radius = availHeight / 2
 	if availWidth < availHeight {
@@ -117,6 +129,7 @@ func (r *polarRenderer) Layout(size fyne.Size) {
 		area.radius = 0
 	}
 	area.coordToPos = area.radius / float32(rMax)
+
 	r.chart.resize(2*area.radius*math.Pi, area.radius)
 
 	// place phi axis
@@ -261,26 +274,57 @@ func (r *polarRenderer) Layout(size fyne.Size) {
 	rs := r.chart.chartRaster()
 	rs.Move(fyne.NewPos(area.zeroPos.X-area.radius, area.zeroPos.Y-area.radius))
 	rs.Resize(fyne.NewSize(2*area.radius, 2*area.radius))
-
-	// place legend
-	if legendVisible {
-		yLegend := (size.Height - float32(len(les)*20)) / 2.0
-		for i := range les {
-			subOffset := float32(0.0)
-			if les[i].IsSub {
-				subOffset = 20
-			}
-			les[i].Button.Resize(fyne.NewSize(15, 15))
-			les[i].Button.Move(fyne.NewPos(size.Width-r.margin-legendWidth+5+subOffset, yLegend+20*float32(i)))
-			les[i].Label.Move(fyne.NewPos(size.Width-r.margin-legendWidth+25+subOffset, yLegend+20*float32(i)))
-		}
-	}
 }
 
 // MinSize calculates the minimum space required to display the chart
 func (r *polarRenderer) MinSize() fyne.Size {
-	//todo
-	return fyne.NewSize(5, 5)
+	titleWidth := float32(0.0)
+	titleHeight := float32(0.0)
+	legendWidth := float32(0.0)
+	legendHeight := float32(0.0)
+	rAxisLabelWidth := float32(0.0)
+	rAxisLabelHeight := float32(0)
+	phiAxisLabelWidth := float32(0)
+	phiAxisLabelHeight := float32(0.0)
+
+	ct := r.chart.title()
+	if ct.Name != "" {
+		titleWidth = ct.Label.MinSize().Width
+		titleHeight = ct.Label.MinSize().Height
+	}
+
+	if r.chart.legendVisibility() {
+		les := r.chart.legendEntries()
+		legendWidth, legendHeight = series.LegendSize(les)
+	}
+
+	phiAxis := r.chart.fromAxis()
+	rAxis := r.chart.toAxis()
+	phiAxLabel, phiAxText := phiAxis.Label()
+	if phiAxText.Text != "" {
+		phiAxisLabelWidth = phiAxLabel.MinSize().Width
+		phiAxisLabelHeight = phiAxLabel.MinSize().Height
+	}
+	rAxLabel, rAxText := rAxis.Label()
+	if rAxText.Text != "" {
+		rAxisLabelWidth = rAxLabel.MinSize().Width
+		rAxisLabelHeight = rAxLabel.MinSize().Height
+	}
+
+	minHeight := 2*r.margin + titleHeight
+	if legendHeight > 20+rAxisLabelHeight+phiAxisLabelHeight {
+		minHeight += legendHeight
+	} else {
+		minHeight += 20 + rAxisLabelHeight + phiAxisLabelHeight
+	}
+
+	minWidth := 2 * r.margin
+	if titleWidth > 20+rAxisLabelWidth+phiAxisLabelWidth+legendWidth {
+		minWidth += titleWidth
+	} else {
+		minWidth += 20 + rAxisLabelWidth + phiAxisLabelWidth + legendWidth
+	}
+	return fyne.NewSize(minWidth, minHeight)
 }
 
 // Objects returns a list of all objects to be drawn

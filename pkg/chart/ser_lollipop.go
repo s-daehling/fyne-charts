@@ -4,7 +4,6 @@ import (
 	"image/color"
 	"time"
 
-	"fyne.io/fyne/v2/widget"
 	"github.com/s-daehling/fyne-charts/internal/series"
 
 	"github.com/s-daehling/fyne-charts/pkg/data"
@@ -12,7 +11,6 @@ import (
 
 type lollipopSeries struct {
 	ser *series.LollipopSeries
-	wid *widget.BaseWidget
 }
 
 // Name returns the name of the series
@@ -73,14 +71,13 @@ type NumericalLollipopSeries struct {
 // The return value gives the number of data points that have been removed
 // An error is returned if min>max
 func (nls NumericalLollipopSeries) DeleteDataInRange(min float64, max float64) (c int, err error) {
-	if nls.ser == nil || nls.wid == nil {
+	if nls.ser == nil {
 		return
 	}
 	c, err = nls.ser.DeleteNumericalDataInRange(min, max)
 	if err != nil {
 		return
 	}
-	nls.wid.Refresh()
 	return
 }
 
@@ -88,14 +85,13 @@ func (nls NumericalLollipopSeries) DeleteDataInRange(min float64, max float64) (
 // The method does not check for duplicates (i.e. data points with same X)
 // The range of X and Val is not restricted
 func (nls NumericalLollipopSeries) AddData(input []data.NumericalDataPoint) (err error) {
-	if nls.ser == nil || nls.wid == nil {
+	if nls.ser == nil {
 		return
 	}
 	err = nls.ser.AddNumericalData(input)
 	if err != nil {
 		return
 	}
-	nls.wid.Refresh()
 	return
 }
 
@@ -108,14 +104,13 @@ type TemporalLollipopSeries struct {
 // The return value gives the number of data points that have been removed
 // An error is returned if min after max
 func (tls TemporalLollipopSeries) DeleteDataInRange(min time.Time, max time.Time) (c int, err error) {
-	if tls.ser == nil || tls.wid == nil {
+	if tls.ser == nil {
 		return
 	}
 	c, err = tls.ser.DeleteTemporalDataInRange(min, max)
 	if err != nil {
 		return
 	}
-	tls.wid.Refresh()
 	return
 }
 
@@ -123,14 +118,13 @@ func (tls TemporalLollipopSeries) DeleteDataInRange(min time.Time, max time.Time
 // The method does not check for duplicates (i.e. data points with same T)
 // The range of T is not restricted. The range of Val is not restricted in a cartesian chart, but Val>=0 in a polar chart
 func (tls TemporalLollipopSeries) AddData(input []data.TemporalDataPoint) (err error) {
-	if tls.ser == nil || tls.wid == nil {
+	if tls.ser == nil {
 		return
 	}
 	err = tls.ser.AddTemporalData(input)
 	if err != nil {
 		return
 	}
-	tls.wid.Refresh()
 	return
 }
 
@@ -143,14 +137,13 @@ type CategoricalLollipopSeries struct {
 // The return value gives the number of data points that have been removed
 // An error is returned if cat is empty
 func (cls CategoricalLollipopSeries) DeleteDataInRange(cat []string) (c int, err error) {
-	if cls.ser == nil || cls.wid == nil {
+	if cls.ser == nil {
 		return
 	}
 	c, err = cls.ser.DeleteCategoricalDataInRange(cat)
 	if err != nil {
 		return
 	}
-	cls.wid.Refresh()
 	return
 }
 
@@ -159,13 +152,12 @@ func (cls CategoricalLollipopSeries) DeleteDataInRange(cat []string) (c int, err
 // Data points with a C that already exists, will be ignored.
 // The range of C is not restricted. The range of Val is not restricted in a cartesian chart, but Val>=0 in a polar chart
 func (cls CategoricalLollipopSeries) AddData(input []data.CategoricalDataPoint) (err error) {
-	if cls.ser == nil || cls.wid == nil {
+	if cls.ser == nil {
 		return
 	}
 	err = cls.ser.AddCategoricalData(input)
 	if err != nil {
 		return
 	}
-	cls.wid.Refresh()
 	return
 }

@@ -4,7 +4,6 @@ import (
 	"image/color"
 	"time"
 
-	"fyne.io/fyne/v2/widget"
 	"github.com/s-daehling/fyne-charts/internal/series"
 
 	"github.com/s-daehling/fyne-charts/pkg/data"
@@ -12,7 +11,6 @@ import (
 
 type areaSeries struct {
 	ser *series.AreaSeries
-	wid *widget.BaseWidget
 }
 
 // Name returns the name of the series
@@ -73,14 +71,13 @@ type NumericalAreaSeries struct {
 // The return value gives the number of data points that have been removed
 // An error is returned if min>max
 func (nas NumericalAreaSeries) DeleteDataInRange(min float64, max float64) (c int, err error) {
-	if nas.ser == nil || nas.wid == nil {
+	if nas.ser == nil {
 		return
 	}
 	c, err = nas.ser.DeleteNumericalDataInRange(min, max)
 	if err != nil {
 		return
 	}
-	nas.wid.Refresh()
 	return
 }
 
@@ -89,14 +86,13 @@ func (nas NumericalAreaSeries) DeleteDataInRange(min float64, max float64) (c in
 // The method does not check for duplicates (i.e. data points with same X)
 // The range of X and Val is not restricted
 func (nas NumericalAreaSeries) AddData(input []data.NumericalDataPoint) (err error) {
-	if nas.ser == nil || nas.wid == nil {
+	if nas.ser == nil {
 		return
 	}
 	err = nas.ser.AddNumericalData(input)
 	if err != nil {
 		return
 	}
-	nas.wid.Refresh()
 	return
 }
 
@@ -109,14 +105,13 @@ type TemporalAreaSeries struct {
 // The return value gives the number of data points that have been removed
 // An error is returned if min after max
 func (tas TemporalAreaSeries) DeleteDataInRange(min time.Time, max time.Time) (c int, err error) {
-	if tas.ser == nil || tas.wid == nil {
+	if tas.ser == nil {
 		return
 	}
 	c, err = tas.ser.DeleteTemporalDataInRange(min, max)
 	if err != nil {
 		return
 	}
-	tas.wid.Refresh()
 	return
 }
 
@@ -125,13 +120,12 @@ func (tas TemporalAreaSeries) DeleteDataInRange(min time.Time, max time.Time) (c
 // The method does not check for duplicates (i.e. data points with same T)
 // The range of T is not restricted. The range of Val is not restricted in a cartesian chart, but Val>=0 in a polar chart
 func (tas TemporalAreaSeries) AddData(input []data.TemporalDataPoint) (err error) {
-	if tas.ser == nil || tas.wid == nil {
+	if tas.ser == nil {
 		return
 	}
 	err = tas.ser.AddTemporalData(input)
 	if err != nil {
 		return
 	}
-	tas.wid.Refresh()
 	return
 }

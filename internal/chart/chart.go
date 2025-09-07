@@ -47,6 +47,7 @@ type BaseChart struct {
 	planeType     PlaneType
 	fromType      FromType
 	rast          *canvas.Raster
+	render        fyne.WidgetRenderer
 }
 
 func EmptyBaseChart(pType PlaneType, fType FromType) (base *BaseChart) {
@@ -65,10 +66,12 @@ func EmptyBaseChart(pType PlaneType, fType FromType) (base *BaseChart) {
 		base.fromAx = EmptyAxis("", CartesianAxis)
 		base.toAx = EmptyAxis("", CartesianAxis)
 		base.rast = canvas.NewRasterWithPixels(base.PixelGenCartesian)
+		base.render = EmptyCartesianRenderer(base)
 	} else {
 		base.fromAx = EmptyAxis("", PolarPhiAxis)
 		base.toAx = EmptyAxis("", PolarRAxis)
 		base.rast = canvas.NewRasterWithPixels(base.PixelGenPolar)
+		base.render = EmptyPolarRenderer(base)
 	}
 	if fType == Proportional {
 		base.HideFromAxis()
@@ -76,6 +79,10 @@ func EmptyBaseChart(pType PlaneType, fType FromType) (base *BaseChart) {
 	}
 	base.updateRangeAndOrigin()
 	return
+}
+
+func (base *BaseChart) GetRenderer() fyne.WidgetRenderer {
+	return base.render
 }
 
 func (base *BaseChart) CartesianOrientation() (transposed bool) {
@@ -717,6 +724,7 @@ func (base *BaseChart) DataChange() {
 	base.updateRangeAndOrigin()
 	base.updateSeriesVariables()
 	base.updateAxTicks()
+	base.render.Refresh()
 }
 
 func (base *BaseChart) RasterVisibilityChange() {

@@ -29,7 +29,7 @@ func NewCartesianTemporalChart() (tempChart *CartesianTemporalChart) {
 
 // CreateRenderer creates the renderer of the widget
 func (tempChart *CartesianTemporalChart) CreateRenderer() fyne.WidgetRenderer {
-	r := chart.EmptyCartesianRenderer(tempChart.base)
+	r := tempChart.base.GetRenderer()
 	return r
 }
 
@@ -42,7 +42,6 @@ func (tempChart *CartesianTemporalChart) CreateRenderer() fyne.WidgetRenderer {
 func (tempChart *CartesianTemporalChart) AddLineSeries(name string, points []data.TemporalDataPoint,
 	showDots bool, color color.Color) (tls TemporalLineSeries, err error) {
 	tls.ser, err = tempChart.base.AddTemporalLineSeries(name, points, showDots, color)
-	tls.wid = &tempChart.BaseWidget
 	return
 }
 
@@ -54,7 +53,6 @@ func (tempChart *CartesianTemporalChart) AddLineSeries(name string, points []dat
 func (tempChart *CartesianTemporalChart) AddScatterSeries(name string, points []data.TemporalDataPoint,
 	color color.Color) (tss TemporalScatterSeries, err error) {
 	tss.ser, err = tempChart.base.AddTemporalScatterSeries(name, points, color)
-	tss.wid = &tempChart.BaseWidget
 	return
 }
 
@@ -66,7 +64,6 @@ func (tempChart *CartesianTemporalChart) AddScatterSeries(name string, points []
 func (tempChart *CartesianTemporalChart) AddLollipopSeries(name string, points []data.TemporalDataPoint,
 	color color.Color) (tls TemporalLollipopSeries, err error) {
 	tls.ser, err = tempChart.base.AddTemporalLollipopSeries(name, points, color)
-	tls.wid = &tempChart.BaseWidget
 	return
 }
 
@@ -78,7 +75,6 @@ func (tempChart *CartesianTemporalChart) AddLollipopSeries(name string, points [
 func (tempChart *CartesianTemporalChart) AddCandleStickSeries(name string,
 	points []data.TemporalCandleStick) (tcs TemporalCandleStickSeries, err error) {
 	tcs.ser, err = tempChart.base.AddTemporalCandleStickSeries(name, points)
-	tcs.wid = &tempChart.BaseWidget
 	return
 }
 
@@ -90,7 +86,6 @@ func (tempChart *CartesianTemporalChart) AddCandleStickSeries(name string,
 func (tempChart *CartesianTemporalChart) AddBoxSeries(name string,
 	points []data.TemporalBox, col color.Color) (tbs TemporalBoxSeries, err error) {
 	tbs.ser, err = tempChart.base.AddTemporalBoxSeries(name, points, col)
-	tbs.wid = &tempChart.BaseWidget
 	return
 }
 
@@ -103,7 +98,6 @@ func (tempChart *CartesianTemporalChart) AddBoxSeries(name string,
 func (tempChart *CartesianTemporalChart) AddAreaSeries(name string, points []data.TemporalDataPoint,
 	showDots bool, color color.Color) (tas TemporalAreaSeries, err error) {
 	tas.ser, err = tempChart.base.AddTemporalAreaSeries(name, points, showDots, color)
-	tas.wid = &tempChart.BaseWidget
 	return
 }
 
@@ -117,7 +111,6 @@ func (tempChart *CartesianTemporalChart) AddAreaSeries(name string, points []dat
 func (tempChart *CartesianTemporalChart) AddBarSeries(name string, points []data.TemporalDataPoint,
 	barWidth time.Duration, color color.Color) (tbs TemporalBarSeries, err error) {
 	tbs.ser, err = tempChart.base.AddTemporalBarSeries(name, points, barWidth, color)
-	tbs.wid = &tempChart.BaseWidget
 	return
 }
 

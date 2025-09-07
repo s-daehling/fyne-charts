@@ -29,7 +29,7 @@ func NewPolarTemporalChart() (tempChart *PolarTemporalChart) {
 
 // CreateRenderer creates the renderer of the widget
 func (tempChart *PolarTemporalChart) CreateRenderer() fyne.WidgetRenderer {
-	r := chart.EmptyPolarRenderer(tempChart.base)
+	r := tempChart.base.GetRenderer()
 	return r
 }
 
@@ -42,7 +42,6 @@ func (tempChart *PolarTemporalChart) CreateRenderer() fyne.WidgetRenderer {
 func (tempChart *PolarTemporalChart) AddLineSeries(name string, points []data.TemporalDataPoint,
 	showDots bool, color color.Color) (tls TemporalLineSeries, err error) {
 	tls.ser, err = tempChart.base.AddTemporalLineSeries(name, points, showDots, color)
-	tls.wid = &tempChart.BaseWidget
 	return
 }
 
@@ -54,7 +53,6 @@ func (tempChart *PolarTemporalChart) AddLineSeries(name string, points []data.Te
 func (tempChart *PolarTemporalChart) AddScatterSeries(name string, points []data.TemporalDataPoint,
 	color color.Color) (tss TemporalScatterSeries, err error) {
 	tss.ser, err = tempChart.base.AddTemporalScatterSeries(name, points, color)
-	tss.wid = &tempChart.BaseWidget
 	return
 }
 
@@ -66,7 +64,6 @@ func (tempChart *PolarTemporalChart) AddScatterSeries(name string, points []data
 func (tempChart *PolarTemporalChart) AddLollipopSeries(name string, points []data.TemporalDataPoint,
 	color color.Color) (tls TemporalLollipopSeries, err error) {
 	tls.ser, err = tempChart.base.AddTemporalLollipopSeries(name, points, color)
-	tls.wid = &tempChart.BaseWidget
 	return
 }
 
@@ -79,7 +76,6 @@ func (tempChart *PolarTemporalChart) AddLollipopSeries(name string, points []dat
 func (tempChart *PolarTemporalChart) AddAreaSeries(name string, points []data.TemporalDataPoint, showDots bool,
 	color color.Color) (tas TemporalAreaSeries, err error) {
 	tas.ser, err = tempChart.base.AddTemporalAreaSeries(name, points, showDots, color)
-	tas.wid = &tempChart.BaseWidget
 	return
 }
 
@@ -93,7 +89,6 @@ func (tempChart *PolarTemporalChart) AddAreaSeries(name string, points []data.Te
 func (tempChart *PolarTemporalChart) AddBarSeries(name string, points []data.TemporalDataPoint,
 	barWidth time.Duration, color color.Color) (tbs TemporalBarSeries, err error) {
 	tbs.ser, err = tempChart.base.AddTemporalBarSeries(name, points, barWidth, color)
-	tbs.wid = &tempChart.BaseWidget
 	return
 }
 
