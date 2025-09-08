@@ -20,63 +20,27 @@ type cartDrawingArea struct {
 
 // cartesianRenderer is the renderer for all cartesian plane widgets
 type cartesianRenderer struct {
-	chart      *BaseChart // reference to the chart widget
-	margin     float32    // free space to the border
-	tickLength float32    // length of ticks
+	baseRenderer
 	transposed bool
 }
 
 func EmptyCartesianRenderer(chart *BaseChart) (r *cartesianRenderer) {
 	r = &cartesianRenderer{
-		chart:      chart,
-		margin:     10.0,
-		tickLength: 5.0,
-		transposed: false,
+		baseRenderer: emptyBaseRenderer(chart),
+		transposed:   false,
 	}
 	return
 }
-
-// Destroy has nothing to do
-func (r *cartesianRenderer) Destroy() {}
 
 // Layout is responsible for redrawing the chart widget; here the horizontal and vertical numerical coordinates are converted to fyne positions and objects are placed accordingly
 func (r *cartesianRenderer) Layout(size fyne.Size) {
 	// todo: should chart be locked from this point on?
 
-	titleWidth := float32(0.0)
-	titleHeight := float32(0.0)
-	legendWidth := float32(0.0)
-	legendHeight := float32(0.0)
+	_, titleHeight, legendWidth, _ := r.placeTitleAndLegend(size)
 	vAxisLabelWidth := float32(0.0)
 	hAxisLabelHeight := float32(0.0)
 	vAxisTickLabelWidth := float32(0.0)
 	hAxisTickLabelHeight := float32(0.0)
-
-	// place title
-	ct := r.chart.title()
-	if ct.Name != "" {
-		ct.Label.Text = ct.Name
-		titleWidth = ct.Label.MinSize().Width
-		titleHeight = ct.Label.MinSize().Height
-		ct.Label.Move(fyne.NewPos(size.Width/2-titleWidth/2, r.margin))
-	}
-
-	// place legend
-	legendVisible := r.chart.legendVisibility()
-	if legendVisible {
-		les := r.chart.legendEntries()
-		legendWidth, legendHeight = series.LegendSize(les)
-		yLegend := (size.Height - legendHeight) / 2.0
-		for i := range les {
-			subOffset := float32(0.0)
-			if les[i].IsSub {
-				subOffset = 20
-			}
-			les[i].Button.Resize(fyne.NewSize(15, 15))
-			les[i].Button.Move(fyne.NewPos(size.Width-r.margin-legendWidth+5+subOffset, yLegend+20*float32(i)))
-			les[i].Label.Move(fyne.NewPos(size.Width-r.margin-legendWidth+25+subOffset, yLegend+20*float32(i)))
-		}
-	}
 
 	var vAxis, hAxis *Axis
 	if r.transposed {

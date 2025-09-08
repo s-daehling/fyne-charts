@@ -21,62 +21,27 @@ type polDrawingArea struct {
 
 // polarRenderer is the renderer for all cartesian plane widgets
 type polarRenderer struct {
-	chart      *BaseChart // reference to the chart widget
-	margin     float32    // free space to the border
-	tickLength float32    // length of ticks
-	rot        float64
-	mathPos    bool
+	baseRenderer
+	rot     float64
+	mathPos bool
 }
 
 func EmptyPolarRenderer(chart *BaseChart) (r *polarRenderer) {
 	r = &polarRenderer{
-		chart:      chart,
-		margin:     10.0,
-		tickLength: 5.0,
-		rot:        0.0,
-		mathPos:    true,
+		baseRenderer: emptyBaseRenderer(chart),
+		rot:          0.0,
+		mathPos:      true,
 	}
 	return
 }
 
-// Destroy has nothing to do
-func (r *polarRenderer) Destroy() {}
-
 // Layout is responsible for redrawing the chart widget
 func (r *polarRenderer) Layout(size fyne.Size) {
-	titleWidth := float32(0.0)
-	titleHeight := float32(0.0)
-	legendWidth := float32(0.0)
-	legendHeight := float32(0.0)
+	_, titleHeight, legendWidth, _ := r.placeTitleAndLegend(size)
 	rAxisLabelHeight := float32(0.0)
 	phiAxisLabelWidth := float32(0.0)
 	phiAxisTickLabelWidth := float32(0.0)
 	phiAxisTickLabelHeight := float32(0.0)
-
-	ct := r.chart.title()
-	if ct.Name != "" {
-		ct.Label.Text = ct.Name
-		titleWidth = ct.Label.MinSize().Width
-		titleHeight = ct.Label.MinSize().Height
-		ct.Label.Move(fyne.NewPos(size.Width/2-titleWidth/2, r.margin))
-	}
-
-	// place legend
-	legendVisible := r.chart.legendVisibility()
-	if legendVisible {
-		les := r.chart.legendEntries()
-		legendWidth, legendHeight = series.LegendSize(les)
-		yLegend := (size.Height - legendHeight) / 2.0
-		for i := range les {
-			subOffset := float32(0.0)
-			if les[i].IsSub {
-				subOffset = 20
-			}
-			les[i].Button.Resize(fyne.NewSize(15, 15))
-			les[i].Button.Move(fyne.NewPos(size.Width-r.margin-legendWidth+5+subOffset, yLegend+20*float32(i)))
-			les[i].Label.Move(fyne.NewPos(size.Width-r.margin-legendWidth+25+subOffset, yLegend+20*float32(i)))
-		}
-	}
 
 	phiAx := r.chart.fromAxis()
 	phiOrigin := phiAx.NOrigin()
