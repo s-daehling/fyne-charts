@@ -81,10 +81,10 @@ func (ser *StackedBarSeries) ConvertCtoN(cToN func(c string) (n float64)) {
 
 func (ser *StackedBarSeries) CartesianRects(xMin float64, xMax float64, yMin float64,
 	yMax float64) (fs []CartesianRect) {
-	valOffset := []catOffset{}
+	// valOffset := []catOffset{}
 	ser.mutex.Lock()
 	for i := range ser.stack {
-		valOffset = ser.stack[i].SetAndUpdateValOffset(valOffset)
+		// valOffset = ser.stack[i].SetAndUpdateValOffset(valOffset)
 		fs = append(fs, ser.stack[i].CartesianRects(xMin, xMax, yMin, yMax)...)
 	}
 	ser.mutex.Unlock()
@@ -151,7 +151,7 @@ func (ser *StackedBarSeries) Show() {
 	ser.mutex.Lock()
 	ser.visible = true
 	for i := range ser.stack {
-		ser.stack[i].Show()
+		go ser.stack[i].Show()
 	}
 	ser.mutex.Unlock()
 }
@@ -161,7 +161,7 @@ func (ser *StackedBarSeries) Hide() {
 	ser.mutex.Lock()
 	ser.visible = false
 	for i := range ser.stack {
-		ser.stack[i].Hide()
+		go ser.stack[i].Hide()
 	}
 	ser.mutex.Unlock()
 }
@@ -171,9 +171,6 @@ func (ser *StackedBarSeries) toggleView() {
 		ser.Hide()
 	} else {
 		ser.Show()
-	}
-	if ser.polar {
-		ser.chart.RasterVisibilityChange()
 	}
 }
 

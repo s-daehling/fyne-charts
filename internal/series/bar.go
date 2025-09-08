@@ -208,14 +208,24 @@ func (ser *BarSeries) SetTemporalWidthAndOffset(width time.Duration, offset time
 
 func (ser *BarSeries) SetAndUpdateValOffset(in []catOffset) (out []catOffset) {
 	ser.mutex.Lock()
-	for i := range in {
-		for j := range ser.data {
-			if in[i].C == ser.data[j].c {
-				ser.data[j].valOffset = in[i].ValOffset
+	for i := range ser.data {
+		catInOffsetList := false
+		for j := range in {
+			if in[j].C == ser.data[i].c {
+				ser.data[i].valOffset = in[j].ValOffset
+				catInOffsetList = true
+				break
 			}
+		}
+		if !catInOffsetList {
+			ser.data[i].valOffset = 0
 		}
 	}
 	copy(out, in)
+	if !ser.visible {
+		ser.mutex.Unlock()
+		return
+	}
 	for i := range ser.data {
 		catExist := false
 		for j := range out {
@@ -241,9 +251,7 @@ func (ser *BarSeries) Show() {
 		ser.data[i].show()
 	}
 	ser.mutex.Unlock()
-	if ser.polar {
-		ser.chart.RasterVisibilityChange()
-	}
+	ser.chart.DataChange()
 }
 
 // Hide hides the bars of the series
@@ -254,9 +262,7 @@ func (ser *BarSeries) Hide() {
 		ser.data[i].hide()
 	}
 	ser.mutex.Unlock()
-	if ser.polar {
-		ser.chart.RasterVisibilityChange()
-	}
+	ser.chart.DataChange()
 }
 
 func (ser *BarSeries) toggleView() {

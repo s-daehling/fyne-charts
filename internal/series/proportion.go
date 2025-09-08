@@ -208,10 +208,12 @@ func (ser *ProportionalSeries) ConvertPtoN(pToN func(p float64) (n float64)) {
 	valOffset := 0.0
 	ser.mutex.Lock()
 	for i := range ser.data {
-		ser.data[i].n = pToN(ser.data[i].val / ser.tot)
 		ser.data[i].valOffset = valOffset
 		if ser.data[i].visible {
+			ser.data[i].n = pToN(ser.data[i].val / ser.tot)
 			valOffset += ser.data[i].n
+		} else {
+			ser.data[i].n = 0
 		}
 	}
 	ser.mutex.Unlock()
@@ -270,7 +272,7 @@ func (ser *ProportionalSeries) Show() {
 	ser.mutex.Lock()
 	ser.visible = true
 	for i := range ser.data {
-		ser.data[i].show()
+		go ser.data[i].show()
 	}
 	ser.mutex.Unlock()
 }
@@ -280,7 +282,7 @@ func (ser *ProportionalSeries) Hide() {
 	ser.mutex.Lock()
 	ser.visible = false
 	for i := range ser.data {
-		ser.data[i].hide()
+		go ser.data[i].hide()
 	}
 	ser.mutex.Unlock()
 }
@@ -301,9 +303,6 @@ func (ser *ProportionalSeries) pointVisibilityUpdate(totChange float64) {
 	ser.tot += totChange
 	ser.mutex.Unlock()
 	ser.chart.DataChange()
-	if ser.polar {
-		ser.chart.RasterVisibilityChange()
-	}
 }
 
 func (ser *ProportionalSeries) LegendEntries() (les []LegendEntry) {
