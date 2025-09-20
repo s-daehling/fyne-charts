@@ -36,6 +36,27 @@ func (ps ProportionalSeries) Hide() {
 	ps.ser.Hide()
 }
 
+// Clear deletes all data
+func (ps ProportionalSeries) Clear() (err error) {
+	if ps.ser == nil {
+		return
+	}
+	err = ps.ser.Clear()
+	return
+}
+
+// UpdateData updates the series by calling the data provider function
+// this only works if the series has been created with a provider function
+// note: UpdateData clears the series and creates new data
+// an error is returned if the series has no provider function or if the data range is incorrect
+func (ps ProportionalSeries) UpdateData() (err error) {
+	if ps.ser == nil {
+		return
+	}
+	err = ps.ser.UpdateData()
+	return
+}
+
 // DeleteDataInRange deletes all data points with one of the given category
 // The return value gives the number of data points that have been removed
 // An error is returned if cat is empty

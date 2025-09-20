@@ -46,6 +46,27 @@ func (bs barSeries) SetColor(col color.Color) {
 	bs.ser.SetColor(col)
 }
 
+// Clear deletes all data
+func (bs barSeries) Clear() (err error) {
+	if bs.ser == nil {
+		return
+	}
+	err = bs.ser.Clear()
+	return
+}
+
+// UpdateData updates the series by calling the data provider function
+// this only works if the series has been created with a provider function
+// note: UpdateData clears the series and creates new data
+// an error is returned if the series has no provider function or if the data range is incorrect
+func (bs barSeries) UpdateData() (err error) {
+	if bs.ser == nil {
+		return
+	}
+	err = bs.ser.UpdateData()
+	return
+}
+
 // NumericalBarSeries represents a scatter series over a numerical x-axis
 type NumericalBarSeries struct {
 	barSeries

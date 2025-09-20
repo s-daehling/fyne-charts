@@ -37,7 +37,19 @@ func (propChart *PolarProportionalChart) CreateRenderer() fyne.WidgetRenderer {
 // The range of C is not restricted. The range of Val is restricted to Val>=0
 func (propChart *PolarProportionalChart) AddProportionalSeries(name string,
 	points []data.ProportionalDataPoint) (ps ProportionalSeries, err error) {
-	ps.ser, err = propChart.base.AddProportionalSeries(name, points)
+	ps.ser, err = propChart.base.AddProportionalSeries(name, points, nil)
+	return
+}
+
+// AddProportionalSeriesWithProvider adds a series of data which is visualized as proportional bar chart.
+// The series can be accessed via the name later, it must be unique throughout the chart.
+// An error is returned,if another series with the same name exists.
+// The series data is retrieved from providerFct
+// The method does not check for duplicates (i.e. data points with same C)
+// The range of C is not restricted. The range of Val is restricted to Val>=0
+func (propChart *PolarProportionalChart) AddProportionalSeriesWithProvider(name string,
+	providerFct func() []data.ProportionalDataPoint) (ps ProportionalSeries, err error) {
+	ps.ser, err = propChart.base.AddProportionalSeries(name, nil, providerFct)
 	return
 }
 

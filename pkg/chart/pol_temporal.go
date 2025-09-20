@@ -41,7 +41,20 @@ func (tempChart *PolarTemporalChart) CreateRenderer() fyne.WidgetRenderer {
 // The range of T is not restricted. The range of Val is restricted to Val>=0.
 func (tempChart *PolarTemporalChart) AddLineSeries(name string, points []data.TemporalDataPoint,
 	showDots bool, color color.Color) (tls TemporalLineSeries, err error) {
-	tls.ser, err = tempChart.base.AddTemporalLineSeries(name, points, showDots, color)
+	tls.ser, err = tempChart.base.AddTemporalLineSeries(name, points, showDots, nil, color)
+	return
+}
+
+// AddLineSeriesWithProvider adds a series of data which is visualized as line chart.
+// The series can be accessed via the name later, it must be unique throughout the chart.
+// An error is returned,if another series with the same name exists.
+// The series data is retrieved from providerFct
+// data does not need to be sorted. It will be sorted by T by the method.
+// The method does not check for duplicates (i.e. data points with same T)
+// The range of T is not restricted. The range of Val is restricted to Val>=0.
+func (tempChart *PolarTemporalChart) AddLineSeriesWithProvider(name string, providerFct func() []data.TemporalDataPoint,
+	showDots bool, color color.Color) (tls TemporalLineSeries, err error) {
+	tls.ser, err = tempChart.base.AddTemporalLineSeries(name, nil, showDots, providerFct, color)
 	return
 }
 
@@ -52,7 +65,19 @@ func (tempChart *PolarTemporalChart) AddLineSeries(name string, points []data.Te
 // The range of T is not restricted. The range of Val is restricted to Val>=0.
 func (tempChart *PolarTemporalChart) AddScatterSeries(name string, points []data.TemporalDataPoint,
 	color color.Color) (tss TemporalScatterSeries, err error) {
-	tss.ser, err = tempChart.base.AddTemporalScatterSeries(name, points, color)
+	tss.ser, err = tempChart.base.AddTemporalScatterSeries(name, points, nil, color)
+	return
+}
+
+// AddScatterSeriesWithProvider adds a series of data which is visualized as scatter chart.
+// The series can be accessed via the name later, it must be unique throughout the chart.
+// An error is returned,if another series with the same name exists.
+// The series data is retrieved from providerFct
+// The method does not check for duplicates (i.e. data points with same T)
+// The range of T is not restricted. The range of Val is restricted to Val>=0.
+func (tempChart *PolarTemporalChart) AddScatterSeriesWithProvider(name string, providerFct func() []data.TemporalDataPoint,
+	color color.Color) (tss TemporalScatterSeries, err error) {
+	tss.ser, err = tempChart.base.AddTemporalScatterSeries(name, nil, providerFct, color)
 	return
 }
 
@@ -63,7 +88,19 @@ func (tempChart *PolarTemporalChart) AddScatterSeries(name string, points []data
 // The range of T is not restricted. The range of Val is restricted to Val>=0.
 func (tempChart *PolarTemporalChart) AddLollipopSeries(name string, points []data.TemporalDataPoint,
 	color color.Color) (tls TemporalLollipopSeries, err error) {
-	tls.ser, err = tempChart.base.AddTemporalLollipopSeries(name, points, color)
+	tls.ser, err = tempChart.base.AddTemporalLollipopSeries(name, points, nil, color)
+	return
+}
+
+// AddLollipopSeriesWithProvider adds a series of data which is visualized as lollipop chart.
+// The series can be accessed via the name later, it must be unique throughout the chart.
+// An error is returned,if another series with the same name exists.
+// The series data is retrieved from providerFct
+// The method does not check for duplicates (i.e. data points with same T)
+// The range of T is not restricted. The range of Val is restricted to Val>=0.
+func (tempChart *PolarTemporalChart) AddLollipopSeriesWithProvider(name string, providerFct func() []data.TemporalDataPoint,
+	color color.Color) (tls TemporalLollipopSeries, err error) {
+	tls.ser, err = tempChart.base.AddTemporalLollipopSeries(name, nil, providerFct, color)
 	return
 }
 
@@ -75,7 +112,20 @@ func (tempChart *PolarTemporalChart) AddLollipopSeries(name string, points []dat
 // The range of T is not restricted. The range of Val is restricted to Val>=0.
 func (tempChart *PolarTemporalChart) AddAreaSeries(name string, points []data.TemporalDataPoint, showDots bool,
 	color color.Color) (tas TemporalAreaSeries, err error) {
-	tas.ser, err = tempChart.base.AddTemporalAreaSeries(name, points, showDots, color)
+	tas.ser, err = tempChart.base.AddTemporalAreaSeries(name, points, showDots, nil, color)
+	return
+}
+
+// AddAreaSeriesWithProvider adds a series of data which is visualized as area chart.
+// The series can be accessed via the name later, it must be unique throughout the chart.
+// An error is returned,if another series with the same name exists.
+// The series data is retrieved from providerFct
+// data does not need to be sorted. It will be sorted by T by the method.
+// The method does not check for duplicates (i.e. data points with same T).
+// The range of T is not restricted. The range of Val is restricted to Val>=0.
+func (tempChart *PolarTemporalChart) AddAreaSeriesWithProvider(name string, providerFct func() []data.TemporalDataPoint, showDots bool,
+	color color.Color) (tas TemporalAreaSeries, err error) {
+	tas.ser, err = tempChart.base.AddTemporalAreaSeries(name, nil, showDots, providerFct, color)
 	return
 }
 
@@ -88,7 +138,21 @@ func (tempChart *PolarTemporalChart) AddAreaSeries(name string, points []data.Te
 // An error is returned if barWidth < 0
 func (tempChart *PolarTemporalChart) AddBarSeries(name string, points []data.TemporalDataPoint,
 	barWidth time.Duration, color color.Color) (tbs TemporalBarSeries, err error) {
-	tbs.ser, err = tempChart.base.AddTemporalBarSeries(name, points, barWidth, color)
+	tbs.ser, err = tempChart.base.AddTemporalBarSeries(name, points, barWidth, nil, color)
+	return
+}
+
+// AddBarSeriesWithProvider adds a series of data which is visualized as bar chart.
+// The series can be accessed via the name later, it must be unique throughout the chart.
+// An error is returned,if another series with the same name exists.
+// The series data is retrieved from providerFct
+// The method does not check for duplicates (i.e. data points with same T)
+// The range of T is not restricted. The range of Val is restricted to Val>=0.
+// The bars are centered around their T value of the data points. barWidth is the width of the bars.
+// An error is returned if barWidth < 0
+func (tempChart *PolarTemporalChart) AddBarSeriesWithProvider(name string, providerFct func() []data.TemporalDataPoint,
+	barWidth time.Duration, color color.Color) (tbs TemporalBarSeries, err error) {
+	tbs.ser, err = tempChart.base.AddTemporalBarSeries(name, nil, barWidth, providerFct, color)
 	return
 }
 

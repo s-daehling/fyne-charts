@@ -358,6 +358,35 @@ func (ser *LineSeries) SetDotSize(ds float32) {
 	ser.mutex.Unlock()
 }
 
+func (ser *LineSeries) Clear() (err error) {
+	ser.mutex.Lock()
+	if ser.chart == nil {
+		err = errors.New("series is not part of any chart")
+		ser.mutex.Unlock()
+		return
+	}
+	chart := ser.chart
+	ser.data = []*linePoint{}
+	ser.mutex.Unlock()
+	chart.DataChange()
+	return
+}
+
+func (ser *LineSeries) AddNumericalUpdateFct(providerFct func() []data.NumericalDataPoint) {
+	f := func() (err error) {
+		err = ser.Clear()
+		if err != nil {
+			return
+		}
+		err = ser.AddNumericalData(providerFct())
+
+		return
+	}
+	ser.mutex.Lock()
+	ser.updateFct = f
+	ser.mutex.Unlock()
+}
+
 func (ser *LineSeries) DeleteNumericalDataInRange(min float64, max float64) (c int, err error) {
 	c = 0
 	if min > max {
@@ -418,6 +447,20 @@ func (ser *LineSeries) AddNumericalData(input []data.NumericalDataPoint) (err er
 	ser.mutex.Unlock()
 	chart.DataChange()
 	return
+}
+
+func (ser *LineSeries) AddTemporalUpdateFct(providerFct func() []data.TemporalDataPoint) {
+	f := func() (err error) {
+		err = ser.Clear()
+		if err != nil {
+			return
+		}
+		err = ser.AddTemporalData(providerFct())
+		return
+	}
+	ser.mutex.Lock()
+	ser.updateFct = f
+	ser.mutex.Unlock()
 }
 
 func (ser *LineSeries) DeleteTemporalDataInRange(min time.Time, max time.Time) (c int, err error) {

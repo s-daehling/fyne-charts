@@ -285,6 +285,34 @@ func (ser *BarSeries) SetColor(col color.Color) {
 	ser.mutex.Unlock()
 }
 
+func (ser *BarSeries) Clear() (err error) {
+	ser.mutex.Lock()
+	if ser.chart == nil {
+		err = errors.New("series is not part of any chart")
+		ser.mutex.Unlock()
+		return
+	}
+	chart := ser.chart
+	ser.data = []*barPoint{}
+	ser.mutex.Unlock()
+	chart.DataChange()
+	return
+}
+
+func (ser *BarSeries) AddNumericalUpdateFct(providerFct func() []data.NumericalDataPoint) {
+	f := func() (err error) {
+		err = ser.Clear()
+		if err != nil {
+			return
+		}
+		err = ser.AddNumericalData(providerFct())
+		return
+	}
+	ser.mutex.Lock()
+	ser.updateFct = f
+	ser.mutex.Unlock()
+}
+
 func (ser *BarSeries) DeleteNumericalDataInRange(min float64, max float64) (c int, err error) {
 	c = 0
 	if min > max {
@@ -338,6 +366,20 @@ func (ser *BarSeries) AddNumericalData(input []data.NumericalDataPoint) (err err
 	ser.mutex.Unlock()
 	chart.DataChange()
 	return
+}
+
+func (ser *BarSeries) AddCategoricalUpdateFct(providerFct func() []data.CategoricalDataPoint) {
+	f := func() (err error) {
+		err = ser.Clear()
+		if err != nil {
+			return
+		}
+		err = ser.AddCategoricalData(providerFct())
+		return
+	}
+	ser.mutex.Lock()
+	ser.updateFct = f
+	ser.mutex.Unlock()
 }
 
 func (ser *BarSeries) DeleteCategoricalDataInRange(cat []string) (c int, err error) {
@@ -410,6 +452,20 @@ func (ser *BarSeries) AddCategoricalData(input []data.CategoricalDataPoint) (err
 	ser.mutex.Unlock()
 	chart.DataChange()
 	return
+}
+
+func (ser *BarSeries) AddTemporalUpdateFct(providerFct func() []data.TemporalDataPoint) {
+	f := func() (err error) {
+		err = ser.Clear()
+		if err != nil {
+			return
+		}
+		err = ser.AddTemporalData(providerFct())
+		return
+	}
+	ser.mutex.Lock()
+	ser.updateFct = f
+	ser.mutex.Unlock()
 }
 
 func (ser *BarSeries) DeleteTemporalDataInRange(min time.Time, max time.Time) (c int, err error) {

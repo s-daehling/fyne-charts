@@ -40,7 +40,20 @@ func (numChart *CartesianNumericalChart) CreateRenderer() fyne.WidgetRenderer {
 // The range of X and Val is not restricted
 func (numChart *CartesianNumericalChart) AddLineSeries(name string, points []data.NumericalDataPoint,
 	showDots bool, color color.Color) (nls NumericalLineSeries, err error) {
-	nls.ser, err = numChart.base.AddNumericalLineSeries(name, points, showDots, color)
+	nls.ser, err = numChart.base.AddNumericalLineSeries(name, points, showDots, nil, color)
+	return
+}
+
+// AddLineSeriesWithProvider adds a series of data which is visualized as line chart.
+// The series can be accessed via the name later, it must be unique throughout the chart.
+// An error is returned,if another series with the same name exists.
+// The series data is retrieved from providerFct
+// data does not need to be sorted. It will be sorted by X by the method.
+// The method does not check for duplicates (i.e. data points with same X)
+// The range of X and Val is not restricted
+func (numChart *CartesianNumericalChart) AddLineSeriesWithProvider(name string, providerFct func() []data.NumericalDataPoint,
+	showDots bool, color color.Color) (nls NumericalLineSeries, err error) {
+	nls.ser, err = numChart.base.AddNumericalLineSeries(name, nil, showDots, providerFct, color)
 	return
 }
 
@@ -51,7 +64,19 @@ func (numChart *CartesianNumericalChart) AddLineSeries(name string, points []dat
 // The range of X and Val is not restricted
 func (numChart *CartesianNumericalChart) AddScatterSeries(name string, points []data.NumericalDataPoint,
 	color color.Color) (nss NumericalScatterSeries, err error) {
-	nss.ser, err = numChart.base.AddNumericalScatterSeries(name, points, color)
+	nss.ser, err = numChart.base.AddNumericalScatterSeries(name, points, nil, color)
+	return
+}
+
+// AddScatterSeriesWithProvider adds a series of data which is visualized as scatter chart.
+// The series can be accessed via the name later, it must be unique throughout the chart.
+// An error is returned,if another series with the same name exists.
+// The series data is retrieved from providerFct
+// The method does not check for duplicates (i.e. data points with same X)
+// The range of X and Val is not restricted
+func (numChart *CartesianNumericalChart) AddScatterSeriesWithProvider(name string, providerFct func() []data.NumericalDataPoint,
+	color color.Color) (nss NumericalScatterSeries, err error) {
+	nss.ser, err = numChart.base.AddNumericalScatterSeries(name, nil, providerFct, color)
 	return
 }
 
@@ -62,7 +87,19 @@ func (numChart *CartesianNumericalChart) AddScatterSeries(name string, points []
 // The range of X and Val is not restricted
 func (numChart *CartesianNumericalChart) AddLollipopSeries(name string, points []data.NumericalDataPoint,
 	color color.Color) (nls NumericalLollipopSeries, err error) {
-	nls.ser, err = numChart.base.AddNumericalLollipopSeries(name, points, color)
+	nls.ser, err = numChart.base.AddNumericalLollipopSeries(name, points, nil, color)
+	return
+}
+
+// AddLollipopSeriesWithProvider adds a series of data which is visualized as lollipop chart.
+// The series can be accessed via the name later, it must be unique throughout the chart.
+// An error is returned,if another series with the same name exists.
+// The series data is retrieved from providerFct
+// The method does not check for duplicates (i.e. data points with same X)
+// The range of X and Val is not restricted
+func (numChart *CartesianNumericalChart) AddLollipopSeriesWithProvider(name string, providerFct func() []data.NumericalDataPoint,
+	color color.Color) (nls NumericalLollipopSeries, err error) {
+	nls.ser, err = numChart.base.AddNumericalLollipopSeries(name, nil, providerFct, color)
 	return
 }
 
@@ -73,7 +110,19 @@ func (numChart *CartesianNumericalChart) AddLollipopSeries(name string, points [
 // The range of XStart, XEnd and values is not restricted
 func (numChart *CartesianNumericalChart) AddCandleStickSeries(name string,
 	points []data.NumericalCandleStick) (ncs NumericalCandleStickSeries, err error) {
-	ncs.ser, err = numChart.base.AddNumericalCandleStickSeries(name, points)
+	ncs.ser, err = numChart.base.AddNumericalCandleStickSeries(name, points, nil)
+	return
+}
+
+// AddCandleStickSeriesWithProvider adds a series of data which is visualized as canlde stick chart.
+// The series can be accessed via the name later, it must be unique throughout the chart.
+// An error is returned,if another series with the same name exists.
+// The series data is retrieved from providerFct
+// The method does not check for duplicates (i.e. data points with same X)
+// The range of XStart, XEnd and values is not restricted
+func (numChart *CartesianNumericalChart) AddCandleStickSeriesWithProvider(name string,
+	providerFct func() []data.NumericalCandleStick) (ncs NumericalCandleStickSeries, err error) {
+	ncs.ser, err = numChart.base.AddNumericalCandleStickSeries(name, nil, providerFct)
 	return
 }
 
@@ -84,7 +133,19 @@ func (numChart *CartesianNumericalChart) AddCandleStickSeries(name string,
 // The range of X and values is not restricted
 func (numChart *CartesianNumericalChart) AddBoxSeries(name string,
 	points []data.NumericalBox, col color.Color) (nbs NumericalBoxSeries, err error) {
-	nbs.ser, err = numChart.base.AddNumericalBoxSeries(name, points, col)
+	nbs.ser, err = numChart.base.AddNumericalBoxSeries(name, points, nil, col)
+	return
+}
+
+// AddBoxSeriesWithProvider adds a series of data which is visualized as box chart.
+// The series can be accessed via the name later, it must be unique throughout the chart.
+// An error is returned,if another series with the same name exists.
+// The series data is retrieved from providerFct
+// The method does not check for duplicates (i.e. data points with same X)
+// The range of X and values is not restricted
+func (numChart *CartesianNumericalChart) AddBoxSeriesWithProvider(name string,
+	providerFct func() []data.NumericalBox, col color.Color) (nbs NumericalBoxSeries, err error) {
+	nbs.ser, err = numChart.base.AddNumericalBoxSeries(name, nil, providerFct, col)
 	return
 }
 
@@ -96,7 +157,20 @@ func (numChart *CartesianNumericalChart) AddBoxSeries(name string,
 // The range of X and Val is not restricted
 func (numChart *CartesianNumericalChart) AddAreaSeries(name string, points []data.NumericalDataPoint, showDots bool,
 	color color.Color) (nas NumericalAreaSeries, err error) {
-	nas.ser, err = numChart.base.AddNumericalAreaSeries(name, points, showDots, color)
+	nas.ser, err = numChart.base.AddNumericalAreaSeries(name, points, showDots, nil, color)
+	return
+}
+
+// AddAreaSeriesWithProvider adds a series of data which is visualized as area chart.
+// The series can be accessed via the name later, it must be unique throughout the chart.
+// An error is returned,if another series with the same name exists.
+// The series data is retrieved from providerFct
+// data does not need to be sorted. It will be sorted by X by the method.
+// The method does not check for duplicates (i.e. data points with same X).
+// The range of X and Val is not restricted
+func (numChart *CartesianNumericalChart) AddAreaSeriesWithProvider(name string, providerFct func() []data.NumericalDataPoint, showDots bool,
+	color color.Color) (nas NumericalAreaSeries, err error) {
+	nas.ser, err = numChart.base.AddNumericalAreaSeries(name, nil, showDots, providerFct, color)
 	return
 }
 
@@ -109,7 +183,21 @@ func (numChart *CartesianNumericalChart) AddAreaSeries(name string, points []dat
 // An error is returned if barWidth < 0
 func (numChart *CartesianNumericalChart) AddBarSeries(name string, points []data.NumericalDataPoint,
 	barWidth float64, color color.Color) (nbs NumericalBarSeries, err error) {
-	nbs.ser, err = numChart.base.AddNumericalBarSeries(name, points, barWidth, color)
+	nbs.ser, err = numChart.base.AddNumericalBarSeries(name, points, barWidth, nil, color)
+	return
+}
+
+// AddBarSeriesWithProvider adds a series of data which is visualized as bar chart.
+// The series can be accessed via the name later, it must be unique throughout the chart.
+// An error is returned,if another series with the same name exists.
+// The series data is retrieved from providerFct
+// The method does not check for duplicates (i.e. data points with same X)
+// The range of X and Val is not restricted
+// The bars are centered around their X value of the data points. barWidth is the width of the bars.
+// An error is returned if barWidth < 0
+func (numChart *CartesianNumericalChart) AddBarSeriesWithProvider(name string, providerFct func() []data.NumericalDataPoint,
+	barWidth float64, color color.Color) (nbs NumericalBarSeries, err error) {
+	nbs.ser, err = numChart.base.AddNumericalBarSeries(name, nil, barWidth, providerFct, color)
 	return
 }
 

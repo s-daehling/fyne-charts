@@ -62,6 +62,27 @@ func (ls lollipopSeries) SetDotSize(ds float32) {
 	ls.ser.SetDotSize(ds)
 }
 
+// Clear deletes all data
+func (ls lollipopSeries) Clear() (err error) {
+	if ls.ser == nil {
+		return
+	}
+	err = ls.ser.Clear()
+	return
+}
+
+// UpdateData updates the series by calling the data provider function
+// this only works if the series has been created with a provider function
+// note: UpdateData clears the series and creates new data
+// an error is returned if the series has no provider function or if the data range is incorrect
+func (ls lollipopSeries) UpdateData() (err error) {
+	if ls.ser == nil {
+		return
+	}
+	err = ls.ser.UpdateData()
+	return
+}
+
 // NumericalLollipopSeries represents a lollipop series over a numerical x-axis
 type NumericalLollipopSeries struct {
 	lollipopSeries

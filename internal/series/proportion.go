@@ -324,6 +324,34 @@ func (ser *ProportionalSeries) SetHeightAndOffset(h float64, hOffset float64) {
 	ser.mutex.Unlock()
 }
 
+func (ser *ProportionalSeries) Clear() (err error) {
+	ser.mutex.Lock()
+	if ser.chart == nil {
+		err = errors.New("series is not part of any chart")
+		ser.mutex.Unlock()
+		return
+	}
+	chart := ser.chart
+	ser.data = []*proportionPoint{}
+	ser.mutex.Unlock()
+	chart.DataChange()
+	return
+}
+
+func (ser *ProportionalSeries) AddUpdateFct(providerFct func() []data.ProportionalDataPoint) {
+	f := func() (err error) {
+		err = ser.Clear()
+		if err != nil {
+			return
+		}
+		err = ser.AddData(providerFct())
+		return
+	}
+	ser.mutex.Lock()
+	ser.updateFct = f
+	ser.mutex.Unlock()
+}
+
 func (ser *ProportionalSeries) DeleteDataInRange(cat []string) (c int, err error) {
 	c = 0
 	if len(cat) == 0 {

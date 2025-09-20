@@ -41,7 +41,20 @@ func (tempChart *CartesianTemporalChart) CreateRenderer() fyne.WidgetRenderer {
 // The range of T and Val is not restricted
 func (tempChart *CartesianTemporalChart) AddLineSeries(name string, points []data.TemporalDataPoint,
 	showDots bool, color color.Color) (tls TemporalLineSeries, err error) {
-	tls.ser, err = tempChart.base.AddTemporalLineSeries(name, points, showDots, color)
+	tls.ser, err = tempChart.base.AddTemporalLineSeries(name, points, showDots, nil, color)
+	return
+}
+
+// AddLineSeriesWithProvider adds a series of data which is visualized as line chart.
+// The series can be accessed via the name later, it must be unique throughout the chart.
+// An error is returned,if another series with the same name exists.
+// The series data is retrieved from providerFct
+// data does not need to be sorted. It will be sorted by T by the method.
+// The method does not check for duplicates (i.e. data points with same T)
+// The range of T and Val is not restricted
+func (tempChart *CartesianTemporalChart) AddLineSeriesWithProvider(name string, providerFct func() []data.TemporalDataPoint,
+	showDots bool, color color.Color) (tls TemporalLineSeries, err error) {
+	tls.ser, err = tempChart.base.AddTemporalLineSeries(name, nil, showDots, providerFct, color)
 	return
 }
 
@@ -52,7 +65,19 @@ func (tempChart *CartesianTemporalChart) AddLineSeries(name string, points []dat
 // The range of T and Val is not restricted
 func (tempChart *CartesianTemporalChart) AddScatterSeries(name string, points []data.TemporalDataPoint,
 	color color.Color) (tss TemporalScatterSeries, err error) {
-	tss.ser, err = tempChart.base.AddTemporalScatterSeries(name, points, color)
+	tss.ser, err = tempChart.base.AddTemporalScatterSeries(name, points, nil, color)
+	return
+}
+
+// AddScatterSeriesWithProvider adds a series of data which is visualized as scatter chart.
+// The series can be accessed via the name later, it must be unique throughout the chart.
+// An error is returned,if another series with the same name exists.
+// The series data is retrieved from providerFct
+// The method does not check for duplicates (i.e. data points with same T)
+// The range of T and Val is not restricted
+func (tempChart *CartesianTemporalChart) AddScatterSeriesWithProvider(name string, providerFct func() []data.TemporalDataPoint,
+	color color.Color) (tss TemporalScatterSeries, err error) {
+	tss.ser, err = tempChart.base.AddTemporalScatterSeries(name, nil, providerFct, color)
 	return
 }
 
@@ -63,7 +88,19 @@ func (tempChart *CartesianTemporalChart) AddScatterSeries(name string, points []
 // The range of T and Val is not restricted
 func (tempChart *CartesianTemporalChart) AddLollipopSeries(name string, points []data.TemporalDataPoint,
 	color color.Color) (tls TemporalLollipopSeries, err error) {
-	tls.ser, err = tempChart.base.AddTemporalLollipopSeries(name, points, color)
+	tls.ser, err = tempChart.base.AddTemporalLollipopSeries(name, points, nil, color)
+	return
+}
+
+// AddLollipopSeriesWithProvider adds a series of data which is visualized as lollipop chart.
+// The series can be accessed via the name later, it must be unique throughout the chart.
+// An error is returned,if another series with the same name exists.
+// The series data is retrieved from providerFct
+// The method does not check for duplicates (i.e. data points with same T)
+// The range of T and Val is not restricted
+func (tempChart *CartesianTemporalChart) AddLollipopSeriesWithProvider(name string, providerFct func() []data.TemporalDataPoint,
+	color color.Color) (tls TemporalLollipopSeries, err error) {
+	tls.ser, err = tempChart.base.AddTemporalLollipopSeries(name, nil, providerFct, color)
 	return
 }
 
@@ -74,7 +111,19 @@ func (tempChart *CartesianTemporalChart) AddLollipopSeries(name string, points [
 // The range of TStart, TEnd and values is not restricted
 func (tempChart *CartesianTemporalChart) AddCandleStickSeries(name string,
 	points []data.TemporalCandleStick) (tcs TemporalCandleStickSeries, err error) {
-	tcs.ser, err = tempChart.base.AddTemporalCandleStickSeries(name, points)
+	tcs.ser, err = tempChart.base.AddTemporalCandleStickSeries(name, points, nil)
+	return
+}
+
+// AddCandleStickSeriesWithProvider adds a series of data which is visualized as canlde stick chart.
+// The series can be accessed via the name later, it must be unique throughout the chart.
+// An error is returned,if another series with the same name exists.
+// The series data is retrieved from providerFct
+// The method does not check for duplicates (i.e. data points with same T)
+// The range of TStart, TEnd and values is not restricted
+func (tempChart *CartesianTemporalChart) AddCandleStickSeriesWithProvider(name string,
+	providerFct func() []data.TemporalCandleStick) (tcs TemporalCandleStickSeries, err error) {
+	tcs.ser, err = tempChart.base.AddTemporalCandleStickSeries(name, nil, providerFct)
 	return
 }
 
@@ -85,7 +134,19 @@ func (tempChart *CartesianTemporalChart) AddCandleStickSeries(name string,
 // The range of T and values is not restricted
 func (tempChart *CartesianTemporalChart) AddBoxSeries(name string,
 	points []data.TemporalBox, col color.Color) (tbs TemporalBoxSeries, err error) {
-	tbs.ser, err = tempChart.base.AddTemporalBoxSeries(name, points, col)
+	tbs.ser, err = tempChart.base.AddTemporalBoxSeries(name, points, nil, col)
+	return
+}
+
+// AddBoxSeriesWithProvider adds a series of data which is visualized as box chart.
+// The series can be accessed via the name later, it must be unique throughout the chart.
+// An error is returned,if another series with the same name exists.
+// The series data is retrieved from providerFct
+// The method does not check for duplicates (i.e. data points with same T)
+// The range of T and values is not restricted
+func (tempChart *CartesianTemporalChart) AddBoxSeriesWithProvider(name string,
+	providerFct func() []data.TemporalBox, col color.Color) (tbs TemporalBoxSeries, err error) {
+	tbs.ser, err = tempChart.base.AddTemporalBoxSeries(name, nil, providerFct, col)
 	return
 }
 
@@ -97,7 +158,20 @@ func (tempChart *CartesianTemporalChart) AddBoxSeries(name string,
 // The range of T and Val is not restricted
 func (tempChart *CartesianTemporalChart) AddAreaSeries(name string, points []data.TemporalDataPoint,
 	showDots bool, color color.Color) (tas TemporalAreaSeries, err error) {
-	tas.ser, err = tempChart.base.AddTemporalAreaSeries(name, points, showDots, color)
+	tas.ser, err = tempChart.base.AddTemporalAreaSeries(name, points, showDots, nil, color)
+	return
+}
+
+// AddAreaSeriesWithProvider adds a series of data which is visualized as area chart.
+// The series can be accessed via the name later, it must be unique throughout the chart.
+// An error is returned,if another series with the same name exists.
+// The series data is retrieved from providerFct
+// data does not need to be sorted. It will be sorted by T by the method.
+// The method does not check for duplicates (i.e. data points with same T).
+// The range of T and Val is not restricted
+func (tempChart *CartesianTemporalChart) AddAreaSeriesWithProvider(name string, providerFct func() []data.TemporalDataPoint,
+	showDots bool, color color.Color) (tas TemporalAreaSeries, err error) {
+	tas.ser, err = tempChart.base.AddTemporalAreaSeries(name, nil, showDots, providerFct, color)
 	return
 }
 
@@ -110,7 +184,21 @@ func (tempChart *CartesianTemporalChart) AddAreaSeries(name string, points []dat
 // An error is returned if barWidth < 0
 func (tempChart *CartesianTemporalChart) AddBarSeries(name string, points []data.TemporalDataPoint,
 	barWidth time.Duration, color color.Color) (tbs TemporalBarSeries, err error) {
-	tbs.ser, err = tempChart.base.AddTemporalBarSeries(name, points, barWidth, color)
+	tbs.ser, err = tempChart.base.AddTemporalBarSeries(name, points, barWidth, nil, color)
+	return
+}
+
+// AddBarSeriesWithProvider adds a series of data which is visualized as bar chart.
+// The series can be accessed via the name later, it must be unique throughout the chart.
+// An error is returned,if another series with the same name exists.
+// The series data is retrieved from providerFct
+// The method does not check for duplicates (i.e. data points with same T)
+// The range of T and Val is not restricted
+// The bars are centered around their T value of the data points. barWidth is the width of the bars.
+// An error is returned if barWidth < 0
+func (tempChart *CartesianTemporalChart) AddBarSeriesWithProvider(name string, providerFct func() []data.TemporalDataPoint,
+	barWidth time.Duration, color color.Color) (tbs TemporalBarSeries, err error) {
+	tbs.ser, err = tempChart.base.AddTemporalBarSeries(name, nil, barWidth, providerFct, color)
 	return
 }
 

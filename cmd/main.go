@@ -48,6 +48,15 @@ func polarCharts() (obj fyne.CanvasObject) {
 	return
 }
 
+func updateSineNUmericalData() (ndp []data.NumericalDataPoint) {
+	periodInMilliSecond := 10000
+	shift := float64(time.Now().UnixMilli()%int64(periodInMilliSecond)) / float64(periodInMilliSecond) * 2 * math.Pi
+	for range 50 {
+		ndp = append(ndp, randomSineNumericalDataPoint(180, 50, shift))
+	}
+	return
+}
+
 func cartNumChart() (numChart *chart.CartesianNumericalChart) {
 	numChart = chart.NewCartesianNumericalChart()
 	data1 := make([]data.NumericalDataPoint, 0)
@@ -59,27 +68,35 @@ func cartNumChart() (numChart *chart.CartesianNumericalChart) {
 	}
 	numChart.AddAreaSeries("area", data1, true, color.RGBA{R: 0xff, G: 0x00, B: 0x00, A: 0xff})
 
-	data2 := make([]data.NumericalDataPoint, 0)
-	for range 50 {
-		data2 = append(data2, randomSineNumericalDataPoint(180, 50))
+	// data2 := make([]data.NumericalDataPoint, 0)
+	// for range 50 {
+	// 	data2 = append(data2, randomSineNumericalDataPoint(180, 50))
+	// }
+	ls, err := numChart.AddLineSeriesWithProvider("line", updateSineNUmericalData, true, color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff})
+	if err != nil {
+		fmt.Println(err)
+		return
 	}
-	ls, _ := numChart.AddLineSeries("line", data2, true, color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff})
 	ls.SetColor(color.RGBA{R: 0x00, G: 0xff, B: 0xff, A: 0xff})
 
 	go func() {
-		data2a := data.NumericalDataPoint{
-			N:   150,
-			Val: 150,
+		// data2a := data.NumericalDataPoint{
+		// 	N:   150,
+		// 	Val: 150,
+		// }
+		// time.Sleep(time.Second * 5)
+		// ls.AddData([]data.NumericalDataPoint{data2a})
+		for {
+			time.Sleep(time.Millisecond * 500)
+			ls.UpdateData()
 		}
-		time.Sleep(time.Second * 5)
-		ls.AddData([]data.NumericalDataPoint{data2a})
 	}()
 
 	data3 := make([]data.NumericalDataPoint, 0)
 	for range 50 {
 		data3 = append(data3, randomNumericalDataPoint(-110, 110, -110, 110))
 	}
-	_, err := numChart.AddBarSeries("scatter", data3, 2, color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff})
+	_, err = numChart.AddBarSeries("scatter", data3, 2, color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff})
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -395,9 +412,9 @@ func randomNumericalDataPoint(xMin float64, xMax float64, valMin float64,
 	return
 }
 
-func randomSineNumericalDataPoint(l float64, amp float64) (ndp data.NumericalDataPoint) {
+func randomSineNumericalDataPoint(l float64, amp float64, shift float64) (ndp data.NumericalDataPoint) {
 	ndp.N = (-l / 2) + (rand.Float64() * l)
-	ndp.Val = amp * math.Sin((ndp.N/(l))*2*math.Pi)
+	ndp.Val = amp * math.Sin((ndp.N/(l))*2*math.Pi-shift)
 	return
 }
 

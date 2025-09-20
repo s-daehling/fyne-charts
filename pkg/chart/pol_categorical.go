@@ -40,7 +40,20 @@ func (catChart *PolarCategoricalChart) CreateRenderer() fyne.WidgetRenderer {
 // The range of C is not restricted. The range of Val is restricted to Val>=0.
 func (catChart *PolarCategoricalChart) AddScatterSeries(name string, points []data.CategoricalDataPoint,
 	color color.Color) (css CategoricalScatterSeries, err error) {
-	css.ser, err = catChart.base.AddCategoricalScatterSeries(name, points, color)
+	css.ser, err = catChart.base.AddCategoricalScatterSeries(name, points, nil, color)
+	return
+}
+
+// AddScatterSeriesWithProvider adds a series of data which is visualized as scatter chart.
+// The series can be accessed via the name later, it must be unique throughout the chart.
+// An error is returned,if another series with the same name exists.
+// The series data is retrieved from providerFct
+// The method checks for duplicates (i.e. data points with same C).
+// Data points with a C that already exists, will be ignored.
+// The range of C is not restricted. The range of Val is restricted to Val>=0.
+func (catChart *PolarCategoricalChart) AddScatterSeriesWithProvider(name string, providerFct func() []data.CategoricalDataPoint,
+	color color.Color) (css CategoricalScatterSeries, err error) {
+	css.ser, err = catChart.base.AddCategoricalScatterSeries(name, nil, providerFct, color)
 	return
 }
 
@@ -52,7 +65,20 @@ func (catChart *PolarCategoricalChart) AddScatterSeries(name string, points []da
 // The range of C is not restricted. The range of Val is restricted to Val>=0.
 func (catChart *PolarCategoricalChart) AddLollipopSeries(name string, points []data.CategoricalDataPoint,
 	color color.Color) (cls CategoricalLollipopSeries, err error) {
-	cls.ser, err = catChart.base.AddCategoricalLollipopSeries(name, points, color)
+	cls.ser, err = catChart.base.AddCategoricalLollipopSeries(name, points, nil, color)
+	return
+}
+
+// AddLollipopSeriesWithProvider adds a series of data which is visualized as lollipop chart.
+// The series can be accessed via the name later, it must be unique throughout the chart.
+// An error is returned,if another series with the same name exists.
+// The series data is retrieved from providerFct
+// The method checks for duplicates (i.e. data points with same C).
+// Data points with a C that already exists, will be ignored.
+// The range of C is not restricted. The range of Val is restricted to Val>=0.
+func (catChart *PolarCategoricalChart) AddLollipopSeriesWithProvider(name string, providerFct func() []data.CategoricalDataPoint,
+	color color.Color) (cls CategoricalLollipopSeries, err error) {
+	cls.ser, err = catChart.base.AddCategoricalLollipopSeries(name, nil, providerFct, color)
 	return
 }
 
@@ -64,7 +90,20 @@ func (catChart *PolarCategoricalChart) AddLollipopSeries(name string, points []d
 // The range of C is not restricted. The range of Val is restricted to Val>=0.
 func (catChart *PolarCategoricalChart) AddBarSeries(name string, points []data.CategoricalDataPoint,
 	color color.Color) (cbs CategoricalBarSeries, err error) {
-	cbs.ser, err = catChart.base.AddCategoricalBarSeries(name, points, color)
+	cbs.ser, err = catChart.base.AddCategoricalBarSeries(name, points, nil, color)
+	return
+}
+
+// AddBarSeriesWithProvider adds a series of data which is visualized as bar chart.
+// The series can be accessed via the name later, it must be unique throughout the chart.
+// An error is returned,if another series with the same name exists.
+// The series data is retrieved from providerFct
+// The method checks for duplicates (i.e. data points with same C).
+// Data points with a C that already exists, will be ignored.
+// The range of C is not restricted. The range of Val is restricted to Val>=0.
+func (catChart *PolarCategoricalChart) AddBarSeriesWithProvider(name string, providerFct func() []data.CategoricalDataPoint,
+	color color.Color) (cbs CategoricalBarSeries, err error) {
+	cbs.ser, err = catChart.base.AddCategoricalBarSeries(name, nil, providerFct, color)
 	return
 }
 
@@ -76,7 +115,20 @@ func (catChart *PolarCategoricalChart) AddBarSeries(name string, points []data.C
 // The range of C is not restricted. The range of Val is restricted to Val>=0.
 func (catChart *PolarCategoricalChart) AddStackedBarSeries(name string,
 	points []data.CategoricalDataSeries) (css CategoricalStackedBarSeries, err error) {
-	css.ser, err = catChart.base.AddCategoricalStackedBarSeries(name, points)
+	css.ser, err = catChart.base.AddCategoricalStackedBarSeries(name, points, nil)
+	return
+}
+
+// AddStackedBarSeriesWithProvider adds a series of data which is visualized as stacked bar chart.
+// The series can be accessed via the name later, it must be unique throughout the chart.
+// An error is returned,if another series with the same name exists.
+// The series data is retrieved from providerFct
+// The method checks for duplicates (i.e. data points with same C).
+// Data points with a C that already exists, will be ignored.
+// The range of C is not restricted. The range of Val is restricted to Val>=0.
+func (catChart *PolarCategoricalChart) AddStackedBarSeriesWithProvider(name string,
+	providerFct func() []data.CategoricalDataSeries) (css CategoricalStackedBarSeries, err error) {
+	css.ser, err = catChart.base.AddCategoricalStackedBarSeries(name, nil, providerFct)
 	return
 }
 

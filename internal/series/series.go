@@ -1,6 +1,7 @@
 package series
 
 import (
+	"errors"
 	"image/color"
 	"sync"
 	"time"
@@ -18,6 +19,7 @@ type baseSeries struct {
 	legendLabel  *canvas.Text
 	polar        bool
 	chart        chart
+	updateFct    func() error
 }
 
 func emptyBaseSeries(chart chart, name string, col color.Color, polar bool, togView func()) (ser baseSeries) {
@@ -30,6 +32,7 @@ func emptyBaseSeries(chart chart, name string, col color.Color, polar bool, togV
 		legendLabel:  canvas.NewText(name, theme.Color(theme.ColorNameForeground)),
 		polar:        polar,
 		chart:        chart,
+		updateFct:    nil,
 	}
 	return
 }
@@ -117,6 +120,22 @@ func (ser *baseSeries) RasterColorPolar(phi float64, r float64, x float64, y flo
 	return
 }
 
+func (ser *baseSeries) UpdateData() (err error) {
+	if ser.updateFct == nil {
+		err = errors.New("series has no provider function")
+		return
+	}
+	ser.mutex.Lock()
+	if ser.chart == nil {
+		err = errors.New("series is not part of any chart")
+		ser.mutex.Unlock()
+		return
+	}
+	ser.mutex.Unlock()
+	err = ser.updateFct()
+	return
+}
+
 type Series interface {
 	LegendEntries() (les []LegendEntry)
 	Name() (n string)
@@ -139,6 +158,7 @@ type Series interface {
 	PolarTexts(phiMin float64, phiMax float64, rMin float64, rMax float64) (es []PolarText)
 	RasterColorCartesian(x float64, y float64) (col color.Color)
 	RasterColorPolar(phi float64, r float64, x float64, y float64) (col color.Color)
+	UpdateData() (err error)
 }
 
 type chart interface {
