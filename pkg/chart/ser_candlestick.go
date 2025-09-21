@@ -54,18 +54,6 @@ func (cs candleStickSeries) Clear() (err error) {
 	return
 }
 
-// UpdateData updates the series by calling the data provider function
-// this only works if the series has been created with a provider function
-// note: UpdateData clears the series and creates new data
-// an error is returned if the series has no provider function or if the data range is incorrect
-func (cs candleStickSeries) UpdateData() (err error) {
-	if cs.ser == nil {
-		return
-	}
-	err = cs.ser.UpdateData()
-	return
-}
-
 // NumericalCandleStickSeries represents a candle stick series over a numerical x-axis
 type NumericalCandleStickSeries struct {
 	candleStickSeries

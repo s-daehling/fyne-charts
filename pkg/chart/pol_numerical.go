@@ -40,20 +40,7 @@ func (numChart *PolarNumericalChart) CreateRenderer() fyne.WidgetRenderer {
 // The range of A and Val is restricted (0<=A<=2pi; Val>0)
 func (numChart *PolarNumericalChart) AddLineSeries(name string, points []data.NumericalDataPoint, showDots bool,
 	color color.Color) (nls NumericalLineSeries, err error) {
-	nls.ser, err = numChart.base.AddNumericalLineSeries(name, points, showDots, nil, color)
-	return
-}
-
-// AddLineSeriesWithProvider adds a series of data which is visualized as line chart.
-// The series can be accessed via the name later, it must be unique throughout the chart.
-// An error is returned,if another series with the same name exists.
-// The series data is retrieved from providerFct
-// data does not need to be sorted. It will be sorted by A by the method.
-// The method does not check for duplicates (i.e. data points with same A)
-// The range of A and Val is restricted (0<=A<=2pi; Val>0)
-func (numChart *PolarNumericalChart) AddLineSeriesWithProvider(name string, providerFct func() []data.NumericalDataPoint,
-	showDots bool, color color.Color) (nls NumericalLineSeries, err error) {
-	nls.ser, err = numChart.base.AddNumericalLineSeries(name, nil, showDots, providerFct, color)
+	nls.ser, err = numChart.base.AddNumericalLineSeries(name, points, showDots, color)
 	return
 }
 
@@ -64,19 +51,7 @@ func (numChart *PolarNumericalChart) AddLineSeriesWithProvider(name string, prov
 // The range of A and Val is restricted (0<=A<=2pi; Val>0)
 func (numChart *PolarNumericalChart) AddScatterSeries(name string, points []data.NumericalDataPoint,
 	color color.Color) (nss NumericalScatterSeries, err error) {
-	nss.ser, err = numChart.base.AddNumericalScatterSeries(name, points, nil, color)
-	return
-}
-
-// AddScatterSeriesWithProvider adds a series of data which is visualized as scatter chart.
-// The series can be accessed via the name later, it must be unique throughout the chart.
-// An error is returned,if another series with the same name exists.
-// The series data is retrieved from providerFct
-// The method does not check for duplicates (i.e. data points with same A)
-// The range of A and Val is restricted (0<=A<=2pi; Val>0)
-func (numChart *PolarNumericalChart) AddScatterSeriesWithProvider(name string, providerFct func() []data.NumericalDataPoint,
-	color color.Color) (nss NumericalScatterSeries, err error) {
-	nss.ser, err = numChart.base.AddNumericalScatterSeries(name, nil, providerFct, color)
+	nss.ser, err = numChart.base.AddNumericalScatterSeries(name, points, color)
 	return
 }
 
@@ -87,19 +62,7 @@ func (numChart *PolarNumericalChart) AddScatterSeriesWithProvider(name string, p
 // The range of A and Val is restricted (0<=A<=2pi; Val>0)
 func (numChart *PolarNumericalChart) AddLollipopSeries(name string, points []data.NumericalDataPoint,
 	color color.Color) (nls NumericalLollipopSeries, err error) {
-	nls.ser, err = numChart.base.AddNumericalLollipopSeries(name, points, nil, color)
-	return
-}
-
-// AddLollipopSeriesWithProvider adds a series of data which is visualized as lollipop chart.
-// The series can be accessed via the name later, it must be unique throughout the chart.
-// An error is returned,if another series with the same name exists.
-// The series data is retrieved from providerFct
-// The method does not check for duplicates (i.e. data points with same A)
-// The range of A and Val is restricted (0<=A<=2pi; Val>0)
-func (numChart *PolarNumericalChart) AddLollipopSeriesWithProvider(name string, providerFct func() []data.NumericalDataPoint,
-	color color.Color) (nls NumericalLollipopSeries, err error) {
-	nls.ser, err = numChart.base.AddNumericalLollipopSeries(name, nil, providerFct, color)
+	nls.ser, err = numChart.base.AddNumericalLollipopSeries(name, points, color)
 	return
 }
 
@@ -111,20 +74,7 @@ func (numChart *PolarNumericalChart) AddLollipopSeriesWithProvider(name string, 
 // The range of A and Val is restricted (0<=A<=2pi; Val>0)
 func (numChart *PolarNumericalChart) AddAreaSeries(name string, points []data.NumericalDataPoint, showDots bool,
 	color color.Color) (nas NumericalAreaSeries, err error) {
-	nas.ser, err = numChart.base.AddNumericalAreaSeries(name, points, showDots, nil, color)
-	return
-}
-
-// AddAreaSeriesWithProvider adds a series of data which is visualized as area chart.
-// The series can be accessed via the name later, it must be unique throughout the chart.
-// An error is returned,if another series with the same name exists.
-// The series data is retrieved from providerFct
-// data does not need to be sorted. It will be sorted by A by the method.
-// The method does not check for duplicates (i.e. data points with same A).
-// The range of A and Val is restricted (0<=A<=2pi; Val>0)
-func (numChart *PolarNumericalChart) AddAreaSeriesWithProvider(name string, providerFct func() []data.NumericalDataPoint, showDots bool,
-	color color.Color) (nas NumericalAreaSeries, err error) {
-	nas.ser, err = numChart.base.AddNumericalAreaSeries(name, nil, showDots, providerFct, color)
+	nas.ser, err = numChart.base.AddNumericalAreaSeries(name, points, showDots, color)
 	return
 }
 
@@ -137,21 +87,7 @@ func (numChart *PolarNumericalChart) AddAreaSeriesWithProvider(name string, prov
 // An error is returned if barWidth < 0
 func (numChart *PolarNumericalChart) AddBarSeries(name string, points []data.NumericalDataPoint,
 	barWidth float64, color color.Color) (nbs NumericalBarSeries, err error) {
-	nbs.ser, err = numChart.base.AddNumericalBarSeries(name, points, barWidth, nil, color)
-	return
-}
-
-// AddBarSeriesWithProvider adds a series of data which is visualized as bar chart.
-// The series can be accessed via the name later, it must be unique throughout the chart.
-// An error is returned,if another series with the same name exists.
-// The series data is retrieved from providerFct
-// The method does not check for duplicates (i.e. data points with same A)
-// The range of A and Val is restricted (0<=A<=2pi; Val>0)
-// The bars are centered around their A value of the data points. barWidth is the width of the bars.
-// An error is returned if barWidth < 0
-func (numChart *PolarNumericalChart) AddBarSeriesWithProvider(name string, providerFct func() []data.NumericalDataPoint,
-	barWidth float64, color color.Color) (nbs NumericalBarSeries, err error) {
-	nbs.ser, err = numChart.base.AddNumericalBarSeries(name, nil, barWidth, providerFct, color)
+	nbs.ser, err = numChart.base.AddNumericalBarSeries(name, points, barWidth, color)
 	return
 }
 

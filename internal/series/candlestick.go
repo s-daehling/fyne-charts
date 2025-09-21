@@ -273,20 +273,6 @@ func (ser *CandleStickSeries) Clear() (err error) {
 	return
 }
 
-func (ser *CandleStickSeries) AddNumericalUpdateFct(providerFct func() []data.NumericalCandleStick) {
-	f := func() (err error) {
-		err = ser.Clear()
-		if err != nil {
-			return
-		}
-		err = ser.AddNumericalData(providerFct())
-		return
-	}
-	ser.mutex.Lock()
-	ser.updateFct = f
-	ser.mutex.Unlock()
-}
-
 // DeleteDataInRange deletes all candles with a nEnd greater than min and a nStart smaller than max
 // The return value gives the number of candles that have been removed
 func (ser *CandleStickSeries) DeleteNumericalDataInRange(min float64, max float64) (c int, err error) {
@@ -354,20 +340,6 @@ func (ser *CandleStickSeries) AddNumericalData(input []data.NumericalCandleStick
 	ser.mutex.Unlock()
 	chart.DataChange()
 	return
-}
-
-func (ser *CandleStickSeries) AddTemporalUpdateFct(providerFct func() []data.TemporalCandleStick) {
-	f := func() (err error) {
-		err = ser.Clear()
-		if err != nil {
-			return
-		}
-		err = ser.AddTemporalData(providerFct())
-		return
-	}
-	ser.mutex.Lock()
-	ser.updateFct = f
-	ser.mutex.Unlock()
 }
 
 // DeleteDataInRange deletes all candles with a tEnd after min and a tStart before max.

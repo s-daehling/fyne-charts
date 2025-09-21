@@ -338,20 +338,6 @@ func (ser *ProportionalSeries) Clear() (err error) {
 	return
 }
 
-func (ser *ProportionalSeries) AddUpdateFct(providerFct func() []data.ProportionalDataPoint) {
-	f := func() (err error) {
-		err = ser.Clear()
-		if err != nil {
-			return
-		}
-		err = ser.AddData(providerFct())
-		return
-	}
-	ser.mutex.Lock()
-	ser.updateFct = f
-	ser.mutex.Unlock()
-}
-
 func (ser *ProportionalSeries) DeleteDataInRange(cat []string) (c int, err error) {
 	c = 0
 	if len(cat) == 0 {

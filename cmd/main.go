@@ -48,7 +48,7 @@ func polarCharts() (obj fyne.CanvasObject) {
 	return
 }
 
-func updateSineNUmericalData() (ndp []data.NumericalDataPoint) {
+func updateSineNumericalData() (ndp []data.NumericalDataPoint) {
 	periodInMilliSecond := 10000
 	shift := float64(time.Now().UnixMilli()%int64(periodInMilliSecond)) / float64(periodInMilliSecond) * 2 * math.Pi
 	for range 50 {
@@ -72,7 +72,7 @@ func cartNumChart() (numChart *chart.CartesianNumericalChart) {
 	// for range 50 {
 	// 	data2 = append(data2, randomSineNumericalDataPoint(180, 50))
 	// }
-	ls, err := numChart.AddLineSeriesWithProvider("line", updateSineNUmericalData, true, color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff})
+	ls, err := numChart.AddLineSeries("line", updateSineNumericalData(), true, color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff})
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -87,8 +87,9 @@ func cartNumChart() (numChart *chart.CartesianNumericalChart) {
 		// time.Sleep(time.Second * 5)
 		// ls.AddData([]data.NumericalDataPoint{data2a})
 		for {
-			time.Sleep(time.Millisecond * 500)
-			ls.UpdateData()
+			time.Sleep(time.Millisecond * 250)
+			ls.Clear()
+			ls.AddData(updateSineNumericalData())
 		}
 	}()
 

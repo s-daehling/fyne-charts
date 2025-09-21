@@ -188,26 +188,6 @@ func (ser *StackedBarSeries) Clear() (err error) {
 	return
 }
 
-func (ser *StackedBarSeries) AddCategoricalUpdateFct(providerFct func() []data.CategoricalDataSeries) {
-	f := func() (err error) {
-		err = ser.Clear()
-		if err != nil {
-			return
-		}
-		cds := providerFct()
-		for i := range cds {
-			err = ser.AddCategoricalSeries(cds[i])
-			if err != nil {
-				return
-			}
-		}
-		return
-	}
-	ser.mutex.Lock()
-	ser.updateFct = f
-	ser.mutex.Unlock()
-}
-
 // DeleteDataInRange deletes all data points with one of the given category
 // The return value gives the number of data points that have been removed
 func (ser *StackedBarSeries) DeleteCategoricalDataInRange(cat []string) (c int, err error) {

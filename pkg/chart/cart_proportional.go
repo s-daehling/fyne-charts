@@ -37,19 +37,7 @@ func (propChart *CartesianProportionalChart) CreateRenderer() fyne.WidgetRendere
 // The range of C is not restricted. The range of Val is restricted to Val>=0
 func (propChart *CartesianProportionalChart) AddProportionalSeries(name string,
 	points []data.ProportionalDataPoint) (ps ProportionalSeries, err error) {
-	ps.ser, err = propChart.base.AddProportionalSeries(name, points, nil)
-	return
-}
-
-// AddProportionalSeriesWithProvider adds a series of data which is visualized as proportional bar chart.
-// The series can be accessed via the name later, it must be unique throughout the chart.
-// An error is returned,if another series with the same name exists.
-// The series data is retrieved from providerFct
-// Data points with a C that already exists, will be ignored.
-// The range of C is not restricted. The range of Val is restricted to Val>=0
-func (propChart *CartesianProportionalChart) AddProportionalSeriesWithProvider(name string,
-	providerFct func() []data.ProportionalDataPoint) (ps ProportionalSeries, err error) {
-	ps.ser, err = propChart.base.AddProportionalSeries(name, nil, providerFct)
+	ps.ser, err = propChart.base.AddProportionalSeries(name, points)
 	return
 }
 

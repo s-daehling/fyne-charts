@@ -318,20 +318,6 @@ func (ser *ScatterSeries) Clear() (err error) {
 	return
 }
 
-func (ser *ScatterSeries) AddNumericalUpdateFct(providerFct func() []data.NumericalDataPoint) {
-	f := func() (err error) {
-		err = ser.Clear()
-		if err != nil {
-			return
-		}
-		err = ser.AddNumericalData(providerFct())
-		return
-	}
-	ser.mutex.Lock()
-	ser.updateFct = f
-	ser.mutex.Unlock()
-}
-
 func (ser *ScatterSeries) DeleteNumericalDataInRange(min float64, max float64) (c int, err error) {
 	c = 0
 	if min > max {
@@ -387,20 +373,6 @@ func (ser *ScatterSeries) AddNumericalData(input []data.NumericalDataPoint) (err
 	return
 }
 
-func (ser *ScatterSeries) AddTemporalUpdateFct(providerFct func() []data.TemporalDataPoint) {
-	f := func() (err error) {
-		err = ser.Clear()
-		if err != nil {
-			return
-		}
-		err = ser.AddTemporalData(providerFct())
-		return
-	}
-	ser.mutex.Lock()
-	ser.updateFct = f
-	ser.mutex.Unlock()
-}
-
 func (ser *ScatterSeries) DeleteTemporalDataInRange(min time.Time, max time.Time) (c int, err error) {
 	c = 0
 	if min.After(max) {
@@ -454,20 +426,6 @@ func (ser *ScatterSeries) AddTemporalData(input []data.TemporalDataPoint) (err e
 	ser.mutex.Unlock()
 	chart.DataChange()
 	return
-}
-
-func (ser *ScatterSeries) AddCategoricalUpdateFct(providerFct func() []data.CategoricalDataPoint) {
-	f := func() (err error) {
-		err = ser.Clear()
-		if err != nil {
-			return
-		}
-		err = ser.AddCategoricalData(providerFct())
-		return
-	}
-	ser.mutex.Lock()
-	ser.updateFct = f
-	ser.mutex.Unlock()
 }
 
 func (ser *ScatterSeries) DeleteCategoricalDataInRange(cat []string) (c int, err error) {

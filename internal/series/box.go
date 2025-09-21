@@ -427,20 +427,6 @@ func (ser *BoxSeries) Clear() (err error) {
 	return
 }
 
-func (ser *BoxSeries) AddNumericalUpdateFct(providerFct func() []data.NumericalBox) {
-	f := func() (err error) {
-		err = ser.Clear()
-		if err != nil {
-			return
-		}
-		err = ser.AddNumericalData(providerFct())
-		return
-	}
-	ser.mutex.Lock()
-	ser.updateFct = f
-	ser.mutex.Unlock()
-}
-
 // DeleteDataInRange deletes all boxes with a x-coordinate greater than min and smaller than max
 // The return value gives the number of boxes that have been removed
 func (ser *BoxSeries) DeleteNumericalDataInRange(min float64, max float64) (c int, err error) {
@@ -512,20 +498,6 @@ func (ser *BoxSeries) AddNumericalData(input []data.NumericalBox) (err error) {
 	return
 }
 
-func (ser *BoxSeries) AddTemporalUpdateFct(providerFct func() []data.TemporalBox) {
-	f := func() (err error) {
-		err = ser.Clear()
-		if err != nil {
-			return
-		}
-		err = ser.AddTemporalData(providerFct())
-		return
-	}
-	ser.mutex.Lock()
-	ser.updateFct = f
-	ser.mutex.Unlock()
-}
-
 // DeleteDataInRange deletes all boxes with a t-coordinate after min and before max.
 // The return value gives the number of boxes that have been removed
 func (ser *BoxSeries) DeleteTemporalDataInRange(min time.Time, max time.Time) (c int, err error) {
@@ -595,20 +567,6 @@ func (ser *BoxSeries) AddTemporalData(input []data.TemporalBox) (err error) {
 	ser.mutex.Unlock()
 	chart.DataChange()
 	return
-}
-
-func (ser *BoxSeries) AddCategoricalUpdateFct(providerFct func() []data.CategoricalBox) {
-	f := func() (err error) {
-		err = ser.Clear()
-		if err != nil {
-			return
-		}
-		err = ser.AddCategoricalData(providerFct())
-		return
-	}
-	ser.mutex.Lock()
-	ser.updateFct = f
-	ser.mutex.Unlock()
 }
 
 // DeleteDataInRange deletes all boxes with one of the given category

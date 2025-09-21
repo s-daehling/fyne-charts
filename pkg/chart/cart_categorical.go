@@ -40,20 +40,7 @@ func (catChart *CartesianCategoricalChart) CreateRenderer() fyne.WidgetRenderer 
 // The range of C and Val is not restricted
 func (catChart *CartesianCategoricalChart) AddScatterSeries(name string, points []data.CategoricalDataPoint,
 	color color.Color) (css CategoricalScatterSeries, err error) {
-	css.ser, err = catChart.base.AddCategoricalScatterSeries(name, points, nil, color)
-	return
-}
-
-// AddScatterSeriesWithProvider adds a series of data which is visualized as scatter chart.
-// The series can be accessed via the name later, it must be unique throughout the chart.
-// An error is returned,if another series with the same name exists.
-// The series data is retrieved from providerFct
-// The method checks for duplicates (i.e. data points with same C).
-// Data points with a C that already exists, will be ignored.
-// The range of C and Val is not restricted
-func (catChart *CartesianCategoricalChart) AddScatterSeriesWithProvider(name string, providerFct func() []data.CategoricalDataPoint,
-	color color.Color) (css CategoricalScatterSeries, err error) {
-	css.ser, err = catChart.base.AddCategoricalScatterSeries(name, nil, providerFct, color)
+	css.ser, err = catChart.base.AddCategoricalScatterSeries(name, points, color)
 	return
 }
 
@@ -65,20 +52,7 @@ func (catChart *CartesianCategoricalChart) AddScatterSeriesWithProvider(name str
 // The range of C and Val is not restricted
 func (catChart *CartesianCategoricalChart) AddBarSeries(name string, points []data.CategoricalDataPoint,
 	color color.Color) (cbs CategoricalBarSeries, err error) {
-	cbs.ser, err = catChart.base.AddCategoricalBarSeries(name, points, nil, color)
-	return
-}
-
-// AddBarSeriesWithProvider adds a series of data which is visualized as bar chart.
-// The series can be accessed via the name later, it must be unique throughout the chart.
-// An error is returned,if another series with the same name exists.
-// The series data is retrieved from providerFct
-// The method checks for duplicates (i.e. data points with same C).
-// Data points with a C that already exists, will be ignored.
-// The range of C and Val is not restricted
-func (catChart *CartesianCategoricalChart) AddBarSeriesWithProvider(name string, providerFct func() []data.CategoricalDataPoint,
-	color color.Color) (cbs CategoricalBarSeries, err error) {
-	cbs.ser, err = catChart.base.AddCategoricalBarSeries(name, nil, providerFct, color)
+	cbs.ser, err = catChart.base.AddCategoricalBarSeries(name, points, color)
 	return
 }
 
@@ -90,20 +64,7 @@ func (catChart *CartesianCategoricalChart) AddBarSeriesWithProvider(name string,
 // The range of C is not restricted. The range of Val is restricted to Val>=0.
 func (catChart *CartesianCategoricalChart) AddStackedBarSeries(name string,
 	points []data.CategoricalDataSeries) (css CategoricalStackedBarSeries, err error) {
-	css.ser, err = catChart.base.AddCategoricalStackedBarSeries(name, points, nil)
-	return
-}
-
-// AddStackedBarSeriesWithProvider adds a series of data which is visualized as stacked bar chart.
-// The series can be accessed via the name later, it must be unique throughout the chart.
-// An error is returned,if another series with the same name exists.
-// The series data is retrieved from providerFct
-// The method checks for duplicates (i.e. data points with same C).
-// Data points with a C that already exists, will be ignored.
-// The range of C is not restricted. The range of Val is restricted to Val>=0.
-func (catChart *CartesianCategoricalChart) AddStackedBarSeriesWithProvider(name string,
-	providerFct func() []data.CategoricalDataSeries) (css CategoricalStackedBarSeries, err error) {
-	css.ser, err = catChart.base.AddCategoricalStackedBarSeries(name, nil, providerFct)
+	css.ser, err = catChart.base.AddCategoricalStackedBarSeries(name, points)
 	return
 }
 
@@ -115,20 +76,7 @@ func (catChart *CartesianCategoricalChart) AddStackedBarSeriesWithProvider(name 
 // The range of C and Val is not restricted
 func (catChart *CartesianCategoricalChart) AddLollipopSeries(name string, points []data.CategoricalDataPoint,
 	color color.Color) (cls CategoricalLollipopSeries, err error) {
-	cls.ser, err = catChart.base.AddCategoricalLollipopSeries(name, points, nil, color)
-	return
-}
-
-// AddLollipopSeriesWithProvider adds a series of data which is visualized as lollipop chart.
-// The series can be accessed via the name later, it must be unique throughout the chart.
-// An error is returned,if another series with the same name exists.
-// The series data is retrieved from providerFct
-// The method checks for duplicates (i.e. data points with same C).
-// Data points with a C that already exists, will be ignored.
-// The range of C and Val is not restricted
-func (catChart *CartesianCategoricalChart) AddLollipopSeriesWithProvider(name string, providerFct func() []data.CategoricalDataPoint,
-	color color.Color) (cls CategoricalLollipopSeries, err error) {
-	cls.ser, err = catChart.base.AddCategoricalLollipopSeries(name, nil, providerFct, color)
+	cls.ser, err = catChart.base.AddCategoricalLollipopSeries(name, points, color)
 	return
 }
 
@@ -140,20 +88,7 @@ func (catChart *CartesianCategoricalChart) AddLollipopSeriesWithProvider(name st
 // The range of C and values is not restricted.
 func (catChart *CartesianCategoricalChart) AddBoxSeries(name string,
 	points []data.CategoricalBox, col color.Color) (cbs CategoricalBoxSeries, err error) {
-	cbs.ser, err = catChart.base.AddCategoricalBoxSeries(name, points, nil, col)
-	return
-}
-
-// AddBoxSeriesWithProvider adds a series of data which is visualized as box chart.
-// The series can be accessed via the name later, it must be unique throughout the chart.
-// An error is returned,if another series with the same name exists.
-// The series data is retrieved from providerFct
-// The method checks for duplicates (i.e. boxes with same C).
-// Boxes with a C that already exists, will be ignored.
-// The range of C and values is not restricted.
-func (catChart *CartesianCategoricalChart) AddBoxSeriesWithProvider(name string,
-	providerFct func() []data.CategoricalBox, col color.Color) (cbs CategoricalBoxSeries, err error) {
-	cbs.ser, err = catChart.base.AddCategoricalBoxSeries(name, nil, providerFct, col)
+	cbs.ser, err = catChart.base.AddCategoricalBoxSeries(name, points, col)
 	return
 }
 
