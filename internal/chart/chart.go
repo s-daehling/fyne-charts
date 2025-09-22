@@ -452,6 +452,17 @@ func (base *BaseChart) calculateAutoFromNRange() {
 			max += 1
 		}
 	}
+
+	// make sure the min and max are not equal
+	absMin := math.Abs(min)
+	if math.Abs(max) < absMin {
+		absMin = math.Abs(max)
+	}
+	r := math.Abs(max - min)
+	if r*1000 < absMin {
+		min = max - 1
+		max = max + 1
+	}
 	base.fromAx.SetNRange(min, max)
 }
 
@@ -496,6 +507,13 @@ func (base *BaseChart) calculateAutoFromTRange() {
 			max = min.Add(time.Hour)
 		}
 	}
+
+	// make sure the min and max are not equal
+	if min.Equal(max) {
+		min = min.Add(-time.Second)
+		max = max.Add(time.Second)
+	}
+
 	base.fromAx.SetTRange(min, max)
 }
 
@@ -584,6 +602,18 @@ func (base *BaseChart) calculateAutoToRange() {
 			max += 1
 		}
 	}
+
+	// make sure the min and max are not equal
+	absMin := math.Abs(min)
+	if math.Abs(max) < absMin {
+		absMin = math.Abs(max)
+	}
+	r := math.Abs(max - min)
+	if r*1000 < absMin {
+		min = max - 1
+		max = max + 1
+	}
+
 	if base.planeType == PolarPlane {
 		min = 0.0
 	}

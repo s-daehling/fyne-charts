@@ -613,6 +613,9 @@ func calculateNTicks(space float32, min float64, max float64,
 		if r/(5.0*math.Pow10(orderOfMagn-1)) < float64(maxTickNum) {
 			// more than 5*10^(magnOfOrder-1) ticks fit -> further decrease magnOfOrder
 			orderOfMagn -= 1
+			if orderOfMagn < -12 {
+				break
+			}
 		} else {
 			break
 		}
