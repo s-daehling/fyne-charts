@@ -49,6 +49,9 @@ func (point *proportionPoint) toggleView() {
 }
 
 func (point *proportionPoint) hide() {
+	if !point.visible {
+		return
+	}
 	point.rect.Hide()
 	if point.text != nil {
 		point.text.Hide()
@@ -60,11 +63,15 @@ func (point *proportionPoint) hide() {
 }
 
 func (point *proportionPoint) show() {
+	if point.visible {
+		return
+	}
 	point.rect.Show()
 	if point.text != nil {
 		point.text.Show()
 	}
 	point.visible = true
+	point.ser.visible = true
 	if point.ser != nil {
 		point.ser.pointVisibilityUpdate(point.val)
 	}
