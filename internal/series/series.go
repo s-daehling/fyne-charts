@@ -117,6 +117,12 @@ func (ser *baseSeries) RasterColorPolar(phi float64, r float64, x float64, y flo
 	return
 }
 
+func (ser *baseSeries) RefreshThemeColor() {
+	ser.mutex.Lock()
+	ser.legendLabel.Color = theme.Color(theme.ColorNameForeground)
+	ser.mutex.Unlock()
+}
+
 type Series interface {
 	LegendEntries() (les []LegendEntry)
 	Name() (n string)
@@ -139,6 +145,7 @@ type Series interface {
 	PolarTexts(phiMin float64, phiMax float64, rMin float64, rMax float64) (es []PolarText)
 	RasterColorCartesian(x float64, y float64) (col color.Color)
 	RasterColorPolar(phi float64, r float64, x float64, y float64) (col color.Color)
+	RefreshThemeColor()
 }
 
 type chart interface {

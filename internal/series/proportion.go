@@ -274,6 +274,15 @@ func (ser *ProportionalSeries) PolarTexts(phiMin float64, phiMax float64, rMin f
 	return
 }
 
+func (ser *ProportionalSeries) RefreshThemeColor() {
+	ser.mutex.Lock()
+	ser.legendLabel.Color = theme.Color(theme.ColorNameForeground)
+	for i := range ser.data {
+		ser.data[i].legendLabel.Color = theme.Color(theme.ColorNameForeground)
+	}
+	ser.mutex.Unlock()
+}
+
 // Show makes the Bars of the series visible
 func (ser *ProportionalSeries) Show() {
 	ser.mutex.Lock()

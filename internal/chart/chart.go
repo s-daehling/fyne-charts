@@ -293,6 +293,17 @@ func (base *BaseChart) legendEntries() (les []series.LegendEntry) {
 	return
 }
 
+func (base *BaseChart) refreshThemeColor() {
+	base.fromAx.RefreshThemeColor()
+	base.toAx.RefreshThemeColor()
+	base.mutex.Lock()
+	base.label.Color = theme.Color(theme.ColorNameForeground)
+	for i := range base.series {
+		base.series[i].RefreshThemeColor()
+	}
+	base.mutex.Unlock()
+}
+
 // func (base *BaseChart) hasChanged() (c bool) {
 // 	return base.changed
 // }

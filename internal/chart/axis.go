@@ -215,6 +215,24 @@ func (ax *Axis) Show() {
 	ax.mutex.Unlock()
 }
 
+func (ax *Axis) RefreshThemeColor() {
+	ax.mutex.Lock()
+	ax.col = theme.Color(theme.ColorNameForeground)
+	ax.supCol = theme.Color(theme.ColorNameShadow)
+	ax.labelText.Color = ax.col
+	ax.arrowOne.StrokeColor = ax.col
+	ax.arrowTwo.StrokeColor = ax.col
+	ax.line.StrokeColor = ax.col
+	ax.circle.StrokeColor = ax.col
+	for i := range ax.ticks {
+		ax.ticks[i].label.Color = ax.col
+		ax.ticks[i].line.StrokeColor = ax.col
+		ax.ticks[i].supportCircle.StrokeColor = ax.supCol
+		ax.ticks[i].supportLine.StrokeColor = ax.supCol
+	}
+	ax.mutex.Unlock()
+}
+
 func (ax *Axis) SetLabel(l string) {
 	ax.mutex.Lock()
 	ax.name = l

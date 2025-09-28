@@ -286,6 +286,7 @@ func (r *cartesianRenderer) Objects() []fyne.CanvasObject {
 // Refresh calls Layout if data of the chart has changes
 func (r *cartesianRenderer) Refresh() {
 	// if r.chart.hasChanged() {
+	r.chart.refreshThemeColor()
 
 	obj := r.Objects()
 	for i := range obj {
