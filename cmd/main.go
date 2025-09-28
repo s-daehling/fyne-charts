@@ -88,8 +88,10 @@ func cartNumChart() (numChart *chart.CartesianNumericalChart) {
 		// ls.AddData([]data.NumericalDataPoint{data2a})
 		for {
 			time.Sleep(time.Millisecond * 250)
-			ls.Clear()
-			ls.AddData(updateSineNumericalData())
+			fyne.Do(func() {
+				ls.Clear()
+				ls.AddData(updateSineNumericalData())
+			})
 		}
 	}()
 
@@ -217,7 +219,7 @@ func cartCatChart() (catChart *chart.CartesianCategoricalChart) {
 	if err != nil {
 		fmt.Print(err)
 	}
-	catChart.SetYRange(-5, 35)
+	// catChart.SetYRange(-5, 35)
 	// chart.SetCRange([]string{"One", "Three"})
 	catChart.SetCAxisLabel("C axis")
 	catChart.SetYAxisLabel("Y axis")

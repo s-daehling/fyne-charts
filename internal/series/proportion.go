@@ -276,22 +276,18 @@ func (ser *ProportionalSeries) PolarTexts(phiMin float64, phiMax float64, rMin f
 
 // Show makes the Bars of the series visible
 func (ser *ProportionalSeries) Show() {
-	ser.mutex.Lock()
 	ser.visible = true
 	for i := range ser.data {
-		go ser.data[i].show()
+		ser.data[i].show()
 	}
-	ser.mutex.Unlock()
 }
 
 // Hide hides the Barss of the series
 func (ser *ProportionalSeries) Hide() {
-	ser.mutex.Lock()
 	ser.visible = false
 	for i := range ser.data {
-		go ser.data[i].hide()
+		ser.data[i].hide()
 	}
-	ser.mutex.Unlock()
 }
 
 func (ser *ProportionalSeries) toggleView() {
