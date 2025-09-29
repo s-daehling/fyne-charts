@@ -41,6 +41,7 @@ func (ser *StackedBarSeries) CRange() (cs []string) {
 }
 
 func (ser *StackedBarSeries) ValRange() (isEmpty bool, min float64, max float64) {
+	ser.UpdateValOffset()
 	min = 0
 	max = 0
 	isEmpty = true
