@@ -175,7 +175,7 @@ type ProportionalSeries struct {
 
 func EmptyProportionalSeries(chart chart, name string, polar bool) (ser *ProportionalSeries) {
 	ser = &ProportionalSeries{showText: true}
-	ser.baseSeries = emptyBaseSeries(chart, name, color.Black, polar, ser.toggleView)
+	ser.baseSeries = emptyBaseSeries(chart, name, theme.Color(theme.ColorNameForeground), polar, ser.toggleView)
 	return
 }
 
@@ -277,6 +277,8 @@ func (ser *ProportionalSeries) PolarTexts(phiMin float64, phiMax float64, rMin f
 func (ser *ProportionalSeries) RefreshThemeColor() {
 	ser.mutex.Lock()
 	ser.legendLabel.Color = theme.Color(theme.ColorNameForeground)
+	ser.color = theme.Color(theme.ColorNameForeground)
+	ser.legendButton.SetColor(theme.Color(theme.ColorNameForeground))
 	for i := range ser.data {
 		ser.data[i].legendLabel.Color = theme.Color(theme.ColorNameForeground)
 		ser.data[i].text.Color = theme.Color(theme.ColorNameForeground)

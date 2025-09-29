@@ -15,7 +15,7 @@ type StackedBarSeries struct {
 
 func EmptyStackedBarSeries(chart chart, name string, polar bool) (ser *StackedBarSeries) {
 	ser = &StackedBarSeries{}
-	ser.baseSeries = emptyBaseSeries(chart, name, color.Black, polar, ser.toggleView)
+	ser.baseSeries = emptyBaseSeries(chart, name, theme.Color(theme.ColorNameForeground), polar, ser.toggleView)
 	return
 }
 
@@ -128,6 +128,8 @@ func (ser *StackedBarSeries) LegendEntries() (les []LegendEntry) {
 func (ser *StackedBarSeries) RefreshThemeColor() {
 	ser.mutex.Lock()
 	ser.legendLabel.Color = theme.Color(theme.ColorNameForeground)
+	ser.color = theme.Color(theme.ColorNameForeground)
+	ser.legendButton.SetColor(theme.Color(theme.ColorNameForeground))
 	for i := range ser.stack {
 		ser.stack[i].RefreshThemeColor()
 	}
