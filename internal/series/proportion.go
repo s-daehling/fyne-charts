@@ -35,7 +35,7 @@ func emptyProportionPoint(showText bool, col color.Color) (point *proportionPoin
 	}
 	point.legendButton = NewLegendBox(col, point.toggleView)
 	if showText {
-		point.text = canvas.NewText("", color.Black)
+		point.text = canvas.NewText("", theme.Color(theme.ColorNameForeground))
 	}
 	return
 }
@@ -279,6 +279,7 @@ func (ser *ProportionalSeries) RefreshThemeColor() {
 	ser.legendLabel.Color = theme.Color(theme.ColorNameForeground)
 	for i := range ser.data {
 		ser.data[i].legendLabel.Color = theme.Color(theme.ColorNameForeground)
+		ser.data[i].text.Color = theme.Color(theme.ColorNameForeground)
 	}
 	ser.mutex.Unlock()
 }
