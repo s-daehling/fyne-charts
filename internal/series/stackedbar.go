@@ -4,6 +4,7 @@ import (
 	"errors"
 	"image/color"
 
+	"fyne.io/fyne/v2/theme"
 	"github.com/s-daehling/fyne-charts/pkg/data"
 )
 
@@ -40,6 +41,7 @@ func (ser *StackedBarSeries) CRange() (cs []string) {
 }
 
 func (ser *StackedBarSeries) ValRange() (isEmpty bool, min float64, max float64) {
+	ser.UpdateValOffset()
 	min = 0
 	max = 0
 	isEmpty = true
@@ -121,6 +123,15 @@ func (ser *StackedBarSeries) LegendEntries() (les []LegendEntry) {
 	}
 	ser.mutex.Unlock()
 	return
+}
+
+func (ser *StackedBarSeries) RefreshThemeColor() {
+	ser.mutex.Lock()
+	ser.legendLabel.Color = theme.Color(theme.ColorNameForeground)
+	for i := range ser.stack {
+		ser.stack[i].RefreshThemeColor()
+	}
+	ser.mutex.Unlock()
 }
 
 // setWidthAndOffset sets width of bars and offset from x coordinate for this series
