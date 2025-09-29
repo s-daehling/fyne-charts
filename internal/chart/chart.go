@@ -752,8 +752,8 @@ func (base *BaseChart) calculateAutoTOrigin() {
 
 func (base *BaseChart) DataChange() {
 	base.updateRangeAndOrigin()
-	base.updateSeriesVariables()
 	base.updateAxTicks()
+	base.updateSeriesVariables()
 	base.render.Refresh()
 }
 
@@ -843,8 +843,14 @@ func (base *BaseChart) updateSeriesVariables() {
 	}
 	nFromMin, nFromMax := base.fromAx.NRange()
 	nToMin, nToMax := base.toAx.NRange()
-	catSize := ((nFromMax - nFromMin) / float64(len(base.fromAx.ticks))) * 0.9
-	barWidth := catSize / float64(nBarSeries)
+	catSize := (nFromMax - nFromMin) * 0.9
+	if len(base.fromAx.ticks) > 0 {
+		catSize = ((nFromMax - nFromMin) / float64(len(base.fromAx.ticks))) * 0.9
+	}
+	barWidth := catSize
+	if nBarSeries > 0 {
+		barWidth = catSize / float64(nBarSeries)
+	}
 	barOffset := -barWidth * (0.5 * float64(nBarSeries-1))
 	propHeight := (nToMax - nToMin) / float64(nPropSeries)
 	propOffset := 0.0

@@ -12,8 +12,8 @@ import (
 )
 
 type catOffset struct {
-	C         string
-	ValOffset float64
+	c         string
+	valOffset float64
 }
 
 type barPoint struct {
@@ -114,14 +114,17 @@ func (ser *BarSeries) ValRange() (isEmpty bool, min float64, max float64) {
 		return
 	}
 	ser.mutex.Lock()
-	min = ser.data[0].val
-	max = ser.data[0].val
+	min = math.Min(ser.data[0].valOffset, ser.data[0].val+ser.data[0].valOffset)
+	max = math.Max(ser.data[0].valOffset, ser.data[0].val+ser.data[0].valOffset)
+
 	for i := range ser.data {
-		if ser.data[i].val < min {
-			min = ser.data[i].val
+		pMin := math.Min(ser.data[i].valOffset, ser.data[i].val+ser.data[i].valOffset)
+		pMax := math.Max(ser.data[i].valOffset, ser.data[i].val+ser.data[i].valOffset)
+		if pMin < min {
+			min = pMin
 		}
-		if ser.data[i].val > max {
-			max = ser.data[i].val
+		if pMax > max {
+			max = pMax
 		}
 	}
 	ser.mutex.Unlock()
@@ -211,8 +214,8 @@ func (ser *BarSeries) SetAndUpdateValOffset(in []catOffset) (out []catOffset) {
 	for i := range ser.data {
 		catInOffsetList := false
 		for j := range in {
-			if in[j].C == ser.data[i].c {
-				ser.data[i].valOffset = in[j].ValOffset
+			if in[j].c == ser.data[i].c {
+				ser.data[i].valOffset = in[j].valOffset
 				catInOffsetList = true
 				break
 			}
@@ -229,14 +232,14 @@ func (ser *BarSeries) SetAndUpdateValOffset(in []catOffset) (out []catOffset) {
 	for i := range ser.data {
 		catExist := false
 		for j := range out {
-			if ser.data[i].c == out[j].C {
+			if ser.data[i].c == out[j].c {
 				catExist = true
-				out[j].ValOffset += ser.data[i].val
+				out[j].valOffset += ser.data[i].val
 				break
 			}
 		}
 		if !catExist {
-			out = append(out, catOffset{C: ser.data[i].c, ValOffset: ser.data[i].val})
+			out = append(out, catOffset{c: ser.data[i].c, valOffset: ser.data[i].val})
 		}
 	}
 	ser.mutex.Unlock()
