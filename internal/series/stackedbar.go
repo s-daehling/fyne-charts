@@ -159,22 +159,18 @@ func (ser *StackedBarSeries) UpdateValOffset() {
 
 // Show makes the bars of the series visible
 func (ser *StackedBarSeries) Show() {
-	ser.mutex.Lock()
 	ser.visible = true
 	for i := range ser.stack {
-		go ser.stack[i].Show()
+		ser.stack[i].Show()
 	}
-	ser.mutex.Unlock()
 }
 
 // Hide hides the bars of the series
 func (ser *StackedBarSeries) Hide() {
-	ser.mutex.Lock()
 	ser.visible = false
 	for i := range ser.stack {
-		go ser.stack[i].Hide()
+		ser.stack[i].Hide()
 	}
-	ser.mutex.Unlock()
 }
 
 func (ser *StackedBarSeries) toggleView() {
