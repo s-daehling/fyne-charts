@@ -23,8 +23,9 @@ type scatterPoint struct {
 
 func emptyScatterPoint(color color.Color) (point *scatterPoint) {
 	point = &scatterPoint{
-		dot:  canvas.NewCircle(color),
-		line: canvas.NewLine(color),
+		dot:       canvas.NewCircle(color),
+		line:      canvas.NewLine(color),
+		valOrigin: 0,
 	}
 	point.dot.Resize(fyne.NewSize(5, 5))
 	return
