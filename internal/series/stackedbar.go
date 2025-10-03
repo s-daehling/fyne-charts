@@ -83,10 +83,8 @@ func (ser *StackedBarSeries) ConvertCtoN(cToN func(c string) (n float64)) {
 
 func (ser *StackedBarSeries) CartesianRects(xMin float64, xMax float64, yMin float64,
 	yMax float64) (fs []CartesianRect) {
-	// valOffset := []catOffset{}
 	ser.mutex.Lock()
 	for i := range ser.stack {
-		// valOffset = ser.stack[i].SetAndUpdateValOffset(valOffset)
 		fs = append(fs, ser.stack[i].CartesianRects(xMin, xMax, yMin, yMax)...)
 	}
 	ser.mutex.Unlock()
@@ -137,10 +135,10 @@ func (ser *StackedBarSeries) RefreshThemeColor() {
 }
 
 // setWidthAndOffset sets width of bars and offset from x coordinate for this series
-func (ser *StackedBarSeries) SetNumericalWidthAndOffset(width float64, offset float64) (err error) {
+func (ser *StackedBarSeries) SetNumericalBarWidthAndShift(width float64, shift float64) (err error) {
 	ser.mutex.Lock()
 	for i := range ser.stack {
-		err = ser.stack[i].SetNumericalWidthAndOffset(width, offset)
+		err = ser.stack[i].SetNumericalBarWidthAndShift(width, shift)
 		if err != nil {
 			ser.mutex.Unlock()
 			return
@@ -154,7 +152,7 @@ func (ser *StackedBarSeries) UpdateValOffset() {
 	valOffset := []catOffset{}
 	ser.mutex.Lock()
 	for i := range ser.stack {
-		valOffset = ser.stack[i].SetAndUpdateValOffset(valOffset)
+		valOffset = ser.stack[i].SetAndUpdateValBaseCategorical(valOffset)
 	}
 	ser.mutex.Unlock()
 }

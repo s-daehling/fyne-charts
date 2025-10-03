@@ -257,7 +257,7 @@ func (base *BaseChart) AddNumericalBarSeries(name string, points []data.Numerica
 	if err != nil {
 		return
 	}
-	err = bSeries.SetNumericalWidthAndOffset(barWidth, 0)
+	err = bSeries.SetNumericalBarWidthAndShift(barWidth, 0)
 	if err != nil {
 		return
 	}
@@ -276,7 +276,7 @@ func (base *BaseChart) AddTemporalBarSeries(name string, points []data.TemporalD
 	if err != nil {
 		return
 	}
-	err = bSeries.SetTemporalWidthAndOffset(barWidth, 0)
+	err = bSeries.SetTemporalBarWidthAndShift(barWidth, 0)
 	if err != nil {
 		return
 	}

@@ -868,22 +868,24 @@ func (base *BaseChart) updateSeriesVariables() {
 	boxWidth := (nFromMax - nFromMin) / float64(maxBoxPoints)
 	for i := range base.series {
 		if ls, ok := base.series[i].(*series.LollipopSeries); ok {
-			ls.SetValOrigin(base.toAx.NOrigin())
+			if base.planeType == CartesianPlane {
+				ls.SetValBaseNumerical(base.toAx.NOrigin())
+			}
 		} else if bs, ok := base.series[i].(*series.BarSeries); ok {
 			if base.fromType == Categorical {
-				bs.SetNumericalWidthAndOffset(barWidth, barOffset)
+				bs.SetNumericalBarWidthAndShift(barWidth, barOffset)
 				barOffset += barWidth
 			}
 		} else if sbs, ok := base.series[i].(*series.StackedBarSeries); ok {
 			if base.fromType == Categorical {
-				sbs.SetNumericalWidthAndOffset(barWidth, barOffset)
+				sbs.SetNumericalBarWidthAndShift(barWidth, barOffset)
 				barOffset += barWidth
 			}
 			sbs.UpdateValOffset()
 		} else if bs, ok := base.series[i].(*series.BoxSeries); ok {
 			bs.SetWidth(boxWidth)
 		} else if as, ok := base.series[i].(*series.AreaSeries); ok {
-			as.SetValOrigin(base.toAx.NOrigin())
+			as.SetValBaseNumerical(base.toAx.NOrigin())
 		} else if ps, ok := base.series[i].(*series.ProportionalSeries); ok {
 			ps.SetHeightAndOffset(propHeight*0.9, propOffset)
 			propOffset += propHeight

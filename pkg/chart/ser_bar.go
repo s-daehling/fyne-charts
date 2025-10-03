@@ -94,7 +94,7 @@ func (nbs NumericalBarSeries) SetBarWidth(w float64) (err error) {
 	if nbs.ser == nil {
 		return
 	}
-	err = nbs.ser.SetNumericalWidthAndOffset(w, 0)
+	err = nbs.ser.SetNumericalBarWidthAndShift(w, 0)
 	if err != nil {
 		return
 	}
@@ -140,7 +140,7 @@ func (tbs TemporalBarSeries) SetBarWidth(w time.Duration) (err error) {
 	if tbs.ser == nil {
 		return
 	}
-	err = tbs.ser.SetTemporalWidthAndOffset(w, 0)
+	err = tbs.ser.SetTemporalBarWidthAndShift(w, 0)
 	if err != nil {
 		return
 	}

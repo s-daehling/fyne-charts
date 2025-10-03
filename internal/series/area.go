@@ -5,15 +5,22 @@ import (
 )
 
 type AreaSeries struct {
-	LineSeries
-	valOrigin float64
+	dataPointSeries
 }
 
-func EmptyAreaSeries(chart chart, name string, showDots bool, color color.Color,
-	polar bool) (ser *AreaSeries) {
+func EmptyAreaSeries(chart chart, name string, showDots bool, color color.Color, polar bool) (ser *AreaSeries) {
 	ser = &AreaSeries{
-		LineSeries: LineSeries{
-			showDots: showDots,
+		dataPointSeries: dataPointSeries{
+			valBase:             0,
+			nBarWidth:           0,
+			tBarWidth:           0,
+			nBarShift:           0,
+			tBarShift:           0,
+			showDot:             showDots,
+			showFromValBaseLine: false,
+			showFromPrevLine:    true,
+			showBar:             false,
+			sortPoints:          true,
 		},
 	}
 	ser.baseSeries = emptyBaseSeries(chart, name, color, polar, ser.toggleView)
@@ -26,7 +33,6 @@ func (ser *AreaSeries) RasterColorCartesian(x float64, y float64) (col color.Col
 		return
 	}
 	// find first data point with x higher
-	ser.mutex.Lock()
 	for i := range ser.data {
 		if ser.data[i].n > x {
 			if i == 0 {
@@ -38,18 +44,17 @@ func (ser *AreaSeries) RasterColorCartesian(x float64, y float64) (col color.Col
 			y2 := ser.data[i].val
 			// interpolate
 			yS := y1 + (((x - x1) / (x2 - x1)) * (y2 - y1))
-			if yS > ser.valOrigin && y > ser.valOrigin && y < yS {
+			if yS > ser.valBase && y > ser.valBase && y < yS {
 				r, g, b, _ := ser.color.RGBA()
 				col = color.RGBA64{R: uint16(r), G: uint16(g), B: uint16(b), A: 0x8888}
 
-			} else if yS < ser.valOrigin && y < ser.valOrigin && y > yS {
+			} else if yS < ser.valBase && y < ser.valBase && y > yS {
 				r, g, b, _ := ser.color.RGBA()
 				col = color.RGBA64{R: uint16(r), G: uint16(g), B: uint16(b), A: 0x8888}
 			}
 			break
 		}
 	}
-	ser.mutex.Unlock()
 	return
 }
 
@@ -60,7 +65,6 @@ func (ser *AreaSeries) RasterColorPolar(phi float64, r float64, x float64, y flo
 	}
 	red, green, blue, _ := ser.color.RGBA()
 	colArea := color.RGBA64{R: uint16(red), G: uint16(green), B: uint16(blue), A: 0x8888}
-	ser.mutex.Lock()
 	// find first data point with x higher
 	for i := range ser.data {
 		if ser.data[i].n > phi {
@@ -78,15 +82,10 @@ func (ser *AreaSeries) RasterColorPolar(phi float64, r float64, x float64, y flo
 			break
 		}
 	}
-	ser.mutex.Unlock()
 	return
 }
 
-func (ser *AreaSeries) SetValOrigin(vo float64) {
-	ser.valOrigin = vo
-}
-
 func (ser *AreaSeries) toggleView() {
-	ser.LineSeries.toggleView()
+	ser.dataPointSeries.toggleView()
 	ser.chart.RasterVisibilityChange()
 }

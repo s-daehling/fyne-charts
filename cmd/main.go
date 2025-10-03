@@ -130,10 +130,10 @@ func cartTempChart() (tempChart *chart.CartesianTemporalChart) {
 	for range 10 {
 		data2 = append(data2, randomTemporalDataPoint(time.Now(), time.Now().Add(time.Hour*50), -5, 10))
 	}
-	tempChart.AddBarSeries("lollipop", data2, time.Minute*15, color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff})
+	tempChart.AddLollipopSeries("lollipop", data2, color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff})
 	// tls.SetDotSize(6)
 
-	tempChart.SetOrigin(time.Now().Add(time.Hour*20), 0)
+	tempChart.SetOrigin(time.Now().Add(time.Hour*20), 4)
 	tempChart.SetTAxisLabel("T axis")
 	tempChart.SetYAxisLabel("Y axis")
 	tempChart.SetTitle("Cartesian Temporal Chart")
