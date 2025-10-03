@@ -32,7 +32,8 @@ func TestAddNumericalData(t *testing.T) {
 		{[]data.NumericalDataPoint{}, false, false, 0, true, 0, 0, 0, 0},
 	}
 	for i, tt := range tests {
-		ser := EmptyScatterSeries(chartDummy{}, "test", color.Black, tt.polar)
+		temp := EmptyDataPointSeries(chartDummy{}, "test", color.Black, tt.polar)
+		ser := &temp
 		err := ser.AddNumericalData(tt.input)
 		if err != nil && tt.expSuccess {
 			t.Errorf("adding data failed incorrectly, set %d, %s", i, err.Error())
@@ -73,7 +74,8 @@ func TestAddTemporalData(t *testing.T) {
 		{[]data.TemporalDataPoint{}, false, false, 0, true, time.Now(), time.Now(), 0, 0},
 	}
 	for i, tt := range tests {
-		ser := EmptyScatterSeries(chartDummy{}, "test", color.Black, tt.polar)
+		temp := EmptyDataPointSeries(chartDummy{}, "test", color.Black, tt.polar)
+		ser := &temp
 		err := ser.AddTemporalData(tt.input)
 		if err != nil && tt.expSuccess {
 			t.Errorf("adding data failed incorrectly, set %d, %s", i, err.Error())
@@ -113,7 +115,8 @@ func TestAddCategoricalData(t *testing.T) {
 		{[]data.CategoricalDataPoint{}, false, false, 0, true, []string{}, 0, 0},
 	}
 	for i, tt := range tests {
-		ser := EmptyScatterSeries(chartDummy{}, "test", color.Black, tt.polar)
+		temp := EmptyDataPointSeries(chartDummy{}, "test", color.Black, tt.polar)
+		ser := &temp
 		err := ser.AddCategoricalData(tt.input)
 		if err != nil && tt.expSuccess {
 			t.Errorf("adding data failed incorrectly, set %d, %s", i, err.Error())
@@ -155,7 +158,8 @@ func TestDeleteNumericalData(t *testing.T) {
 		{ndpTestSetFull, 1000.000001, -1000.000001, false, 0, false, -1000, 1000, -1000, 1000},
 	}
 	for i, tt := range tests {
-		ser := EmptyScatterSeries(chartDummy{}, "test", color.Black, false)
+		temp := EmptyDataPointSeries(chartDummy{}, "test", color.Black, false)
+		ser := &temp
 		ser.AddNumericalData(tt.input)
 		c, err := ser.DeleteNumericalDataInRange(tt.delMin, tt.delMax)
 		if err != nil && tt.expSuccess {
@@ -198,7 +202,8 @@ func TestDeleteTemporalData(t *testing.T) {
 		{tdpTestSetFull, tdpTestSetFull[4].T.Add(-time.Second), tdpTestSetFull[3].T.Add(time.Second), false, 0, false, tdpTestSetFull[3].T, tdpTestSetFull[4].T, -1000, 1000},
 	}
 	for i, tt := range tests {
-		ser := EmptyScatterSeries(chartDummy{}, "test", color.Black, false)
+		temp := EmptyDataPointSeries(chartDummy{}, "test", color.Black, false)
+		ser := &temp
 		ser.AddTemporalData(tt.input)
 		c, err := ser.DeleteTemporalDataInRange(tt.delMin, tt.delMax)
 		if err != nil && tt.expSuccess {
@@ -238,7 +243,8 @@ func TestDeleteCategoricalData(t *testing.T) {
 		{cdpTestSetFull, []string{"one", "two", "three", "four", "five"}, true, 5, true, []string{}, 0, 0},
 	}
 	for i, tt := range tests {
-		ser := EmptyScatterSeries(chartDummy{}, "test", color.Black, false)
+		temp := EmptyDataPointSeries(chartDummy{}, "test", color.Black, false)
+		ser := &temp
 		ser.AddCategoricalData(tt.input)
 		c, err := ser.DeleteCategoricalDataInRange(tt.del)
 		if err != nil && tt.expSuccess {
@@ -279,7 +285,8 @@ func TestNodes(t *testing.T) {
 	}
 	for i, tt := range tests {
 		app.New()
-		ser := EmptyScatterSeries(chartDummy{}, "test", color.Black, false)
+		ser := EmptyDataPointSeries(chartDummy{}, "test", color.Black, false)
+		ser.showDot = true
 		ser.AddNumericalData(tt.input)
 		cns := ser.CartesianNodes(tt.xMin, tt.xMax, tt.yMin, tt.yMax)
 		if len(cns) != tt.expCartNodes {
