@@ -180,11 +180,9 @@ func EmptyProportionalSeries(chart chart, name string, polar bool) (ser *Proport
 }
 
 func (ser *ProportionalSeries) CRange() (cs []string) {
-	ser.mutex.Lock()
 	for i := range ser.data {
 		cs = append(cs, ser.data[i].c)
 	}
-	ser.mutex.Unlock()
 	return
 }
 
@@ -196,7 +194,6 @@ func (ser *ProportionalSeries) ValRange() (isEmpty bool, min float64, max float6
 		isEmpty = true
 		return
 	}
-	ser.mutex.Lock()
 	min = ser.data[0].val
 	max = ser.data[0].val
 	for i := range ser.data {
@@ -207,13 +204,11 @@ func (ser *ProportionalSeries) ValRange() (isEmpty bool, min float64, max float6
 			max = ser.data[i].val
 		}
 	}
-	ser.mutex.Unlock()
 	return
 }
 
 func (ser *ProportionalSeries) ConvertPtoN(pToN func(p float64) (n float64)) {
 	valOffset := 0.0
-	ser.mutex.Lock()
 	for i := range ser.data {
 		ser.data[i].valOffset = valOffset
 		if ser.data[i].visible {
@@ -223,26 +218,21 @@ func (ser *ProportionalSeries) ConvertPtoN(pToN func(p float64) (n float64)) {
 			ser.data[i].n = 0
 		}
 	}
-	ser.mutex.Unlock()
 }
 
 func (ser *ProportionalSeries) CartesianRects(xMin float64, xMax float64, yMin float64,
 	yMax float64) (fs []CartesianRect) {
-	ser.mutex.Lock()
 	for i := range ser.data {
 		fs = append(fs, ser.data[i].cartesianRects(xMin, xMax, yMin, yMax)...)
 	}
-	ser.mutex.Unlock()
 	return
 }
 
 func (ser *ProportionalSeries) CartesianTexts(xMin float64, xMax float64, yMin float64,
 	yMax float64) (ts []CartesianText) {
-	ser.mutex.Lock()
 	for i := range ser.data {
 		ts = append(ts, ser.data[i].cartesianTexts(xMin, xMax, yMin, yMax)...)
 	}
-	ser.mutex.Unlock()
 	return
 }
 
@@ -251,7 +241,6 @@ func (ser *ProportionalSeries) RasterColorPolar(phi float64, r float64, x float6
 	if !ser.visible {
 		return
 	}
-	ser.mutex.Lock()
 	for i := range ser.data {
 		pCol := ser.data[i].RasterColorPolar(phi, r, x, y)
 		r, g, b, _ := pCol.RGBA()
@@ -260,22 +249,18 @@ func (ser *ProportionalSeries) RasterColorPolar(phi float64, r float64, x float6
 			break
 		}
 	}
-	ser.mutex.Unlock()
 	return
 }
 
 func (ser *ProportionalSeries) PolarTexts(phiMin float64, phiMax float64, rMin float64,
 	rMax float64) (ts []PolarText) {
-	ser.mutex.Lock()
 	for i := range ser.data {
 		ts = append(ts, ser.data[i].polarTexts(phiMin, phiMax, rMin, rMax)...)
 	}
-	ser.mutex.Unlock()
 	return
 }
 
 func (ser *ProportionalSeries) RefreshThemeColor() {
-	ser.mutex.Lock()
 	ser.legendLabel.Color = theme.Color(theme.ColorNameForeground)
 	ser.color = theme.Color(theme.ColorNameForeground)
 	ser.legendButton.SetColor(theme.Color(theme.ColorNameForeground))
@@ -283,7 +268,6 @@ func (ser *ProportionalSeries) RefreshThemeColor() {
 		ser.data[i].legendLabel.Color = theme.Color(theme.ColorNameForeground)
 		ser.data[i].text.Color = theme.Color(theme.ColorNameForeground)
 	}
-	ser.mutex.Unlock()
 }
 
 // Show makes the Bars of the series visible
@@ -314,41 +298,32 @@ func (ser *ProportionalSeries) toggleView() {
 }
 
 func (ser *ProportionalSeries) pointVisibilityUpdate(totChange float64) {
-	ser.mutex.Lock()
 	ser.tot += totChange
-	ser.mutex.Unlock()
 	ser.chart.DataChange()
 }
 
 func (ser *ProportionalSeries) LegendEntries() (les []LegendEntry) {
-	ser.mutex.Lock()
 	les = append(les, ser.baseSeries.LegendEntries()...)
 	for i := range ser.data {
 		les = append(les, ser.data[i].legendEntry())
 	}
-	ser.mutex.Unlock()
 	return
 }
 
 func (ser *ProportionalSeries) SetHeightAndOffset(h float64, hOffset float64) {
-	ser.mutex.Lock()
 	for i := range ser.data {
 		ser.data[i].height = h
 		ser.data[i].hOffset = hOffset
 	}
-	ser.mutex.Unlock()
 }
 
 func (ser *ProportionalSeries) Clear() (err error) {
-	ser.mutex.Lock()
 	if ser.chart == nil {
 		err = errors.New("series is not part of any chart")
-		ser.mutex.Unlock()
 		return
 	}
 	chart := ser.chart
 	ser.data = []*proportionPoint{}
-	ser.mutex.Unlock()
 	chart.DataChange()
 	return
 }
@@ -360,13 +335,10 @@ func (ser *ProportionalSeries) DeleteDataInRange(cat []string) (c int, err error
 		return
 	}
 	finalData := []*proportionPoint{}
-	ser.mutex.Lock()
 	if ser.chart == nil {
 		err = errors.New("series is not part of any chart")
-		ser.mutex.Unlock()
 		return
 	}
-	chart := ser.chart
 	tot := 0.0
 	for i := range ser.data {
 		del := false
@@ -384,14 +356,12 @@ func (ser *ProportionalSeries) DeleteDataInRange(cat []string) (c int, err error
 		}
 	}
 	if c == 0 {
-		ser.mutex.Unlock()
 		return
 	}
 	ser.data = nil
 	ser.data = finalData
 	ser.tot = tot
-	ser.mutex.Unlock()
-	chart.DataChange()
+	ser.chart.DataChange()
 	return
 }
 
@@ -407,13 +377,10 @@ func (ser *ProportionalSeries) AddData(input []data.ProportionalDataPoint) (err 
 		}
 	}
 
-	ser.mutex.Lock()
 	if ser.chart == nil {
 		err = errors.New("series is not part of any chart")
-		ser.mutex.Unlock()
 		return
 	}
-	chart := ser.chart
 	for i := range input {
 		catExist := false
 		for j := range ser.data {
@@ -433,7 +400,6 @@ func (ser *ProportionalSeries) AddData(input []data.ProportionalDataPoint) (err 
 		ser.data = append(ser.data, pPoint)
 		ser.tot += pPoint.val
 	}
-	ser.mutex.Unlock()
-	chart.DataChange()
+	ser.chart.DataChange()
 	return
 }

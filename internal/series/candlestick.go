@@ -121,10 +121,8 @@ func EmptyCandleStickSeries(chart chart, name string, polar bool) (ser *CandleSt
 
 func (ser *CandleStickSeries) TRange() (isEmpty bool, min time.Time, max time.Time) {
 	isEmpty = false
-	ser.mutex.Lock()
 	if len(ser.data) == 0 {
 		isEmpty = true
-		ser.mutex.Unlock()
 		return
 	}
 	min = ser.data[0].tStart
@@ -137,7 +135,6 @@ func (ser *CandleStickSeries) TRange() (isEmpty bool, min time.Time, max time.Ti
 			max = ser.data[i].tEnd
 		}
 	}
-	ser.mutex.Unlock()
 	return
 }
 
@@ -145,10 +142,8 @@ func (ser *CandleStickSeries) NRange() (isEmpty bool, min float64, max float64) 
 	min = 0
 	max = 0
 	isEmpty = false
-	ser.mutex.Lock()
 	if len(ser.data) == 0 {
 		isEmpty = true
-		ser.mutex.Unlock()
 		return
 	}
 	min = ser.data[0].nStart
@@ -161,17 +156,14 @@ func (ser *CandleStickSeries) NRange() (isEmpty bool, min float64, max float64) 
 			max = ser.data[i].nEnd
 		}
 	}
-	ser.mutex.Unlock()
 	return
 }
 func (ser *CandleStickSeries) ValRange() (isEmpty bool, min float64, max float64) {
 	min = 0
 	max = 0
 	isEmpty = false
-	ser.mutex.Lock()
 	if len(ser.data) == 0 {
 		isEmpty = true
-		ser.mutex.Unlock()
 		return
 	}
 	min = ser.data[0].low
@@ -184,65 +176,52 @@ func (ser *CandleStickSeries) ValRange() (isEmpty bool, min float64, max float64
 			max = ser.data[i].high
 		}
 	}
-	ser.mutex.Unlock()
 	return
 }
 
 func (ser *CandleStickSeries) ConvertTtoN(tToN func(t time.Time) (n float64)) {
-	ser.mutex.Lock()
 	for i := range ser.data {
 		ser.data[i].nStart = tToN(ser.data[i].tStart)
 		ser.data[i].nEnd = tToN(ser.data[i].tEnd)
 	}
-	ser.mutex.Unlock()
 }
 
 func (ser *CandleStickSeries) CartesianEdges(xMin float64, xMax float64, yMin float64,
 	yMax float64) (es []CartesianEdge) {
-	ser.mutex.Lock()
 	for i := range ser.data {
 		es = append(es, ser.data[i].cartesianEdges(xMin, xMax, yMin, yMax)...)
 	}
-	ser.mutex.Unlock()
 	return
 }
 
 func (ser *CandleStickSeries) CartesianRects(xMin float64, xMax float64, yMin float64,
 	yMax float64) (fs []CartesianRect) {
-	ser.mutex.Lock()
 	for i := range ser.data {
 		fs = append(fs, ser.data[i].cartesianRects(xMin, xMax, yMin, yMax)...)
 	}
-	ser.mutex.Unlock()
 	return
 }
 
 func (ser *CandleStickSeries) RefreshThemeColor() {
-	ser.mutex.Lock()
 	ser.legendLabel.Color = theme.Color(theme.ColorNameForeground)
 	ser.color = theme.Color(theme.ColorNameForeground)
 	ser.legendButton.SetColor(theme.Color(theme.ColorNameForeground))
-	ser.mutex.Unlock()
 }
 
 // Show makes all elements of the series visible
 func (ser *CandleStickSeries) Show() {
-	ser.mutex.Lock()
 	ser.visible = true
 	for i := range ser.data {
 		ser.data[i].show()
 	}
-	ser.mutex.Unlock()
 }
 
 // Hide hides all elements of the series
 func (ser *CandleStickSeries) Hide() {
-	ser.mutex.Lock()
 	ser.visible = false
 	for i := range ser.data {
 		ser.data[i].hide()
 	}
-	ser.mutex.Unlock()
 }
 
 func (ser *CandleStickSeries) toggleView() {
@@ -260,23 +239,18 @@ func (ser *CandleStickSeries) SetLineWidth(lw float32) {
 	if lw < 0 {
 		return
 	}
-	ser.mutex.Lock()
 	for i := range ser.data {
 		ser.data[i].setLineWidth(lw)
 	}
-	ser.mutex.Unlock()
 }
 
 func (ser *CandleStickSeries) Clear() (err error) {
-	ser.mutex.Lock()
 	if ser.chart == nil {
 		err = errors.New("series is not part of any chart")
-		ser.mutex.Unlock()
 		return
 	}
 	chart := ser.chart
 	ser.data = []*candleStickPoint{}
-	ser.mutex.Unlock()
 	chart.DataChange()
 	return
 }
@@ -290,13 +264,10 @@ func (ser *CandleStickSeries) DeleteNumericalDataInRange(min float64, max float6
 		return
 	}
 	finalData := []*candleStickPoint{}
-	ser.mutex.Lock()
 	if ser.chart == nil {
 		err = errors.New("series is not part of any chart")
-		ser.mutex.Unlock()
 		return
 	}
-	chart := ser.chart
 	for i := range ser.data {
 		if ser.data[i].nEnd > min && ser.data[i].nStart < max {
 			c++
@@ -305,13 +276,11 @@ func (ser *CandleStickSeries) DeleteNumericalDataInRange(min float64, max float6
 		}
 	}
 	if c == 0 {
-		ser.mutex.Unlock()
 		return
 	}
 	ser.data = nil
 	ser.data = finalData
-	ser.mutex.Unlock()
-	chart.DataChange()
+	ser.chart.DataChange()
 	return
 }
 
@@ -328,13 +297,10 @@ func (ser *CandleStickSeries) AddNumericalData(input []data.NumericalCandleStick
 			return
 		}
 	}
-	ser.mutex.Lock()
 	if ser.chart == nil {
 		err = errors.New("series is not part of any chart")
-		ser.mutex.Unlock()
 		return
 	}
-	chart := ser.chart
 	for i := range input {
 		csPoint := emptyCandleStickPoint()
 		csPoint.nStart = input[i].NStart
@@ -345,8 +311,7 @@ func (ser *CandleStickSeries) AddNumericalData(input []data.NumericalCandleStick
 		csPoint.low = input[i].Low
 		ser.data = append(ser.data, csPoint)
 	}
-	ser.mutex.Unlock()
-	chart.DataChange()
+	ser.chart.DataChange()
 	return
 }
 
@@ -359,13 +324,10 @@ func (ser *CandleStickSeries) DeleteTemporalDataInRange(min time.Time, max time.
 		return
 	}
 	finalData := []*candleStickPoint{}
-	ser.mutex.Lock()
 	if ser.chart == nil {
 		err = errors.New("series is not part of any chart")
-		ser.mutex.Unlock()
 		return
 	}
-	chart := ser.chart
 	for i := range ser.data {
 		if ser.data[i].tEnd.After(min) && ser.data[i].tStart.Before(max) {
 			c++
@@ -374,13 +336,11 @@ func (ser *CandleStickSeries) DeleteTemporalDataInRange(min time.Time, max time.
 		}
 	}
 	if c == 0 {
-		ser.mutex.Unlock()
 		return
 	}
 	ser.data = nil
 	ser.data = finalData
-	ser.mutex.Unlock()
-	chart.DataChange()
+	ser.chart.DataChange()
 	return
 }
 
@@ -397,13 +357,10 @@ func (ser *CandleStickSeries) AddTemporalData(input []data.TemporalCandleStick) 
 			return
 		}
 	}
-	ser.mutex.Lock()
 	if ser.chart == nil {
 		err = errors.New("series is not part of any chart")
-		ser.mutex.Unlock()
 		return
 	}
-	chart := ser.chart
 	for i := range input {
 		csPoint := emptyCandleStickPoint()
 		csPoint.tStart = input[i].TStart
@@ -414,7 +371,6 @@ func (ser *CandleStickSeries) AddTemporalData(input []data.TemporalCandleStick) 
 		csPoint.low = input[i].Low
 		ser.data = append(ser.data, csPoint)
 	}
-	ser.mutex.Unlock()
-	chart.DataChange()
+	ser.chart.DataChange()
 	return
 }

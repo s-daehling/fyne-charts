@@ -2,7 +2,6 @@ package series
 
 import (
 	"image/color"
-	"sync"
 	"time"
 
 	"fyne.io/fyne/v2/canvas"
@@ -12,7 +11,6 @@ import (
 type baseSeries struct {
 	name         string
 	visible      bool
-	mutex        *sync.Mutex
 	color        color.Color
 	legendButton *LegendBox
 	legendLabel  *canvas.Text
@@ -24,7 +22,6 @@ func emptyBaseSeries(chart chart, name string, col color.Color, polar bool, togV
 	ser = baseSeries{
 		name:         name,
 		visible:      true,
-		mutex:        &sync.Mutex{},
 		color:        col,
 		legendButton: NewLegendBox(col, togView),
 		legendLabel:  canvas.NewText(name, theme.Color(theme.ColorNameForeground)),
@@ -51,9 +48,7 @@ func (ser *baseSeries) LegendEntries() (les []LegendEntry) {
 }
 
 func (ser *baseSeries) Delete() {
-	ser.mutex.Lock()
 	ser.chart = nil
-	ser.mutex.Unlock()
 }
 
 func (ser *baseSeries) CRange() (cs []string) { return }
@@ -118,9 +113,7 @@ func (ser *baseSeries) RasterColorPolar(phi float64, r float64, x float64, y flo
 }
 
 func (ser *baseSeries) RefreshThemeColor() {
-	ser.mutex.Lock()
 	ser.legendLabel.Color = theme.Color(theme.ColorNameForeground)
-	ser.mutex.Unlock()
 }
 
 type Series interface {

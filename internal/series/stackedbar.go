@@ -20,7 +20,6 @@ func EmptyStackedBarSeries(chart chart, name string, polar bool) (ser *StackedBa
 }
 
 func (ser *StackedBarSeries) CRange() (cs []string) {
-	ser.mutex.Lock()
 	for i := range ser.stack {
 		cats := ser.stack[i].CRange()
 		for j := range cats {
@@ -36,7 +35,6 @@ func (ser *StackedBarSeries) CRange() (cs []string) {
 			}
 		}
 	}
-	ser.mutex.Unlock()
 	return
 }
 
@@ -45,9 +43,7 @@ func (ser *StackedBarSeries) ValRange() (isEmpty bool, min float64, max float64)
 	min = 0
 	max = 0
 	isEmpty = true
-	ser.mutex.Lock()
 	if len(ser.stack) == 0 {
-		ser.mutex.Unlock()
 		return
 	}
 	for i := range ser.stack {
@@ -69,25 +65,20 @@ func (ser *StackedBarSeries) ValRange() (isEmpty bool, min float64, max float64)
 			}
 		}
 	}
-	ser.mutex.Unlock()
 	return
 }
 
 func (ser *StackedBarSeries) ConvertCtoN(cToN func(c string) (n float64)) {
-	ser.mutex.Lock()
 	for i := range ser.stack {
 		ser.stack[i].ConvertCtoN(cToN)
 	}
-	ser.mutex.Unlock()
 }
 
 func (ser *StackedBarSeries) CartesianRects(xMin float64, xMax float64, yMin float64,
 	yMax float64) (fs []CartesianRect) {
-	ser.mutex.Lock()
 	for i := range ser.stack {
 		fs = append(fs, ser.stack[i].CartesianRects(xMin, xMax, yMin, yMax)...)
 	}
-	ser.mutex.Unlock()
 	return
 }
 
@@ -96,7 +87,6 @@ func (ser *StackedBarSeries) RasterColorPolar(phi float64, r float64, x float64,
 	if !ser.visible {
 		return
 	}
-	ser.mutex.Lock()
 	for i := range ser.stack {
 		sCol := ser.stack[i].RasterColorPolar(phi, r, x, y)
 		r, g, b, _ := sCol.RGBA()
@@ -105,13 +95,11 @@ func (ser *StackedBarSeries) RasterColorPolar(phi float64, r float64, x float64,
 			break
 		}
 	}
-	ser.mutex.Unlock()
 	return
 }
 
 func (ser *StackedBarSeries) LegendEntries() (les []LegendEntry) {
 	les = append(les, ser.baseSeries.LegendEntries()...)
-	ser.mutex.Lock()
 	for i := range ser.stack {
 		subLes := ser.stack[i].LegendEntries()
 		for j := range subLes {
@@ -119,42 +107,34 @@ func (ser *StackedBarSeries) LegendEntries() (les []LegendEntry) {
 		}
 		les = append(les, subLes...)
 	}
-	ser.mutex.Unlock()
 	return
 }
 
 func (ser *StackedBarSeries) RefreshThemeColor() {
-	ser.mutex.Lock()
 	ser.legendLabel.Color = theme.Color(theme.ColorNameForeground)
 	ser.color = theme.Color(theme.ColorNameForeground)
 	ser.legendButton.SetColor(theme.Color(theme.ColorNameForeground))
 	for i := range ser.stack {
 		ser.stack[i].RefreshThemeColor()
 	}
-	ser.mutex.Unlock()
 }
 
 // setWidthAndOffset sets width of bars and offset from x coordinate for this series
 func (ser *StackedBarSeries) SetNumericalBarWidthAndShift(width float64, shift float64) (err error) {
-	ser.mutex.Lock()
 	for i := range ser.stack {
 		err = ser.stack[i].SetNumericalBarWidthAndShift(width, shift)
 		if err != nil {
-			ser.mutex.Unlock()
 			return
 		}
 	}
-	ser.mutex.Unlock()
 	return
 }
 
 func (ser *StackedBarSeries) UpdateValOffset() {
 	valOffset := []catOffset{}
-	ser.mutex.Lock()
 	for i := range ser.stack {
 		valOffset = ser.stack[i].SetAndUpdateValBaseCategorical(valOffset)
 	}
-	ser.mutex.Unlock()
 }
 
 // Show makes the bars of the series visible
@@ -182,15 +162,12 @@ func (ser *StackedBarSeries) toggleView() {
 }
 
 func (ser *StackedBarSeries) Clear() (err error) {
-	ser.mutex.Lock()
 	if ser.chart == nil {
 		err = errors.New("series is not part of any chart")
-		ser.mutex.Unlock()
 		return
 	}
 	chart := ser.chart
 	ser.stack = []*BarSeries{}
-	ser.mutex.Unlock()
 	chart.DataChange()
 	return
 }
@@ -203,17 +180,14 @@ func (ser *StackedBarSeries) DeleteCategoricalDataInRange(cat []string) (c int, 
 		err = errors.New("invald range")
 		return
 	}
-	ser.mutex.Lock()
 	for i := range ser.stack {
 		var cs int
 		cs, err = ser.stack[i].DeleteCategoricalDataInRange(cat)
 		if err != nil {
-			ser.mutex.Unlock()
 			return
 		}
 		c += cs
 	}
-	ser.mutex.Unlock()
 	return
 }
 
@@ -227,14 +201,12 @@ func (ser *StackedBarSeries) AddCategoricalData(series string, input []data.Cate
 	if err != nil {
 		return
 	}
-	ser.mutex.Lock()
 	for i := range ser.stack {
 		if ser.stack[i].name == series {
 			err = ser.stack[i].AddCategoricalData(input)
 			break
 		}
 	}
-	ser.mutex.Unlock()
 	return
 }
 
@@ -251,27 +223,22 @@ func (ser *StackedBarSeries) AddCategoricalSeries(series data.CategoricalDataSer
 	if err != nil {
 		return
 	}
-	ser.mutex.Lock()
 	bs := EmptyBarSeries(ser.chart, series.Name, series.Col, ser.polar)
 	err = bs.AddCategoricalData(series.Points)
 	if err != nil {
-		ser.mutex.Unlock()
 		return
 	}
 	ser.stack = append(ser.stack, bs)
-	ser.mutex.Unlock()
 	return
 }
 
 func (ser *StackedBarSeries) seriesExist(name string) (exist bool) {
 	exist = false
-	ser.mutex.Lock()
 	for i := range ser.stack {
 		if ser.stack[i].name == name {
 			exist = true
 			break
 		}
 	}
-	ser.mutex.Unlock()
 	return
 }

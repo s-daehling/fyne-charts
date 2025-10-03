@@ -200,20 +200,16 @@ func EmptyBoxSeries(chart chart, name string, color color.Color, polar bool) (se
 }
 
 func (ser *BoxSeries) CRange() (cs []string) {
-	ser.mutex.Lock()
 	for i := range ser.data {
 		cs = append(cs, ser.data[i].c)
 	}
-	ser.mutex.Unlock()
 	return
 }
 
 func (ser *BoxSeries) TRange() (isEmpty bool, min time.Time, max time.Time) {
 	isEmpty = false
-	ser.mutex.Lock()
 	if len(ser.data) == 0 {
 		isEmpty = true
-		ser.mutex.Unlock()
 		return
 	}
 	min = ser.data[0].t
@@ -226,7 +222,6 @@ func (ser *BoxSeries) TRange() (isEmpty bool, min time.Time, max time.Time) {
 			max = ser.data[i].t
 		}
 	}
-	ser.mutex.Unlock()
 	return
 }
 
@@ -234,10 +229,8 @@ func (ser *BoxSeries) NRange() (isEmpty bool, min float64, max float64) {
 	min = 0
 	max = 0
 	isEmpty = false
-	ser.mutex.Lock()
 	if len(ser.data) == 0 {
 		isEmpty = true
-		ser.mutex.Unlock()
 		return
 	}
 	min = ser.data[0].n
@@ -250,17 +243,14 @@ func (ser *BoxSeries) NRange() (isEmpty bool, min float64, max float64) {
 			max = ser.data[i].n
 		}
 	}
-	ser.mutex.Unlock()
 	return
 }
 func (ser *BoxSeries) ValRange() (isEmpty bool, min float64, max float64) {
 	min = 0
 	max = 0
 	isEmpty = false
-	ser.mutex.Lock()
 	if len(ser.data) == 0 {
 		isEmpty = true
-		ser.mutex.Unlock()
 		return
 	}
 	min = ser.data[0].min
@@ -281,63 +271,50 @@ func (ser *BoxSeries) ValRange() (isEmpty bool, min float64, max float64) {
 			}
 		}
 	}
-	ser.mutex.Unlock()
 	return
 }
 
 func (ser *BoxSeries) ConvertCtoN(cToN func(c string) (n float64)) {
-	ser.mutex.Lock()
 	for i := range ser.data {
 		ser.data[i].n = cToN(ser.data[i].c)
 	}
-	ser.mutex.Unlock()
 }
 
 func (ser *BoxSeries) ConvertTtoN(tToN func(t time.Time) (n float64)) {
-	ser.mutex.Lock()
 	for i := range ser.data {
 		ser.data[i].n = tToN(ser.data[i].t)
 	}
-	ser.mutex.Unlock()
 }
 
 func (ser *BoxSeries) CartesianNodes(xMin float64, xMax float64, yMin float64,
 	yMax float64) (ns []CartesianNode) {
-	ser.mutex.Lock()
 	for i := range ser.data {
 		ns = append(ns, ser.data[i].cartesianNodes(xMin, xMax, yMin, yMax)...)
 	}
-	ser.mutex.Unlock()
 	return
 }
 
 func (ser *BoxSeries) CartesianEdges(xMin float64, xMax float64, yMin float64,
 	yMax float64) (es []CartesianEdge) {
-	ser.mutex.Lock()
 	for i := range ser.data {
 		es = append(es, ser.data[i].cartesianEdges(xMin, xMax, yMin, yMax)...)
 	}
-	ser.mutex.Unlock()
 	return
 }
 
 func (ser *BoxSeries) CartesianRects(xMin float64, xMax float64, yMin float64,
 	yMax float64) (as []CartesianRect) {
-	ser.mutex.Lock()
 	for i := range ser.data {
 		as = append(as, ser.data[i].cartesianRects(xMin, xMax, yMin, yMax)...)
 	}
-	ser.mutex.Unlock()
 	return
 }
 
 // setWidth sets width of boxes for this series
 func (ser *BoxSeries) SetWidth(width float64) {
-	ser.mutex.Lock()
 	for i := range ser.data {
 		ser.data[i].setWidth(width)
 	}
-	ser.mutex.Unlock()
 }
 
 func (ser *BoxSeries) NumberOfPoints() (n int) {
@@ -347,22 +324,18 @@ func (ser *BoxSeries) NumberOfPoints() (n int) {
 
 // Show makes all elements of the bar series visible
 func (ser *BoxSeries) Show() {
-	ser.mutex.Lock()
 	ser.visible = true
 	for i := range ser.data {
 		ser.data[i].show()
 	}
-	ser.mutex.Unlock()
 }
 
 // Hide hides all elements of the bar series
 func (ser *BoxSeries) Hide() {
-	ser.mutex.Lock()
 	ser.visible = false
 	for i := range ser.data {
 		ser.data[i].hide()
 	}
-	ser.mutex.Unlock()
 }
 
 func (ser *BoxSeries) toggleView() {
@@ -375,14 +348,12 @@ func (ser *BoxSeries) toggleView() {
 
 // SetColor changes the color of the bar series
 func (ser *BoxSeries) SetColor(col color.Color) {
-	ser.mutex.Lock()
 	ser.color = col
 	ser.legendButton.color = col
 	ser.legendButton.rect.FillColor = col
 	for i := range ser.data {
 		ser.data[i].setColor(col)
 	}
-	ser.mutex.Unlock()
 }
 
 // SetLineWidth changes the width of the Line
@@ -392,11 +363,9 @@ func (ser *BoxSeries) SetLineWidth(lw float32) {
 	if lw < 0 {
 		return
 	}
-	ser.mutex.Lock()
 	for i := range ser.data {
 		ser.data[i].setLineWidth(lw)
 	}
-	ser.mutex.Unlock()
 }
 
 // SetOutlierSize changes the size of the outlier dots
@@ -406,23 +375,18 @@ func (ser *BoxSeries) SetOutlierSize(os float32) {
 	if os < 0 {
 		return
 	}
-	ser.mutex.Lock()
 	for i := range ser.data {
 		ser.data[i].setOutlierSize(os)
 	}
-	ser.mutex.Unlock()
 }
 
 func (ser *BoxSeries) Clear() (err error) {
-	ser.mutex.Lock()
 	if ser.chart == nil {
 		err = errors.New("series is not part of any chart")
-		ser.mutex.Unlock()
 		return
 	}
 	chart := ser.chart
 	ser.data = []*boxPoint{}
-	ser.mutex.Unlock()
 	chart.DataChange()
 	return
 }
@@ -436,13 +400,10 @@ func (ser *BoxSeries) DeleteNumericalDataInRange(min float64, max float64) (c in
 		return
 	}
 	finalData := []*boxPoint{}
-	ser.mutex.Lock()
 	if ser.chart == nil {
 		err = errors.New("series is not part of any chart")
-		ser.mutex.Unlock()
 		return
 	}
-	chart := ser.chart
 	for i := range ser.data {
 		if ser.data[i].n > min && ser.data[i].n < max {
 			c++
@@ -451,13 +412,11 @@ func (ser *BoxSeries) DeleteNumericalDataInRange(min float64, max float64) (c in
 		}
 	}
 	if c == 0 {
-		ser.mutex.Unlock()
 		return
 	}
 	ser.data = nil
 	ser.data = finalData
-	ser.mutex.Unlock()
-	chart.DataChange()
+	ser.chart.DataChange()
 	return
 }
 
@@ -475,13 +434,10 @@ func (ser *BoxSeries) AddNumericalData(input []data.NumericalBox) (err error) {
 			return
 		}
 	}
-	ser.mutex.Lock()
 	if ser.chart == nil {
 		err = errors.New("series is not part of any chart")
-		ser.mutex.Unlock()
 		return
 	}
-	chart := ser.chart
 	for i := range input {
 		bPoint := emptyBoxPoint(len(input[i].Outlier), ser.color)
 		bPoint.n = input[i].N
@@ -493,8 +449,7 @@ func (ser *BoxSeries) AddNumericalData(input []data.NumericalBox) (err error) {
 		bPoint.outlier = append(bPoint.outlier, input[i].Outlier...)
 		ser.data = append(ser.data, bPoint)
 	}
-	ser.mutex.Unlock()
-	chart.DataChange()
+	ser.chart.DataChange()
 	return
 }
 
@@ -507,13 +462,10 @@ func (ser *BoxSeries) DeleteTemporalDataInRange(min time.Time, max time.Time) (c
 		return
 	}
 	finalData := []*boxPoint{}
-	ser.mutex.Lock()
 	if ser.chart == nil {
 		err = errors.New("series is not part of any chart")
-		ser.mutex.Unlock()
 		return
 	}
-	chart := ser.chart
 	for i := range ser.data {
 		if ser.data[i].t.After(min) && ser.data[i].t.Before(max) {
 			c++
@@ -522,13 +474,11 @@ func (ser *BoxSeries) DeleteTemporalDataInRange(min time.Time, max time.Time) (c
 		}
 	}
 	if c == 0 {
-		ser.mutex.Unlock()
 		return
 	}
 	ser.data = nil
 	ser.data = finalData
-	ser.mutex.Unlock()
-	chart.DataChange()
+	ser.chart.DataChange()
 	return
 }
 
@@ -546,13 +496,10 @@ func (ser *BoxSeries) AddTemporalData(input []data.TemporalBox) (err error) {
 			return
 		}
 	}
-	ser.mutex.Lock()
 	if ser.chart == nil {
 		err = errors.New("series is not part of any chart")
-		ser.mutex.Unlock()
 		return
 	}
-	chart := ser.chart
 	for i := range input {
 		bPoint := emptyBoxPoint(len(input[i].Outlier), ser.color)
 		bPoint.t = input[i].T
@@ -564,8 +511,7 @@ func (ser *BoxSeries) AddTemporalData(input []data.TemporalBox) (err error) {
 		bPoint.outlier = append(bPoint.outlier, input[i].Outlier...)
 		ser.data = append(ser.data, bPoint)
 	}
-	ser.mutex.Unlock()
-	chart.DataChange()
+	ser.chart.DataChange()
 	return
 }
 
@@ -578,13 +524,10 @@ func (ser *BoxSeries) DeleteCategoricalDataInRange(cat []string) (c int, err err
 		return
 	}
 	finalData := []*boxPoint{}
-	ser.mutex.Lock()
 	if ser.chart == nil {
 		err = errors.New("series is not part of any chart")
-		ser.mutex.Unlock()
 		return
 	}
-	chart := ser.chart
 	for i := range ser.data {
 		del := false
 		for j := range cat {
@@ -600,13 +543,11 @@ func (ser *BoxSeries) DeleteCategoricalDataInRange(cat []string) (c int, err err
 		}
 	}
 	if c == 0 {
-		ser.mutex.Unlock()
 		return
 	}
 	ser.data = nil
 	ser.data = finalData
-	ser.mutex.Unlock()
-	chart.DataChange()
+	ser.chart.DataChange()
 	return
 }
 
@@ -625,13 +566,10 @@ func (ser *BoxSeries) AddCategoricalData(input []data.CategoricalBox) (err error
 			return
 		}
 	}
-	ser.mutex.Lock()
 	if ser.chart == nil {
 		err = errors.New("series is not part of any chart")
-		ser.mutex.Unlock()
 		return
 	}
-	chart := ser.chart
 	for i := range input {
 		catExist := false
 		for j := range ser.data {
@@ -653,7 +591,6 @@ func (ser *BoxSeries) AddCategoricalData(input []data.CategoricalBox) (err error
 		bPoint.outlier = append(bPoint.outlier, input[i].Outlier...)
 		ser.data = append(ser.data, bPoint)
 	}
-	ser.mutex.Unlock()
-	chart.DataChange()
+	ser.chart.DataChange()
 	return
 }

@@ -435,11 +435,9 @@ func (ser *dataPointSeries) CartesianRects(xMin float64, xMax float64, yMin floa
 
 func (ser *dataPointSeries) PolarNodes(phiMin float64, phiMax float64, rMin float64,
 	rMax float64) (ns []PolarNode) {
-	ser.mutex.Lock()
 	for i := range ser.data {
 		ns = append(ns, ser.data[i].polarNodes(phiMin, phiMax, rMin, rMax)...)
 	}
-	ser.mutex.Unlock()
 	return
 }
 

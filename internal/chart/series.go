@@ -11,16 +11,13 @@ import (
 )
 
 func (base *BaseChart) addSeriesIfNotExist(ser series.Series) (err error) {
-	base.mutex.Lock()
 	for i := range base.series {
 		if base.series[i].Name() == ser.Name() {
 			err = errors.New("series already exists")
-			base.mutex.Unlock()
 			return
 		}
 	}
 	base.series = append(base.series, ser)
-	base.mutex.Unlock()
 	base.DataChange()
 	return
 }

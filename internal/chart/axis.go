@@ -4,7 +4,6 @@ import (
 	"image/color"
 	"math"
 	"strconv"
-	"sync"
 	"time"
 
 	"github.com/s-daehling/fyne-charts/pkg/data"
@@ -68,7 +67,6 @@ type Axis struct {
 	space           float32
 	col             color.Color
 	supCol          color.Color
-	mutex           *sync.Mutex // mutex to prevent concurrent access
 }
 
 func EmptyAxis(name string, typ AxisType) (ax *Axis) {
@@ -91,7 +89,6 @@ func EmptyAxis(name string, typ AxisType) (ax *Axis) {
 		labelText:       canvas.NewText(name, col),
 		col:             col,
 		supCol:          theme.Color(theme.ColorNameShadow),
-		mutex:           &sync.Mutex{},
 	}
 	if typ == PolarPhiAxis {
 		ax.nMax = 2 * math.Pi
@@ -148,7 +145,6 @@ func (ax *Axis) Arrow() (line *canvas.Line, circle *canvas.Circle, arrowOne *can
 }
 
 func (ax *Axis) Ticks() (ts []Tick) {
-	ax.mutex.Lock()
 	for i := range ax.ticks {
 		if ax.ticks[i].n < ax.nMin || ax.ticks[i].n > ax.nMax {
 			continue
@@ -177,12 +173,10 @@ func (ax *Axis) Ticks() (ts []Tick) {
 			ts = append(ts, t)
 		}
 	}
-	ax.mutex.Unlock()
 	return
 }
 
 func (ax *Axis) Hide() {
-	ax.mutex.Lock()
 	ax.visible = false
 	ax.arrowOne.Hide()
 	ax.arrowTwo.Hide()
@@ -195,11 +189,9 @@ func (ax *Axis) Hide() {
 		ax.ticks[i].supportCircle.Hide()
 		ax.ticks[i].supportLine.Hide()
 	}
-	ax.mutex.Unlock()
 }
 
 func (ax *Axis) Show() {
-	ax.mutex.Lock()
 	ax.visible = true
 	ax.arrowOne.Show()
 	ax.arrowTwo.Show()
@@ -212,11 +204,9 @@ func (ax *Axis) Show() {
 		ax.ticks[i].supportCircle.Show()
 		ax.ticks[i].supportLine.Show()
 	}
-	ax.mutex.Unlock()
 }
 
 func (ax *Axis) RefreshThemeColor() {
-	ax.mutex.Lock()
 	ax.col = theme.Color(theme.ColorNameForeground)
 	ax.supCol = theme.Color(theme.ColorNameShadow)
 	ax.labelText.Color = ax.col
@@ -230,40 +220,30 @@ func (ax *Axis) RefreshThemeColor() {
 		ax.ticks[i].supportCircle.StrokeColor = ax.supCol
 		ax.ticks[i].supportLine.StrokeColor = ax.supCol
 	}
-	ax.mutex.Unlock()
 }
 
 func (ax *Axis) SetLabel(l string) {
-	ax.mutex.Lock()
 	ax.name = l
 	ax.labelText.Text = l
-	ax.mutex.Unlock()
 }
 
 func (ax *Axis) Label() (label *canvas.Image, text *canvas.Text) {
-	ax.mutex.Lock()
 	label = ax.label
 	text = ax.labelText
-	ax.mutex.Unlock()
 	return
 }
 
 func (ax *Axis) SetAutoTicks(autoSupport bool) {
-	ax.mutex.Lock()
 	ax.autoTicks = true
 	ax.autoSupportLine = autoSupport
-	ax.mutex.Unlock()
 }
 
 func (ax *Axis) SetManualTicks() {
-	ax.mutex.Lock()
 	ax.autoTicks = false
 	ax.autoSupportLine = false
-	ax.mutex.Unlock()
 }
 
 func (ax *Axis) adjustNumberOfTicks(n int) {
-	ax.mutex.Lock()
 	//adjust size of ticks
 	if n < len(ax.ticks) {
 		ax.ticks = ax.ticks[:n]
@@ -289,89 +269,67 @@ func (ax *Axis) adjustNumberOfTicks(n int) {
 			ax.ticks = append(ax.ticks, tick)
 		}
 	}
-	ax.mutex.Unlock()
 }
 
 func (ax *Axis) MaxTickWidth() (maxWidth float32) {
 	maxWidth = 0
-	ax.mutex.Lock()
 	for i := range ax.ticks {
 		if ax.ticks[i].label.MinSize().Width > maxWidth {
 			maxWidth = ax.ticks[i].label.MinSize().Width
 		}
 	}
-	ax.mutex.Unlock()
 	return
 }
 
 func (ax *Axis) MaxTickHeight() (maxHeight float32) {
 	maxHeight = 0
-	ax.mutex.Lock()
 	for i := range ax.ticks {
 		if ax.ticks[i].label.MinSize().Height > maxHeight {
 			maxHeight = ax.ticks[i].label.MinSize().Height
 		}
 	}
-	ax.mutex.Unlock()
 	return
 }
 
 func (ax *Axis) SetCRange(cs []string) {
-	ax.mutex.Lock()
 	ax.cs = nil
 	ax.cs = append(ax.cs, cs...)
-	ax.mutex.Unlock()
 }
 
 func (ax *Axis) CRange() (cs []string) {
-	ax.mutex.Lock()
 	cs = append(cs, ax.cs...)
-	ax.mutex.Unlock()
 	return
 }
 
 func (ax *Axis) SetTOrigin(o time.Time) {
-	ax.mutex.Lock()
 	ax.tOrigin = o
-	ax.mutex.Unlock()
 }
 
 func (ax *Axis) AutoTOrigin() {
-	ax.mutex.Lock()
 	ax.tOrigin = ax.tMin
-	ax.mutex.Unlock()
 }
 
 func (ax *Axis) TOrigin() (o time.Time) {
-	ax.mutex.Lock()
 	o = ax.tOrigin
-	ax.mutex.Unlock()
 	return
 }
 
 func (ax *Axis) SetTRange(min time.Time, max time.Time) {
-	ax.mutex.Lock()
 	ax.tMin = min
 	ax.tMax = max
-	ax.mutex.Unlock()
 }
 
 func (ax *Axis) TRange() (min time.Time, max time.Time) {
-	ax.mutex.Lock()
 	min = ax.tMin
 	max = ax.tMax
-	ax.mutex.Unlock()
 	return
 }
 
 func (ax *Axis) SetNOrigin(o float64) {
-	ax.mutex.Lock()
 	ax.nOrigin = o
-	ax.mutex.Unlock()
 }
 
 func (ax *Axis) AutoNOrigin() {
-	ax.mutex.Lock()
 	switch ax.typ {
 	case CartesianAxis:
 		if ax.nMin < 0 && ax.nMax > 0 {
@@ -384,46 +342,35 @@ func (ax *Axis) AutoNOrigin() {
 	case PolarRAxis:
 		ax.nOrigin = ax.nMax
 	}
-	ax.mutex.Unlock()
 }
 
 func (ax *Axis) NOrigin() (o float64) {
-	ax.mutex.Lock()
 	o = ax.nOrigin
-	ax.mutex.Unlock()
 	return
 }
 
 func (ax *Axis) SetNRange(min float64, max float64) {
-	ax.mutex.Lock()
 	ax.nMin = min
 	ax.nMax = max
-	ax.mutex.Unlock()
 }
 
 func (ax *Axis) NRange() (min float64, max float64) {
-	ax.mutex.Lock()
 	min = ax.nMin
 	max = ax.nMax
-	ax.mutex.Unlock()
 	return
 }
 
 func (ax *Axis) SetSpace(space float32) {
-	ax.mutex.Lock()
 	ax.space = space
-	ax.mutex.Unlock()
 }
 
 func (ax *Axis) SetCTicks(cs []data.CategoricalTick) {
 	ax.adjustNumberOfTicks(len(cs))
-	ax.mutex.Lock()
 	for i := range cs {
 		ax.ticks[i].c = cs[i].C
 		ax.ticks[i].label.Text = cs[i].C
 		ax.ticks[i].hasSupportLine = cs[i].SupportLine
 	}
-	ax.mutex.Unlock()
 }
 
 func (ax *Axis) AutoCTicks() {
@@ -431,55 +378,45 @@ func (ax *Axis) AutoCTicks() {
 		return
 	}
 	cs := make([]data.CategoricalTick, 0)
-	ax.mutex.Lock()
 	for i := range ax.cs {
 		cs = append(cs, data.CategoricalTick{C: ax.cs[i], SupportLine: ax.autoSupportLine})
 	}
-	ax.mutex.Unlock()
 	ax.SetCTicks(cs)
 }
 
 func (ax *Axis) ConvertCTickstoN() {
-	ax.mutex.Lock()
 	catSize := (ax.nMax - ax.nMin) / float64(len(ax.cs))
 	for i := range ax.ticks {
 		ax.ticks[i].nLabel = ax.CtoN(ax.ticks[i].c)
 		ax.ticks[i].nLine = ax.CtoN(ax.ticks[i].c) - 0.5*catSize
 	}
-	ax.mutex.Unlock()
 }
 
 func (ax *Axis) SetTTicks(ts []data.TemporalTick, format string) {
 	ax.adjustNumberOfTicks(len(ts))
-	ax.mutex.Lock()
 	for i := range ts {
 		ax.ticks[i].t = ts[i].T
 		ax.ticks[i].label.Text = ts[i].T.Format(format)
 		ax.ticks[i].hasSupportLine = ts[i].SupportLine
 	}
-	ax.mutex.Unlock()
 }
 
 func (ax *Axis) AutoTTicks() {
 	if !ax.autoTicks {
 		return
 	}
-	ax.mutex.Lock()
 	min := ax.tMin
 	max := ax.tMax
-	ax.mutex.Unlock()
 	ts, format := calculateTTicks(ax.space, min, max, ax.autoSupportLine)
 	ax.SetTTicks(ts, format)
 }
 
 func (ax *Axis) ConvertTTickstoN() {
-	ax.mutex.Lock()
 	for i := range ax.ticks {
 		ax.ticks[i].nLabel = ax.TtoN(ax.ticks[i].t)
 		ax.ticks[i].nLine = ax.TtoN(ax.ticks[i].t)
 	}
 	ax.nOrigin = ax.TtoN(ax.tOrigin)
-	ax.mutex.Unlock()
 }
 
 func (ax *Axis) SetNTicks(ns []data.NumericalTick, orderOfMagn int) {
@@ -488,7 +425,6 @@ func (ax *Axis) SetNTicks(ns []data.NumericalTick, orderOfMagn int) {
 	if prec < 0 {
 		prec = 0
 	}
-	ax.mutex.Lock()
 	for i := range ns {
 		ax.ticks[i].n = ns[i].N
 		ax.ticks[i].nLabel = ns[i].N
@@ -500,17 +436,14 @@ func (ax *Axis) SetNTicks(ns []data.NumericalTick, orderOfMagn int) {
 			ax.ticks[i].label.Text = strconv.FormatFloat(ns[i].N, 'f', prec, 64)
 		}
 	}
-	ax.mutex.Unlock()
 }
 
 func (ax *Axis) AutoNTicks() {
 	if !ax.autoTicks {
 		return
 	}
-	ax.mutex.Lock()
 	min := ax.nMin
 	max := ax.nMax
-	ax.mutex.Unlock()
 	if ax.typ == PolarPhiAxis {
 		ns := calculatePhiTicks(ax.autoSupportLine)
 		ax.SetNTicks(ns, 1)

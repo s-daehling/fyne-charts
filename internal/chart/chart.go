@@ -4,7 +4,6 @@ import (
 	"errors"
 	"image/color"
 	"math"
-	"sync"
 	"time"
 
 	"github.com/s-daehling/fyne-charts/internal/series"
@@ -33,7 +32,6 @@ const (
 )
 
 type BaseChart struct {
-	mutex         *sync.Mutex
 	name          string
 	label         *canvas.Text
 	fromAx        *Axis
@@ -52,7 +50,6 @@ type BaseChart struct {
 
 func EmptyBaseChart(pType PlaneType, fType FromType) (base *BaseChart) {
 	base = &BaseChart{
-		mutex:         &sync.Mutex{},
 		label:         canvas.NewText("", theme.Color(theme.ColorNameForeground)),
 		changed:       false,
 		autoFromRange: true,
@@ -98,20 +95,17 @@ func (base *BaseChart) PolarOrientation() (rot float64, mathPos bool) {
 
 func (base *BaseChart) SeriesExist(n string) (exist bool) {
 	exist = false
-	base.mutex.Lock()
 	for i := range base.series {
 		if base.series[i].Name() == n {
 			exist = true
 			break
 		}
 	}
-	base.mutex.Unlock()
 	return
 }
 
 func (base *BaseChart) DeleteSeries(name string) {
 	newSeries := make([]series.Series, 0)
-	base.mutex.Lock()
 	for i := range base.series {
 		if base.series[i].Name() != name {
 			newSeries = append(newSeries, base.series[i])
@@ -120,7 +114,6 @@ func (base *BaseChart) DeleteSeries(name string) {
 		}
 	}
 	base.series = newSeries
-	base.mutex.Unlock()
 	base.DataChange()
 }
 
@@ -142,7 +135,6 @@ func (base *BaseChart) title() (ct Title) {
 
 func (base *BaseChart) cartesianObjects() (canObj []fyne.CanvasObject) {
 	// objects will be drawn in the same order as added here
-	base.mutex.Lock()
 
 	// first get all objects from the series
 	if base.legendVisible {
@@ -177,7 +169,6 @@ func (base *BaseChart) cartesianObjects() (canObj []fyne.CanvasObject) {
 	if base.name != "" {
 		canObj = append(canObj, base.label)
 	}
-	base.mutex.Unlock()
 	return
 }
 
@@ -219,7 +210,6 @@ func (base *BaseChart) cartesianTexts() (ts []series.CartesianText) {
 
 func (base *BaseChart) polarObjects() (canObj []fyne.CanvasObject) {
 	// objects will be drawn in the same order as added here
-	base.mutex.Lock()
 
 	// first get all objects from the series
 	if base.legendVisible {
@@ -250,7 +240,6 @@ func (base *BaseChart) polarObjects() (canObj []fyne.CanvasObject) {
 	if base.name != "" {
 		canObj = append(canObj, base.label)
 	}
-	base.mutex.Unlock()
 	return
 }
 
@@ -296,12 +285,10 @@ func (base *BaseChart) legendEntries() (les []series.LegendEntry) {
 func (base *BaseChart) refreshThemeColor() {
 	base.fromAx.RefreshThemeColor()
 	base.toAx.RefreshThemeColor()
-	base.mutex.Lock()
 	base.label.Color = theme.Color(theme.ColorNameForeground)
 	for i := range base.series {
 		base.series[i].RefreshThemeColor()
 	}
-	base.mutex.Unlock()
 }
 
 // func (base *BaseChart) hasChanged() (c bool) {
@@ -317,22 +304,16 @@ func (base *BaseChart) refreshThemeColor() {
 // }
 
 func (base *BaseChart) SetTitle(l string) {
-	base.mutex.Lock()
 	base.name = l
-	base.mutex.Unlock()
 }
 
 func (base *BaseChart) ShowLegend() {
-	base.mutex.Lock()
 	base.legendVisible = true
-	base.mutex.Unlock()
 	base.DataChange()
 }
 
 func (base *BaseChart) HideLegend() {
-	base.mutex.Lock()
 	base.legendVisible = false
-	base.mutex.Unlock()
 	base.DataChange()
 }
 
@@ -370,15 +351,12 @@ func (base *BaseChart) SetFromNRange(min float64, max float64) (err error) {
 		err = errors.New("invalid range")
 		return
 	}
-	base.mutex.Lock()
 	if !base.autoOrigin &&
 		(base.fromAx.NOrigin() < min || base.fromAx.NOrigin() > max) {
-		base.mutex.Unlock()
 		err = errors.New("previously defined origin not in range")
 		return
 	}
 	base.autoFromRange = false
-	base.mutex.Unlock()
 	base.fromAx.SetNRange(min, max)
 	base.DataChange()
 	return
@@ -389,15 +367,12 @@ func (base *BaseChart) SetFromTRange(min time.Time, max time.Time) (err error) {
 		err = errors.New("invalid range")
 		return
 	}
-	base.mutex.Lock()
 	if !base.autoOrigin &&
 		(base.fromAx.TOrigin().Before(min) || base.fromAx.TOrigin().After(max)) {
-		base.mutex.Unlock()
 		err = errors.New("previously defined origin not in range")
 		return
 	}
 	base.autoFromRange = false
-	base.mutex.Unlock()
 	base.fromAx.SetTRange(min, max)
 	base.DataChange()
 	return
@@ -408,18 +383,14 @@ func (base *BaseChart) SetFromCRange(cs []string) (err error) {
 		err = errors.New("invalid range")
 		return
 	}
-	base.mutex.Lock()
 	base.autoFromRange = false
-	base.mutex.Unlock()
 	base.fromAx.SetCRange(cs)
 	base.DataChange()
 	return
 }
 
 func (base *BaseChart) SetAutoFromRange() {
-	base.mutex.Lock()
 	base.autoFromRange = true
-	base.mutex.Unlock()
 	base.DataChange()
 }
 
@@ -553,24 +524,19 @@ func (base *BaseChart) SetToRange(min float64, max float64) (err error) {
 		err = errors.New("invalid range")
 		return
 	}
-	base.mutex.Lock()
 	if !base.autoOrigin &&
 		(base.toAx.NOrigin() < min || base.toAx.NOrigin() > max) {
-		base.mutex.Unlock()
 		err = errors.New("previously defined origin not in range")
 		return
 	}
 	base.autoToRange = false
-	base.mutex.Unlock()
 	base.toAx.SetNRange(min, max)
 	base.DataChange()
 	return
 }
 
 func (base *BaseChart) SetAutoToRange() {
-	base.mutex.Lock()
 	base.autoToRange = true
-	base.mutex.Unlock()
 	base.DataChange()
 }
 
@@ -715,9 +681,7 @@ func (base *BaseChart) SetNOrigin(from float64, to float64) (err error) {
 		err = errors.New("out of user defined range")
 		return
 	}
-	base.mutex.Lock()
 	base.autoOrigin = false
-	base.mutex.Unlock()
 	base.toAx.SetNOrigin(to)
 	base.fromAx.SetNOrigin(from)
 	base.DataChange()
@@ -735,9 +699,7 @@ func (base *BaseChart) SetTOrigin(from time.Time, to float64) (err error) {
 		err = errors.New("out of user defined range")
 		return
 	}
-	base.mutex.Lock()
 	base.autoOrigin = false
-	base.mutex.Unlock()
 	base.toAx.SetNOrigin(to)
 	base.fromAx.SetTOrigin(from)
 	base.DataChange()
@@ -745,9 +707,7 @@ func (base *BaseChart) SetTOrigin(from time.Time, to float64) (err error) {
 }
 
 func (base *BaseChart) SetAutoOrigin() {
-	base.mutex.Lock()
 	base.autoOrigin = true
-	base.mutex.Unlock()
 	base.DataChange()
 }
 
@@ -834,7 +794,6 @@ func (base *BaseChart) updateAxTicks() {
 }
 
 func (base *BaseChart) updateSeriesVariables() {
-	base.mutex.Lock()
 	nBarSeries := 0
 	nPropSeries := 0
 	maxBoxPoints := 5
@@ -907,13 +866,11 @@ func (base *BaseChart) updateSeriesVariables() {
 			base.series[i].ConvertPtoN(base.fromAx.PtoN)
 		}
 	}
-	base.mutex.Unlock()
 }
 
 func (base *BaseChart) PixelGenCartesian(pX, pY, w, h int) (col color.Color) {
 	x, y := base.PositionToCartesianCoordinates(pX, pY, w, h)
 	col = color.RGBA{0x00, 0x00, 0x00, 0x00}
-	base.mutex.Lock()
 	for i := range base.series {
 		serCol := base.series[i].RasterColorCartesian(x, y)
 		r, g, b, _ := serCol.RGBA()
@@ -922,7 +879,6 @@ func (base *BaseChart) PixelGenCartesian(pX, pY, w, h int) (col color.Color) {
 			break
 		}
 	}
-	base.mutex.Unlock()
 	return
 }
 
@@ -933,7 +889,6 @@ func (base *BaseChart) PixelGenPolar(pX, pY, w, h int) (col color.Color) {
 	if r > rMax {
 		return
 	}
-	base.mutex.Lock()
 	for i := range base.series {
 		serCol := base.series[i].RasterColorPolar(phi, r, x, y)
 		r, g, b, _ := serCol.RGBA()
@@ -942,7 +897,6 @@ func (base *BaseChart) PixelGenPolar(pX, pY, w, h int) (col color.Color) {
 			break
 		}
 	}
-	base.mutex.Unlock()
 	return
 }
 
