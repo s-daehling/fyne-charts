@@ -10,7 +10,7 @@ import (
 	"github.com/s-daehling/fyne-charts/pkg/data"
 )
 
-func TestAddNumericalData(t *testing.T) {
+func TestDataPointAddNumericalData(t *testing.T) {
 	app.New()
 	var tests = []struct {
 		input        []data.NumericalDataPoint
@@ -54,7 +54,7 @@ func TestAddNumericalData(t *testing.T) {
 	}
 }
 
-func TestAddTemporalData(t *testing.T) {
+func TestDataPointAddTemporalData(t *testing.T) {
 	app.New()
 	var tests = []struct {
 		input        []data.TemporalDataPoint
@@ -96,7 +96,7 @@ func TestAddTemporalData(t *testing.T) {
 	}
 }
 
-func TestAddCategoricalData(t *testing.T) {
+func TestDataPointAddCategoricalData(t *testing.T) {
 	app.New()
 	var tests = []struct {
 		input        []data.CategoricalDataPoint
@@ -137,7 +137,7 @@ func TestAddCategoricalData(t *testing.T) {
 	}
 }
 
-func TestDeleteNumericalData(t *testing.T) {
+func TestDataPointDeleteNumericalData(t *testing.T) {
 	app.New()
 	var tests = []struct {
 		input         []data.NumericalDataPoint
@@ -181,7 +181,7 @@ func TestDeleteNumericalData(t *testing.T) {
 	}
 }
 
-func TestDeleteTemporalData(t *testing.T) {
+func TestDataPointDeleteTemporalData(t *testing.T) {
 	app.New()
 	var tests = []struct {
 		input         []data.TemporalDataPoint
@@ -225,7 +225,7 @@ func TestDeleteTemporalData(t *testing.T) {
 	}
 }
 
-func TestDeleteCategoricalData(t *testing.T) {
+func TestDataPointDeleteCategoricalData(t *testing.T) {
 	app.New()
 	var tests = []struct {
 		input         []data.CategoricalDataPoint
@@ -266,7 +266,7 @@ func TestDeleteCategoricalData(t *testing.T) {
 	}
 }
 
-func TestNodes(t *testing.T) {
+func TestDataPointNodes(t *testing.T) {
 	app.New()
 	var tests = []struct {
 		input        []data.NumericalDataPoint
@@ -293,8 +293,75 @@ func TestNodes(t *testing.T) {
 			t.Errorf("wrong number of cartesian nodes, set %d, num %d, exp %d", i, len(cns), tt.expCartNodes)
 		}
 		pns := ser.PolarNodes(tt.xMin, tt.xMax, tt.yMin, tt.yMax)
-		if len(pns) != tt.expCartNodes {
-			t.Errorf("wrong number of polar nodes, set %d, num %d, exp %d", i, len(pns), tt.expCartNodes)
+		if len(pns) != tt.expPolNodes {
+			t.Errorf("wrong number of polar nodes, set %d, num %d, exp %d", i, len(pns), tt.expPolNodes)
+		}
+	}
+}
+
+func TestDataPointEdges(t *testing.T) {
+	app.New()
+	var tests = []struct {
+		input               []data.NumericalDataPoint
+		xMin                float64
+		xMax                float64
+		yMin                float64
+		yMax                float64
+		showFromValBaseLine bool
+		showFromPrevLine    bool
+		expCartEdges        int
+		expPolEdges         int
+	}{
+		{ndpTestSetFull, -1000, 1000, -1000, 1000, true, true, 69, 69},
+		{ndpTestSetFull, 0, 1000, -1000, 1000, true, true, 50, 49},
+		{ndpTestSetFull, -1000, 1000, 0, 1000, true, true, 62, 35},
+		{ndpTestSetFull, -1000, 0, -1000, 1000, true, true, 30, 29},
+		{ndpTestSetFull, -1000, 1000, -1000, 0, true, true, 62, 49},
+	}
+	for i, tt := range tests {
+		app.New()
+		ser := EmptyDataPointSeries(chartDummy{}, "test", color.Black, false)
+		ser.showFromPrevLine = tt.showFromPrevLine
+		ser.showFromValBaseLine = tt.showFromValBaseLine
+		if ser.showFromPrevLine {
+			ser.sortPoints = true
+		}
+		ser.AddNumericalData(tt.input)
+		ces := ser.CartesianEdges(tt.xMin, tt.xMax, tt.yMin, tt.yMax)
+		if len(ces) != tt.expCartEdges {
+			t.Errorf("wrong number of cartesian edges, set %d, num %d, exp %d", i, len(ces), tt.expCartEdges)
+		}
+		pes := ser.PolarEdges(tt.xMin, tt.xMax, tt.yMin, tt.yMax)
+		if len(pes) != tt.expPolEdges {
+			t.Errorf("wrong number of polar edges, set %d, num %d, exp %d", i, len(pes), tt.expPolEdges)
+		}
+	}
+}
+
+func TestDataPointRects(t *testing.T) {
+	app.New()
+	var tests = []struct {
+		input        []data.NumericalDataPoint
+		xMin         float64
+		xMax         float64
+		yMin         float64
+		yMax         float64
+		expCartRects int
+	}{
+		{ndpTestSetFull, -1000, 1000, -1000, 1000, len(ndpTestSetFull)},
+		{ndpTestSetFull, 0, 1000, -1000, 1000, 25},
+		{ndpTestSetFull, -1000, 1000, 0, 1000, 35},
+		{ndpTestSetFull, -1000, 0, -1000, 1000, 15},
+		{ndpTestSetFull, -1000, 1000, -1000, 0, 35},
+	}
+	for i, tt := range tests {
+		app.New()
+		ser := EmptyDataPointSeries(chartDummy{}, "test", color.Black, false)
+		ser.showBar = true
+		ser.AddNumericalData(tt.input)
+		crs := ser.CartesianRects(tt.xMin, tt.xMax, tt.yMin, tt.yMax)
+		if len(crs) != tt.expCartRects {
+			t.Errorf("wrong number of cartesian rects, set %d, num %d, exp %d", i, len(crs), tt.expCartRects)
 		}
 	}
 }

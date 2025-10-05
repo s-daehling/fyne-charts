@@ -162,7 +162,7 @@ func (point *dataPoint) cartesianEdges(firstPoint bool, prevX float64, prevY flo
 		x2 = xMax
 	}
 	if (y1 < yMin && y2 < yMin) ||
-		(y1 > yMax && y2 < yMax) {
+		(y1 > yMax && y2 > yMax) {
 		// both points out of range
 		return
 	}
