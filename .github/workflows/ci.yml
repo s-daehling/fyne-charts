@@ -1,0 +1,24 @@
+name: build and test
+
+on: push
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23.x'
+      - name: Get dependencies
+        run: >-
+          sudo apt update
+          sudo apt install gcc libgl1-mesa-dev xorg-dev libxkbcommon-dev
+      - name: Get Go depenencies
+        run: go mod download
+      - name: Build
+        run: go build cmd/main.go
+      - name: Test
+        run: go test ./...
