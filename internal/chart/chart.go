@@ -6,6 +6,7 @@ import (
 	"math"
 	"time"
 
+	"github.com/s-daehling/fyne-charts/internal/axis"
 	"github.com/s-daehling/fyne-charts/internal/series"
 
 	"github.com/s-daehling/fyne-charts/pkg/data"
@@ -34,8 +35,8 @@ const (
 type BaseChart struct {
 	name          string
 	label         *canvas.Text
-	fromAx        *Axis
-	toAx          *Axis
+	fromAx        *axis.Axis
+	toAx          *axis.Axis
 	series        []series.Series
 	changed       bool
 	autoFromRange bool
@@ -60,13 +61,13 @@ func EmptyBaseChart(pType PlaneType, fType FromType) (base *BaseChart) {
 		fromType:      fType,
 	}
 	if pType == CartesianPlane {
-		base.fromAx = EmptyAxis("", CartesianAxis)
-		base.toAx = EmptyAxis("", CartesianAxis)
+		base.fromAx = axis.EmptyAxis("", axis.CartesianAxis)
+		base.toAx = axis.EmptyAxis("", axis.CartesianAxis)
 		base.rast = canvas.NewRasterWithPixels(base.PixelGenCartesian)
 		base.render = EmptyCartesianRenderer(base)
 	} else {
-		base.fromAx = EmptyAxis("", PolarPhiAxis)
-		base.toAx = EmptyAxis("", PolarRAxis)
+		base.fromAx = axis.EmptyAxis("", axis.PolarPhiAxis)
+		base.toAx = axis.EmptyAxis("", axis.PolarRAxis)
 		base.rast = canvas.NewRasterWithPixels(base.PixelGenPolar)
 		base.render = EmptyPolarRenderer(base)
 	}
@@ -117,12 +118,12 @@ func (base *BaseChart) DeleteSeries(name string) {
 	base.DataChange()
 }
 
-func (base *BaseChart) fromAxis() (from *Axis) {
+func (base *BaseChart) fromAxis() (from *axis.Axis) {
 	from = base.fromAx
 	return
 }
 
-func (base *BaseChart) toAxis() (to *Axis) {
+func (base *BaseChart) toAxis() (to *axis.Axis) {
 	to = base.toAx
 	return
 }
@@ -814,8 +815,9 @@ func (base *BaseChart) updateSeriesVariables() {
 	nFromMin, nFromMax := base.fromAx.NRange()
 	nToMin, nToMax := base.toAx.NRange()
 	catSize := (nFromMax - nFromMin) * 0.9
-	if len(base.fromAx.ticks) > 0 {
-		catSize = ((nFromMax - nFromMin) / float64(len(base.fromAx.ticks))) * 0.9
+	numCategories := len(base.fromAxis().CRange())
+	if numCategories > 0 {
+		catSize = ((nFromMax - nFromMin) / float64(numCategories)) * 0.9
 	}
 	barWidth := catSize
 	if nBarSeries > 0 {

@@ -1,6 +1,7 @@
 package chart
 
 import (
+	"github.com/s-daehling/fyne-charts/internal/axis"
 	"github.com/s-daehling/fyne-charts/internal/series"
 
 	"fyne.io/fyne/v2"
@@ -42,7 +43,7 @@ func (r *cartesianRenderer) Layout(size fyne.Size) {
 	vAxisTickLabelWidth := float32(0.0)
 	hAxisTickLabelHeight := float32(0.0)
 
-	var vAxis, hAxis *Axis
+	var vAxis, hAxis *axis.Axis
 	if r.transposed {
 		vAxis = r.chart.fromAxis()
 		hAxis = r.chart.toAxis()
@@ -77,18 +78,22 @@ func (r *cartesianRenderer) Layout(size fyne.Size) {
 	}
 
 	// determine the chart area
+	hMin, hMax := hAxis.NRange()
+	hOrigin := hAxis.NOrigin()
+	vMin, vMax := vAxis.NRange()
+	vOrigin := vAxis.NOrigin()
 	var area cartDrawingArea
-	area.hmin = hAxis.nMin
-	area.vmin = vAxis.nMin
+	area.hmin = hMin
+	area.vmin = vMin
 	area.minPos.X = r.margin + vAxisLabelWidth + vAxisTickLabelWidth + r.tickLength -
 		((size.Width - (r.tickLength + vAxisTickLabelWidth)) *
-			float32((hAxis.nOrigin-hAxis.nMin)/(hAxis.nMax-hAxis.nMin)))
+			float32((hOrigin-hMin)/(hMax-hMin)))
 	if area.minPos.X < r.margin+vAxisLabelWidth {
 		area.minPos.X = r.margin + vAxisLabelWidth
 	}
 	area.minPos.Y = size.Height - (r.margin + hAxisLabelHeight + hAxisTickLabelHeight + r.tickLength -
 		((size.Height - (r.tickLength + hAxisTickLabelHeight)) *
-			float32((vAxis.nOrigin-vAxis.nMin)/(vAxis.nMax-vAxis.nMin))))
+			float32((vOrigin-vMin)/(vMax-vMin))))
 	if area.minPos.Y > size.Height-r.margin-hAxisLabelHeight {
 		area.minPos.Y = size.Height - r.margin - hAxisLabelHeight
 	}
@@ -98,63 +103,65 @@ func (r *cartesianRenderer) Layout(size fyne.Size) {
 	r.chart.resize(area.maxPos.X-area.minPos.X, area.minPos.Y-area.maxPos.Y)
 
 	// calculate conversion factors from ccordinates to positions
-	area.hCoordToPos = (area.maxPos.X - area.minPos.X) / float32(hAxis.nMax-hAxis.nMin)
-	area.vCoordToPos = (area.minPos.Y - area.maxPos.Y) / float32(vAxis.nMax-vAxis.nMin)
+	area.hCoordToPos = (area.maxPos.X - area.minPos.X) / float32(hMax-hMin)
+	area.vCoordToPos = (area.minPos.Y - area.maxPos.Y) / float32(vMax-vMin)
 
 	// Place horizontal-Axis from hMin to hMax
+	hLine, _, hArrowOne, hArrowTwo := hAxis.Arrow()
 	if hAxText.Text != "" {
 		hAxLabel.Move(fyne.NewPos(area.minPos.X+((area.maxPos.X-area.minPos.X)/2)-hAxText.MinSize().Width/2,
 			size.Height-hAxText.MinSize().Height-r.margin))
 	}
-	hAxis.line.Position1 = cartesianCoordinatesToPosition(hAxis.nMin, vAxis.nOrigin, area)
-	hAxis.line.Position2 = cartesianCoordinatesToPosition(hAxis.nMax, vAxis.nOrigin, area)
-	hAxis.arrowOne.Position1 = fyne.NewPos(hAxis.line.Position2.X-10, hAxis.line.Position2.Y-5)
-	hAxis.arrowOne.Position2 = hAxis.line.Position2
-	hAxis.arrowTwo.Position1 = fyne.NewPos(hAxis.line.Position2.X-10, hAxis.line.Position2.Y+5)
-	hAxis.arrowTwo.Position2 = hAxis.line.Position2
+	hLine.Position1 = cartesianCoordinatesToPosition(hMin, vOrigin, area)
+	hLine.Position2 = cartesianCoordinatesToPosition(hMax, vOrigin, area)
+	hArrowOne.Position1 = fyne.NewPos(hLine.Position2.X-10, hLine.Position2.Y-5)
+	hArrowOne.Position2 = hLine.Position2
+	hArrowTwo.Position1 = fyne.NewPos(hLine.Position2.X-10, hLine.Position2.Y+5)
+	hArrowTwo.Position2 = hLine.Position2
 
 	// place horizontal ticks
 	th := hAxis.Ticks()
 	for i := range th {
 		if th[i].Line != nil {
-			th[i].Line.Position1 = cartesianCoordinatesToPosition(th[i].NLine, vAxis.nOrigin, area)
+			th[i].Line.Position1 = cartesianCoordinatesToPosition(th[i].NLine, vOrigin, area)
 			th[i].Line.Position2 = th[i].Line.Position1.AddXY(0, 5)
 		}
 		if th[i].SupLine != nil {
-			th[i].SupLine.Position1 = cartesianCoordinatesToPosition(th[i].NLine, vAxis.nMin, area)
-			th[i].SupLine.Position2 = cartesianCoordinatesToPosition(th[i].NLine, vAxis.nMax, area)
+			th[i].SupLine.Position1 = cartesianCoordinatesToPosition(th[i].NLine, vMin, area)
+			th[i].SupLine.Position2 = cartesianCoordinatesToPosition(th[i].NLine, vMax, area)
 		}
 		if th[i].Label != nil {
-			th[i].Label.Move(cartesianCoordinatesToPosition(th[i].NLabel, vAxis.nOrigin, area).AddXY(0, 5))
+			th[i].Label.Move(cartesianCoordinatesToPosition(th[i].NLabel, vOrigin, area).AddXY(0, 5))
 			th[i].Label.Alignment = fyne.TextAlignCenter
 		}
 	}
 
 	// Place vertical axis from vMin to vMax
+	vLine, _, vArrowOne, vArrowTwo := vAxis.Arrow()
 	if vAxText.Text != "" {
 		vAxLabel.Move(fyne.NewPos(r.margin, area.maxPos.Y+((area.minPos.Y-area.maxPos.Y)/2)-vAxText.MinSize().Width/2))
 	}
-	vAxis.line.Position1 = cartesianCoordinatesToPosition(hAxis.nOrigin, vAxis.nMin, area)
-	vAxis.line.Position2 = cartesianCoordinatesToPosition(hAxis.nOrigin, vAxis.nMax, area)
-	vAxis.arrowOne.Position1 = fyne.NewPos(vAxis.line.Position2.X-5, vAxis.line.Position2.Y+10)
-	vAxis.arrowOne.Position2 = vAxis.line.Position2
-	vAxis.arrowTwo.Position1 = fyne.NewPos(vAxis.line.Position2.X+5, vAxis.line.Position2.Y+10)
-	vAxis.arrowTwo.Position2 = vAxis.line.Position2
+	vLine.Position1 = cartesianCoordinatesToPosition(hOrigin, vMin, area)
+	vLine.Position2 = cartesianCoordinatesToPosition(hOrigin, vMax, area)
+	vArrowOne.Position1 = fyne.NewPos(vLine.Position2.X-5, vLine.Position2.Y+10)
+	vArrowOne.Position2 = vLine.Position2
+	vArrowTwo.Position1 = fyne.NewPos(vLine.Position2.X+5, vLine.Position2.Y+10)
+	vArrowTwo.Position2 = vLine.Position2
 
 	// place vertical ticks
 	vh := vAxis.Ticks()
 	for i := range vh {
 		if vh[i].Line != nil {
-			vh[i].Line.Position1 = cartesianCoordinatesToPosition(hAxis.nOrigin,
+			vh[i].Line.Position1 = cartesianCoordinatesToPosition(hOrigin,
 				vh[i].NLine, area)
 			vh[i].Line.Position2 = vh[i].Line.Position1.SubtractXY(5, 0)
 		}
 		if vh[i].SupLine != nil {
-			vh[i].SupLine.Position1 = cartesianCoordinatesToPosition(hAxis.nMin, vh[i].NLine, area)
-			vh[i].SupLine.Position2 = cartesianCoordinatesToPosition(hAxis.nMax, vh[i].NLine, area)
+			vh[i].SupLine.Position1 = cartesianCoordinatesToPosition(hMin, vh[i].NLine, area)
+			vh[i].SupLine.Position2 = cartesianCoordinatesToPosition(hMax, vh[i].NLine, area)
 		}
 		if vh[i].Label != nil {
-			vh[i].Label.Move(cartesianCoordinatesToPosition(hAxis.nOrigin,
+			vh[i].Label.Move(cartesianCoordinatesToPosition(hOrigin,
 				vh[i].NLabel, area).SubtractXY(5, vh[i].Label.MinSize().Height/2))
 			vh[i].Label.Alignment = fyne.TextAlignTrailing
 		}
@@ -242,7 +249,7 @@ func (r *cartesianRenderer) MinSize() fyne.Size {
 		legendWidth, legendHeight = series.LegendSize(les)
 	}
 
-	var vAxis, hAxis *Axis
+	var vAxis, hAxis *axis.Axis
 	if r.transposed {
 		vAxis = r.chart.fromAxis()
 		hAxis = r.chart.toAxis()
