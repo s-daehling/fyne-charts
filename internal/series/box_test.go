@@ -162,9 +162,9 @@ func TestBoxDeleteNumericalData(t *testing.T) {
 		ser.AddNumericalData(tt.input)
 		c, err := ser.DeleteNumericalDataInRange(tt.delMin, tt.delMax)
 		if err != nil && tt.expSuccess {
-			t.Errorf("deleteing data failed incorrectly, set %d, %s", i, err.Error())
+			t.Errorf("deleting data failed incorrectly, set %d, %s", i, err.Error())
 		} else if err == nil && !tt.expSuccess {
-			t.Errorf("deleteing data succeeded incorrectly, set %d", i)
+			t.Errorf("deleting data succeeded incorrectly, set %d", i)
 		}
 		if c != tt.expNumDeleted {
 			t.Errorf("wrong number of data deleted, set %d, exp %d, have %d", i, tt.expNumDeleted, c)
@@ -201,9 +201,9 @@ func TestBoxDeleteTemporalData(t *testing.T) {
 		ser.AddTemporalData(tt.input)
 		c, err := ser.DeleteTemporalDataInRange(tt.delMin, tt.delMax)
 		if err != nil && tt.expSuccess {
-			t.Errorf("deleteing data failed incorrectly, set %d, %s", i, err.Error())
+			t.Errorf("deleting data failed incorrectly, set %d, %s", i, err.Error())
 		} else if err == nil && !tt.expSuccess {
-			t.Errorf("deleteing data succeeded incorrectly, set %d", i)
+			t.Errorf("deleting data succeeded incorrectly, set %d", i)
 		}
 		if c != tt.expNumDeleted {
 			t.Errorf("wrong number of data deleted, set %d, exp %d, have %d", i, tt.expNumDeleted, c)
@@ -238,9 +238,9 @@ func TestBoxDeleteCategoricalData(t *testing.T) {
 		ser.AddCategoricalData(tt.input)
 		c, err := ser.DeleteCategoricalDataInRange(tt.del)
 		if err != nil && tt.expSuccess {
-			t.Errorf("deleteing data failed incorrectly, set %d, %s", i, err.Error())
+			t.Errorf("deleting data failed incorrectly, set %d, %s", i, err.Error())
 		} else if err == nil && !tt.expSuccess {
-			t.Errorf("deleteing data succeeded incorrectly, set %d", i)
+			t.Errorf("deleting data succeeded incorrectly, set %d", i)
 		}
 		if c != tt.expNumDeleted {
 			t.Errorf("wrong number of data deleted, set %d, exp %d, have %d", i, tt.expNumDeleted, c)

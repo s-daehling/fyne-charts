@@ -269,7 +269,7 @@ func (ser *CandleStickSeries) DeleteNumericalDataInRange(min float64, max float6
 		return
 	}
 	for i := range ser.data {
-		if ser.data[i].nEnd > min && ser.data[i].nStart < max {
+		if ser.data[i].nStart > min && ser.data[i].nEnd < max {
 			c++
 		} else {
 			finalData = append(finalData, ser.data[i])
@@ -329,7 +329,7 @@ func (ser *CandleStickSeries) DeleteTemporalDataInRange(min time.Time, max time.
 		return
 	}
 	for i := range ser.data {
-		if ser.data[i].tEnd.After(min) && ser.data[i].tStart.Before(max) {
+		if ser.data[i].tStart.After(min) && ser.data[i].tEnd.Before(max) {
 			c++
 		} else {
 			finalData = append(finalData, ser.data[i])

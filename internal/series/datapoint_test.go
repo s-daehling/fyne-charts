@@ -10,6 +10,181 @@ import (
 	"github.com/s-daehling/fyne-charts/pkg/data"
 )
 
+var ndpTestSetFull = []data.NumericalDataPoint{
+	{N: -1000, Val: -1000},
+	{N: -1000, Val: -0.000001},
+	{N: -1000, Val: 0},
+	{N: -1000, Val: 0.000001},
+	{N: -1000, Val: 1000},
+	{N: -0.000001, Val: -1000},
+	{N: -0.000001, Val: -0.000001},
+	{N: -0.000001, Val: 0},
+	{N: -0.000001, Val: 0.000001},
+	{N: -0.000001, Val: 1000},
+	{N: 0, Val: -1000},
+	{N: 0, Val: -0.000001},
+	{N: 0, Val: 0},
+	{N: 0, Val: 0.000001},
+	{N: 0, Val: 1000},
+	{N: 0.000001, Val: -1000},
+	{N: 0.000001, Val: -0.000001},
+	{N: 0.000001, Val: 0},
+	{N: 0.000001, Val: 0.000001},
+	{N: 0.000001, Val: 1000},
+	{N: math.Pi, Val: -1000},
+	{N: math.Pi, Val: -0.000001},
+	{N: math.Pi, Val: 0},
+	{N: math.Pi, Val: 0.000001},
+	{N: math.Pi, Val: 1000},
+	{N: 2 * math.Pi, Val: -1000},
+	{N: 2 * math.Pi, Val: -0.000001},
+	{N: 2 * math.Pi, Val: 0},
+	{N: 2 * math.Pi, Val: 0.000001},
+	{N: 2 * math.Pi, Val: 1000},
+	{N: 1000, Val: -1000},
+	{N: 1000, Val: -0.000001},
+	{N: 1000, Val: 0},
+	{N: 1000, Val: 0.000001},
+	{N: 1000, Val: 1000},
+}
+
+var ndpTestSetPosVal = []data.NumericalDataPoint{
+	{N: -1000, Val: 0},
+	{N: -1000, Val: 0.000001},
+	{N: -1000, Val: 1000},
+	{N: -0.000001, Val: 0},
+	{N: -0.000001, Val: 0.000001},
+	{N: -0.000001, Val: 1000},
+	{N: 0, Val: 0},
+	{N: 0, Val: 0.000001},
+	{N: 0, Val: 1000},
+	{N: 0.000001, Val: 0},
+	{N: 0.000001, Val: 0.000001},
+	{N: 0.000001, Val: 1000},
+	{N: math.Pi, Val: 0},
+	{N: math.Pi, Val: 0.000001},
+	{N: math.Pi, Val: 1000},
+	{N: 2 * math.Pi, Val: 0},
+	{N: 2 * math.Pi, Val: 0.000001},
+	{N: 2 * math.Pi, Val: 1000},
+	{N: 1000, Val: 0},
+	{N: 1000, Val: 0.000001},
+	{N: 1000, Val: 1000},
+}
+
+var ndpTestSetPosValPolar = []data.NumericalDataPoint{
+	{N: 0, Val: 0},
+	{N: 0, Val: 0.000001},
+	{N: 0, Val: 1000},
+	{N: 0.000001, Val: 0},
+	{N: 0.000001, Val: 0.000001},
+	{N: 0.000001, Val: 1000},
+	{N: math.Pi, Val: 0},
+	{N: math.Pi, Val: 0.000001},
+	{N: math.Pi, Val: 1000},
+	{N: 2 * math.Pi, Val: 0},
+	{N: 2 * math.Pi, Val: 0.000001},
+	{N: 2 * math.Pi, Val: 1000},
+}
+
+var tdpTestSetFull = []data.TemporalDataPoint{
+	{T: time.Now(), Val: -1000},
+	{T: time.Now().Add(-time.Hour), Val: -0.000001},
+	{T: time.Now().Add(time.Hour), Val: 0},
+	{T: time.Now().Add(-2 * time.Hour), Val: 0.000001},
+	{T: time.Now().Add(2 * time.Hour), Val: 1000},
+}
+
+var tdpTestSetPosVal = []data.TemporalDataPoint{
+	{T: time.Now().Add(time.Hour), Val: 0},
+	{T: time.Now().Add(-2 * time.Hour), Val: 0.000001},
+	{T: time.Now().Add(2 * time.Hour), Val: 1000},
+}
+
+var cdpTestSetFull = []data.CategoricalDataPoint{
+	{C: "one", Val: -1000},
+	{C: "two", Val: -0.000001},
+	{C: "three", Val: 0},
+	{C: "four", Val: 0.000001},
+	{C: "five", Val: 1000},
+}
+
+var cdpTestSetPosVal = []data.CategoricalDataPoint{
+	{C: "one", Val: 0},
+	{C: "two", Val: 0.000001},
+	{C: "three", Val: 1000},
+}
+
+func TestNumericalDataPointRangeCheck(t *testing.T) {
+	for _, tt := range ndpTestSetFull {
+		err := numericalDataPointRangeCheck([]data.NumericalDataPoint{tt}, false, false)
+		if err != nil {
+			t.Errorf("point incorrectly rejected; N: %f, Val: %f, noNegative: %t, polar: %t", tt.N, tt.Val, false, false)
+		}
+
+		err = numericalDataPointRangeCheck([]data.NumericalDataPoint{tt}, true, false)
+		if tt.Val < 0 {
+			if err == nil {
+				t.Errorf("point incorrectly accpeted; N: %f, Val: %f, noNegative: %t, polar: %t", tt.N, tt.Val, true, false)
+			}
+		} else if err != nil {
+			t.Errorf("point incorrectly rejected; N: %f, Val: %f, noNegative: %t, polar: %t", tt.N, tt.Val, true, false)
+		}
+
+		err = numericalDataPointRangeCheck([]data.NumericalDataPoint{tt}, false, true)
+		if tt.N < 0 || tt.N > 2*math.Pi {
+			if err == nil {
+				t.Errorf("point incorrectly accepted; N: %f, Val: %f, noNegative: %t, polar: %t", tt.N, tt.Val, false, true)
+			}
+		} else if err != nil {
+			t.Errorf("point incorrectly rejected; N: %f, Val: %f, noNegative: %t, polar: %t", tt.N, tt.Val, false, true)
+		}
+
+		err = numericalDataPointRangeCheck([]data.NumericalDataPoint{tt}, true, true)
+		if (tt.N < 0 || tt.N > 2*math.Pi) || tt.Val < 0 {
+			if err == nil {
+				t.Errorf("point incorrectly accepted; N: %f, Val: %f, noNegative: %t, polar: %t", tt.N, tt.Val, true, true)
+			}
+		} else if err != nil {
+			t.Errorf("point incorrectly rejected; N: %f, Val: %f, noNegative: %t, polar: %t", tt.N, tt.Val, true, true)
+		}
+	}
+}
+
+func TestTemporalDataPointRangeCheck(t *testing.T) {
+	for _, tt := range tdpTestSetFull {
+		err := temporalDataPointRangeCheck([]data.TemporalDataPoint{tt}, false)
+		if err != nil {
+			t.Errorf("point incorrectly rejected; T: %s, Val: %f, noNegative: %t", tt.T.String(), tt.Val, false)
+		}
+		err = temporalDataPointRangeCheck([]data.TemporalDataPoint{tt}, true)
+		if tt.Val < 0 {
+			if err == nil {
+				t.Errorf("point incorrectly accpeted; T: %s, Val: %f, noNegative: %t", tt.T.String(), tt.Val, true)
+			}
+		} else if err != nil {
+			t.Errorf("point incorrectly rejected; T: %s, Val: %f, noNegative: %t", tt.T.String(), tt.Val, true)
+		}
+	}
+}
+
+func TestCategoricalDataPointRangeCheck(t *testing.T) {
+	for _, tt := range cdpTestSetFull {
+		err := categoricalDataPointRangeCheck([]data.CategoricalDataPoint{tt}, false)
+		if err != nil {
+			t.Errorf("point incorrectly rejected; C: %s, Val: %f, noNegative: %t", tt.C, tt.Val, false)
+		}
+		err = categoricalDataPointRangeCheck([]data.CategoricalDataPoint{tt}, true)
+		if tt.Val < 0 {
+			if err == nil {
+				t.Errorf("point incorrectly accpeted; C: %s, Val: %f, noNegative: %t", tt.C, tt.Val, true)
+			}
+		} else if err != nil {
+			t.Errorf("point incorrectly rejected; C: %s, Val: %f, noNegative: %t", tt.C, tt.Val, true)
+		}
+	}
+}
+
 func TestDataPointAddNumericalData(t *testing.T) {
 	app.New()
 	var tests = []struct {
@@ -163,9 +338,9 @@ func TestDataPointDeleteNumericalData(t *testing.T) {
 		ser.AddNumericalData(tt.input)
 		c, err := ser.DeleteNumericalDataInRange(tt.delMin, tt.delMax)
 		if err != nil && tt.expSuccess {
-			t.Errorf("deleteing data failed incorrectly, set %d, %s", i, err.Error())
+			t.Errorf("deleting data failed incorrectly, set %d, %s", i, err.Error())
 		} else if err == nil && !tt.expSuccess {
-			t.Errorf("deleteing data succeeded incorrectly, set %d", i)
+			t.Errorf("deleting data succeeded incorrectly, set %d", i)
 		}
 		if c != tt.expNumDeleted {
 			t.Errorf("wrong number of data deleted, set %d, exp %d, have %d", i, tt.expNumDeleted, c)
@@ -207,9 +382,9 @@ func TestDataPointDeleteTemporalData(t *testing.T) {
 		ser.AddTemporalData(tt.input)
 		c, err := ser.DeleteTemporalDataInRange(tt.delMin, tt.delMax)
 		if err != nil && tt.expSuccess {
-			t.Errorf("deleteing data failed incorrectly, set %d, %s", i, err.Error())
+			t.Errorf("deleting data failed incorrectly, set %d, %s", i, err.Error())
 		} else if err == nil && !tt.expSuccess {
-			t.Errorf("deleteing data succeeded incorrectly, set %d", i)
+			t.Errorf("deleting data succeeded incorrectly, set %d", i)
 		}
 		if c != tt.expNumDeleted {
 			t.Errorf("wrong number of data deleted, set %d, exp %d, have %d", i, tt.expNumDeleted, c)
@@ -248,9 +423,9 @@ func TestDataPointDeleteCategoricalData(t *testing.T) {
 		ser.AddCategoricalData(tt.input)
 		c, err := ser.DeleteCategoricalDataInRange(tt.del)
 		if err != nil && tt.expSuccess {
-			t.Errorf("deleteing data failed incorrectly, set %d, %s", i, err.Error())
+			t.Errorf("deleting data failed incorrectly, set %d, %s", i, err.Error())
 		} else if err == nil && !tt.expSuccess {
-			t.Errorf("deleteing data succeeded incorrectly, set %d", i)
+			t.Errorf("deleting data succeeded incorrectly, set %d", i)
 		}
 		if c != tt.expNumDeleted {
 			t.Errorf("wrong number of data deleted, set %d, exp %d, have %d", i, tt.expNumDeleted, c)
