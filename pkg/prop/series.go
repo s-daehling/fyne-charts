@@ -1,4 +1,4 @@
-package chart
+package prop
 
 import (
 	"github.com/s-daehling/fyne-charts/internal/series"

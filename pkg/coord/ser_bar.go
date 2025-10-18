@@ -1,4 +1,4 @@
-package chart
+package coord
 
 import (
 	"image/color"
@@ -9,12 +9,12 @@ import (
 	"github.com/s-daehling/fyne-charts/pkg/data"
 )
 
-type boxSeries struct {
-	ser *series.BoxSeries
+type barSeries struct {
+	ser *series.BarSeries
 }
 
 // Name returns the name of the series
-func (bs boxSeries) Name() (n string) {
+func (bs barSeries) Name() (n string) {
 	if bs.ser == nil {
 		return
 	}
@@ -23,7 +23,7 @@ func (bs boxSeries) Name() (n string) {
 }
 
 // Show makes the elements of the series visible
-func (bs boxSeries) Show() {
+func (bs barSeries) Show() {
 	if bs.ser == nil {
 		return
 	}
@@ -31,7 +31,7 @@ func (bs boxSeries) Show() {
 }
 
 // Hide makes the elements of the series invisible
-func (bs boxSeries) Hide() {
+func (bs barSeries) Hide() {
 	if bs.ser == nil {
 		return
 	}
@@ -39,31 +39,15 @@ func (bs boxSeries) Hide() {
 }
 
 // SetColor changes the color of series elements
-func (bs boxSeries) SetColor(col color.Color) {
+func (bs barSeries) SetColor(col color.Color) {
 	if bs.ser == nil {
 		return
 	}
 	bs.ser.SetColor(col)
 }
 
-// SetLineWidth sets the width of the line
-func (bs boxSeries) SetLineWidth(lw float32) {
-	if bs.ser == nil {
-		return
-	}
-	bs.ser.SetLineWidth(lw)
-}
-
-// SetOutlierSize sets the size of the dots at outlier points
-func (bs boxSeries) SetOutlierSize(os float32) {
-	if bs.ser == nil {
-		return
-	}
-	bs.ser.SetOutlierSize(os)
-}
-
 // Clear deletes all data
-func (bs boxSeries) Clear() (err error) {
+func (bs barSeries) Clear() (err error) {
 	if bs.ser == nil {
 		return
 	}
@@ -71,15 +55,15 @@ func (bs boxSeries) Clear() (err error) {
 	return
 }
 
-// NumericalBoxSeries represents a box series over a numerical x-axis
-type NumericalBoxSeries struct {
-	boxSeries
+// NumericalBarSeries represents a scatter series over a numerical x-axis
+type NumericalBarSeries struct {
+	barSeries
 }
 
 // DeleteDataInRange deletes all data points with a x-coordinate greater than min and smaller than max
 // The return value gives the number of data points that have been removed
 // An error is returned if min>max
-func (nbs NumericalBoxSeries) DeleteDataInRange(min float64, max float64) (c int, err error) {
+func (nbs NumericalBarSeries) DeleteDataInRange(min float64, max float64) (c int, err error) {
 	if nbs.ser == nil {
 		return
 	}
@@ -93,7 +77,7 @@ func (nbs NumericalBoxSeries) DeleteDataInRange(min float64, max float64) (c int
 // AddData adds data points to the series.
 // The method does not check for duplicates (i.e. data points with same X)
 // The range of X and Val is not restricted
-func (nbs NumericalBoxSeries) AddData(input []data.NumericalBox) (err error) {
+func (nbs NumericalBarSeries) AddData(input []data.NumericalDataPoint) (err error) {
 	if nbs.ser == nil {
 		return
 	}
@@ -104,15 +88,28 @@ func (nbs NumericalBoxSeries) AddData(input []data.NumericalBox) (err error) {
 	return
 }
 
-// TemporalBoxSeries represents a box series over a temporal t-axis
-type TemporalBoxSeries struct {
-	boxSeries
+// SetBarWidth sets the width of the bars. The bars are centered around their X value of the data points
+// An error is returned in w < 0
+func (nbs NumericalBarSeries) SetBarWidth(w float64) (err error) {
+	if nbs.ser == nil {
+		return
+	}
+	err = nbs.ser.SetNumericalBarWidthAndShift(w, 0)
+	if err != nil {
+		return
+	}
+	return
+}
+
+// TemporalBarSeries represents a scatter series over a temporal t-axis
+type TemporalBarSeries struct {
+	barSeries
 }
 
 // DeleteDataInRange deletes all data points with a t-coordinate after min and before max.
 // The return value gives the number of data points that have been removed
 // An error is returned if min after max
-func (tbs TemporalBoxSeries) DeleteDataInRange(min time.Time, max time.Time) (c int, err error) {
+func (tbs TemporalBarSeries) DeleteDataInRange(min time.Time, max time.Time) (c int, err error) {
 	if tbs.ser == nil {
 		return
 	}
@@ -125,8 +122,8 @@ func (tbs TemporalBoxSeries) DeleteDataInRange(min time.Time, max time.Time) (c 
 
 // AddData adds data points to the series.
 // The method does not check for duplicates (i.e. data points with same T)
-// The range of T and values is not restricted
-func (tbs TemporalBoxSeries) AddData(input []data.TemporalBox) (err error) {
+// The range of T is not restricted. The range of Val is not restricted in a cartesian chart, but Val>=0 in a polar chart
+func (tbs TemporalBarSeries) AddData(input []data.TemporalDataPoint) (err error) {
 	if tbs.ser == nil {
 		return
 	}
@@ -137,15 +134,28 @@ func (tbs TemporalBoxSeries) AddData(input []data.TemporalBox) (err error) {
 	return
 }
 
-// CategoricalBoxSeries represents a box series over a categorical c-axis
-type CategoricalBoxSeries struct {
-	boxSeries
+// SetBarWidth sets the width of the bars. The bars are centered around their T value of the data points
+// An error is returned in w < 0
+func (tbs TemporalBarSeries) SetBarWidth(w time.Duration) (err error) {
+	if tbs.ser == nil {
+		return
+	}
+	err = tbs.ser.SetTemporalBarWidthAndShift(w, 0)
+	if err != nil {
+		return
+	}
+	return
+}
+
+// CategoricalBarSeries represents a bar series over a categorical c-axis
+type CategoricalBarSeries struct {
+	barSeries
 }
 
 // DeleteDataInRange deletes all data points with one of the given category
 // The return value gives the number of data points that have been removed
 // An error is returned if cat is empty
-func (cbs CategoricalBoxSeries) DeleteDataInRange(cat []string) (c int, err error) {
+func (cbs CategoricalBarSeries) DeleteDataInRange(cat []string) (c int, err error) {
 	if cbs.ser == nil {
 		return
 	}
@@ -159,8 +169,8 @@ func (cbs CategoricalBoxSeries) DeleteDataInRange(cat []string) (c int, err erro
 // AddData adds data points to the series.
 // The method checks for duplicates (i.e. data points with same C).
 // Data points with a C that already exists, will be ignored.
-// The range of C and values is not restricted.
-func (cbs CategoricalBoxSeries) AddData(input []data.CategoricalBox) (err error) {
+// The range of C is not restricted. The range of Val is not restricted in a cartesian chart, but Val>=0 in a polar chart
+func (cbs CategoricalBarSeries) AddData(input []data.CategoricalDataPoint) (err error) {
 	if cbs.ser == nil {
 		return
 	}

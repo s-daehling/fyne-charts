@@ -1,4 +1,4 @@
-package chart
+package coord
 
 import (
 	"github.com/s-daehling/fyne-charts/internal/series"

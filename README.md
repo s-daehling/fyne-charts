@@ -36,7 +36,7 @@ import (
     "math"
     "math/rand/v2"
 
-    "github.com/s-daehling/fyne-charts/pkg/chart"
+    "github.com/s-daehling/fyne-charts/pkg/coord"
     "github.com/s-daehling/fyne-charts/pkg/data"
 
     "fyne.io/fyne/v2"
@@ -47,7 +47,7 @@ func main() {
     myApp := app.New()
     myWindow := myApp.NewWindow("fyne-charts")
 
-    nc := chart.NewCartesianNumericalChart()
+    nc := coord.NewCartesianNumericalChart()
     _, err := nc.AddLineSeries("line", randomSine(50, 100, 40), true, color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff})
     if err != nil {
         panic(err)
@@ -126,7 +126,7 @@ Below you can find a screenshot with all six widgets and different series.
 ![example](docs/example.png "Example")
 
 In order to visualize one or multiple data series, first you must create an empty chart widget.
-Package `github.com/s-daehling/fyne-charts/pkg/chart` provides the six chart widget discussed above:
+Package `github.com/s-daehling/fyne-charts/pkg/coord` provides the six chart widget discussed above:
 
 * `CartesianNumericalChart`
 * `CartesianTemporalChart`
@@ -138,7 +138,7 @@ Package `github.com/s-daehling/fyne-charts/pkg/chart` provides the six chart wid
 For example, creating a chart with a cartesian coordinate system and numerical x-axis looks like this:
 
 ```go
-numChart := chart.NewCartesianNumericalChart()
+numChart := coord.NewCartesianNumericalChart()
 ```
 
 The data types for data to be visualized in the chart are defined in `github.com/s-daehling/fyne-charts/pkg/data`.
@@ -158,7 +158,7 @@ ser, err := numChart.AddScatterSeries("line", numData, color.RGBA{R: 0x00, G: 0x
 ```
 
 The method `AddScatterSeries` takes the name of the series, the data to be visualized and the color to be used.
-It returns a `chart.NumericalScatterSeries` object, that can be used to manipulate the series, and an error (e.g. when a series with the same name already exists).
+It returns a `coord.NumericalScatterSeries` object, that can be used to manipulate the series, and an error (e.g. when a series with the same name already exists).
 
 The series object provides methods to add/delete data or to change the appearance of the series. The following example deletes all data points within the range of 10 < N < 15.
 
@@ -193,15 +193,15 @@ Tapping the rectange toggles the visibility of the series in the chart.
 
 ### Proportional Data Charts
 
-Analogous to the coordinate system charts, also proportional data charts can be drawn in two ways:
+Analogous to the coordinate system charts, also proportional data charts can be drawn in two ways importing package `github.com/s-daehling/fyne-charts/pkg/prop`:
 
-* Stacked bars using `CartesianProportionalChart`
-* Pie/Doughnut using `PolarProportionalChart`
+* Horizontal Bars using `BarChart`
+* Pie/Doughnut using `PieChart`
 
 Creating a Pie/Doughnut chart is created like this:
 
 ```go
-propChart := chart.NewPolarProportionalChart()
+propChart := prop.NewPieChart()
 ```
 
 Adding a new series is done by:
@@ -219,7 +219,7 @@ propData := []data.ProportionalDataPoint{
         Col: color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff},
     },
 }
-_, err := propChart.AddProportionalSeries("pie", propData)
+_, err := propChart.AddSeries("pie", propData)
 ```
 
 The first data series is drawn as pie (full circle).

@@ -7,8 +7,9 @@ import (
 	"math/rand/v2"
 	"time"
 
-	"github.com/s-daehling/fyne-charts/pkg/chart"
+	"github.com/s-daehling/fyne-charts/pkg/coord"
 	"github.com/s-daehling/fyne-charts/pkg/data"
+	"github.com/s-daehling/fyne-charts/pkg/prop"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -57,8 +58,8 @@ func updateSineNumericalData() (ndp []data.NumericalDataPoint) {
 	return
 }
 
-func cartNumChart() (numChart *chart.CartesianNumericalChart) {
-	numChart = chart.NewCartesianNumericalChart()
+func cartNumChart() (numChart *coord.CartesianNumericalChart) {
+	numChart = coord.NewCartesianNumericalChart()
 	data1 := make([]data.NumericalDataPoint, 0)
 	for range 50 {
 		data1 = append(data1, randomNumericalDataPoint(-100, 0, -100, 0))
@@ -112,8 +113,8 @@ func cartNumChart() (numChart *chart.CartesianNumericalChart) {
 	return
 }
 
-func cartTempChart() (tempChart *chart.CartesianTemporalChart) {
-	tempChart = chart.NewCartesianTemporalChart()
+func cartTempChart() (tempChart *coord.CartesianTemporalChart) {
+	tempChart = coord.NewCartesianTemporalChart()
 	data1 := make([]data.TemporalCandleStick, 0)
 	tStart := time.Now()
 	close := 3.14
@@ -140,8 +141,8 @@ func cartTempChart() (tempChart *chart.CartesianTemporalChart) {
 	return
 }
 
-func cartCatChart() (catChart *chart.CartesianCategoricalChart) {
-	catChart = chart.NewCartesianCategoricalChart()
+func cartCatChart() (catChart *coord.CartesianCategoricalChart) {
+	catChart = coord.NewCartesianCategoricalChart()
 	data1 := []data.CategoricalDataPoint{
 		{
 			C:   "One",
@@ -227,8 +228,8 @@ func cartCatChart() (catChart *chart.CartesianCategoricalChart) {
 	return
 }
 
-func cartPropChart() (propChart *chart.CartesianProportionalChart) {
-	propChart = chart.NewCartesianProportionalChart()
+func cartPropChart() (propChart *prop.BarChart) {
+	propChart = prop.NewBarChart()
 	data1 := []data.ProportionalDataPoint{
 		{
 			Val: rand.Float64() * 222,
@@ -241,7 +242,7 @@ func cartPropChart() (propChart *chart.CartesianProportionalChart) {
 			Col: color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff},
 		},
 	}
-	propChart.AddProportionalSeries("proportion", data1)
+	propChart.AddSeries("proportion", data1)
 	data2 := []data.ProportionalDataPoint{
 		{
 			Val: rand.Float64() * 222,
@@ -259,13 +260,13 @@ func cartPropChart() (propChart *chart.CartesianProportionalChart) {
 			Col: color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff},
 		},
 	}
-	propChart.AddProportionalSeries("proportion 2", data2)
-	propChart.SetTitle("Cartesian Proportional Chart")
+	propChart.AddSeries("proportion 2", data2)
+	propChart.SetTitle("Proportional Bar Chart")
 	return
 }
 
-func polAngChart() (angChart *chart.PolarNumericalChart) {
-	angChart = chart.NewPolarNumericalChart()
+func polAngChart() (angChart *coord.PolarNumericalChart) {
+	angChart = coord.NewPolarNumericalChart()
 	data1 := make([]data.NumericalDataPoint, 0)
 	for range 100 {
 		data1 = append(data1, randomAngularDataPoint(63.777))
@@ -286,8 +287,8 @@ func polAngChart() (angChart *chart.PolarNumericalChart) {
 	return
 }
 
-func polTempChart() (tempChart *chart.PolarTemporalChart) {
-	tempChart = chart.NewPolarTemporalChart()
+func polTempChart() (tempChart *coord.PolarTemporalChart) {
+	tempChart = coord.NewPolarTemporalChart()
 	data1 := make([]data.TemporalDataPoint, 0)
 	for range 50 {
 		data1 = append(data1, randomTemporalDataPoint(time.Now(), time.Now().Add(time.Hour*50), 0, 111))
@@ -307,8 +308,8 @@ func polTempChart() (tempChart *chart.PolarTemporalChart) {
 	return
 }
 
-func polCatChart() (catChart *chart.PolarCategoricalChart) {
-	catChart = chart.NewPolarCategoricalChart()
+func polCatChart() (catChart *coord.PolarCategoricalChart) {
+	catChart = coord.NewPolarCategoricalChart()
 	data1 := []data.CategoricalDataPoint{
 		{
 			C:   "One",
@@ -371,8 +372,8 @@ func polCatChart() (catChart *chart.PolarCategoricalChart) {
 	return
 }
 
-func polPropChart() (propChart *chart.PolarProportionalChart) {
-	propChart = chart.NewPolarProportionalChart()
+func polPropChart() (propChart *prop.PieChart) {
+	propChart = prop.NewPieChart()
 	data1 := []data.ProportionalDataPoint{
 		{
 			Val: rand.Float64() * 222,
@@ -385,7 +386,7 @@ func polPropChart() (propChart *chart.PolarProportionalChart) {
 			Col: color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff},
 		},
 	}
-	propChart.AddProportionalSeries("proportion", data1)
+	propChart.AddSeries("proportion", data1)
 	data2 := []data.ProportionalDataPoint{
 		{
 			Val: rand.Float64() * 222,
@@ -403,8 +404,8 @@ func polPropChart() (propChart *chart.PolarProportionalChart) {
 			Col: color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff},
 		},
 	}
-	propChart.AddProportionalSeries("proportion2", data2)
-	propChart.SetTitle("Polar Proportional Chart")
+	propChart.AddSeries("proportion2", data2)
+	propChart.SetTitle("Proportional Pie/Doughnut Chart")
 	return
 }
 
