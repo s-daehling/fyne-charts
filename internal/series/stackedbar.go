@@ -5,6 +5,7 @@ import (
 	"image/color"
 
 	"fyne.io/fyne/v2/theme"
+	"github.com/s-daehling/fyne-charts/internal/renderer"
 	"github.com/s-daehling/fyne-charts/pkg/data"
 )
 
@@ -75,7 +76,7 @@ func (ser *StackedBarSeries) ConvertCtoN(cToN func(c string) (n float64)) {
 }
 
 func (ser *StackedBarSeries) CartesianRects(xMin float64, xMax float64, yMin float64,
-	yMax float64) (fs []CartesianRect) {
+	yMax float64) (fs []renderer.CartesianRect) {
 	for i := range ser.stack {
 		fs = append(fs, ser.stack[i].CartesianRects(xMin, xMax, yMin, yMax)...)
 	}
@@ -98,7 +99,7 @@ func (ser *StackedBarSeries) RasterColorPolar(phi float64, r float64, x float64,
 	return
 }
 
-func (ser *StackedBarSeries) LegendEntries() (les []LegendEntry) {
+func (ser *StackedBarSeries) LegendEntries() (les []renderer.LegendEntry) {
 	les = append(les, ser.baseSeries.LegendEntries()...)
 	for i := range ser.stack {
 		subLes := ser.stack[i].LegendEntries()

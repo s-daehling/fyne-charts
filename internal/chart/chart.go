@@ -5,6 +5,7 @@ import (
 	"math"
 
 	"github.com/s-daehling/fyne-charts/internal/axis"
+	"github.com/s-daehling/fyne-charts/internal/renderer"
 	"github.com/s-daehling/fyne-charts/internal/series"
 
 	"fyne.io/fyne/v2"
@@ -28,13 +29,7 @@ const (
 	Proportional FromType = "Proportional"
 )
 
-type Title struct {
-	Name  string
-	Label *canvas.Text
-}
-
 type BaseChart struct {
-	name          string
 	label         *canvas.Text
 	fromAx        *axis.Axis
 	toAx          *axis.Axis
@@ -65,12 +60,12 @@ func EmptyBaseChart(pType PlaneType, fType FromType) (base *BaseChart) {
 		base.fromAx = axis.EmptyAxis("", axis.CartesianAxis)
 		base.toAx = axis.EmptyAxis("", axis.CartesianAxis)
 		base.rast = canvas.NewRasterWithPixels(base.PixelGenCartesian)
-		base.render = EmptyCartesianRenderer(base)
+		base.render = renderer.EmptyCartesianRenderer(base)
 	} else {
 		base.fromAx = axis.EmptyAxis("", axis.PolarPhiAxis)
 		base.toAx = axis.EmptyAxis("", axis.PolarRAxis)
 		base.rast = canvas.NewRasterWithPixels(base.PixelGenPolar)
-		base.render = EmptyPolarRenderer(base)
+		base.render = renderer.EmptyPolarRenderer(base)
 	}
 	if fType == Proportional {
 		base.HideFromAxis()
@@ -119,36 +114,35 @@ func (base *BaseChart) DeleteSeries(name string) {
 	base.DataChange()
 }
 
-func (base *BaseChart) title() (ct Title) {
-	ct.Name = base.name
-	ct.Label = base.label
+func (base *BaseChart) Title() (ct *canvas.Text) {
+	ct = base.label
 	return
 }
 
-func (base *BaseChart) cartesianObjects() (canObj []fyne.CanvasObject) {
+func (base *BaseChart) CartesianObjects() (canObj []fyne.CanvasObject) {
 	// objects will be drawn in the same order as added here
 
 	// first get all objects from the series
 	if base.legendVisible {
-		lEntries := base.legendEntries()
+		lEntries := base.LegendEntries()
 		for i := range lEntries {
 			canObj = append(canObj, lEntries[i].Button, lEntries[i].Label)
 		}
 	}
 	canObj = append(canObj, base.rast)
-	rects := base.cartesianRects()
+	rects := base.CartesianRects()
 	for i := range rects {
 		canObj = append(canObj, rects[i].Rect)
 	}
-	edges := base.cartesianEdges()
+	edges := base.CartesianEdges()
 	for i := range edges {
 		canObj = append(canObj, edges[i].Line)
 	}
-	nodes := base.cartesianNodes()
+	nodes := base.CartesianNodes()
 	for i := range nodes {
 		canObj = append(canObj, nodes[i].Dot)
 	}
-	texts := base.cartesianTexts()
+	texts := base.CartesianTexts()
 	for i := range texts {
 		canObj = append(canObj, texts[i].Text)
 	}
@@ -158,13 +152,13 @@ func (base *BaseChart) cartesianObjects() (canObj []fyne.CanvasObject) {
 	canObj = append(canObj, base.toAx.Objects()...)
 
 	// add chart title and axis titles
-	if base.name != "" {
+	if base.label.Text != "" {
 		canObj = append(canObj, base.label)
 	}
 	return
 }
 
-func (base *BaseChart) cartesianNodes() (ns []series.CartesianNode) {
+func (base *BaseChart) CartesianNodes() (ns []renderer.CartesianNode) {
 	xMin, xMax := base.fromAx.NRange()
 	yMin, yMax := base.toAx.NRange()
 	for i := range base.series {
@@ -173,7 +167,7 @@ func (base *BaseChart) cartesianNodes() (ns []series.CartesianNode) {
 	return
 }
 
-func (base *BaseChart) cartesianEdges() (es []series.CartesianEdge) {
+func (base *BaseChart) CartesianEdges() (es []renderer.CartesianEdge) {
 	xMin, xMax := base.fromAx.NRange()
 	yMin, yMax := base.toAx.NRange()
 	for i := range base.series {
@@ -182,7 +176,7 @@ func (base *BaseChart) cartesianEdges() (es []series.CartesianEdge) {
 	return
 }
 
-func (base *BaseChart) cartesianRects() (as []series.CartesianRect) {
+func (base *BaseChart) CartesianRects() (as []renderer.CartesianRect) {
 	xMin, xMax := base.fromAx.NRange()
 	yMin, yMax := base.toAx.NRange()
 	for i := range base.series {
@@ -191,7 +185,7 @@ func (base *BaseChart) cartesianRects() (as []series.CartesianRect) {
 	return
 }
 
-func (base *BaseChart) cartesianTexts() (ts []series.CartesianText) {
+func (base *BaseChart) CartesianTexts() (ts []renderer.CartesianText) {
 	xMin, xMax := base.fromAx.NRange()
 	yMin, yMax := base.toAx.NRange()
 	for i := range base.series {
@@ -200,26 +194,26 @@ func (base *BaseChart) cartesianTexts() (ts []series.CartesianText) {
 	return
 }
 
-func (base *BaseChart) polarObjects() (canObj []fyne.CanvasObject) {
+func (base *BaseChart) PolarObjects() (canObj []fyne.CanvasObject) {
 	// objects will be drawn in the same order as added here
 
 	// first get all objects from the series
 	if base.legendVisible {
-		lEntries := base.legendEntries()
+		lEntries := base.LegendEntries()
 		for i := range lEntries {
 			canObj = append(canObj, lEntries[i].Button, lEntries[i].Label)
 		}
 	}
 	canObj = append(canObj, base.rast)
-	edges := base.polarEdges()
+	edges := base.PolarEdges()
 	for i := range edges {
 		canObj = append(canObj, edges[i].Line)
 	}
-	nodes := base.polarNodes()
+	nodes := base.PolarNodes()
 	for i := range nodes {
 		canObj = append(canObj, nodes[i].Dot)
 	}
-	texts := base.polarTexts()
+	texts := base.PolarTexts()
 	for i := range texts {
 		canObj = append(canObj, texts[i].Text)
 	}
@@ -229,13 +223,13 @@ func (base *BaseChart) polarObjects() (canObj []fyne.CanvasObject) {
 	canObj = append(canObj, base.toAx.Objects()...)
 
 	// add chart title and axis titles
-	if base.name != "" {
+	if base.label.Text != "" {
 		canObj = append(canObj, base.label)
 	}
 	return
 }
 
-func (base *BaseChart) polarNodes() (ns []series.PolarNode) {
+func (base *BaseChart) PolarNodes() (ns []renderer.PolarNode) {
 	phiMin, phiMax := base.fromAx.NRange()
 	rMin, rMax := base.toAx.NRange()
 	for i := range base.series {
@@ -244,7 +238,7 @@ func (base *BaseChart) polarNodes() (ns []series.PolarNode) {
 	return
 }
 
-func (base *BaseChart) polarEdges() (es []series.PolarEdge) {
+func (base *BaseChart) PolarEdges() (es []renderer.PolarEdge) {
 	phiMin, phiMax := base.fromAx.NRange()
 	rMin, rMax := base.toAx.NRange()
 	for i := range base.series {
@@ -253,7 +247,7 @@ func (base *BaseChart) polarEdges() (es []series.PolarEdge) {
 	return
 }
 
-func (base *BaseChart) polarTexts() (ts []series.PolarText) {
+func (base *BaseChart) PolarTexts() (ts []renderer.PolarText) {
 	phiMin, phiMax := base.fromAx.NRange()
 	rMin, rMax := base.toAx.NRange()
 	for i := range base.series {
@@ -262,12 +256,12 @@ func (base *BaseChart) polarTexts() (ts []series.PolarText) {
 	return
 }
 
-func (base *BaseChart) chartRaster() (rs *canvas.Raster) {
+func (base *BaseChart) Raster() (rs *canvas.Raster) {
 	rs = base.rast
 	return
 }
 
-func (base *BaseChart) legendEntries() (les []series.LegendEntry) {
+func (base *BaseChart) LegendEntries() (les []renderer.LegendEntry) {
 	for i := range base.series {
 		les = append(les, base.series[i].LegendEntries()...)
 	}
@@ -290,16 +284,7 @@ func (base *BaseChart) legendVisibility() (v bool) {
 }
 
 func (base *BaseChart) SetTitle(l string) {
-	base.name = l
-}
-
-func (base *BaseChart) refreshThemeColor() {
-	base.fromAx.RefreshThemeColor()
-	base.toAx.RefreshThemeColor()
-	base.label.Color = theme.Color(theme.ColorNameForeground)
-	for i := range base.series {
-		base.series[i].RefreshThemeColor()
-	}
+	base.label.Text = l
 }
 
 // func (base *BaseChart) hasChanged() (c bool) {

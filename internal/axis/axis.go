@@ -9,6 +9,7 @@ import (
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/driver/software"
 	"fyne.io/fyne/v2/theme"
+	"github.com/s-daehling/fyne-charts/internal/renderer"
 )
 
 type AxisType string
@@ -18,15 +19,6 @@ const (
 	PolarPhiAxis  AxisType = "PolarPhi"
 	PolarRAxis    AxisType = "PolarR"
 )
-
-type Tick struct {
-	NLabel    float64
-	Label     *canvas.Text
-	NLine     float64
-	Line      *canvas.Line
-	SupLine   *canvas.Line
-	SupCircle *canvas.Circle
-}
 
 type axisTick struct {
 	c              string
@@ -126,21 +118,20 @@ func (ax *Axis) Objects() (canObj []fyne.CanvasObject) {
 	return
 }
 
-func (ax *Axis) Arrow() (line *canvas.Line, circle *canvas.Circle, arrowOne *canvas.Line,
-	arrowTwo *canvas.Line) {
-	line = ax.line
-	circle = ax.circle
-	arrowOne = ax.arrowOne
-	arrowTwo = ax.arrowTwo
+func (ax *Axis) Arrow() (ar renderer.Arrow) {
+	ar.Line = ax.line
+	ar.Circle = ax.circle
+	ar.HeadOne = ax.arrowOne
+	ar.HeadTwo = ax.arrowTwo
 	return
 }
 
-func (ax *Axis) Ticks() (ts []Tick) {
+func (ax *Axis) Ticks() (ts []renderer.Tick) {
 	for i := range ax.ticks {
 		if ax.ticks[i].n < ax.nMin || ax.ticks[i].n > ax.nMax {
 			continue
 		}
-		t := Tick{
+		t := renderer.Tick{
 			NLabel:  ax.ticks[i].nLabel,
 			NLine:   ax.ticks[i].nLine,
 			Label:   nil,
@@ -221,6 +212,11 @@ func (ax *Axis) Show() {
 	}
 }
 
+func (ax *Axis) Visible() (b bool) {
+	b = ax.visible
+	return
+}
+
 func (ax *Axis) RefreshThemeColor() {
 	ax.col = theme.Color(theme.ColorNameForeground)
 	ax.supCol = theme.Color(theme.ColorNameShadow)
@@ -242,9 +238,9 @@ func (ax *Axis) SetLabel(l string) {
 	ax.labelText.Text = l
 }
 
-func (ax *Axis) Label() (label *canvas.Image, text *canvas.Text) {
-	label = ax.label
-	text = ax.labelText
+func (ax *Axis) Label() (l renderer.Label) {
+	l.Image = ax.label
+	l.Text = ax.labelText
 	return
 }
 

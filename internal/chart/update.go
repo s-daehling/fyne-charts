@@ -1,6 +1,9 @@
 package chart
 
-import "github.com/s-daehling/fyne-charts/internal/series"
+import (
+	"fyne.io/fyne/v2/theme"
+	"github.com/s-daehling/fyne-charts/internal/series"
+)
 
 func (base *BaseChart) DataChange() {
 	base.updateRangeAndOrigin()
@@ -13,7 +16,7 @@ func (base *BaseChart) RasterVisibilityChange() {
 	base.rast.Refresh()
 }
 
-func (base *BaseChart) resize(fromSpace float32, toSpace float32) {
+func (base *BaseChart) Resize(fromSpace float32, toSpace float32) {
 	base.fromAx.SetSpace(fromSpace)
 	base.toAx.SetSpace(toSpace)
 	base.updateAxTicks()
@@ -95,7 +98,7 @@ func (base *BaseChart) updateSeriesVariables() {
 	nFromMin, nFromMax := base.fromAx.NRange()
 	nToMin, nToMax := base.toAx.NRange()
 	catSize := (nFromMax - nFromMin) * 0.9
-	numCategories := len(base.fromAxis().CRange())
+	numCategories := len(base.fromAx.CRange())
 	if numCategories > 0 {
 		catSize = ((nFromMax - nFromMin) / float64(numCategories)) * 0.9
 	}
@@ -147,5 +150,14 @@ func (base *BaseChart) updateSeriesVariables() {
 		for i := range base.series {
 			base.series[i].ConvertPtoN(base.fromAx.PtoN)
 		}
+	}
+}
+
+func (base *BaseChart) RefreshThemeColor() {
+	base.fromAx.RefreshThemeColor()
+	base.toAx.RefreshThemeColor()
+	base.label.Color = theme.Color(theme.ColorNameForeground)
+	for i := range base.series {
+		base.series[i].RefreshThemeColor()
 	}
 }

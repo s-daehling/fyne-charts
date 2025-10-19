@@ -7,6 +7,7 @@ import (
 	"sort"
 	"time"
 
+	"github.com/s-daehling/fyne-charts/internal/renderer"
 	"github.com/s-daehling/fyne-charts/pkg/data"
 
 	"fyne.io/fyne/v2"
@@ -107,11 +108,11 @@ func (point *dataPoint) setTBarWidthAndShift(bw time.Duration, bs time.Duration)
 }
 
 func (point *dataPoint) cartesianNodes(xMin float64, xMax float64, yMin float64,
-	yMax float64) (ns []CartesianNode) {
+	yMax float64) (ns []renderer.CartesianNode) {
 	if !point.showDot || point.n < xMin || point.n > xMax || point.val < yMin || point.val > yMax {
 		return
 	}
-	ns = append(ns, CartesianNode{
+	ns = append(ns, renderer.CartesianNode{
 		X:   point.n,
 		Y:   point.val,
 		Dot: point.dot,
@@ -120,12 +121,12 @@ func (point *dataPoint) cartesianNodes(xMin float64, xMax float64, yMin float64,
 }
 
 func (point *dataPoint) polarNodes(phiMin float64, phiMax float64, rMin float64,
-	rMax float64) (ns []PolarNode) {
+	rMax float64) (ns []renderer.PolarNode) {
 	if !point.showDot || point.val > rMax || point.val < rMin || point.n < phiMin ||
 		point.n > phiMax {
 		return
 	}
-	ns = append(ns, PolarNode{
+	ns = append(ns, renderer.PolarNode{
 		Phi: point.n,
 		R:   point.val,
 		Dot: point.dot,
@@ -134,9 +135,9 @@ func (point *dataPoint) polarNodes(phiMin float64, phiMax float64, rMin float64,
 }
 
 func (point *dataPoint) cartesianEdges(firstPoint bool, prevX float64, prevY float64, xMin float64,
-	xMax float64, yMin float64, yMax float64) (es []CartesianEdge) {
+	xMax float64, yMin float64, yMax float64) (es []renderer.CartesianEdge) {
 	if point.showFromValBaseLine && !(point.n > xMax || point.n < xMin) {
-		es = append(es, CartesianEdge{
+		es = append(es, renderer.CartesianEdge{
 			X1:   point.n,
 			Y1:   math.Max(yMin, point.valBase),
 			X2:   point.n,
@@ -186,7 +187,7 @@ func (point *dataPoint) cartesianEdges(firstPoint bool, prevX float64, prevY flo
 		x2 = x1 + ((yMax - y1) * ((x2 - x1) / (y2 - y1)))
 		y2 = yMax
 	}
-	es = append(es, CartesianEdge{
+	es = append(es, renderer.CartesianEdge{
 		X1:   x1,
 		Y1:   y1,
 		X2:   x2,
@@ -197,9 +198,9 @@ func (point *dataPoint) cartesianEdges(firstPoint bool, prevX float64, prevY flo
 }
 
 func (point *dataPoint) polarEdges(firstPoint bool, prevPhi float64, prevR float64, phiMin float64,
-	phiMax float64, rMin float64, rMax float64) (es []PolarEdge) {
+	phiMax float64, rMin float64, rMax float64) (es []renderer.PolarEdge) {
 	if point.showFromValBaseLine && !(point.n < phiMin || point.n > phiMax || point.val < rMin) {
-		es = append(es, PolarEdge{
+		es = append(es, renderer.PolarEdge{
 			Phi1: point.n,
 			R1:   math.Max(rMin, point.valBase),
 			Phi2: point.n,
@@ -212,7 +213,7 @@ func (point *dataPoint) polarEdges(firstPoint bool, prevPhi float64, prevR float
 		point.n > phiMax {
 		return
 	}
-	es = append(es, PolarEdge{
+	es = append(es, renderer.PolarEdge{
 		Phi1: prevPhi,
 		R1:   prevR,
 		Phi2: point.n,
@@ -223,11 +224,11 @@ func (point *dataPoint) polarEdges(firstPoint bool, prevPhi float64, prevR float
 }
 
 func (point *dataPoint) cartesianRects(xMin float64, xMax float64, yMin float64,
-	yMax float64) (rs []CartesianRect) {
+	yMax float64) (rs []renderer.CartesianRect) {
 	if !point.showBar || point.n < xMin || point.n > xMax {
 		return
 	}
-	rs = append(rs, CartesianRect{
+	rs = append(rs, renderer.CartesianRect{
 		X1:   point.n + point.nBarShift - (point.nBarWidth / 2),
 		Y1:   math.Max(math.Min(point.valBase, point.valBase+point.val), yMin),
 		X2:   point.n + point.nBarShift + (point.nBarWidth / 2),
@@ -405,7 +406,7 @@ func (ser *dataPointSeries) ConvertTtoN(tToN func(t time.Time) (n float64)) {
 }
 
 func (ser *dataPointSeries) CartesianNodes(xMin float64, xMax float64, yMin float64,
-	yMax float64) (ns []CartesianNode) {
+	yMax float64) (ns []renderer.CartesianNode) {
 	for i := range ser.data {
 		ns = append(ns, ser.data[i].cartesianNodes(xMin, xMax, yMin, yMax)...)
 	}
@@ -413,7 +414,7 @@ func (ser *dataPointSeries) CartesianNodes(xMin float64, xMax float64, yMin floa
 }
 
 func (ser *dataPointSeries) CartesianEdges(xMin float64, xMax float64, yMin float64,
-	yMax float64) (es []CartesianEdge) {
+	yMax float64) (es []renderer.CartesianEdge) {
 	for i := range ser.data {
 		if i == 0 {
 			es = append(es, ser.data[i].cartesianEdges(true, 0, 0, xMin, xMax, yMin, yMax)...)
@@ -426,7 +427,7 @@ func (ser *dataPointSeries) CartesianEdges(xMin float64, xMax float64, yMin floa
 }
 
 func (ser *dataPointSeries) CartesianRects(xMin float64, xMax float64, yMin float64,
-	yMax float64) (fs []CartesianRect) {
+	yMax float64) (fs []renderer.CartesianRect) {
 	for i := range ser.data {
 		fs = append(fs, ser.data[i].cartesianRects(xMin, xMax, yMin, yMax)...)
 	}
@@ -434,7 +435,7 @@ func (ser *dataPointSeries) CartesianRects(xMin float64, xMax float64, yMin floa
 }
 
 func (ser *dataPointSeries) PolarNodes(phiMin float64, phiMax float64, rMin float64,
-	rMax float64) (ns []PolarNode) {
+	rMax float64) (ns []renderer.PolarNode) {
 	for i := range ser.data {
 		ns = append(ns, ser.data[i].polarNodes(phiMin, phiMax, rMin, rMax)...)
 	}
@@ -442,7 +443,7 @@ func (ser *dataPointSeries) PolarNodes(phiMin float64, phiMax float64, rMin floa
 }
 
 func (ser *dataPointSeries) PolarEdges(phiMin float64, phiMax float64, rMin float64,
-	rMax float64) (es []PolarEdge) {
+	rMax float64) (es []renderer.PolarEdge) {
 	for i := range ser.data {
 		if i == 0 {
 			es = append(es, ser.data[i].polarEdges(true, 0, 0, phiMin, phiMax, rMin, rMax)...)

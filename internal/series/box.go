@@ -5,6 +5,7 @@ import (
 	"image/color"
 	"time"
 
+	"github.com/s-daehling/fyne-charts/internal/renderer"
 	"github.com/s-daehling/fyne-charts/pkg/data"
 
 	"fyne.io/fyne/v2"
@@ -106,7 +107,7 @@ func (point *boxPoint) setWidth(width float64) {
 }
 
 func (point *boxPoint) cartesianNodes(xMin float64, xMax float64, yMin float64,
-	yMax float64) (ns []CartesianNode) {
+	yMax float64) (ns []renderer.CartesianNode) {
 	if point.n < xMin || point.n > xMax || point.min < yMin || point.max > yMax {
 		return
 	}
@@ -114,7 +115,7 @@ func (point *boxPoint) cartesianNodes(xMin float64, xMax float64, yMin float64,
 		if point.outlier[i] < yMin || point.outlier[i] > yMax {
 			continue
 		}
-		n := CartesianNode{
+		n := renderer.CartesianNode{
 			X:   point.n,
 			Y:   point.outlier[i],
 			Dot: point.outlierDots[i],
@@ -125,11 +126,11 @@ func (point *boxPoint) cartesianNodes(xMin float64, xMax float64, yMin float64,
 }
 
 func (point *boxPoint) cartesianEdges(xMin float64, xMax float64, yMin float64,
-	yMax float64) (es []CartesianEdge) {
+	yMax float64) (es []renderer.CartesianEdge) {
 	if point.n < xMin || point.n > xMax || point.min < yMin || point.max > yMax {
 		return
 	}
-	e1 := CartesianEdge{
+	e1 := renderer.CartesianEdge{
 		X1:   point.n - (point.width / 2),
 		Y1:   point.max,
 		X2:   point.n + (point.width / 2),
@@ -137,7 +138,7 @@ func (point *boxPoint) cartesianEdges(xMin float64, xMax float64, yMin float64,
 		Line: point.maxLine,
 	}
 	es = append(es, e1)
-	e2 := CartesianEdge{
+	e2 := renderer.CartesianEdge{
 		X1:   point.n,
 		Y1:   point.thirdQuart,
 		X2:   point.n,
@@ -145,7 +146,7 @@ func (point *boxPoint) cartesianEdges(xMin float64, xMax float64, yMin float64,
 		Line: point.upperWhisker,
 	}
 	es = append(es, e2)
-	e3 := CartesianEdge{
+	e3 := renderer.CartesianEdge{
 		X1:   point.n - (point.width / 2),
 		Y1:   point.median,
 		X2:   point.n + (point.width / 2),
@@ -153,7 +154,7 @@ func (point *boxPoint) cartesianEdges(xMin float64, xMax float64, yMin float64,
 		Line: point.medianLine,
 	}
 	es = append(es, e3)
-	e4 := CartesianEdge{
+	e4 := renderer.CartesianEdge{
 		X1:   point.n,
 		Y1:   point.min,
 		X2:   point.n,
@@ -161,7 +162,7 @@ func (point *boxPoint) cartesianEdges(xMin float64, xMax float64, yMin float64,
 		Line: point.lowerWhisker,
 	}
 	es = append(es, e4)
-	e5 := CartesianEdge{
+	e5 := renderer.CartesianEdge{
 		X1:   point.n - (point.width / 2),
 		Y1:   point.min,
 		X2:   point.n + (point.width / 2),
@@ -173,11 +174,11 @@ func (point *boxPoint) cartesianEdges(xMin float64, xMax float64, yMin float64,
 }
 
 func (point *boxPoint) cartesianRects(xMin float64, xMax float64,
-	yMin float64, yMax float64) (as []CartesianRect) {
+	yMin float64, yMax float64) (as []renderer.CartesianRect) {
 	if point.n < xMin || point.n > xMax || point.min < yMin || point.max > yMax {
 		return
 	}
-	a := CartesianRect{
+	a := renderer.CartesianRect{
 		X1:   point.n - (point.width / 2),
 		Y1:   point.firstQuart,
 		X2:   point.n + (point.width / 2),
@@ -287,7 +288,7 @@ func (ser *BoxSeries) ConvertTtoN(tToN func(t time.Time) (n float64)) {
 }
 
 func (ser *BoxSeries) CartesianNodes(xMin float64, xMax float64, yMin float64,
-	yMax float64) (ns []CartesianNode) {
+	yMax float64) (ns []renderer.CartesianNode) {
 	for i := range ser.data {
 		ns = append(ns, ser.data[i].cartesianNodes(xMin, xMax, yMin, yMax)...)
 	}
@@ -295,7 +296,7 @@ func (ser *BoxSeries) CartesianNodes(xMin float64, xMax float64, yMin float64,
 }
 
 func (ser *BoxSeries) CartesianEdges(xMin float64, xMax float64, yMin float64,
-	yMax float64) (es []CartesianEdge) {
+	yMax float64) (es []renderer.CartesianEdge) {
 	for i := range ser.data {
 		es = append(es, ser.data[i].cartesianEdges(xMin, xMax, yMin, yMax)...)
 	}
@@ -303,7 +304,7 @@ func (ser *BoxSeries) CartesianEdges(xMin float64, xMax float64, yMin float64,
 }
 
 func (ser *BoxSeries) CartesianRects(xMin float64, xMax float64, yMin float64,
-	yMax float64) (as []CartesianRect) {
+	yMax float64) (as []renderer.CartesianRect) {
 	for i := range ser.data {
 		as = append(as, ser.data[i].cartesianRects(xMin, xMax, yMin, yMax)...)
 	}
@@ -349,8 +350,7 @@ func (ser *BoxSeries) toggleView() {
 // SetColor changes the color of the bar series
 func (ser *BoxSeries) SetColor(col color.Color) {
 	ser.color = col
-	ser.legendButton.color = col
-	ser.legendButton.rect.FillColor = col
+	ser.legendButton.SetColor(col)
 	for i := range ser.data {
 		ser.data[i].setColor(col)
 	}

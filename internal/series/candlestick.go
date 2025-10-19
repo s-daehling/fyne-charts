@@ -5,6 +5,7 @@ import (
 	"image/color"
 	"time"
 
+	"github.com/s-daehling/fyne-charts/internal/renderer"
 	"github.com/s-daehling/fyne-charts/pkg/data"
 
 	"fyne.io/fyne/v2/canvas"
@@ -53,7 +54,7 @@ func (point *candleStickPoint) setLineWidth(lw float32) {
 }
 
 func (point *candleStickPoint) cartesianEdges(xMin float64, xMax float64, yMin float64,
-	yMax float64) (es []CartesianEdge) {
+	yMax float64) (es []renderer.CartesianEdge) {
 	if point.nEnd > xMax || point.nStart < xMin || point.high > yMax || point.low < yMin {
 		// point out of range
 		return
@@ -64,7 +65,7 @@ func (point *candleStickPoint) cartesianEdges(xMin float64, xMax float64, yMin f
 		cMax = point.close
 		cMin = point.open
 	}
-	e1 := CartesianEdge{
+	e1 := renderer.CartesianEdge{
 		X1:   (point.nEnd + point.nStart) / 2,
 		Y1:   cMax,
 		X2:   (point.nEnd + point.nStart) / 2,
@@ -72,7 +73,7 @@ func (point *candleStickPoint) cartesianEdges(xMin float64, xMax float64, yMin f
 		Line: point.upperLine,
 	}
 	es = append(es, e1)
-	e2 := CartesianEdge{
+	e2 := renderer.CartesianEdge{
 		X1:   (point.nEnd + point.nStart) / 2,
 		Y1:   point.low,
 		X2:   (point.nEnd + point.nStart) / 2,
@@ -84,7 +85,7 @@ func (point *candleStickPoint) cartesianEdges(xMin float64, xMax float64, yMin f
 }
 
 func (point *candleStickPoint) cartesianRects(xMin float64, xMax float64, yMin float64,
-	yMax float64) (as []CartesianRect) {
+	yMax float64) (as []renderer.CartesianRect) {
 	if point.nEnd > xMax || point.nStart < xMin || point.high > yMax || point.low < yMin {
 		// point out of range
 		return
@@ -97,7 +98,7 @@ func (point *candleStickPoint) cartesianRects(xMin float64, xMax float64, yMin f
 		cMin = point.open
 		point.candle.FillColor = color.RGBA{R: 0x00, G: 0x88, B: 0x00, A: 0xff}
 	}
-	a := CartesianRect{
+	a := renderer.CartesianRect{
 		X1:   point.nStart,
 		Y1:   cMin,
 		X2:   point.nEnd,
@@ -187,7 +188,7 @@ func (ser *CandleStickSeries) ConvertTtoN(tToN func(t time.Time) (n float64)) {
 }
 
 func (ser *CandleStickSeries) CartesianEdges(xMin float64, xMax float64, yMin float64,
-	yMax float64) (es []CartesianEdge) {
+	yMax float64) (es []renderer.CartesianEdge) {
 	for i := range ser.data {
 		es = append(es, ser.data[i].cartesianEdges(xMin, xMax, yMin, yMax)...)
 	}
@@ -195,7 +196,7 @@ func (ser *CandleStickSeries) CartesianEdges(xMin float64, xMax float64, yMin fl
 }
 
 func (ser *CandleStickSeries) CartesianRects(xMin float64, xMax float64, yMin float64,
-	yMax float64) (fs []CartesianRect) {
+	yMax float64) (fs []renderer.CartesianRect) {
 	for i := range ser.data {
 		fs = append(fs, ser.data[i].cartesianRects(xMin, xMax, yMin, yMax)...)
 	}
