@@ -1,12 +1,12 @@
-package chart
+package coord
 
 import (
 	"image/color"
 	"math"
 
-	"github.com/s-daehling/fyne-charts/internal/axis"
+	"github.com/s-daehling/fyne-charts/internal/coord/axis"
+	"github.com/s-daehling/fyne-charts/internal/coord/series"
 	"github.com/s-daehling/fyne-charts/internal/renderer"
-	"github.com/s-daehling/fyne-charts/internal/series"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
@@ -123,11 +123,9 @@ func (base *BaseChart) CartesianObjects() (canObj []fyne.CanvasObject) {
 	// objects will be drawn in the same order as added here
 
 	// first get all objects from the series
-	if base.legendVisible {
-		lEntries := base.LegendEntries()
-		for i := range lEntries {
-			canObj = append(canObj, lEntries[i].Button, lEntries[i].Label)
-		}
+	lEntries := base.LegendEntries()
+	for i := range lEntries {
+		canObj = append(canObj, lEntries[i].Button, lEntries[i].Label)
 	}
 	canObj = append(canObj, base.rast)
 	rects := base.CartesianRects()
@@ -198,11 +196,9 @@ func (base *BaseChart) PolarObjects() (canObj []fyne.CanvasObject) {
 	// objects will be drawn in the same order as added here
 
 	// first get all objects from the series
-	if base.legendVisible {
-		lEntries := base.LegendEntries()
-		for i := range lEntries {
-			canObj = append(canObj, lEntries[i].Button, lEntries[i].Label)
-		}
+	lEntries := base.LegendEntries()
+	for i := range lEntries {
+		canObj = append(canObj, lEntries[i].Button, lEntries[i].Label)
 	}
 	canObj = append(canObj, base.rast)
 	edges := base.PolarEdges()
@@ -262,6 +258,9 @@ func (base *BaseChart) Raster() (rs *canvas.Raster) {
 }
 
 func (base *BaseChart) LegendEntries() (les []renderer.LegendEntry) {
+	if !base.legendVisible {
+		return
+	}
 	for i := range base.series {
 		les = append(les, base.series[i].LegendEntries()...)
 	}

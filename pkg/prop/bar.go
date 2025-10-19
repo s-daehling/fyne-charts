@@ -1,7 +1,7 @@
 package prop
 
 import (
-	"github.com/s-daehling/fyne-charts/internal/chart"
+	"github.com/s-daehling/fyne-charts/internal/coord"
 
 	"github.com/s-daehling/fyne-charts/pkg/data"
 
@@ -11,14 +11,14 @@ import (
 
 // BarChart implements a cartesian plane with one proportional axis
 type BarChart struct {
-	base *chart.BaseChart
+	base *coord.BaseChart
 	widget.BaseWidget
 }
 
 // NewBarChart returns an initialized CartesianProportionalChart
 func NewBarChart() (propChart *BarChart) {
 	propChart = &BarChart{
-		base: chart.EmptyBaseChart(chart.CartesianPlane, chart.Proportional),
+		base: coord.EmptyBaseChart(coord.CartesianPlane, coord.Proportional),
 	}
 	propChart.ExtendBaseWidget(propChart)
 	return

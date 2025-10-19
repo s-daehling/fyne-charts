@@ -3,8 +3,7 @@ package coord
 import (
 	"image/color"
 
-	"github.com/s-daehling/fyne-charts/internal/chart"
-
+	"github.com/s-daehling/fyne-charts/internal/coord"
 	"github.com/s-daehling/fyne-charts/pkg/data"
 
 	"fyne.io/fyne/v2"
@@ -13,14 +12,14 @@ import (
 
 // PolarNumericalChart implements a polar plane with one numerical phi-axis and one numerical r-axis
 type PolarNumericalChart struct {
-	base *chart.BaseChart
+	base *coord.BaseChart
 	widget.BaseWidget
 }
 
 // NewPolarNumericalChart returns an initialized PolarNumericalChart
 func NewPolarNumericalChart() (numChart *PolarNumericalChart) {
 	numChart = &PolarNumericalChart{
-		base: chart.EmptyBaseChart(chart.PolarPlane, chart.Numerical),
+		base: coord.EmptyBaseChart(coord.PolarPlane, coord.Numerical),
 	}
 	numChart.ExtendBaseWidget(numChart)
 	return

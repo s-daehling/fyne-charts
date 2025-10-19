@@ -4,8 +4,7 @@ import (
 	"image/color"
 	"time"
 
-	"github.com/s-daehling/fyne-charts/internal/chart"
-
+	"github.com/s-daehling/fyne-charts/internal/coord"
 	"github.com/s-daehling/fyne-charts/pkg/data"
 
 	"fyne.io/fyne/v2"
@@ -14,14 +13,14 @@ import (
 
 // PolarTemporalChart implements a polar plane with one temporal t-axis and one numerical r-axis
 type PolarTemporalChart struct {
-	base *chart.BaseChart
+	base *coord.BaseChart
 	widget.BaseWidget
 }
 
 // NewPolarTemporalChart returns an initialized PolarTemporalChart
 func NewPolarTemporalChart() (tempChart *PolarTemporalChart) {
 	tempChart = &PolarTemporalChart{
-		base: chart.EmptyBaseChart(chart.PolarPlane, chart.Temporal),
+		base: coord.EmptyBaseChart(coord.PolarPlane, coord.Temporal),
 	}
 	tempChart.ExtendBaseWidget(tempChart)
 	return

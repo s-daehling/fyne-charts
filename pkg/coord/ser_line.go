@@ -4,7 +4,7 @@ import (
 	"image/color"
 	"time"
 
-	"github.com/s-daehling/fyne-charts/internal/series"
+	"github.com/s-daehling/fyne-charts/internal/coord/series"
 
 	"github.com/s-daehling/fyne-charts/pkg/data"
 )

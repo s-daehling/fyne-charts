@@ -3,7 +3,7 @@ package coord
 import (
 	"image/color"
 
-	"github.com/s-daehling/fyne-charts/internal/chart"
+	"github.com/s-daehling/fyne-charts/internal/coord"
 
 	"github.com/s-daehling/fyne-charts/pkg/data"
 
@@ -13,14 +13,14 @@ import (
 
 // CartesianNumericalChart implements a cartesian plane with two numerical axes x and y
 type CartesianNumericalChart struct {
-	base *chart.BaseChart
+	base *coord.BaseChart
 	widget.BaseWidget
 }
 
 // NewCartesianNumericalChart returns an initialized CartesianNumericalChart
 func NewCartesianNumericalChart() (numChart *CartesianNumericalChart) {
 	numChart = &CartesianNumericalChart{
-		base: chart.EmptyBaseChart(chart.CartesianPlane, chart.Numerical),
+		base: coord.EmptyBaseChart(coord.CartesianPlane, coord.Numerical),
 	}
 	numChart.ExtendBaseWidget(numChart)
 	return

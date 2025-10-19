@@ -4,7 +4,7 @@ import (
 	"image/color"
 	"time"
 
-	"github.com/s-daehling/fyne-charts/internal/chart"
+	"github.com/s-daehling/fyne-charts/internal/coord"
 
 	"github.com/s-daehling/fyne-charts/pkg/data"
 
@@ -14,14 +14,14 @@ import (
 
 // CartesianTemporalChart implements a cartesian plane with a temporal t-axis and a numerical y-axis
 type CartesianTemporalChart struct {
-	base *chart.BaseChart
+	base *coord.BaseChart
 	widget.BaseWidget
 }
 
 // NewCartesianTemporalChart returns an initialized CartesianTemporalChart
 func NewCartesianTemporalChart() (tempChart *CartesianTemporalChart) {
 	tempChart = &CartesianTemporalChart{
-		base: chart.EmptyBaseChart(chart.CartesianPlane, chart.Temporal),
+		base: coord.EmptyBaseChart(coord.CartesianPlane, coord.Temporal),
 	}
 	tempChart.ExtendBaseWidget(tempChart)
 	return

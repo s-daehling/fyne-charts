@@ -3,8 +3,7 @@ package coord
 import (
 	"image/color"
 
-	"github.com/s-daehling/fyne-charts/internal/chart"
-
+	"github.com/s-daehling/fyne-charts/internal/coord"
 	"github.com/s-daehling/fyne-charts/pkg/data"
 
 	"fyne.io/fyne/v2"
@@ -13,14 +12,14 @@ import (
 
 // CartesianCategoricalChart implements a cartesian plane with a categorical c-axis and a numerical y-axis
 type CartesianCategoricalChart struct {
-	base *chart.BaseChart
+	base *coord.BaseChart
 	widget.BaseWidget
 }
 
 // NewCartesianCategoricalChart returns an initialized CategoricalChart
 func NewCartesianCategoricalChart() (catChart *CartesianCategoricalChart) {
 	catChart = &CartesianCategoricalChart{
-		base: chart.EmptyBaseChart(chart.CartesianPlane, chart.Categorical),
+		base: coord.EmptyBaseChart(coord.CartesianPlane, coord.Categorical),
 	}
 	catChart.ExtendBaseWidget(catChart)
 	return

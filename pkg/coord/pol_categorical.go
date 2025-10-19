@@ -3,8 +3,7 @@ package coord
 import (
 	"image/color"
 
-	"github.com/s-daehling/fyne-charts/internal/chart"
-
+	"github.com/s-daehling/fyne-charts/internal/coord"
 	"github.com/s-daehling/fyne-charts/pkg/data"
 
 	"fyne.io/fyne/v2"
@@ -13,14 +12,14 @@ import (
 
 // PolarCategoricalChart implements a polar plane with one categorical c-axis and one numerical r-axis
 type PolarCategoricalChart struct {
-	base *chart.BaseChart
+	base *coord.BaseChart
 	widget.BaseWidget
 }
 
 // NewPolarCategoricalChart returns an initialized PolarCategoricalChart
 func NewPolarCategoricalChart() (catChart *PolarCategoricalChart) {
 	catChart = &PolarCategoricalChart{
-		base: chart.EmptyBaseChart(chart.PolarPlane, chart.Categorical),
+		base: coord.EmptyBaseChart(coord.PolarPlane, coord.Categorical),
 	}
 	catChart.ExtendBaseWidget(catChart)
 	return

@@ -1,8 +1,7 @@
 package prop
 
 import (
-	"github.com/s-daehling/fyne-charts/internal/chart"
-
+	"github.com/s-daehling/fyne-charts/internal/coord"
 	"github.com/s-daehling/fyne-charts/pkg/data"
 
 	"fyne.io/fyne/v2"
@@ -11,14 +10,14 @@ import (
 
 // PieChart implements a polar plane with one proportional axis
 type PieChart struct {
-	base *chart.BaseChart
+	base *coord.BaseChart
 	widget.BaseWidget
 }
 
 // NewPieChart returns an initialized PolarProportionalChart
 func NewPieChart() (propChart *PieChart) {
 	propChart = &PieChart{
-		base: chart.EmptyBaseChart(chart.PolarPlane, chart.Proportional),
+		base: coord.EmptyBaseChart(coord.PolarPlane, coord.Proportional),
 	}
 	propChart.ExtendBaseWidget(propChart)
 	return
