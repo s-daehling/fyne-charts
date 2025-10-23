@@ -1,14 +1,13 @@
 package prop
 
 import (
-	"github.com/s-daehling/fyne-charts/internal/coord/series"
-
+	"github.com/s-daehling/fyne-charts/internal/prop"
 	"github.com/s-daehling/fyne-charts/pkg/data"
 )
 
 // ProportionalSeries represents a proportional series over a proportional axis
 type ProportionalSeries struct {
-	ser *series.ProportionalSeries
+	ser *prop.Series
 }
 
 // Name returns the name of the series

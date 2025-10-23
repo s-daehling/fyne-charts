@@ -245,8 +245,10 @@ func (r *Polar) Layout(size fyne.Size) {
 
 	// place raster
 	rs := r.chart.Raster()
-	rs.Move(fyne.NewPos(area.zeroPos.X-area.radius, area.zeroPos.Y-area.radius))
-	rs.Resize(fyne.NewSize(2*area.radius, 2*area.radius))
+	if rs != nil {
+		rs.Move(fyne.NewPos(area.zeroPos.X-area.radius, area.zeroPos.Y-area.radius))
+		rs.Resize(fyne.NewSize(2*area.radius, 2*area.radius))
+	}
 }
 
 // MinSize calculates the minimum space required to display the chart

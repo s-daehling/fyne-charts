@@ -316,17 +316,3 @@ func (base *BaseChart) AddCategoricalStackedBarSeries(name string,
 	ser = sbSeries
 	return
 }
-
-func (base *BaseChart) AddProportionalSeries(name string, points []data.ProportionalDataPoint) (ser *series.ProportionalSeries, err error) {
-	pSeries := series.EmptyProportionalSeries(base, name, base.planeType == PolarPlane)
-	err = pSeries.AddData(points)
-	if err != nil {
-		return
-	}
-	err = base.addSeriesIfNotExist(pSeries)
-	if err != nil {
-		return
-	}
-	ser = pSeries
-	return
-}

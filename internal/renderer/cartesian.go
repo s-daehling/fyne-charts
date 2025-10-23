@@ -228,8 +228,10 @@ func (r *Cartesian) Layout(size fyne.Size) {
 
 	// place raster
 	rs := r.chart.Raster()
-	rs.Move(fyne.NewPos(area.minPos.X, area.maxPos.Y))
-	rs.Resize(fyne.NewSize(area.maxPos.X-area.minPos.X, area.minPos.Y-area.maxPos.Y))
+	if rs != nil {
+		rs.Move(fyne.NewPos(area.minPos.X, area.maxPos.Y))
+		rs.Resize(fyne.NewSize(area.maxPos.X-area.minPos.X, area.minPos.Y-area.maxPos.Y))
+	}
 }
 
 // MinSize calculates the minimum space required to display the chart

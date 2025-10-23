@@ -1,4 +1,4 @@
-package series
+package prop
 
 import (
 	"errors"
@@ -6,13 +6,39 @@ import (
 	"math"
 	"strconv"
 
-	"github.com/s-daehling/fyne-charts/internal/legend"
-	"github.com/s-daehling/fyne-charts/internal/renderer"
-	"github.com/s-daehling/fyne-charts/pkg/data"
-
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/theme"
+	"github.com/s-daehling/fyne-charts/internal/legend"
+	"github.com/s-daehling/fyne-charts/internal/renderer"
+
+	"github.com/s-daehling/fyne-charts/pkg/data"
 )
+
+func (base *BaseChart) addSeriesIfNotExist(ser *Series) (err error) {
+	for i := range base.series {
+		if base.series[i].Name() == ser.Name() {
+			err = errors.New("series already exists")
+			return
+		}
+	}
+	base.series = append(base.series, ser)
+	base.DataChange()
+	return
+}
+
+func (base *BaseChart) AddProportionalSeries(name string, points []data.ProportionalDataPoint) (ser *Series, err error) {
+	pSeries := EmptyProportionalSeries(base, name, base.planeType == PolarPlane)
+	err = pSeries.AddData(points)
+	if err != nil {
+		return
+	}
+	err = base.addSeriesIfNotExist(pSeries)
+	if err != nil {
+		return
+	}
+	ser = pSeries
+	return
+}
 
 type proportionPoint struct {
 	c            string
@@ -26,7 +52,7 @@ type proportionPoint struct {
 	visible      bool
 	legendButton *legend.LegendBox
 	legendLabel  *canvas.Text
-	ser          *ProportionalSeries
+	ser          *Series
 }
 
 func emptyProportionPoint(showText bool, col color.Color) (point *proportionPoint) {
@@ -168,48 +194,42 @@ func (point *proportionPoint) polarTexts(phiMin float64, phiMax float64, rMin fl
 	return
 }
 
-type ProportionalSeries struct {
-	baseSeries
-	showText bool
-	data     []*proportionPoint
-	tot      float64
+type Series struct {
+	showText     bool
+	data         []*proportionPoint
+	tot          float64
+	name         string
+	visible      bool
+	legendButton *legend.LegendBox
+	legendLabel  *canvas.Text
+	polar        bool
+	chart        *BaseChart
 }
 
-func EmptyProportionalSeries(chart chart, name string, polar bool) (ser *ProportionalSeries) {
-	ser = &ProportionalSeries{showText: true}
-	ser.baseSeries = emptyBaseSeries(chart, name, theme.Color(theme.ColorNameForeground), polar, ser.toggleView)
+func EmptyProportionalSeries(chart *BaseChart, name string, polar bool) (ser *Series) {
+	ser = &Series{
+		name:        name,
+		visible:     true,
+		showText:    true,
+		legendLabel: canvas.NewText(name, theme.Color(theme.ColorNameForeground)),
+		polar:       polar,
+		chart:       chart,
+	}
+	ser.legendButton = legend.NewLegendBox(theme.Color(theme.ColorNameForeground), ser.toggleView)
 	return
 }
 
-func (ser *ProportionalSeries) CRange() (cs []string) {
-	for i := range ser.data {
-		cs = append(cs, ser.data[i].c)
-	}
+// Name gives the name of the series
+func (ser *Series) Name() (n string) {
+	n = ser.name
 	return
 }
 
-func (ser *ProportionalSeries) ValRange() (isEmpty bool, min float64, max float64) {
-	min = 0
-	max = 0
-	isEmpty = false
-	if len(ser.data) == 0 {
-		isEmpty = true
-		return
-	}
-	min = ser.data[0].val
-	max = ser.data[0].val
-	for i := range ser.data {
-		if ser.data[i].val < min {
-			min = ser.data[i].val
-		}
-		if ser.data[i].val > max {
-			max = ser.data[i].val
-		}
-	}
-	return
+func (ser *Series) Delete() {
+	ser.chart = nil
 }
 
-func (ser *ProportionalSeries) ConvertPtoN(pToN func(p float64) (n float64)) {
+func (ser *Series) ConvertPtoN(pToN func(p float64) (n float64)) {
 	valOffset := 0.0
 	for i := range ser.data {
 		ser.data[i].valOffset = valOffset
@@ -222,7 +242,7 @@ func (ser *ProportionalSeries) ConvertPtoN(pToN func(p float64) (n float64)) {
 	}
 }
 
-func (ser *ProportionalSeries) CartesianRects(xMin float64, xMax float64, yMin float64,
+func (ser *Series) CartesianRects(xMin float64, xMax float64, yMin float64,
 	yMax float64) (fs []renderer.CartesianRect) {
 	for i := range ser.data {
 		fs = append(fs, ser.data[i].cartesianRects(xMin, xMax, yMin, yMax)...)
@@ -230,7 +250,7 @@ func (ser *ProportionalSeries) CartesianRects(xMin float64, xMax float64, yMin f
 	return
 }
 
-func (ser *ProportionalSeries) CartesianTexts(xMin float64, xMax float64, yMin float64,
+func (ser *Series) CartesianTexts(xMin float64, xMax float64, yMin float64,
 	yMax float64) (ts []renderer.CartesianText) {
 	for i := range ser.data {
 		ts = append(ts, ser.data[i].cartesianTexts(xMin, xMax, yMin, yMax)...)
@@ -238,8 +258,8 @@ func (ser *ProportionalSeries) CartesianTexts(xMin float64, xMax float64, yMin f
 	return
 }
 
-func (ser *ProportionalSeries) RasterColorPolar(phi float64, r float64, x float64, y float64) (col color.Color) {
-	col = ser.baseSeries.RasterColorPolar(phi, r, x, y)
+func (ser *Series) RasterColorPolar(phi float64, r float64, x float64, y float64) (col color.Color) {
+	col = color.RGBA{0x00, 0x00, 0x00, 0x00}
 	if !ser.visible {
 		return
 	}
@@ -254,7 +274,7 @@ func (ser *ProportionalSeries) RasterColorPolar(phi float64, r float64, x float6
 	return
 }
 
-func (ser *ProportionalSeries) PolarTexts(phiMin float64, phiMax float64, rMin float64,
+func (ser *Series) PolarTexts(phiMin float64, phiMax float64, rMin float64,
 	rMax float64) (ts []renderer.PolarText) {
 	for i := range ser.data {
 		ts = append(ts, ser.data[i].polarTexts(phiMin, phiMax, rMin, rMax)...)
@@ -262,9 +282,8 @@ func (ser *ProportionalSeries) PolarTexts(phiMin float64, phiMax float64, rMin f
 	return
 }
 
-func (ser *ProportionalSeries) RefreshThemeColor() {
+func (ser *Series) RefreshThemeColor() {
 	ser.legendLabel.Color = theme.Color(theme.ColorNameForeground)
-	ser.color = theme.Color(theme.ColorNameForeground)
 	ser.legendButton.SetColor(theme.Color(theme.ColorNameForeground))
 	for i := range ser.data {
 		ser.data[i].legendLabel.Color = theme.Color(theme.ColorNameForeground)
@@ -273,7 +292,7 @@ func (ser *ProportionalSeries) RefreshThemeColor() {
 }
 
 // Show makes the Bars of the series visible
-func (ser *ProportionalSeries) Show() {
+func (ser *Series) Show() {
 	ser.visible = true
 	for i := range ser.data {
 		ser.data[i].show()
@@ -281,14 +300,14 @@ func (ser *ProportionalSeries) Show() {
 }
 
 // Hide hides the Barss of the series
-func (ser *ProportionalSeries) Hide() {
+func (ser *Series) Hide() {
 	ser.visible = false
 	for i := range ser.data {
 		ser.data[i].hide()
 	}
 }
 
-func (ser *ProportionalSeries) toggleView() {
+func (ser *Series) toggleView() {
 	if ser.visible {
 		ser.Hide()
 	} else {
@@ -299,27 +318,31 @@ func (ser *ProportionalSeries) toggleView() {
 	}
 }
 
-func (ser *ProportionalSeries) pointVisibilityUpdate(totChange float64) {
+func (ser *Series) pointVisibilityUpdate(totChange float64) {
 	ser.tot += totChange
 	ser.chart.DataChange()
 }
 
-func (ser *ProportionalSeries) LegendEntries() (les []renderer.LegendEntry) {
-	les = append(les, ser.baseSeries.LegendEntries()...)
+func (ser *Series) LegendEntries() (les []renderer.LegendEntry) {
+	les = append(les, renderer.LegendEntry{
+		Button: ser.legendButton,
+		Label:  ser.legendLabel,
+		IsSub:  false,
+	})
 	for i := range ser.data {
 		les = append(les, ser.data[i].legendEntry())
 	}
 	return
 }
 
-func (ser *ProportionalSeries) SetHeightAndOffset(h float64, hOffset float64) {
+func (ser *Series) SetHeightAndOffset(h float64, hOffset float64) {
 	for i := range ser.data {
 		ser.data[i].height = h
 		ser.data[i].hOffset = hOffset
 	}
 }
 
-func (ser *ProportionalSeries) Clear() (err error) {
+func (ser *Series) Clear() (err error) {
 	if ser.chart == nil {
 		err = errors.New("series is not part of any chart")
 		return
@@ -330,7 +353,7 @@ func (ser *ProportionalSeries) Clear() (err error) {
 	return
 }
 
-func (ser *ProportionalSeries) DeleteDataInRange(cat []string) (c int, err error) {
+func (ser *Series) DeleteDataInRange(cat []string) (c int, err error) {
 	c = 0
 	if len(cat) == 0 {
 		err = errors.New("invald range")
@@ -367,7 +390,7 @@ func (ser *ProportionalSeries) DeleteDataInRange(cat []string) (c int, err error
 	return
 }
 
-func (ser *ProportionalSeries) AddData(input []data.ProportionalDataPoint) (err error) {
+func (ser *Series) AddData(input []data.ProportionalDataPoint) (err error) {
 	if len(input) == 0 {
 		err = errors.New("no input data")
 		return
