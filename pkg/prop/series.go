@@ -1,6 +1,8 @@
 package prop
 
 import (
+	"image/color"
+
 	"github.com/s-daehling/fyne-charts/internal/prop"
 	"github.com/s-daehling/fyne-charts/pkg/data"
 )
@@ -17,6 +19,16 @@ func (ps ProportionalSeries) Name() (n string) {
 	}
 	n = ps.ser.Name()
 	return
+}
+
+// SetValTextColor changes the color of value labels
+func (ps *ProportionalSeries) SetValTextColor(col color.Color) {
+	ps.ser.SetValTextColor(col)
+}
+
+// AutoValTextColor sets the color of value labels to the default (theme.ColorNameForeground)
+func (ps *ProportionalSeries) AutoValTextColor() {
+	ps.ser.AutoValTextColor()
 }
 
 // Show makes the elements of the series visible

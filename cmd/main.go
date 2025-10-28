@@ -404,7 +404,8 @@ func polPropChart() (propChart *prop.PieChart) {
 			Col: color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff},
 		},
 	}
-	propChart.AddSeries("proportion2", data2)
+	ser, _ := propChart.AddSeries("proportion2", data2)
+	ser.SetValTextColor(color.Black)
 	propChart.SetTitle("Proportional Pie/Doughnut Chart")
 	return
 }

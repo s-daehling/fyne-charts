@@ -195,25 +195,27 @@ func (point *proportionPoint) polarTexts(phiMin float64, phiMax float64, rMin fl
 }
 
 type Series struct {
-	showText     bool
-	data         []*proportionPoint
-	tot          float64
-	name         string
-	visible      bool
-	legendButton *legend.LegendBox
-	legendLabel  *canvas.Text
-	polar        bool
-	chart        *BaseChart
+	showText         bool
+	data             []*proportionPoint
+	tot              float64
+	name             string
+	visible          bool
+	autoValTextColor bool
+	legendButton     *legend.LegendBox
+	legendLabel      *canvas.Text
+	polar            bool
+	chart            *BaseChart
 }
 
 func EmptyProportionalSeries(chart *BaseChart, name string, polar bool) (ser *Series) {
 	ser = &Series{
-		name:        name,
-		visible:     true,
-		showText:    true,
-		legendLabel: canvas.NewText(name, theme.Color(theme.ColorNameForeground)),
-		polar:       polar,
-		chart:       chart,
+		name:             name,
+		visible:          true,
+		showText:         true,
+		autoValTextColor: true,
+		legendLabel:      canvas.NewText(name, theme.Color(theme.ColorNameForeground)),
+		polar:            polar,
+		chart:            chart,
 	}
 	ser.legendButton = legend.NewLegendBox(theme.Color(theme.ColorNameForeground), ser.toggleView)
 	return
@@ -287,6 +289,22 @@ func (ser *Series) RefreshThemeColor() {
 	ser.legendButton.SetColor(theme.Color(theme.ColorNameForeground))
 	for i := range ser.data {
 		ser.data[i].legendLabel.Color = theme.Color(theme.ColorNameForeground)
+		if ser.autoValTextColor {
+			ser.data[i].text.Color = theme.Color(theme.ColorNameForeground)
+		}
+	}
+}
+
+func (ser *Series) SetValTextColor(col color.Color) {
+	ser.autoValTextColor = false
+	for i := range ser.data {
+		ser.data[i].text.Color = col
+	}
+}
+
+func (ser *Series) AutoValTextColor() {
+	ser.autoValTextColor = true
+	for i := range ser.data {
 		ser.data[i].text.Color = theme.Color(theme.ColorNameForeground)
 	}
 }
