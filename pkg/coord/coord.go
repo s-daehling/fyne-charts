@@ -1,6 +1,8 @@
 package coord
 
 import (
+	"image/color"
+
 	"fyne.io/fyne/v2"
 	"github.com/s-daehling/fyne-charts/internal/coord"
 )
@@ -28,6 +30,26 @@ func (chart *coordChart) DeleteSeries(name string) {
 // SetTitle sets the title of the chart, which will be displayed at the top
 func (chart *coordChart) SetTitle(l string) {
 	chart.base.SetTitle(l)
+}
+
+// SetTitleColor changes the color of the chart title
+func (chart *coordChart) SetTitleColor(col color.Color) {
+	chart.base.SetTitleColor(col)
+}
+
+// SetAutoTitleColor changes the color of the chart title back to the default (theme.ColorNameForeground)
+func (chart *coordChart) SetAutoTitleColor(col color.Color) {
+	chart.base.SetAutoTitleColor()
+}
+
+// SetTitleSize changes the size of the chart title
+func (chart *coordChart) SetTitleSize(size float32) {
+	chart.base.SetTitleSize(size)
+}
+
+// SetAutoTitleSize changes the size of the chart title back to the default (theme.SizeNameSubHeadingText)
+func (chart *coordChart) SetAutoTitleSize() {
+	chart.base.SetAutoTitleSize()
 }
 
 // HideLegend hides the legend and uses the full space for the chart

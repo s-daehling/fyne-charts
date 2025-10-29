@@ -302,7 +302,7 @@ func (ser *Series) SetValTextColor(col color.Color) {
 	}
 }
 
-func (ser *Series) AutoValTextColor() {
+func (ser *Series) SetAutoValTextColor() {
 	ser.autoValTextColor = true
 	for i := range ser.data {
 		ser.data[i].text.Color = theme.Color(theme.ColorNameForeground)

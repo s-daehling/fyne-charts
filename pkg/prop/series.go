@@ -27,8 +27,8 @@ func (ps *ProportionalSeries) SetValTextColor(col color.Color) {
 }
 
 // AutoValTextColor sets the color of value labels to the default (theme.ColorNameForeground)
-func (ps *ProportionalSeries) AutoValTextColor() {
-	ps.ser.AutoValTextColor()
+func (ps *ProportionalSeries) SetAutoValTextColor() {
+	ps.ser.SetAutoValTextColor()
 }
 
 // Show makes the elements of the series visible

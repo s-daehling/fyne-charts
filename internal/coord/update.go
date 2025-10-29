@@ -136,7 +136,12 @@ func (base *BaseChart) updateSeriesVariables() {
 func (base *BaseChart) RefreshThemeColor() {
 	base.fromAx.RefreshThemeColor()
 	base.toAx.RefreshThemeColor()
-	base.label.Color = theme.Color(theme.ColorNameForeground)
+	if base.autoTitleColor {
+		base.title.Color = theme.Color(theme.ColorNameForeground)
+	}
+	if base.autoTitleSize {
+		base.title.TextSize = theme.Size(theme.SizeNameSubHeadingText)
+	}
 	for i := range base.series {
 		base.series[i].RefreshThemeColor()
 	}

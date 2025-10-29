@@ -29,32 +29,37 @@ const (
 )
 
 type BaseChart struct {
-	label         *canvas.Text
-	fromAx        *axis.Axis
-	toAx          *axis.Axis
-	series        []series.Series
-	changed       bool
-	autoFromRange bool
-	autoToRange   bool
-	autoOrigin    bool
-	legendVisible bool
-	planeType     PlaneType
-	fromType      FromType
-	rast          *canvas.Raster
-	render        fyne.WidgetRenderer
+	title          *canvas.Text
+	autoTitleColor bool
+	autoTitleSize  bool
+	fromAx         *axis.Axis
+	toAx           *axis.Axis
+	series         []series.Series
+	changed        bool
+	autoFromRange  bool
+	autoToRange    bool
+	autoOrigin     bool
+	legendVisible  bool
+	planeType      PlaneType
+	fromType       FromType
+	rast           *canvas.Raster
+	render         fyne.WidgetRenderer
 }
 
 func EmptyBaseChart(pType PlaneType, fType FromType) (base *BaseChart) {
 	base = &BaseChart{
-		label:         canvas.NewText("", theme.Color(theme.ColorNameForeground)),
-		changed:       false,
-		autoFromRange: true,
-		autoToRange:   true,
-		autoOrigin:    true,
-		legendVisible: true,
-		planeType:     pType,
-		fromType:      fType,
+		title:          canvas.NewText("", theme.Color(theme.ColorNameForeground)),
+		autoTitleColor: true,
+		autoTitleSize:  true,
+		changed:        false,
+		autoFromRange:  true,
+		autoToRange:    true,
+		autoOrigin:     true,
+		legendVisible:  true,
+		planeType:      pType,
+		fromType:       fType,
 	}
+	base.title.TextSize = theme.Size(theme.SizeNameSubHeadingText)
 	if pType == CartesianPlane {
 		base.fromAx = axis.EmptyAxis("", axis.CartesianAxis)
 		base.toAx = axis.EmptyAxis("", axis.CartesianAxis)
@@ -110,7 +115,7 @@ func (base *BaseChart) DeleteSeries(name string) {
 }
 
 func (base *BaseChart) Title() (ct *canvas.Text) {
-	ct = base.label
+	ct = base.title
 	return
 }
 
@@ -145,8 +150,8 @@ func (base *BaseChart) CartesianObjects() (canObj []fyne.CanvasObject) {
 	canObj = append(canObj, base.toAx.Objects()...)
 
 	// add chart title and axis titles
-	if base.label.Text != "" {
-		canObj = append(canObj, base.label)
+	if base.title.Text != "" {
+		canObj = append(canObj, base.title)
 	}
 	return
 }
@@ -214,8 +219,8 @@ func (base *BaseChart) PolarObjects() (canObj []fyne.CanvasObject) {
 	canObj = append(canObj, base.toAx.Objects()...)
 
 	// add chart title and axis titles
-	if base.label.Text != "" {
-		canObj = append(canObj, base.label)
+	if base.title.Text != "" {
+		canObj = append(canObj, base.title)
 	}
 	return
 }
@@ -278,7 +283,27 @@ func (base *BaseChart) legendVisibility() (v bool) {
 }
 
 func (base *BaseChart) SetTitle(l string) {
-	base.label.Text = l
+	base.title.Text = l
+}
+
+func (base *BaseChart) SetTitleColor(col color.Color) {
+	base.autoTitleColor = false
+	base.title.Color = col
+}
+
+func (base *BaseChart) SetAutoTitleColor() {
+	base.autoTitleColor = true
+	base.title.Color = theme.Color(theme.ColorNameForeground)
+}
+
+func (base *BaseChart) SetTitleSize(size float32) {
+	base.autoTitleSize = false
+	base.title.TextSize = size
+}
+
+func (base *BaseChart) SetAutoTitleSize() {
+	base.autoTitleSize = true
+	base.title.TextSize = theme.Size(theme.SizeNameSubHeadingText)
 }
 
 // func (base *BaseChart) hasChanged() (c bool) {

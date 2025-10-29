@@ -14,6 +14,7 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/theme"
 )
 
 func main() {
@@ -225,6 +226,7 @@ func cartCatChart() (catChart *coord.CartesianCategoricalChart) {
 	catChart.SetCAxisLabel("C axis")
 	catChart.SetYAxisLabel("Y axis")
 	catChart.SetTitle("Cartesian Categorical Chart")
+	catChart.SetTitleSize(theme.Size(theme.SizeNameText))
 	return
 }
 
@@ -305,6 +307,7 @@ func polTempChart() (tempChart *coord.PolarTemporalChart) {
 	tempChart.SetTAxisLabel("T axis")
 	tempChart.SetRAxisLabel("R axis")
 	tempChart.SetTitle("Polar Temporal Chart")
+	tempChart.SetTitleColor(color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff})
 	return
 }
 

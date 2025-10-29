@@ -46,7 +46,7 @@ func (r *baseRenderer) placeTitleAndLegend(size fyne.Size, ct *canvas.Text,
 	// place legend
 	if len(les) > 0 {
 		legendWidth, legendHeight = legendSize(les)
-		yLegend := (size.Height - legendHeight) / 2.0
+		yLegend := titleHeight + (size.Height-titleHeight-legendHeight)/2.0
 		for i := range les {
 			subOffset := float32(0.0)
 			if les[i].IsSub {
