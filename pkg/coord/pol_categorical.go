@@ -12,14 +12,14 @@ import (
 
 // PolarCategoricalChart implements a polar plane with one categorical c-axis and one numerical r-axis
 type PolarCategoricalChart struct {
-	base *coord.BaseChart
+	coordChart
 	widget.BaseWidget
 }
 
 // NewPolarCategoricalChart returns an initialized PolarCategoricalChart
 func NewPolarCategoricalChart() (catChart *PolarCategoricalChart) {
 	catChart = &PolarCategoricalChart{
-		base: coord.EmptyBaseChart(coord.PolarPlane, coord.Categorical),
+		coordChart: emptyCoordChart(coord.PolarPlane, coord.Categorical),
 	}
 	catChart.ExtendBaseWidget(catChart)
 	return
@@ -77,26 +77,6 @@ func (catChart *PolarCategoricalChart) AddStackedBarSeries(name string,
 	points []data.CategoricalDataSeries) (css CategoricalStackedBarSeries, err error) {
 	css.ser, err = catChart.base.AddCategoricalStackedBarSeries(name, points)
 	return
-}
-
-// DeleteSeries deletes the series with the specified name if it exists
-func (catChart *PolarCategoricalChart) DeleteSeries(name string) {
-	catChart.base.DeleteSeries(name)
-}
-
-// SetTitle sets the title of the chart, which will be displayed at the top
-func (catChart *PolarCategoricalChart) SetTitle(l string) {
-	catChart.base.SetTitle(l)
-}
-
-// HideLegend hides the legend and uses the full space for the chart
-func (catChart *PolarCategoricalChart) HideLegend() {
-	catChart.base.HideLegend()
-}
-
-// ShowLegend shows the legend on the right side
-func (catChart *PolarCategoricalChart) ShowLegend() {
-	catChart.base.ShowLegend()
 }
 
 // SetYAxisLabel sets the label of the y-axis, which will be displayed at the left side

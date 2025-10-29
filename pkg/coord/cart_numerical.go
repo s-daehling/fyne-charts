@@ -13,14 +13,14 @@ import (
 
 // CartesianNumericalChart implements a cartesian plane with two numerical axes x and y
 type CartesianNumericalChart struct {
-	base *coord.BaseChart
+	coordChart
 	widget.BaseWidget
 }
 
 // NewCartesianNumericalChart returns an initialized CartesianNumericalChart
 func NewCartesianNumericalChart() (numChart *CartesianNumericalChart) {
 	numChart = &CartesianNumericalChart{
-		base: coord.EmptyBaseChart(coord.CartesianPlane, coord.Numerical),
+		coordChart: emptyCoordChart(coord.CartesianPlane, coord.Numerical),
 	}
 	numChart.ExtendBaseWidget(numChart)
 	return
@@ -111,26 +111,6 @@ func (numChart *CartesianNumericalChart) AddBarSeries(name string, points []data
 	barWidth float64, color color.Color) (nbs NumericalBarSeries, err error) {
 	nbs.ser, err = numChart.base.AddNumericalBarSeries(name, points, barWidth, color)
 	return
-}
-
-// DeleteSeries deletes the series with the specified name if it exists
-func (numChart *CartesianNumericalChart) DeleteSeries(name string) {
-	numChart.base.DeleteSeries(name)
-}
-
-// SetTitle sets the title of the chart, which will be displayed at the top
-func (numChart *CartesianNumericalChart) SetTitle(l string) {
-	numChart.base.SetTitle(l)
-}
-
-// HideLegend hides the legend and uses the full space for the chart
-func (numChart *CartesianNumericalChart) HideLegend() {
-	numChart.base.HideLegend()
-}
-
-// ShowLegend shows the legend on the right side
-func (numChart *CartesianNumericalChart) ShowLegend() {
-	numChart.base.ShowLegend()
 }
 
 // SetYAxisLabel sets the label of the y-axis, which will be displayed at the left side

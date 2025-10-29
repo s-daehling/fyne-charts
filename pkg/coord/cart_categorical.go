@@ -12,14 +12,14 @@ import (
 
 // CartesianCategoricalChart implements a cartesian plane with a categorical c-axis and a numerical y-axis
 type CartesianCategoricalChart struct {
-	base *coord.BaseChart
+	coordChart
 	widget.BaseWidget
 }
 
 // NewCartesianCategoricalChart returns an initialized CategoricalChart
 func NewCartesianCategoricalChart() (catChart *CartesianCategoricalChart) {
 	catChart = &CartesianCategoricalChart{
-		base: coord.EmptyBaseChart(coord.CartesianPlane, coord.Categorical),
+		coordChart: emptyCoordChart(coord.CartesianPlane, coord.Categorical),
 	}
 	catChart.ExtendBaseWidget(catChart)
 	return
@@ -89,26 +89,6 @@ func (catChart *CartesianCategoricalChart) AddBoxSeries(name string,
 	points []data.CategoricalBox, col color.Color) (cbs CategoricalBoxSeries, err error) {
 	cbs.ser, err = catChart.base.AddCategoricalBoxSeries(name, points, col)
 	return
-}
-
-// DeleteSeries deletes the series with the specified name if it exists
-func (catChart *CartesianCategoricalChart) DeleteSeries(name string) {
-	catChart.base.DeleteSeries(name)
-}
-
-// SetTitle sets the title of the chart, which will be displayed at the top
-func (catChart *CartesianCategoricalChart) SetTitle(l string) {
-	catChart.base.SetTitle(l)
-}
-
-// HideLegend hides the legend and uses the full space for the chart
-func (catChart *CartesianCategoricalChart) HideLegend() {
-	catChart.base.HideLegend()
-}
-
-// ShowLegend shows the legend on the right side
-func (catChart *CartesianCategoricalChart) ShowLegend() {
-	catChart.base.ShowLegend()
 }
 
 // SetYAxisLabel sets the label of the y-axis, which will be displayed at the left side

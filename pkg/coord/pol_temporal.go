@@ -13,14 +13,14 @@ import (
 
 // PolarTemporalChart implements a polar plane with one temporal t-axis and one numerical r-axis
 type PolarTemporalChart struct {
-	base *coord.BaseChart
+	coordChart
 	widget.BaseWidget
 }
 
 // NewPolarTemporalChart returns an initialized PolarTemporalChart
 func NewPolarTemporalChart() (tempChart *PolarTemporalChart) {
 	tempChart = &PolarTemporalChart{
-		base: coord.EmptyBaseChart(coord.PolarPlane, coord.Temporal),
+		coordChart: emptyCoordChart(coord.PolarPlane, coord.Temporal),
 	}
 	tempChart.ExtendBaseWidget(tempChart)
 	return
@@ -89,26 +89,6 @@ func (tempChart *PolarTemporalChart) AddBarSeries(name string, points []data.Tem
 	barWidth time.Duration, color color.Color) (tbs TemporalBarSeries, err error) {
 	tbs.ser, err = tempChart.base.AddTemporalBarSeries(name, points, barWidth, color)
 	return
-}
-
-// DeleteSeries deletes the series with the specified name if it exists
-func (tempChart *PolarTemporalChart) DeleteSeries(name string) {
-	tempChart.base.DeleteSeries(name)
-}
-
-// SetTitle sets the title of the chart, which will be displayed at the top
-func (tempChart *PolarTemporalChart) SetTitle(l string) {
-	tempChart.base.SetTitle(l)
-}
-
-// HideLegend hides the legend and uses the full space for the chart
-func (tempChart *PolarTemporalChart) HideLegend() {
-	tempChart.base.HideLegend()
-}
-
-// ShowLegend shows the legend on the right side
-func (tempChart *PolarTemporalChart) ShowLegend() {
-	tempChart.base.ShowLegend()
 }
 
 // SetRAxisLabel sets the label of the r-axis, which will be displayed at the bottom-right

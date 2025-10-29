@@ -14,14 +14,14 @@ import (
 
 // CartesianTemporalChart implements a cartesian plane with a temporal t-axis and a numerical y-axis
 type CartesianTemporalChart struct {
-	base *coord.BaseChart
+	coordChart
 	widget.BaseWidget
 }
 
 // NewCartesianTemporalChart returns an initialized CartesianTemporalChart
 func NewCartesianTemporalChart() (tempChart *CartesianTemporalChart) {
 	tempChart = &CartesianTemporalChart{
-		base: coord.EmptyBaseChart(coord.CartesianPlane, coord.Temporal),
+		coordChart: emptyCoordChart(coord.CartesianPlane, coord.Temporal),
 	}
 	tempChart.ExtendBaseWidget(tempChart)
 	return
@@ -112,26 +112,6 @@ func (tempChart *CartesianTemporalChart) AddBarSeries(name string, points []data
 	barWidth time.Duration, color color.Color) (tbs TemporalBarSeries, err error) {
 	tbs.ser, err = tempChart.base.AddTemporalBarSeries(name, points, barWidth, color)
 	return
-}
-
-// DeleteSeries deletes the series with the specified name if it exists
-func (tempChart *CartesianTemporalChart) DeleteSeries(name string) {
-	tempChart.base.DeleteSeries(name)
-}
-
-// SetTitle sets the title of the chart, which will be displayed at the top
-func (tempChart *CartesianTemporalChart) SetTitle(l string) {
-	tempChart.base.SetTitle(l)
-}
-
-// HideLegend hides the legend and uses the full space for the chart
-func (tempChart *CartesianTemporalChart) HideLegend() {
-	tempChart.base.HideLegend()
-}
-
-// ShowLegend shows the legend on the right side
-func (tempChart *CartesianTemporalChart) ShowLegend() {
-	tempChart.base.ShowLegend()
 }
 
 // SetYAxisLabel sets the label of the y-axis, which will be displayed at the left side

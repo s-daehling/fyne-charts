@@ -12,14 +12,14 @@ import (
 
 // PolarNumericalChart implements a polar plane with one numerical phi-axis and one numerical r-axis
 type PolarNumericalChart struct {
-	base *coord.BaseChart
+	coordChart
 	widget.BaseWidget
 }
 
 // NewPolarNumericalChart returns an initialized PolarNumericalChart
 func NewPolarNumericalChart() (numChart *PolarNumericalChart) {
 	numChart = &PolarNumericalChart{
-		base: coord.EmptyBaseChart(coord.PolarPlane, coord.Numerical),
+		coordChart: emptyCoordChart(coord.PolarPlane, coord.Numerical),
 	}
 	numChart.ExtendBaseWidget(numChart)
 	return
@@ -88,26 +88,6 @@ func (numChart *PolarNumericalChart) AddBarSeries(name string, points []data.Num
 	barWidth float64, color color.Color) (nbs NumericalBarSeries, err error) {
 	nbs.ser, err = numChart.base.AddNumericalBarSeries(name, points, barWidth, color)
 	return
-}
-
-// DeleteSeries deletes the series with the specified name if it exists
-func (numChart *PolarNumericalChart) DeleteSeries(name string) {
-	numChart.base.DeleteSeries(name)
-}
-
-// SetTitle sets the title of the chart, which will be displayed at the top
-func (numChart *PolarNumericalChart) SetTitle(l string) {
-	numChart.base.SetTitle(l)
-}
-
-// HideLegend hides the legend and uses the full space for the chart
-func (numChart *PolarNumericalChart) HideLegend() {
-	numChart.base.HideLegend()
-}
-
-// ShowLegend shows the legend on the right side
-func (numChart *PolarNumericalChart) ShowLegend() {
-	numChart.base.ShowLegend()
 }
 
 // SetRAxisLabel sets the label of the r-axis, which will be displayed at the bottom-right
