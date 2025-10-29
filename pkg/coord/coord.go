@@ -1,6 +1,9 @@
 package coord
 
-import "github.com/s-daehling/fyne-charts/internal/coord"
+import (
+	"fyne.io/fyne/v2"
+	"github.com/s-daehling/fyne-charts/internal/coord"
+)
 
 type coordChart struct {
 	base *coord.BaseChart
@@ -9,6 +12,12 @@ type coordChart struct {
 func emptyCoordChart(planeType coord.PlaneType, fromType coord.FromType) (chart coordChart) {
 	chart.base = coord.EmptyBaseChart(planeType, fromType)
 	return
+}
+
+// CreateRenderer creates the renderer of the widget
+func (chart *coordChart) CreateRenderer() fyne.WidgetRenderer {
+	r := chart.base.GetRenderer()
+	return r
 }
 
 // DeleteSeries deletes the series with the specified name if it exists

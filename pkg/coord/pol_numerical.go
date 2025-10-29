@@ -6,7 +6,6 @@ import (
 	"github.com/s-daehling/fyne-charts/internal/coord"
 	"github.com/s-daehling/fyne-charts/pkg/data"
 
-	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/widget"
 )
 
@@ -23,12 +22,6 @@ func NewPolarNumericalChart() (numChart *PolarNumericalChart) {
 	}
 	numChart.ExtendBaseWidget(numChart)
 	return
-}
-
-// CreateRenderer creates the renderer of the widget
-func (numChart *PolarNumericalChart) CreateRenderer() fyne.WidgetRenderer {
-	r := numChart.base.GetRenderer()
-	return r
 }
 
 // AddLineSeries adds a series of data which is visualized as line chart.

@@ -8,7 +8,6 @@ import (
 
 	"github.com/s-daehling/fyne-charts/pkg/data"
 
-	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/widget"
 )
 
@@ -25,12 +24,6 @@ func NewCartesianTemporalChart() (tempChart *CartesianTemporalChart) {
 	}
 	tempChart.ExtendBaseWidget(tempChart)
 	return
-}
-
-// CreateRenderer creates the renderer of the widget
-func (tempChart *CartesianTemporalChart) CreateRenderer() fyne.WidgetRenderer {
-	r := tempChart.base.GetRenderer()
-	return r
 }
 
 // AddLineSeries adds a series of data which is visualized as line chart.

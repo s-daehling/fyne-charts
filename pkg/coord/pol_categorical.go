@@ -6,7 +6,6 @@ import (
 	"github.com/s-daehling/fyne-charts/internal/coord"
 	"github.com/s-daehling/fyne-charts/pkg/data"
 
-	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/widget"
 )
 
@@ -23,12 +22,6 @@ func NewPolarCategoricalChart() (catChart *PolarCategoricalChart) {
 	}
 	catChart.ExtendBaseWidget(catChart)
 	return
-}
-
-// CreateRenderer creates the renderer of the widget
-func (catChart *PolarCategoricalChart) CreateRenderer() fyne.WidgetRenderer {
-	r := catChart.base.GetRenderer()
-	return r
 }
 
 // AddScatterSeries adds a series of data which is visualized as scatter chart.
