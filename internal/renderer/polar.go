@@ -28,9 +28,10 @@ type polDrawingArea struct {
 // Polar is the renderer for all cartesian plane widgets
 type Polar struct {
 	baseRenderer
-	chart   PolarChart
-	rot     float64
-	mathPos bool
+	chart                     PolarChart
+	rot                       float64
+	mathPos                   bool
+	prevPhiAxisTickLabelWidth float32
 }
 
 func EmptyPolarRenderer(chart PolarChart) (r *Polar) {
@@ -57,10 +58,15 @@ func (r *Polar) Layout(size fyne.Size) {
 	var phiArrow, rArrow Arrow
 	var phiShow, rShow bool
 	_, _, phiOrigin, phiLabel, phiTicks, phiArrow, phiShow = r.chart.FromAxisElements()
-	_, rMax, rOrigin, rLabel, rTicks, rArrow, rShow = r.chart.ToAxisElements()
+	_, rMax, rOrigin, rLabel, _, rArrow, rShow = r.chart.ToAxisElements()
 
 	phiOriginAbs := absAngle(phiOrigin, r.mathPos, r.rot)
 	phiAxisTickLabelWidth, phiAxisTickLabelHeight = maxTickSize(phiTicks)
+	if phiAxisTickLabelWidth < 0.001 {
+		phiAxisTickLabelWidth = r.prevPhiAxisTickLabelWidth
+	} else {
+		r.prevPhiAxisTickLabelWidth = phiAxisTickLabelWidth
+	}
 
 	if phiShow && phiLabel.Text.Text != "" {
 		c := software.NewTransparentCanvas()
@@ -104,6 +110,9 @@ func (r *Polar) Layout(size fyne.Size) {
 	area.coordToPos = area.radius / float32(rMax)
 
 	r.chart.Resize(2*area.radius*math.Pi, area.radius)
+
+	_, _, _, _, phiTicks, _, _ = r.chart.FromAxisElements()
+	_, _, _, _, rTicks, _, _ = r.chart.ToAxisElements()
 
 	// place phi axis
 	if phiShow {

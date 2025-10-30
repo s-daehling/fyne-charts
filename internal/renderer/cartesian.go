@@ -107,6 +107,14 @@ func (r *Cartesian) Layout(size fyne.Size) {
 	// update chart with available space
 	r.chart.Resize(area.maxPos.X-area.minPos.X, area.minPos.Y-area.maxPos.Y)
 
+	if r.transposed {
+		_, _, _, _, vTicks, _, _ = r.chart.FromAxisElements()
+		_, _, _, _, hTicks, _, _ = r.chart.ToAxisElements()
+	} else {
+		_, _, _, _, vTicks, _, _ = r.chart.ToAxisElements()
+		_, _, _, _, hTicks, _, _ = r.chart.FromAxisElements()
+	}
+
 	// calculate conversion factors from ccordinates to positions
 	area.hCoordToPos = (area.maxPos.X - area.minPos.X) / float32(hMax-hMin)
 	area.vCoordToPos = (area.minPos.Y - area.maxPos.Y) / float32(vMax-vMin)

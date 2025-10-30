@@ -84,7 +84,7 @@ func calculateTTicks(space float32, min time.Time, max time.Time, supLine bool) 
 		inc := numDays/maxTickNum + 1
 		coord = time.Date(min.Year(), min.Month(), min.Day(), 0, 0, 0, 0, time.Local)
 		step = time.Duration(int(time.Hour) * 24 * inc)
-		format = "02.01.2006"
+		format = "02.01."
 		if min.Hour() < 1 {
 			addMin = true
 		}
