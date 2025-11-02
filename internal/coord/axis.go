@@ -2,10 +2,10 @@ package coord
 
 import (
 	"errors"
-	"image/color"
 	"math"
 	"time"
 
+	"fyne.io/fyne/v2"
 	"github.com/s-daehling/fyne-charts/internal/renderer"
 	"github.com/s-daehling/fyne-charts/pkg/data"
 )
@@ -44,6 +44,14 @@ func (base *BaseChart) SetFromAxisLabel(l string) {
 	base.fromAx.SetLabel(l)
 }
 
+func (base *BaseChart) SetFromAxisLabelStyle(sizeName fyne.ThemeSizeName, colorName fyne.ThemeColorName) {
+	base.fromAx.SetAxisLabelStyle(sizeName, colorName)
+}
+
+func (base *BaseChart) SetFromAxisStyle(colorName fyne.ThemeColorName) {
+	base.fromAx.SetAxisStyle(colorName)
+}
+
 func (base *BaseChart) HideToAxis() {
 	base.toAx.Hide()
 }
@@ -56,24 +64,12 @@ func (base *BaseChart) SetToAxisLabel(l string) {
 	base.toAx.SetLabel(l)
 }
 
-func (base *BaseChart) SetAxisLabelColor(col color.Color) {
-	base.fromAx.SetLabelColor(col)
-	base.toAx.SetLabelColor(col)
+func (base *BaseChart) SetToAxisLabelStyle(sizeName fyne.ThemeSizeName, colorName fyne.ThemeColorName) {
+	base.toAx.SetAxisLabelStyle(sizeName, colorName)
 }
 
-func (base *BaseChart) SetAutoAxisLabelColor() {
-	base.fromAx.SetAutoLabelColor()
-	base.toAx.SetAutoLabelColor()
-}
-
-func (base *BaseChart) SetAxisLabelSize(size float32) {
-	base.fromAx.SetLabelSize(size)
-	base.toAx.SetLabelSize(size)
-}
-
-func (base *BaseChart) SetAutoAxisLabelSize() {
-	base.fromAx.SetAutoLabelSize()
-	base.toAx.SetAutoLabelSize()
+func (base *BaseChart) SetToAxisStyle(colorName fyne.ThemeColorName) {
+	base.toAx.SetAxisStyle(colorName)
 }
 
 // -------------------- origin --------------------

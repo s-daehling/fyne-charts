@@ -7,6 +7,7 @@ import (
 
 	"github.com/s-daehling/fyne-charts/pkg/data"
 
+	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/widget"
 )
 
@@ -133,6 +134,16 @@ func (numChart *CartesianNumericalChart) SetAutoYTicks(autoSupportLine bool) {
 	numChart.base.SetAutoToTicks(autoSupportLine)
 }
 
+// SetYAxisStyle changes the style of the Y-axis
+// default value label size: theme.SizeNameSubHeadingText
+// default value label color: theme.ColorNameForeground
+// default value axis color: theme.ColorNameForeground
+func (numChart *CartesianNumericalChart) SetYAxisStyle(labelSize fyne.ThemeSizeName,
+	labelColor fyne.ThemeColorName, axisColor fyne.ThemeColorName) {
+	numChart.base.SetToAxisLabelStyle(labelSize, labelColor)
+	numChart.base.SetToAxisStyle(axisColor)
+}
+
 // SetOrigin sets a user defined origin (crossing of x and y axis).
 // An error is returned, if a range has been defined before and at least one coordinate is outside the range.
 func (numChart *CartesianNumericalChart) SetOrigin(x float64, y float64) (err error) {
@@ -170,4 +181,14 @@ func (numChart *CartesianNumericalChart) SetXTicks(ts []data.NumericalTick) {
 // SetAutoXTicks overrides a previously user defined set of x-axis ticks and lets the ticks be calculated automatically
 func (numChart *CartesianNumericalChart) SetAutoXTicks(autoSupportLine bool) {
 	numChart.base.SetAutoFromTicks(autoSupportLine)
+}
+
+// SetXAxisStyle changes the style of the X-axis
+// default value label size: theme.SizeNameSubHeadingText
+// default value label color: theme.ColorNameForeground
+// default value axis color: theme.ColorNameForeground
+func (numChart *CartesianNumericalChart) SetXAxisStyle(labelSize fyne.ThemeSizeName,
+	labelColor fyne.ThemeColorName, axisColor fyne.ThemeColorName) {
+	numChart.base.SetFromAxisLabelStyle(labelSize, labelColor)
+	numChart.base.SetFromAxisStyle(axisColor)
 }

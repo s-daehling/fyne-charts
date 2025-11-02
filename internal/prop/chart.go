@@ -20,8 +20,8 @@ const (
 
 type BaseChart struct {
 	title          *canvas.Text
-	autoTitleColor bool
-	autoTitleSize  bool
+	titleColorName fyne.ThemeColorName
+	titleSizeName  fyne.ThemeSizeName
 	series         []*Series
 	changed        bool
 	legendVisible  bool
@@ -36,17 +36,15 @@ type BaseChart struct {
 
 func EmptyBaseChart(pType PlaneType) (base *BaseChart) {
 	base = &BaseChart{
-		title:          canvas.NewText("", theme.Color(theme.ColorNameForeground)),
-		autoTitleColor: true,
-		autoTitleSize:  true,
-		changed:        false,
-		legendVisible:  true,
-		planeType:      pType,
-		fromMin:        0,
-		toMin:          0,
-		toMax:          100,
+		title:         canvas.NewText("", theme.Color(theme.ColorNameForeground)),
+		changed:       false,
+		legendVisible: true,
+		planeType:     pType,
+		fromMin:       0,
+		toMin:         0,
+		toMax:         100,
 	}
-	base.title.TextSize = theme.Size(theme.SizeNameHeadingText)
+	base.SetTitleStyle(theme.SizeNameHeadingText, theme.ColorNameForeground)
 	if pType == CartesianPlane {
 		base.rast = nil
 		base.render = renderer.EmptyCartesianRenderer(base)
@@ -203,24 +201,11 @@ func (base *BaseChart) SetTitle(l string) {
 	base.title.Text = l
 }
 
-func (base *BaseChart) SetTitleColor(col color.Color) {
-	base.autoTitleColor = false
-	base.title.Color = col
-}
-
-func (base *BaseChart) SetAutoTitleColor() {
-	base.autoTitleColor = true
-	base.title.Color = theme.Color(theme.ColorNameForeground)
-}
-
-func (base *BaseChart) SetTitleSize(size float32) {
-	base.autoTitleSize = false
-	base.title.TextSize = size
-}
-
-func (base *BaseChart) SetAutoTitleSize() {
-	base.autoTitleSize = true
-	base.title.TextSize = theme.Size(theme.SizeNameHeadingText)
+func (base *BaseChart) SetTitleStyle(sizeName fyne.ThemeSizeName, colorName fyne.ThemeColorName) {
+	base.titleSizeName = sizeName
+	base.title.TextSize = theme.Size(sizeName)
+	base.titleColorName = colorName
+	base.title.Color = theme.Color(colorName)
 }
 
 func (base *BaseChart) FromAxisElements() (min float64, max float64, origin float64,

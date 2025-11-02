@@ -284,7 +284,7 @@ func (ser *Series) PolarTexts(phiMin float64, phiMax float64, rMin float64,
 	return
 }
 
-func (ser *Series) RefreshThemeColor() {
+func (ser *Series) RefreshTheme() {
 	ser.legendLabel.Color = theme.Color(theme.ColorNameForeground)
 	ser.legendButton.SetColor(theme.Color(theme.ColorNameForeground))
 	for i := range ser.data {

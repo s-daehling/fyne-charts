@@ -6,6 +6,7 @@ import (
 	"github.com/s-daehling/fyne-charts/internal/coord"
 	"github.com/s-daehling/fyne-charts/pkg/data"
 
+	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/widget"
 )
 
@@ -111,6 +112,16 @@ func (catChart *CartesianCategoricalChart) SetAutoYTicks(autoSupportLine bool) {
 	catChart.base.SetAutoToTicks(autoSupportLine)
 }
 
+// SetYAxisStyle changes the style of the Y-axis
+// default value label size: theme.SizeNameSubHeadingText
+// default value label color: theme.ColorNameForeground
+// default value axis color: theme.ColorNameForeground
+func (catChart *CartesianCategoricalChart) SetYAxisStyle(labelSize fyne.ThemeSizeName,
+	labelColor fyne.ThemeColorName, axisColor fyne.ThemeColorName) {
+	catChart.base.SetToAxisLabelStyle(labelSize, labelColor)
+	catChart.base.SetToAxisStyle(axisColor)
+}
+
 // SetCAxisLabel sets the label of the c-axis, which will be displayed at the bottom
 func (catChart *CartesianCategoricalChart) SetCAxisLabel(l string) {
 	catChart.base.SetFromAxisLabel(l)
@@ -127,4 +138,14 @@ func (catChart *CartesianCategoricalChart) SetCRange(cs []string) (err error) {
 // SetAutoCRange overrides a previously user defined set of categories to be shown and lets the set be calculated automatically
 func (catChart *CartesianCategoricalChart) SetAutoCRange() {
 	catChart.base.SetAutoFromRange()
+}
+
+// SetCAxisStyle changes the style of the C-axis
+// default value label size: theme.SizeNameSubHeadingText
+// default value label color: theme.ColorNameForeground
+// default value axis color: theme.ColorNameForeground
+func (catChart *CartesianCategoricalChart) SetCAxisStyle(labelSize fyne.ThemeSizeName,
+	labelColor fyne.ThemeColorName, axisColor fyne.ThemeColorName) {
+	catChart.base.SetFromAxisLabelStyle(labelSize, labelColor)
+	catChart.base.SetFromAxisStyle(axisColor)
 }

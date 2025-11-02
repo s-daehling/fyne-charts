@@ -30,8 +30,8 @@ const (
 
 type BaseChart struct {
 	title          *canvas.Text
-	autoTitleColor bool
-	autoTitleSize  bool
+	titleColorName fyne.ThemeColorName
+	titleSizeName  fyne.ThemeSizeName
 	fromAx         *axis.Axis
 	toAx           *axis.Axis
 	series         []series.Series
@@ -48,18 +48,16 @@ type BaseChart struct {
 
 func EmptyBaseChart(pType PlaneType, fType FromType) (base *BaseChart) {
 	base = &BaseChart{
-		title:          canvas.NewText("", theme.Color(theme.ColorNameForeground)),
-		autoTitleColor: true,
-		autoTitleSize:  true,
-		changed:        false,
-		autoFromRange:  true,
-		autoToRange:    true,
-		autoOrigin:     true,
-		legendVisible:  true,
-		planeType:      pType,
-		fromType:       fType,
+		title:         canvas.NewText("", theme.Color(theme.ColorNameForeground)),
+		changed:       false,
+		autoFromRange: true,
+		autoToRange:   true,
+		autoOrigin:    true,
+		legendVisible: true,
+		planeType:     pType,
+		fromType:      fType,
 	}
-	base.title.TextSize = theme.Size(theme.SizeNameHeadingText)
+	base.SetTitleStyle(theme.SizeNameHeadingText, theme.ColorNameForeground)
 	if pType == CartesianPlane {
 		base.fromAx = axis.EmptyAxis("", axis.CartesianAxis)
 		base.toAx = axis.EmptyAxis("", axis.CartesianAxis)
@@ -286,37 +284,12 @@ func (base *BaseChart) SetTitle(l string) {
 	base.title.Text = l
 }
 
-func (base *BaseChart) SetTitleColor(col color.Color) {
-	base.autoTitleColor = false
-	base.title.Color = col
+func (base *BaseChart) SetTitleStyle(sizeName fyne.ThemeSizeName, colorName fyne.ThemeColorName) {
+	base.titleSizeName = sizeName
+	base.title.TextSize = theme.Size(sizeName)
+	base.titleColorName = colorName
+	base.title.Color = theme.Color(colorName)
 }
-
-func (base *BaseChart) SetAutoTitleColor() {
-	base.autoTitleColor = true
-	base.title.Color = theme.Color(theme.ColorNameForeground)
-}
-
-func (base *BaseChart) SetTitleSize(size float32) {
-	base.autoTitleSize = false
-	base.title.TextSize = size
-}
-
-func (base *BaseChart) SetAutoTitleSize() {
-	base.autoTitleSize = true
-	base.title.TextSize = theme.Size(theme.SizeNameHeadingText)
-}
-
-// func (base *BaseChart) hasChanged() (c bool) {
-// 	return base.changed
-// }
-
-// func (base *BaseChart) resetHasChanged() {
-// 	base.changed = false
-// }
-
-// func (base *BaseChart) widgetSize() (s fyne.Size) {
-// 	return base.Size()
-// }
 
 func (base *BaseChart) PixelGenCartesian(pX, pY, w, h int) (col color.Color) {
 	x, y := base.PositionToCartesianCoordinates(pX, pY, w, h)

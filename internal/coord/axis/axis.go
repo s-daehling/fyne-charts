@@ -53,10 +53,11 @@ type Axis struct {
 	name            string        // name/title of the axis
 	label           *canvas.Image // name/title of the axis; rotated if the axis is vertical
 	labelText       *canvas.Text
-	autoLabelColor  bool
-	autoLabelSize   bool
+	labelColorName  fyne.ThemeColorName
+	labelSizeName   fyne.ThemeSizeName
 	space           float32
 	col             color.Color
+	colorName       fyne.ThemeColorName
 	supCol          color.Color
 }
 
@@ -78,12 +79,10 @@ func EmptyAxis(name string, typ AxisType) (ax *Axis) {
 		name:            name,
 		label:           canvas.NewImageFromImage(software.NewTransparentCanvas().Capture()),
 		labelText:       canvas.NewText(name, col),
-		autoLabelColor:  true,
-		autoLabelSize:   true,
-		col:             col,
 		supCol:          theme.Color(theme.ColorNameShadow),
 	}
-	ax.labelText.TextSize = theme.Size(theme.SizeNameSubHeadingText)
+	ax.SetAxisLabelStyle(theme.SizeNameSubHeadingText, theme.ColorNameForeground)
+	ax.SetAxisStyle(theme.ColorNameForeground)
 	if typ == PolarPhiAxis {
 		ax.nMax = 2 * math.Pi
 	}
@@ -223,19 +222,31 @@ func (ax *Axis) Visible() (b bool) {
 }
 
 func (ax *Axis) RefreshTheme() {
-	ax.col = theme.Color(theme.ColorNameForeground)
 	ax.supCol = theme.Color(theme.ColorNameShadow)
+	ax.updateAxisColor(theme.Color(ax.colorName))
+	ax.labelText.Color = theme.Color(ax.labelColorName)
+	ax.labelText.TextSize = theme.Size(ax.labelSizeName)
+}
+
+func (ax *Axis) SetAxisLabelStyle(sizeName fyne.ThemeSizeName, colorName fyne.ThemeColorName) {
+	ax.labelSizeName = sizeName
+	ax.labelText.TextSize = theme.Size(sizeName)
+	ax.labelColorName = colorName
+	ax.labelText.Color = theme.Color(colorName)
+}
+
+func (ax *Axis) SetAxisStyle(colorName fyne.ThemeColorName) {
+	ax.colorName = colorName
+	ax.updateAxisColor(theme.Color(colorName))
+}
+
+func (ax *Axis) updateAxisColor(col color.Color) {
+	ax.col = col
 	ax.labelText.Color = ax.col
 	ax.arrowOne.StrokeColor = ax.col
 	ax.arrowTwo.StrokeColor = ax.col
 	ax.line.StrokeColor = ax.col
 	ax.circle.StrokeColor = ax.col
-	if ax.autoLabelColor {
-		ax.labelText.Color = theme.Color(theme.ColorNameForeground)
-	}
-	if ax.autoLabelSize {
-		ax.labelText.TextSize = theme.Size(theme.SizeNameSubHeadingText)
-	}
 	for i := range ax.ticks {
 		ax.ticks[i].label.Color = ax.col
 		ax.ticks[i].line.StrokeColor = ax.col
@@ -247,26 +258,6 @@ func (ax *Axis) RefreshTheme() {
 func (ax *Axis) SetLabel(l string) {
 	ax.name = l
 	ax.labelText.Text = l
-}
-
-func (ax *Axis) SetLabelColor(col color.Color) {
-	ax.autoLabelColor = false
-	ax.labelText.Color = col
-}
-
-func (ax *Axis) SetAutoLabelColor() {
-	ax.autoLabelColor = true
-	ax.labelText.Color = theme.Color(theme.ColorNameForeground)
-}
-
-func (ax *Axis) SetLabelSize(size float32) {
-	ax.autoLabelSize = false
-	ax.labelText.TextSize = size
-}
-
-func (ax *Axis) SetAutoLabelSize() {
-	ax.autoLabelSize = true
-	ax.labelText.TextSize = theme.Size(theme.SizeNameSubHeadingText)
 }
 
 func (ax *Axis) Label() (l renderer.Label) {

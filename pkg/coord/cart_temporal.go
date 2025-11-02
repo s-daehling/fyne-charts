@@ -8,6 +8,7 @@ import (
 
 	"github.com/s-daehling/fyne-charts/pkg/data"
 
+	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/widget"
 )
 
@@ -134,6 +135,16 @@ func (tempChart *CartesianTemporalChart) SetAutoYTicks(autoSupportLine bool) {
 	tempChart.base.SetAutoToTicks(autoSupportLine)
 }
 
+// SetYAxisStyle changes the style of the Y-axis
+// default value label size: theme.SizeNameSubHeadingText
+// default value label color: theme.ColorNameForeground
+// default value axis color: theme.ColorNameForeground
+func (tempChart *CartesianTemporalChart) SetYAxisStyle(labelSize fyne.ThemeSizeName,
+	labelColor fyne.ThemeColorName, axisColor fyne.ThemeColorName) {
+	tempChart.base.SetToAxisLabelStyle(labelSize, labelColor)
+	tempChart.base.SetToAxisStyle(axisColor)
+}
+
 // SetOrigin sets a user defined origin (crossing of t and y axis).
 // An error is returned. if a range has been defined before and at least one coordinate is outside the range.
 func (tempChart *CartesianTemporalChart) SetOrigin(t time.Time, y float64) (err error) {
@@ -171,4 +182,14 @@ func (tempChart *CartesianTemporalChart) SetTTicks(ts []data.TemporalTick, forma
 // SetAutoTTicks overrides a previously user defined set of t-axis ticks and lets the ticks be calculated automatically
 func (tempChart *CartesianTemporalChart) SetAutoTTicks(autoSupportLine bool) {
 	tempChart.base.SetAutoFromTicks(autoSupportLine)
+}
+
+// SetTAxisStyle changes the style of the T-axis
+// default value label size: theme.SizeNameSubHeadingText
+// default value label color: theme.ColorNameForeground
+// default value axis color: theme.ColorNameForeground
+func (tempChart *CartesianTemporalChart) SetTAxisStyle(labelSize fyne.ThemeSizeName,
+	labelColor fyne.ThemeColorName, axisColor fyne.ThemeColorName) {
+	tempChart.base.SetFromAxisLabelStyle(labelSize, labelColor)
+	tempChart.base.SetFromAxisStyle(axisColor)
 }

@@ -7,6 +7,7 @@ import (
 	"github.com/s-daehling/fyne-charts/internal/coord"
 	"github.com/s-daehling/fyne-charts/pkg/data"
 
+	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/widget"
 )
 
@@ -111,6 +112,16 @@ func (tempChart *PolarTemporalChart) SetAutoRTicks(autoSupportLine bool) {
 	tempChart.base.SetAutoToTicks(autoSupportLine)
 }
 
+// SetRAxisStyle changes the style of the R-axis
+// default value label size: theme.SizeNameSubHeadingText
+// default value label color: theme.ColorNameForeground
+// default value axis color: theme.ColorNameForeground
+func (tempChart *PolarTemporalChart) SetRAxisStyle(labelSize fyne.ThemeSizeName,
+	labelColor fyne.ThemeColorName, axisColor fyne.ThemeColorName) {
+	tempChart.base.SetToAxisLabelStyle(labelSize, labelColor)
+	tempChart.base.SetToAxisStyle(axisColor)
+}
+
 // SetOrigin sets a user defined origin (crossing of t and r axis).
 // An error is returned, if a range has been defined before and at least one coordinate is outside the range.
 func (tempChart *PolarTemporalChart) SetOrigin(t time.Time, r float64) (err error) {
@@ -148,4 +159,14 @@ func (tempChart *PolarTemporalChart) SetTTicks(ts []data.TemporalTick, format st
 // SetAutoTTicks overrides a previously user defined set of t-axis ticks and lets the ticks be calculated automatically
 func (tempChart *PolarTemporalChart) SetAutoTTicks(autoSupportLine bool) {
 	tempChart.base.SetAutoFromTicks(autoSupportLine)
+}
+
+// SetTAxisStyle changes the style of the T-axis
+// default value label size: theme.SizeNameSubHeadingText
+// default value label color: theme.ColorNameForeground
+// default value axis color: theme.ColorNameForeground
+func (tempChart *PolarTemporalChart) SetTAxisStyle(labelSize fyne.ThemeSizeName,
+	labelColor fyne.ThemeColorName, axisColor fyne.ThemeColorName) {
+	tempChart.base.SetFromAxisLabelStyle(labelSize, labelColor)
+	tempChart.base.SetFromAxisStyle(axisColor)
 }

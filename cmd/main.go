@@ -70,10 +70,6 @@ func cartNumChart() (numChart *coord.CartesianNumericalChart) {
 	}
 	numChart.AddAreaSeries("area", data1, true, color.RGBA{R: 0xff, G: 0x00, B: 0x00, A: 0xff})
 
-	// data2 := make([]data.NumericalDataPoint, 0)
-	// for range 50 {
-	// 	data2 = append(data2, randomSineNumericalDataPoint(180, 50))
-	// }
 	ls, err := numChart.AddLineSeries("line", updateSineNumericalData(), true, color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff})
 	if err != nil {
 		fmt.Println(err)
@@ -82,12 +78,6 @@ func cartNumChart() (numChart *coord.CartesianNumericalChart) {
 	ls.SetColor(color.RGBA{R: 0x00, G: 0xff, B: 0xff, A: 0xff})
 
 	go func() {
-		// data2a := data.NumericalDataPoint{
-		// 	N:   150,
-		// 	Val: 150,
-		// }
-		// time.Sleep(time.Second * 5)
-		// ls.AddData([]data.NumericalDataPoint{data2a})
 		for {
 			time.Sleep(time.Millisecond * 250)
 			fyne.Do(func() {
@@ -139,7 +129,7 @@ func cartTempChart() (tempChart *coord.CartesianTemporalChart) {
 	tempChart.SetTAxisLabel("T axis")
 	tempChart.SetYAxisLabel("Y axis")
 	tempChart.SetTitle("Cartesian Temporal Chart")
-	tempChart.SetAxisLabelSize(12)
+	tempChart.SetTAxisStyle(theme.SizeNameText, theme.ColorNameForeground, theme.ColorNameForeground)
 	return
 }
 
@@ -227,7 +217,7 @@ func cartCatChart() (catChart *coord.CartesianCategoricalChart) {
 	catChart.SetCAxisLabel("C axis")
 	catChart.SetYAxisLabel("Y axis")
 	catChart.SetTitle("Cartesian Categorical Chart")
-	catChart.SetTitleSize(theme.Size(theme.SizeNameText))
+	catChart.SetTitleStyle(theme.SizeNameText, theme.ColorNameForeground)
 	return
 }
 
@@ -287,6 +277,7 @@ func polAngChart() (angChart *coord.PolarNumericalChart) {
 	angChart.SetPhiAxisLabel("Phi axis")
 	angChart.SetRAxisLabel("R axis")
 	angChart.SetTitle("Polar Numerical Chart")
+	angChart.SetPhiAxisStyle(theme.SizeNameText, theme.ColorNameForeground, theme.ColorNameSuccess)
 	return
 }
 
@@ -308,7 +299,7 @@ func polTempChart() (tempChart *coord.PolarTemporalChart) {
 	tempChart.SetTAxisLabel("T axis")
 	tempChart.SetRAxisLabel("R axis")
 	tempChart.SetTitle("Polar Temporal Chart")
-	tempChart.SetTitleColor(color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff})
+	tempChart.SetTitleStyle(theme.SizeNameHeadingText, theme.ColorNameError)
 	return
 }
 
