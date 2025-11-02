@@ -53,6 +53,8 @@ type Axis struct {
 	name            string        // name/title of the axis
 	label           *canvas.Image // name/title of the axis; rotated if the axis is vertical
 	labelText       *canvas.Text
+	autoLabelColor  bool
+	autoLabelSize   bool
 	space           float32
 	col             color.Color
 	supCol          color.Color
@@ -76,9 +78,12 @@ func EmptyAxis(name string, typ AxisType) (ax *Axis) {
 		name:            name,
 		label:           canvas.NewImageFromImage(software.NewTransparentCanvas().Capture()),
 		labelText:       canvas.NewText(name, col),
+		autoLabelColor:  true,
+		autoLabelSize:   true,
 		col:             col,
 		supCol:          theme.Color(theme.ColorNameShadow),
 	}
+	ax.labelText.TextSize = theme.Size(theme.SizeNameSubHeadingText)
 	if typ == PolarPhiAxis {
 		ax.nMax = 2 * math.Pi
 	}
@@ -217,7 +222,7 @@ func (ax *Axis) Visible() (b bool) {
 	return
 }
 
-func (ax *Axis) RefreshThemeColor() {
+func (ax *Axis) RefreshTheme() {
 	ax.col = theme.Color(theme.ColorNameForeground)
 	ax.supCol = theme.Color(theme.ColorNameShadow)
 	ax.labelText.Color = ax.col
@@ -225,6 +230,12 @@ func (ax *Axis) RefreshThemeColor() {
 	ax.arrowTwo.StrokeColor = ax.col
 	ax.line.StrokeColor = ax.col
 	ax.circle.StrokeColor = ax.col
+	if ax.autoLabelColor {
+		ax.labelText.Color = theme.Color(theme.ColorNameForeground)
+	}
+	if ax.autoLabelSize {
+		ax.labelText.TextSize = theme.Size(theme.SizeNameSubHeadingText)
+	}
 	for i := range ax.ticks {
 		ax.ticks[i].label.Color = ax.col
 		ax.ticks[i].line.StrokeColor = ax.col
@@ -236,6 +247,26 @@ func (ax *Axis) RefreshThemeColor() {
 func (ax *Axis) SetLabel(l string) {
 	ax.name = l
 	ax.labelText.Text = l
+}
+
+func (ax *Axis) SetLabelColor(col color.Color) {
+	ax.autoLabelColor = false
+	ax.labelText.Color = col
+}
+
+func (ax *Axis) SetAutoLabelColor() {
+	ax.autoLabelColor = true
+	ax.labelText.Color = theme.Color(theme.ColorNameForeground)
+}
+
+func (ax *Axis) SetLabelSize(size float32) {
+	ax.autoLabelSize = false
+	ax.labelText.TextSize = size
+}
+
+func (ax *Axis) SetAutoLabelSize() {
+	ax.autoLabelSize = true
+	ax.labelText.TextSize = theme.Size(theme.SizeNameSubHeadingText)
 }
 
 func (ax *Axis) Label() (l renderer.Label) {

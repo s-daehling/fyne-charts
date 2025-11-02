@@ -33,12 +33,12 @@ func (base *BaseChart) updateSeriesVariables() {
 	}
 }
 
-func (base *BaseChart) RefreshThemeColor() {
+func (base *BaseChart) RefreshTheme() {
 	if base.autoTitleColor {
 		base.title.Color = theme.Color(theme.ColorNameForeground)
 	}
 	if base.autoTitleSize {
-		base.title.TextSize = theme.Size(theme.SizeNameSubHeadingText)
+		base.title.TextSize = theme.Size(theme.SizeNameHeadingText)
 	}
 	for i := range base.series {
 		base.series[i].RefreshThemeColor()

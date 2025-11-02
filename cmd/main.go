@@ -139,6 +139,7 @@ func cartTempChart() (tempChart *coord.CartesianTemporalChart) {
 	tempChart.SetTAxisLabel("T axis")
 	tempChart.SetYAxisLabel("Y axis")
 	tempChart.SetTitle("Cartesian Temporal Chart")
+	tempChart.SetAxisLabelSize(12)
 	return
 }
 

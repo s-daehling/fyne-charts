@@ -2,6 +2,7 @@ package coord
 
 import (
 	"errors"
+	"image/color"
 	"math"
 	"time"
 
@@ -53,6 +54,26 @@ func (base *BaseChart) ShowToAxis() {
 
 func (base *BaseChart) SetToAxisLabel(l string) {
 	base.toAx.SetLabel(l)
+}
+
+func (base *BaseChart) SetAxisLabelColor(col color.Color) {
+	base.fromAx.SetLabelColor(col)
+	base.toAx.SetLabelColor(col)
+}
+
+func (base *BaseChart) SetAutoAxisLabelColor() {
+	base.fromAx.SetAutoLabelColor()
+	base.toAx.SetAutoLabelColor()
+}
+
+func (base *BaseChart) SetAxisLabelSize(size float32) {
+	base.fromAx.SetLabelSize(size)
+	base.toAx.SetLabelSize(size)
+}
+
+func (base *BaseChart) SetAutoAxisLabelSize() {
+	base.fromAx.SetAutoLabelSize()
+	base.toAx.SetAutoLabelSize()
 }
 
 // -------------------- origin --------------------

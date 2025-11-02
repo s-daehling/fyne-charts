@@ -50,7 +50,7 @@ func (chart *propChart) SetTitleColor(col color.Color) {
 }
 
 // SetAutoTitleColor changes the color of the chart title back to the default (theme.ColorNameForeground)
-func (chart *propChart) SetAutoTitleColor(col color.Color) {
+func (chart *propChart) SetAutoTitleColor() {
 	chart.base.SetAutoTitleColor()
 }
 
@@ -59,7 +59,7 @@ func (chart *propChart) SetTitleSize(size float32) {
 	chart.base.SetTitleSize(size)
 }
 
-// SetAutoTitleSize changes the size of the chart title back to the default (theme.SizeNameSubHeadingText)
+// SetAutoTitleSize changes the size of the chart title back to the default (theme.SizeNameHeadingText)
 func (chart *propChart) SetAutoTitleSize() {
 	chart.base.SetAutoTitleSize()
 }

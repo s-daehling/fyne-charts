@@ -46,7 +46,7 @@ func EmptyBaseChart(pType PlaneType) (base *BaseChart) {
 		toMin:          0,
 		toMax:          100,
 	}
-	base.title.TextSize = theme.Size(theme.SizeNameSubHeadingText)
+	base.title.TextSize = theme.Size(theme.SizeNameHeadingText)
 	if pType == CartesianPlane {
 		base.rast = nil
 		base.render = renderer.EmptyCartesianRenderer(base)
@@ -220,7 +220,7 @@ func (base *BaseChart) SetTitleSize(size float32) {
 
 func (base *BaseChart) SetAutoTitleSize() {
 	base.autoTitleSize = true
-	base.title.TextSize = theme.Size(theme.SizeNameSubHeadingText)
+	base.title.TextSize = theme.Size(theme.SizeNameHeadingText)
 }
 
 func (base *BaseChart) FromAxisElements() (min float64, max float64, origin float64,

@@ -111,12 +111,12 @@ func (ser *StackedBarSeries) LegendEntries() (les []renderer.LegendEntry) {
 	return
 }
 
-func (ser *StackedBarSeries) RefreshThemeColor() {
+func (ser *StackedBarSeries) RefreshTheme() {
 	ser.legendLabel.Color = theme.Color(theme.ColorNameForeground)
 	ser.color = theme.Color(theme.ColorNameForeground)
 	ser.legendButton.SetColor(theme.Color(theme.ColorNameForeground))
 	for i := range ser.stack {
-		ser.stack[i].RefreshThemeColor()
+		ser.stack[i].RefreshTheme()
 	}
 }
 

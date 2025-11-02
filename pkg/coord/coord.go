@@ -38,7 +38,7 @@ func (chart *coordChart) SetTitleColor(col color.Color) {
 }
 
 // SetAutoTitleColor changes the color of the chart title back to the default (theme.ColorNameForeground)
-func (chart *coordChart) SetAutoTitleColor(col color.Color) {
+func (chart *coordChart) SetAutoTitleColor() {
 	chart.base.SetAutoTitleColor()
 }
 
@@ -47,9 +47,29 @@ func (chart *coordChart) SetTitleSize(size float32) {
 	chart.base.SetTitleSize(size)
 }
 
-// SetAutoTitleSize changes the size of the chart title back to the default (theme.SizeNameSubHeadingText)
+// SetAutoTitleSize changes the size of the chart title back to the default (theme.SizeNameHeadingText)
 func (chart *coordChart) SetAutoTitleSize() {
 	chart.base.SetAutoTitleSize()
+}
+
+// SetAxisLabelColor changes the color of the chart axis labels
+func (chart *coordChart) SetAxisLabelColor(col color.Color) {
+	chart.base.SetAxisLabelColor(col)
+}
+
+// SetAutoAxisLabelColor changes the color of the chart axis labels back to the default (theme.ColorNameForeground)
+func (chart *coordChart) SetAutoAxisLabelColor() {
+	chart.base.SetAutoAxisLabelColor()
+}
+
+// SetAxisLabelSize changes the size of the chart axis labels
+func (chart *coordChart) SetAxisLabelSize(size float32) {
+	chart.base.SetAxisLabelSize(size)
+}
+
+// SetAutoAxisLabelSize changes the size of the chart axis labels back to the default (theme.SizeNameSubHeadingText)
+func (chart *coordChart) SetAutoAxisLabelSize() {
+	chart.base.SetAutoAxisLabelSize()
 }
 
 // HideLegend hides the legend and uses the full space for the chart

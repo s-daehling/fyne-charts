@@ -203,7 +203,7 @@ func (ser *CandleStickSeries) CartesianRects(xMin float64, xMax float64, yMin fl
 	return
 }
 
-func (ser *CandleStickSeries) RefreshThemeColor() {
+func (ser *CandleStickSeries) RefreshTheme() {
 	ser.legendLabel.Color = theme.Color(theme.ColorNameForeground)
 	ser.color = theme.Color(theme.ColorNameForeground)
 	ser.legendButton.SetColor(theme.Color(theme.ColorNameForeground))
