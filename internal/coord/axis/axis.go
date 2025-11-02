@@ -242,7 +242,6 @@ func (ax *Axis) SetAxisStyle(colorName fyne.ThemeColorName) {
 
 func (ax *Axis) updateAxisColor(col color.Color) {
 	ax.col = col
-	ax.labelText.Color = ax.col
 	ax.arrowOne.StrokeColor = ax.col
 	ax.arrowTwo.StrokeColor = ax.col
 	ax.line.StrokeColor = ax.col

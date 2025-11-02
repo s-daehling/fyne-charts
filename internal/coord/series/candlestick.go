@@ -117,6 +117,7 @@ type CandleStickSeries struct {
 func EmptyCandleStickSeries(chart chart, name string, polar bool) (ser *CandleStickSeries) {
 	ser = &CandleStickSeries{}
 	ser.baseSeries = emptyBaseSeries(chart, name, theme.Color(theme.ColorNameForeground), polar, ser.toggleView)
+	ser.legendButton.UseGradient(color.RGBA{R: 0xff, G: 0x00, B: 0x00, A: 0xff}, color.RGBA{R: 0x00, G: 0x88, B: 0x00, A: 0xff})
 	return
 }
 
@@ -206,7 +207,11 @@ func (ser *CandleStickSeries) CartesianRects(xMin float64, xMax float64, yMin fl
 func (ser *CandleStickSeries) RefreshTheme() {
 	ser.legendLabel.Color = theme.Color(theme.ColorNameForeground)
 	ser.color = theme.Color(theme.ColorNameForeground)
-	ser.legendButton.SetColor(theme.Color(theme.ColorNameForeground))
+	// ser.legendButton.SetRectColor(theme.Color(theme.ColorNameForeground))
+	for i := range ser.data {
+		ser.data[i].upperLine.StrokeColor = theme.Color(theme.ColorNameForeground)
+		ser.data[i].lowerLine.StrokeColor = theme.Color(theme.ColorNameForeground)
+	}
 }
 
 // Show makes all elements of the series visible

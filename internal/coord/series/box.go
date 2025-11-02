@@ -350,7 +350,7 @@ func (ser *BoxSeries) toggleView() {
 // SetColor changes the color of the bar series
 func (ser *BoxSeries) SetColor(col color.Color) {
 	ser.color = col
-	ser.legendButton.SetColor(col)
+	ser.legendButton.SetRectColor(col)
 	for i := range ser.data {
 		ser.data[i].setColor(col)
 	}

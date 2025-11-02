@@ -545,7 +545,7 @@ func (ser *dataPointSeries) toggleView() {
 
 func (ser *dataPointSeries) SetColor(col color.Color) {
 	ser.color = col
-	ser.legendButton.SetColor(col)
+	ser.legendButton.SetRectColor(col)
 	for i := range ser.data {
 		ser.data[i].setColor(col)
 	}

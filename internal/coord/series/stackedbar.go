@@ -17,6 +17,7 @@ type StackedBarSeries struct {
 func EmptyStackedBarSeries(chart chart, name string, polar bool) (ser *StackedBarSeries) {
 	ser = &StackedBarSeries{}
 	ser.baseSeries = emptyBaseSeries(chart, name, theme.Color(theme.ColorNameForeground), polar, ser.toggleView)
+	ser.legendButton.UseGradient(theme.Color(theme.ColorNameForeground), theme.Color(theme.ColorNameBackground))
 	return
 }
 
@@ -114,7 +115,8 @@ func (ser *StackedBarSeries) LegendEntries() (les []renderer.LegendEntry) {
 func (ser *StackedBarSeries) RefreshTheme() {
 	ser.legendLabel.Color = theme.Color(theme.ColorNameForeground)
 	ser.color = theme.Color(theme.ColorNameForeground)
-	ser.legendButton.SetColor(theme.Color(theme.ColorNameForeground))
+	// ser.legendButton.SetRectColor(theme.Color(theme.ColorNameForeground))
+	ser.legendButton.SetGradColor(theme.Color(theme.ColorNameForeground), theme.Color(theme.ColorNameBackground))
 	for i := range ser.stack {
 		ser.stack[i].RefreshTheme()
 	}
