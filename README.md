@@ -74,15 +74,13 @@ func randomSine(n int, l float64, amp float64) (ndp []data.NumericalDataPoint) {
 }
 ```
 
-A demo of fyne-charts can be found in ``cmd/main.go``
+Demos of fyne-charts can be found in ``cmd/``
 
 ## Widgets
 
-Below you can find a screenshot showing all charts currently available:
-
-![example](docs/example.png "Example")
-
 ### Two-Dimensional Coordinate System Charts
+
+![example](docs/coord-example.png "Example of Coordinate System Charts")
 
 fyne-charts provides six widgets for visualization of two-dimensional data in a coordinate system.
 They differ in the coordinate system that is used and in the kind of data that is mapped.
@@ -135,6 +133,8 @@ Package `github.com/s-daehling/fyne-charts/pkg/coord` provides the six chart wid
 * `PolarCategoricalChart`
 
 ### Proportional Data Charts
+
+![example](docs/prop-example.png "Example of Proportional Data Charts")
 
 Analogous to the coordinate system charts, also proportional data charts can be drawn in two ways.
 The two corresponding chart widgets are provided by the package `github.com/s-daehling/fyne-charts/pkg/prop`:

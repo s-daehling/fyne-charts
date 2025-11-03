@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"image/color"
 	"math"
 	"math/rand/v2"
@@ -9,7 +8,6 @@ import (
 
 	"github.com/s-daehling/fyne-charts/pkg/coord"
 	"github.com/s-daehling/fyne-charts/pkg/data"
-	"github.com/s-daehling/fyne-charts/pkg/prop"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -19,48 +17,67 @@ import (
 
 func main() {
 	myApp := app.New()
-	myWindow := myApp.NewWindow("Chart")
+	myWindow := myApp.NewWindow("Coordinate System Charts")
 
-	vS := container.NewVSplit(cartesianCharts(), polarCharts())
+	var cartCharts, polCharts fyne.CanvasObject
+	var err error
+	cartCharts, err = cartesianCharts()
+	if err != nil {
+		panic(err)
+	}
+	polCharts, err = polarCharts()
+	if err != nil {
+		panic(err)
+	}
+
+	vS := container.NewVSplit(cartCharts, polCharts)
 
 	myWindow.SetContent(vS)
 	myWindow.Resize(fyne.NewSize(200, 200))
 	myWindow.ShowAndRun()
 }
 
-func cartesianCharts() (obj fyne.CanvasObject) {
-	t := cartTempChart()
-	c := cartCatChart()
-	n := cartNumChart()
-	p := cartPropChart()
-	hS1 := container.NewHSplit(c, p)
-	hS2 := container.NewHSplit(t, hS1)
-	obj = container.NewHSplit(n, hS2)
-	return
-}
-
-func polarCharts() (obj fyne.CanvasObject) {
-	t := polTempChart()
-	c := polCatChart()
-	a := polAngChart()
-	p := polPropChart()
-	hS1 := container.NewHSplit(c, p)
-	hS2 := container.NewHSplit(t, hS1)
-	obj = container.NewHSplit(a, hS2)
-	return
-}
-
-func updateSineNumericalData() (ndp []data.NumericalDataPoint) {
-	periodInMilliSecond := 10000
-	shift := float64(time.Now().UnixMilli()%int64(periodInMilliSecond)) / float64(periodInMilliSecond) * 2 * math.Pi
-	for range 50 {
-		ndp = append(ndp, randomSineNumericalDataPoint(180, 50, shift))
+func cartesianCharts() (obj fyne.CanvasObject, err error) {
+	t, err := cartTempChart()
+	if err != nil {
+		return
 	}
+	c, err := cartCatChart()
+	if err != nil {
+		return
+	}
+	n, err := cartNumChart()
+	if err != nil {
+		return
+	}
+	hS := container.NewHSplit(t, c)
+	obj = container.NewHSplit(n, hS)
 	return
 }
 
-func cartNumChart() (numChart *coord.CartesianNumericalChart) {
+func polarCharts() (obj fyne.CanvasObject, err error) {
+	t, err := polTempChart()
+	if err != nil {
+		return
+	}
+	c, err := polCatChart()
+	if err != nil {
+		return
+	}
+	a, err := polNumChart()
+	if err != nil {
+		return
+	}
+	hS := container.NewHSplit(t, c)
+	obj = container.NewHSplit(a, hS)
+	return
+}
+
+// Cartesian Numerical Chart
+func cartNumChart() (numChart *coord.CartesianNumericalChart, err error) {
 	numChart = coord.NewCartesianNumericalChart()
+
+	// Area Series
 	data1 := make([]data.NumericalDataPoint, 0)
 	for range 50 {
 		data1 = append(data1, randomNumericalDataPoint(-100, 0, -100, 0))
@@ -68,15 +85,19 @@ func cartNumChart() (numChart *coord.CartesianNumericalChart) {
 	for range 50 {
 		data1 = append(data1, randomNumericalDataPoint(0, 100, 0, 100))
 	}
-	numChart.AddAreaSeries("area", data1, true, color.RGBA{R: 0xff, G: 0x00, B: 0x00, A: 0xff})
-
-	ls, err := numChart.AddLineSeries("line", updateSineNumericalData(), true, color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff})
+	_, err = numChart.AddAreaSeries("area", data1, true, color.RGBA{R: 0xff, G: 0x00, B: 0x00, A: 0xff})
 	if err != nil {
-		fmt.Println(err)
 		return
 	}
-	ls.SetColor(color.RGBA{R: 0x00, G: 0xff, B: 0xff, A: 0xff})
 
+	// Line Series
+	ls, err := numChart.AddLineSeries("line", updateSineNumericalData(), true, color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff})
+	if err != nil {
+		return
+	}
+	// Change color after series creation
+	ls.SetColor(color.RGBA{R: 0x00, G: 0xff, B: 0xff, A: 0xff})
+	// Update Line Series in a goroutine
 	go func() {
 		for {
 			time.Sleep(time.Millisecond * 250)
@@ -87,15 +108,17 @@ func cartNumChart() (numChart *coord.CartesianNumericalChart) {
 		}
 	}()
 
+	// Bar Series
 	data3 := make([]data.NumericalDataPoint, 0)
 	for range 50 {
 		data3 = append(data3, randomNumericalDataPoint(-110, 110, -110, 110))
 	}
-	_, err = numChart.AddBarSeries("scatter", data3, 2, color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff})
+	_, err = numChart.AddBarSeries("bar", data3, 2, color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff})
 	if err != nil {
-		fmt.Println(err)
+		return
 	}
 
+	// Examples of methods for altering the chart appearance
 	numChart.SetOrigin(0, 0)
 	numChart.SetXAxisLabel("X axis")
 	numChart.SetYAxisLabel("Y axis")
@@ -104,8 +127,11 @@ func cartNumChart() (numChart *coord.CartesianNumericalChart) {
 	return
 }
 
-func cartTempChart() (tempChart *coord.CartesianTemporalChart) {
+// Cartesian Temporal Chart
+func cartTempChart() (tempChart *coord.CartesianTemporalChart, err error) {
 	tempChart = coord.NewCartesianTemporalChart()
+
+	// Candlestick Series
 	data1 := make([]data.TemporalCandleStick, 0)
 	tStart := time.Now()
 	close := 3.14
@@ -116,15 +142,23 @@ func cartTempChart() (tempChart *coord.CartesianTemporalChart) {
 		tStart = tStart.Add(span)
 		close = cs.Close
 	}
-	tempChart.AddCandleStickSeries("candlestick", data1)
+	_, err = tempChart.AddCandleStickSeries("candlestick", data1)
+	if err != nil {
+		return
+	}
 
+	// Lollipop Series
 	data2 := make([]data.TemporalDataPoint, 0)
 	for range 10 {
 		data2 = append(data2, randomTemporalDataPoint(time.Now(), time.Now().Add(time.Hour*50), -5, 10))
 	}
-	tempChart.AddLollipopSeries("lollipop", data2, color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff})
-	// tls.SetDotSize(6)
+	tls, err := tempChart.AddLollipopSeries("lollipop", data2, color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff})
+	if err != nil {
+		return
+	}
+	tls.SetDotSize(3)
 
+	// Examples of methods for altering the chart appearance
 	tempChart.SetOrigin(time.Now().Add(time.Hour*20), 4)
 	tempChart.SetTAxisLabel("T axis")
 	tempChart.SetYAxisLabel("Y axis")
@@ -133,8 +167,11 @@ func cartTempChart() (tempChart *coord.CartesianTemporalChart) {
 	return
 }
 
-func cartCatChart() (catChart *coord.CartesianCategoricalChart) {
+// Cartesian Categorical Chart
+func cartCatChart() (catChart *coord.CartesianCategoricalChart, err error) {
 	catChart = coord.NewCartesianCategoricalChart()
+
+	// Stacked Bar Series
 	data1 := []data.CategoricalDataPoint{
 		{
 			C:   "One",
@@ -171,7 +208,12 @@ func cartCatChart() (catChart *coord.CartesianCategoricalChart) {
 			Points: data2,
 		},
 	}
-	catChart.AddStackedBarSeries("stacked bar", catSer)
+	_, err = catChart.AddStackedBarSeries("stacked bar", catSer)
+	if err != nil {
+		return
+	}
+
+	// Bar Series
 	data3 := []data.CategoricalDataPoint{
 		{
 			C:   "One",
@@ -186,7 +228,12 @@ func cartCatChart() (catChart *coord.CartesianCategoricalChart) {
 			Val: -10 + rand.Float64()*20,
 		},
 	}
-	catChart.AddBarSeries("bar", data3, color.RGBA{R: 0xff, G: 0xff, B: 0x00, A: 0xff})
+	_, err = catChart.AddBarSeries("bar", data3, color.RGBA{R: 0xff, G: 0xff, B: 0x00, A: 0xff})
+	if err != nil {
+		return
+	}
+
+	// Box Series
 	data4 := []data.CategoricalBox{
 		{
 			C:             "One",
@@ -197,7 +244,6 @@ func cartCatChart() (catChart *coord.CartesianCategoricalChart) {
 			Minimum:       18,
 			Outlier:       []float64{26.3, 25.3, 17.45, 12.8},
 		},
-
 		{
 			C:             "Three",
 			Maximum:       20.12,
@@ -208,12 +254,12 @@ func cartCatChart() (catChart *coord.CartesianCategoricalChart) {
 			Outlier:       []float64{21.3, 20.3, 12.45, 7.8},
 		},
 	}
-	_, err := catChart.AddBoxSeries("box", data4, color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff})
+	_, err = catChart.AddBoxSeries("box", data4, color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff})
 	if err != nil {
-		fmt.Print(err)
+		return
 	}
-	// catChart.SetYRange(-5, 35)
-	// chart.SetCRange([]string{"One", "Three"})
+
+	// Examples of methods for altering the chart appearance
 	catChart.SetCAxisLabel("C axis")
 	catChart.SetYAxisLabel("Y axis")
 	catChart.SetTitle("Cartesian Categorical Chart")
@@ -221,80 +267,65 @@ func cartCatChart() (catChart *coord.CartesianCategoricalChart) {
 	return
 }
 
-func cartPropChart() (propChart *prop.BarChart) {
-	propChart = prop.NewBarChart()
-	data1 := []data.ProportionalDataPoint{
-		{
-			Val: rand.Float64() * 222,
-			C:   "One",
-			Col: color.RGBA{R: 0xff, G: 0x00, B: 0x00, A: 0xff},
-		},
-		{
-			Val: rand.Float64() * 222,
-			C:   "Two",
-			Col: color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff},
-		},
-	}
-	propChart.AddSeries("proportion", data1)
-	data2 := []data.ProportionalDataPoint{
-		{
-			Val: rand.Float64() * 222,
-			C:   "One",
-			Col: color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff},
-		},
-		{
-			Val: rand.Float64() * 222,
-			C:   "Two",
-			Col: color.RGBA{R: 0xff, G: 0x00, B: 0x00, A: 0xff},
-		},
-		{
-			Val: rand.Float64() * 222,
-			C:   "Three",
-			Col: color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff},
-		},
-	}
-	propChart.AddSeries("proportion 2", data2)
-	propChart.SetTitle("Proportional Bar Chart")
-	return
-}
+// Polar Numerical Chart
+func polNumChart() (numChart *coord.PolarNumericalChart, err error) {
+	numChart = coord.NewPolarNumericalChart()
 
-func polAngChart() (angChart *coord.PolarNumericalChart) {
-	angChart = coord.NewPolarNumericalChart()
+	// Area Series
 	data1 := make([]data.NumericalDataPoint, 0)
 	for range 100 {
 		data1 = append(data1, randomAngularDataPoint(63.777))
 	}
-	angChart.AddAreaSeries("area", data1, true, color.RGBA{R: 0xff, G: 0x00, B: 0x00, A: 0xff})
+	_, err = numChart.AddAreaSeries("area", data1, true, color.RGBA{R: 0xff, G: 0x00, B: 0x00, A: 0xff})
+	if err != nil {
+		return
+	}
 
+	// Line Series
 	data2 := make([]data.NumericalDataPoint, 0)
 	for range 150 {
 		data2 = append(data2, randomSineAngularDataPoint(63.777))
 	}
-	ls, _ := angChart.AddLineSeries("line", data2, false, color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff})
+	ls, err := numChart.AddLineSeries("line", data2, false, color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff})
+	if err != nil {
+		return
+	}
 	ls.SetLineWidth(2)
 
-	angChart.SetOrigin(0, 64)
-	angChart.SetPhiAxisLabel("Phi axis")
-	angChart.SetRAxisLabel("R axis")
-	angChart.SetTitle("Polar Numerical Chart")
-	angChart.SetPhiAxisStyle(theme.SizeNameText, theme.ColorNameForeground, theme.ColorNameSuccess)
+	// Examples of methods for altering the chart appearance
+	numChart.SetOrigin(0, 64)
+	numChart.SetPhiAxisLabel("Phi axis")
+	numChart.SetRAxisLabel("R axis")
+	numChart.SetTitle("Polar Numerical Chart")
+	numChart.SetPhiAxisStyle(theme.SizeNameText, theme.ColorNameForeground, theme.ColorNameSuccess)
 	return
 }
 
-func polTempChart() (tempChart *coord.PolarTemporalChart) {
+// Polar Temporal Chart
+func polTempChart() (tempChart *coord.PolarTemporalChart, err error) {
 	tempChart = coord.NewPolarTemporalChart()
+
+	// Lollipop Series
 	data1 := make([]data.TemporalDataPoint, 0)
 	for range 50 {
 		data1 = append(data1, randomTemporalDataPoint(time.Now(), time.Now().Add(time.Hour*50), 0, 111))
 	}
-	tempChart.AddLollipopSeries("lollipop", data1, color.RGBA{R: 0xff, G: 0xff, B: 0x00, A: 0xff})
+	_, err = tempChart.AddLollipopSeries("lollipop", data1, color.RGBA{R: 0xff, G: 0xff, B: 0x00, A: 0xff})
+	if err != nil {
+		return
+	}
 
+	// Scatter Series
 	data2 := make([]data.TemporalDataPoint, 0)
 	for range 25 {
 		data2 = append(data2, randomTemporalDataPoint(time.Now(), time.Now().Add(time.Hour*50), 0, 111))
 	}
-	tempChart.AddScatterSeries("scatter", data2, color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff})
+	_, err = tempChart.AddScatterSeries("scatter", data2, color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff})
+	if err != nil {
+		return
+	}
 
+	// Examples of methods for altering the chart appearance
 	tempChart.SetOrigin(time.Now().Add(time.Hour*10), 120)
 	tempChart.SetTAxisLabel("T axis")
 	tempChart.SetRAxisLabel("R axis")
@@ -303,8 +334,11 @@ func polTempChart() (tempChart *coord.PolarTemporalChart) {
 	return
 }
 
-func polCatChart() (catChart *coord.PolarCategoricalChart) {
+// Polar Categorical Chart
+func polCatChart() (catChart *coord.PolarCategoricalChart, err error) {
 	catChart = coord.NewPolarCategoricalChart()
+
+	// Stacked Bar Series
 	data1 := []data.CategoricalDataPoint{
 		{
 			C:   "One",
@@ -319,7 +353,6 @@ func polCatChart() (catChart *coord.PolarCategoricalChart) {
 			Val: rand.Float64() * 30,
 		},
 	}
-
 	data2 := []data.CategoricalDataPoint{
 		{
 			C:   "One",
@@ -342,7 +375,12 @@ func polCatChart() (catChart *coord.PolarCategoricalChart) {
 			Points: data2,
 		},
 	}
-	catChart.AddStackedBarSeries("stacked bar", catSer)
+	_, err = catChart.AddStackedBarSeries("stacked bar", catSer)
+	if err != nil {
+		return
+	}
+
+	// Bar Series
 	data3 := []data.CategoricalDataPoint{
 		{
 			C:   "One",
@@ -357,51 +395,16 @@ func polCatChart() (catChart *coord.PolarCategoricalChart) {
 			Val: rand.Float64() * 30,
 		},
 	}
-	catChart.AddBarSeries("bar", data3, color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff})
+	_, err = catChart.AddBarSeries("bar", data3, color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff})
+	if err != nil {
+		return
+	}
 
+	// Examples of methods for altering the chart appearance
 	catChart.SetRRange(40)
-	// chart.SetCRange([]string{"One", "Three"})
 	catChart.SetCAxisLabel("C axis")
 	catChart.SetRAxisLabel("R axis")
 	catChart.SetTitle("Polar Categorical Chart")
-	return
-}
-
-func polPropChart() (propChart *prop.PieChart) {
-	propChart = prop.NewPieChart()
-	data1 := []data.ProportionalDataPoint{
-		{
-			Val: rand.Float64() * 222,
-			C:   "One",
-			Col: color.RGBA{R: 0xff, G: 0x00, B: 0x00, A: 0xff},
-		},
-		{
-			Val: rand.Float64() * 222,
-			C:   "Two",
-			Col: color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff},
-		},
-	}
-	propChart.AddSeries("proportion", data1)
-	data2 := []data.ProportionalDataPoint{
-		{
-			Val: rand.Float64() * 222,
-			C:   "One",
-			Col: color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff},
-		},
-		{
-			Val: rand.Float64() * 222,
-			C:   "Two",
-			Col: color.RGBA{R: 0xff, G: 0x00, B: 0x00, A: 0xff},
-		},
-		{
-			Val: rand.Float64() * 222,
-			C:   "Three",
-			Col: color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff},
-		},
-	}
-	ser, _ := propChart.AddSeries("proportion2", data2)
-	ser.SetValTextColor(color.Black)
-	propChart.SetTitle("Proportional Pie/Doughnut Chart")
 	return
 }
 
@@ -409,6 +412,15 @@ func randomNumericalDataPoint(xMin float64, xMax float64, valMin float64,
 	valMax float64) (ndp data.NumericalDataPoint) {
 	ndp.N = xMin + (rand.Float64() * (xMax - xMin))
 	ndp.Val = valMin + (rand.Float64() * (valMax - valMin))
+	return
+}
+
+func updateSineNumericalData() (ndp []data.NumericalDataPoint) {
+	periodInMilliSecond := 10000
+	shift := float64(time.Now().UnixMilli()%int64(periodInMilliSecond)) / float64(periodInMilliSecond) * 2 * math.Pi
+	for range 50 {
+		ndp = append(ndp, randomSineNumericalDataPoint(180, 50, shift))
+	}
 	return
 }
 
