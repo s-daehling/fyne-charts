@@ -18,7 +18,9 @@ jobs:
           sudo apt-get install gcc libgl1-mesa-dev xorg-dev libxkbcommon-dev
       - name: Get Go depenencies
         run: go mod download
-      - name: Build
-        run: go build cmd/main.go
+      - name: Build coord
+        run: go build cmd/coord/main.go
+      - name: Build prop
+        run: go build cmd/prop/main.go
       - name: Test
         run: go test ./...
