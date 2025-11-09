@@ -1,11 +1,13 @@
 package coord
 
 import (
+	"fmt"
 	"image/color"
 	"math"
 
 	"github.com/s-daehling/fyne-charts/internal/coord/axis"
 	"github.com/s-daehling/fyne-charts/internal/coord/series"
+	"github.com/s-daehling/fyne-charts/internal/interact"
 	"github.com/s-daehling/fyne-charts/internal/renderer"
 
 	"fyne.io/fyne/v2"
@@ -36,6 +38,8 @@ type BaseChart struct {
 	fromAx         *axis.Axis
 	toAx           *axis.Axis
 	series         []series.Series
+	overlay        *interact.Overlay
+	tooltip        *interact.Tooltip
 	changed        bool
 	autoFromRange  bool
 	autoToRange    bool
@@ -51,6 +55,7 @@ type BaseChart struct {
 func EmptyBaseChart(pType PlaneType, fType FromType) (base *BaseChart) {
 	base = &BaseChart{
 		title:         canvas.NewText("", theme.Color(theme.ColorNameForeground)),
+		tooltip:       interact.NewTooltip(),
 		changed:       false,
 		autoFromRange: true,
 		autoToRange:   true,
@@ -59,6 +64,7 @@ func EmptyBaseChart(pType PlaneType, fType FromType) (base *BaseChart) {
 		planeType:     pType,
 		fromType:      fType,
 	}
+	base.overlay = interact.NewOverlay(base)
 	base.SetTitleStyle(theme.SizeNameHeadingText, theme.ColorNameForeground)
 	if pType == CartesianPlane {
 		base.fromAx = axis.EmptyAxis("", axis.CartesianAxis)
@@ -81,6 +87,11 @@ func (base *BaseChart) CreateRenderer() (r fyne.WidgetRenderer) {
 		base.render = renderer.EmptyPolarRenderer(base)
 	}
 	r = base.render
+	return
+}
+
+func (base *BaseChart) WidgetSize() (size fyne.Size) {
+	size = base.Size()
 	return
 }
 
@@ -158,6 +169,15 @@ func (base *BaseChart) CartesianObjects() (canObj []fyne.CanvasObject) {
 	if base.title.Text != "" {
 		canObj = append(canObj, base.title)
 	}
+
+	// add tooltip
+	tt := base.CartesianTooltip()
+	for i := range tt.Entries {
+		canObj = append(canObj, tt.Entries[i])
+	}
+
+	// add overlay
+	canObj = append(canObj, base.overlay)
 	return
 }
 
@@ -197,6 +217,14 @@ func (base *BaseChart) CartesianTexts() (ts []renderer.CartesianText) {
 	return
 }
 
+func (base *BaseChart) CartesianTooltip() (tt renderer.CartesianTooltip) {
+	from, to, entries := base.tooltip.GetEntries()
+	tt.X = from
+	tt.Y = to
+	tt.Entries = entries
+	return
+}
+
 func (base *BaseChart) PolarObjects() (canObj []fyne.CanvasObject) {
 	// objects will be drawn in the same order as added here
 
@@ -227,6 +255,15 @@ func (base *BaseChart) PolarObjects() (canObj []fyne.CanvasObject) {
 	if base.title.Text != "" {
 		canObj = append(canObj, base.title)
 	}
+
+	// add tooltip
+	tt := base.PolarTooltip()
+	for i := range tt.Entries {
+		canObj = append(canObj, tt.Entries[i])
+	}
+
+	// add overlay
+	canObj = append(canObj, base.overlay)
 	return
 }
 
@@ -257,8 +294,21 @@ func (base *BaseChart) PolarTexts() (ts []renderer.PolarText) {
 	return
 }
 
+func (base *BaseChart) PolarTooltip() (tt renderer.PolarTooltip) {
+	from, to, entries := base.tooltip.GetEntries()
+	tt.Phi = from
+	tt.R = to
+	tt.Entries = entries
+	return
+}
+
 func (base *BaseChart) Raster() (rs *canvas.Raster) {
 	rs = base.rast
+	return
+}
+
+func (base *BaseChart) Overlay() (io *interact.Overlay) {
+	io = base.overlay
 	return
 }
 
@@ -298,8 +348,44 @@ func (base *BaseChart) SetTitleStyle(sizeName fyne.ThemeSizeName, colorName fyne
 	base.title.Color = theme.Color(colorName)
 }
 
+func (base *BaseChart) MouseIn(pX, pY, w, h float32) {
+	if base.planeType == CartesianPlane {
+		x, y := base.PositionToCartesianCoordinates(pX, pY, w, h)
+		base.tooltip.MouseIn(x, y)
+		base.tooltip.SetEntries([]string{fmt.Sprintf("x: %f, y: %f", x, y)})
+	} else {
+		phi, r, _, _ := base.PositionToPolarCoordinates(pX, pY, w, h)
+		base.tooltip.MouseIn(phi, r)
+		base.tooltip.SetEntries([]string{fmt.Sprintf("phi: %f, r: %f", phi, r)})
+	}
+	base.Refresh()
+}
+
+func (base *BaseChart) MouseMove(pX, pY, w, h float32) {
+	if base.planeType == CartesianPlane {
+		x, y := base.PositionToCartesianCoordinates(pX, pY, w, h)
+		c := base.tooltip.MouseMove(x, y)
+		if c > 5 {
+			base.tooltip.SetEntries([]string{fmt.Sprintf("x: %f, y: %f", x, y)})
+			base.Refresh()
+		}
+	} else {
+		phi, r, _, _ := base.PositionToPolarCoordinates(pX, pY, w, h)
+		c := base.tooltip.MouseMove(phi, r)
+		if c > 5 {
+			base.tooltip.SetEntries([]string{fmt.Sprintf("phi: %f, r: %f", phi, r)})
+			base.Refresh()
+		}
+	}
+}
+
+func (base *BaseChart) MouseOut() {
+	base.tooltip.MouseOut()
+	base.Refresh()
+}
+
 func (base *BaseChart) PixelGenCartesian(pX, pY, w, h int) (col color.Color) {
-	x, y := base.PositionToCartesianCoordinates(pX, pY, w, h)
+	x, y := base.PositionToCartesianCoordinates(float32(pX), float32(pY), float32(w), float32(h))
 	col = color.RGBA{0x00, 0x00, 0x00, 0x00}
 	for i := range base.series {
 		serCol := base.series[i].RasterColorCartesian(x, y)
@@ -313,7 +399,7 @@ func (base *BaseChart) PixelGenCartesian(pX, pY, w, h int) (col color.Color) {
 }
 
 func (base *BaseChart) PixelGenPolar(pX, pY, w, h int) (col color.Color) {
-	phi, r, x, y := base.PositionToPolarCoordinates(pX, pY, w, h)
+	phi, r, x, y := base.PositionToPolarCoordinates(float32(pX), float32(pY), float32(w), float32(h))
 	col = color.RGBA{0x00, 0x00, 0x00, 0x00}
 	_, rMax := base.toAx.NRange()
 	if r > rMax {
@@ -330,7 +416,7 @@ func (base *BaseChart) PixelGenPolar(pX, pY, w, h int) (col color.Color) {
 	return
 }
 
-func (base *BaseChart) PositionToCartesianCoordinates(pX int, pY int, w int, h int) (x float64, y float64) {
+func (base *BaseChart) PositionToCartesianCoordinates(pX float32, pY float32, w float32, h float32) (x float64, y float64) {
 	trans := false
 	xMin, xMax := base.fromAx.NRange()
 	yMin, yMax := base.toAx.NRange()
@@ -344,7 +430,7 @@ func (base *BaseChart) PositionToCartesianCoordinates(pX int, pY int, w int, h i
 	return
 }
 
-func (base *BaseChart) PositionToPolarCoordinates(pX int, pY int, w int, h int) (phi float64,
+func (base *BaseChart) PositionToPolarCoordinates(pX float32, pY float32, w float32, h float32) (phi float64,
 	r float64, x float64, y float64) {
 	_, rMax := base.toAx.NRange()
 	rot := 0.0

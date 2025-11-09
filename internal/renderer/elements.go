@@ -2,7 +2,7 @@ package renderer
 
 import (
 	"fyne.io/fyne/v2/canvas"
-	"github.com/s-daehling/fyne-charts/internal/legend"
+	"github.com/s-daehling/fyne-charts/internal/interact"
 )
 
 type CartesianNode struct {
@@ -89,7 +89,7 @@ func maxTickSize(ts []Tick) (maxWidth float32, maxHeight float32) {
 }
 
 type LegendEntry struct {
-	Button *legend.LegendBox
+	Button *interact.LegendBox
 	Label  *canvas.Text
 	IsSub  bool
 }
@@ -114,5 +114,33 @@ func legendSize(les []LegendEntry) (w float32, h float32) {
 		w += 20
 	}
 	h = float32(len(les) * 20)
+	return
+}
+
+type CartesianTooltip struct {
+	X       float64
+	Y       float64
+	Entries []*canvas.Text
+}
+
+type PolarTooltip struct {
+	Phi     float64
+	R       float64
+	Entries []*canvas.Text
+}
+
+func tooltipSize(entries []*canvas.Text) (w float32, h float32) {
+	w = 0.0
+	h = 0.0
+	if len(entries) == 0 {
+		return
+	}
+	w = entries[0].MinSize().Width
+	for i := range entries {
+		h += entries[i].MinSize().Height + 2
+		if entries[i].MinSize().Width > w {
+			w = entries[i].MinSize().Width
+		}
+	}
 	return
 }

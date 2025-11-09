@@ -6,7 +6,7 @@ import (
 
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/theme"
-	"github.com/s-daehling/fyne-charts/internal/legend"
+	"github.com/s-daehling/fyne-charts/internal/interact"
 	"github.com/s-daehling/fyne-charts/internal/renderer"
 )
 
@@ -14,7 +14,7 @@ type baseSeries struct {
 	name         string
 	visible      bool
 	color        color.Color
-	legendButton *legend.LegendBox
+	legendButton *interact.LegendBox
 	legendLabel  *canvas.Text
 	polar        bool
 	chart        chart
@@ -25,7 +25,7 @@ func emptyBaseSeries(chart chart, name string, col color.Color, polar bool, togV
 		name:         name,
 		visible:      true,
 		color:        col,
-		legendButton: legend.NewLegendBox(col, togView),
+		legendButton: interact.NewLegendBox(col, togView),
 		legendLabel:  canvas.NewText(name, theme.Color(theme.ColorNameForeground)),
 		polar:        polar,
 		chart:        chart,
@@ -153,6 +153,4 @@ type Series interface {
 type chart interface {
 	DataChange()
 	RasterVisibilityChange()
-	PositionToCartesianCoordinates(pX int, pY int, w int, h int) (x float64, y float64)
-	PositionToPolarCoordinates(pX int, pY int, w int, h int) (phi float64, r float64, x float64, y float64)
 }

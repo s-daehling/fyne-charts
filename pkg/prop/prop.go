@@ -7,18 +7,12 @@ import (
 )
 
 type propChart struct {
-	base *prop.BaseChart
+	*prop.BaseChart
 }
 
 func emptyPropChart(planeType prop.PlaneType) (chart propChart) {
-	chart.base = prop.EmptyBaseChart(planeType)
+	chart.BaseChart = prop.EmptyBaseChart(planeType)
 	return
-}
-
-// CreateRenderer creates the renderer of the widget
-func (chart *propChart) CreateRenderer() fyne.WidgetRenderer {
-	r := chart.base.GetRenderer()
-	return r
 }
 
 // AddSeries adds a series of data which is visualized as proportional bar chart.
@@ -28,33 +22,33 @@ func (chart *propChart) CreateRenderer() fyne.WidgetRenderer {
 // The range of C is not restricted. The range of Val is restricted to Val>=0
 func (chart *propChart) AddSeries(name string,
 	points []data.ProportionalDataPoint) (ps ProportionalSeries, err error) {
-	ps.ser, err = chart.base.AddProportionalSeries(name, points)
+	ps.ser, err = chart.BaseChart.AddProportionalSeries(name, points)
 	return
 }
 
 // DeleteSeries deletes the series with the specified name if it exists
 func (chart *propChart) DeleteSeries(name string) {
-	chart.base.DeleteSeries(name)
+	chart.BaseChart.DeleteSeries(name)
 }
 
 // SetTitle sets the title of the chart, which will be displayed at the top
 func (chart *propChart) SetTitle(l string) {
-	chart.base.SetTitle(l)
+	chart.BaseChart.SetTitle(l)
 }
 
 // SetTitleStyle changes the style of the chart title
 // default value title size: theme.SizeNameSubHeadingText
 // default value title color: theme.ColorNameForeground
 func (chart *propChart) SetTitleStyle(titleSize fyne.ThemeSizeName, titleColor fyne.ThemeColorName) {
-	chart.base.SetTitleStyle(titleSize, titleColor)
+	chart.BaseChart.SetTitleStyle(titleSize, titleColor)
 }
 
 // HideLegend hides the legend and uses the full space for the chart
 func (chart *propChart) HideLegend() {
-	chart.base.HideLegend()
+	chart.BaseChart.HideLegend()
 }
 
 // ShowLegend shows the legend on the right side
 func (chart *propChart) ShowLegend() {
-	chart.base.ShowLegend()
+	chart.BaseChart.ShowLegend()
 }

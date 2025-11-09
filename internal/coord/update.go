@@ -5,14 +5,17 @@ import (
 	"github.com/s-daehling/fyne-charts/internal/coord/series"
 )
 
+func (base *BaseChart) Refresh() {
+	if base.render != nil {
+		base.render.Refresh()
+	}
+}
+
 func (base *BaseChart) DataChange() {
 	base.updateRangeAndOrigin()
 	base.updateAxTicks()
 	base.updateSeriesVariables()
-	if base.render != nil {
-		base.render.Refresh()
-		base.render.Layout(base.Size())
-	}
+	base.Refresh()
 }
 
 func (base *BaseChart) RasterVisibilityChange() {

@@ -13,6 +13,7 @@ type PolarChart interface {
 	PolarNodes() (ns []PolarNode)
 	PolarEdges() (es []PolarEdge)
 	PolarTexts() (ts []PolarText)
+	PolarTooltip() (tt PolarTooltip)
 	PolarObjects() (obj []fyne.CanvasObject)
 }
 
@@ -258,6 +259,20 @@ func (r *Polar) Layout(size fyne.Size) {
 		rs.Move(fyne.NewPos(area.zeroPos.X-area.radius, area.zeroPos.Y-area.radius))
 		rs.Resize(fyne.NewSize(2*area.radius, 2*area.radius))
 	}
+
+	// place tooltip
+	tt := r.chart.PolarTooltip()
+	for i := range tt.Entries {
+		tt.Entries[i].Move(polarCoordinatesToPosition(tt.Phi, tt.R, area))
+		tt.Entries[i].Alignment = fyne.TextAlignTrailing
+	}
+
+	// place overlay
+	ov := r.chart.Overlay()
+	if ov != nil {
+		ov.Move(fyne.NewPos(area.zeroPos.X-area.radius, area.zeroPos.Y-area.radius))
+		ov.Resize(fyne.NewSize(2*area.radius, 2*area.radius))
+	}
 }
 
 // MinSize calculates the minimum space required to display the chart
@@ -326,6 +341,8 @@ func (r *Polar) Refresh() {
 	for i := range obj {
 		obj[i].Refresh()
 	}
+
+	r.Layout(r.chart.WidgetSize())
 	// 	r.chart.resetHasChanged()
 	// }
 }

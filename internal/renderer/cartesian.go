@@ -12,6 +12,7 @@ type CartesianChart interface {
 	CartesianEdges() (es []CartesianEdge)
 	CartesianRects() (rs []CartesianRect)
 	CartesianTexts() (ts []CartesianText)
+	CartesianTooltip() (tt CartesianTooltip)
 	CartesianObjects() (obj []fyne.CanvasObject)
 }
 
@@ -240,6 +241,20 @@ func (r *Cartesian) Layout(size fyne.Size) {
 		rs.Move(fyne.NewPos(area.minPos.X, area.maxPos.Y))
 		rs.Resize(fyne.NewSize(area.maxPos.X-area.minPos.X, area.minPos.Y-area.maxPos.Y))
 	}
+
+	// place tooltip
+	tt := r.chart.CartesianTooltip()
+	for i := range tt.Entries {
+		tt.Entries[i].Move(cartesianCoordinatesToPosition(tt.X, tt.Y, area))
+		tt.Entries[i].Alignment = fyne.TextAlignTrailing
+	}
+
+	// place overlay
+	ov := r.chart.Overlay()
+	if ov != nil {
+		ov.Move(fyne.NewPos(area.minPos.X, area.maxPos.Y))
+		ov.Resize(fyne.NewSize(area.maxPos.X-area.minPos.X, area.minPos.Y-area.maxPos.Y))
+	}
 }
 
 // MinSize calculates the minimum space required to display the chart
@@ -314,6 +329,8 @@ func (r *Cartesian) Refresh() {
 	for i := range obj {
 		obj[i].Refresh()
 	}
+
+	r.Layout(r.chart.WidgetSize())
 	// 	r.chart.resetHasChanged()
 	// }
 }

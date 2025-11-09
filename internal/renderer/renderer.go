@@ -3,6 +3,7 @@ package renderer
 import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
+	"github.com/s-daehling/fyne-charts/internal/interact"
 )
 
 type baseChart interface {
@@ -11,7 +12,9 @@ type baseChart interface {
 	FromAxisElements() (min float64, max float64, origin float64, label Label, ticks []Tick, arrow Arrow, show bool)
 	ToAxisElements() (min float64, max float64, origin float64, label Label, ticks []Tick, arrow Arrow, show bool)
 	Raster() (r *canvas.Raster)
+	Overlay() (io *interact.Overlay)
 	ChartSizeChange(fromSpace float32, toSpace float32)
+	WidgetSize() (size fyne.Size)
 	RefreshTheme()
 }
 

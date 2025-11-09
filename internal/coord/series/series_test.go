@@ -12,12 +12,6 @@ type chartDummy struct{}
 
 func (cd chartDummy) DataChange()             {}
 func (cd chartDummy) RasterVisibilityChange() {}
-func (cd chartDummy) PositionToCartesianCoordinates(pX int, pY int, w int, h int) (x float64, y float64) {
-	return
-}
-func (cd chartDummy) PositionToPolarCoordinates(pX int, pY int, w int, h int) (phi float64, r float64, x float64, y float64) {
-	return
-}
 
 func testNRange(ser Series, expIsEmpty bool, expMin float64, expMax float64) (err error) {
 	isEmpty, min, max := ser.NRange()

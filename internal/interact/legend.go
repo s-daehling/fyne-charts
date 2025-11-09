@@ -1,4 +1,4 @@
-package legend
+package interact
 
 import (
 	"image/color"

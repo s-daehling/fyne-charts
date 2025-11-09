@@ -4,11 +4,13 @@ import (
 	"image/color"
 	"math"
 
+	"github.com/s-daehling/fyne-charts/internal/interact"
 	"github.com/s-daehling/fyne-charts/internal/renderer"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/theme"
+	"fyne.io/fyne/v2/widget"
 )
 
 type PlaneType string
@@ -32,6 +34,7 @@ type BaseChart struct {
 	fromMax        float64
 	toMin          float64
 	toMax          float64
+	widget.BaseWidget
 }
 
 func EmptyBaseChart(pType PlaneType) (base *BaseChart) {
@@ -47,18 +50,28 @@ func EmptyBaseChart(pType PlaneType) (base *BaseChart) {
 	base.SetTitleStyle(theme.SizeNameHeadingText, theme.ColorNameForeground)
 	if pType == CartesianPlane {
 		base.rast = nil
-		base.render = renderer.EmptyCartesianRenderer(base)
 		base.fromMax = 100
 	} else {
 		base.rast = canvas.NewRasterWithPixels(base.PixelGenPolar)
-		base.render = renderer.EmptyPolarRenderer(base)
 		base.fromMax = 2 * math.Pi
 	}
+	base.ExtendBaseWidget(base)
 	return
 }
 
-func (base *BaseChart) GetRenderer() fyne.WidgetRenderer {
-	return base.render
+func (base *BaseChart) CreateRenderer() (r fyne.WidgetRenderer) {
+	if base.planeType == CartesianPlane {
+		base.render = renderer.EmptyCartesianRenderer(base)
+	} else {
+		base.render = renderer.EmptyPolarRenderer(base)
+	}
+	r = base.render
+	return
+}
+
+func (base *BaseChart) WidgetSize() (size fyne.Size) {
+	size = base.Size()
+	return
 }
 
 func (base *BaseChart) SeriesExist(n string) (exist bool) {
@@ -136,6 +149,10 @@ func (base *BaseChart) CartesianTexts() (ts []renderer.CartesianText) {
 	return
 }
 
+func (base *BaseChart) CartesianTooltip() (tt renderer.CartesianTooltip) {
+	return
+}
+
 func (base *BaseChart) PolarObjects() (canObj []fyne.CanvasObject) {
 	// objects will be drawn in the same order as added here
 
@@ -172,8 +189,17 @@ func (base *BaseChart) PolarTexts() (ts []renderer.PolarText) {
 	return
 }
 
+func (base *BaseChart) PolarTooltip() (tt renderer.PolarTooltip) {
+	return
+}
+
 func (base *BaseChart) Raster() (rs *canvas.Raster) {
 	rs = base.rast
+	return
+}
+
+func (base *BaseChart) Overlay() (io *interact.Overlay) {
+	io = nil
 	return
 }
 

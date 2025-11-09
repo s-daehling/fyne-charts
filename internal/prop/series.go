@@ -8,7 +8,7 @@ import (
 
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/theme"
-	"github.com/s-daehling/fyne-charts/internal/legend"
+	"github.com/s-daehling/fyne-charts/internal/interact"
 	"github.com/s-daehling/fyne-charts/internal/renderer"
 
 	"github.com/s-daehling/fyne-charts/pkg/data"
@@ -50,7 +50,7 @@ type proportionPoint struct {
 	rect         *canvas.Rectangle
 	text         *canvas.Text
 	visible      bool
-	legendButton *legend.LegendBox
+	legendButton *interact.LegendBox
 	legendLabel  *canvas.Text
 	ser          *Series
 }
@@ -61,7 +61,7 @@ func emptyProportionPoint(showText bool, col color.Color) (point *proportionPoin
 		legendLabel: canvas.NewText("", theme.Color(theme.ColorNameForeground)),
 		visible:     true,
 	}
-	point.legendButton = legend.NewLegendBox(col, point.toggleView)
+	point.legendButton = interact.NewLegendBox(col, point.toggleView)
 	if showText {
 		point.text = canvas.NewText("", theme.Color(theme.ColorNameForeground))
 	}
@@ -201,7 +201,7 @@ type Series struct {
 	name             string
 	visible          bool
 	autoValTextColor bool
-	legendButton     *legend.LegendBox
+	legendButton     *interact.LegendBox
 	legendLabel      *canvas.Text
 	polar            bool
 	chart            *BaseChart
@@ -217,7 +217,7 @@ func EmptyProportionalSeries(chart *BaseChart, name string, polar bool) (ser *Se
 		polar:            polar,
 		chart:            chart,
 	}
-	ser.legendButton = legend.NewLegendBox(theme.Color(theme.ColorNameForeground), ser.toggleView)
+	ser.legendButton = interact.NewLegendBox(theme.Color(theme.ColorNameForeground), ser.toggleView)
 	ser.legendButton.UseGradient(theme.Color(theme.ColorNameForeground), theme.Color(theme.ColorNameBackground))
 	return
 }

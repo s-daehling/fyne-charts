@@ -4,9 +4,15 @@ import (
 	"fyne.io/fyne/v2/theme"
 )
 
+func (base *BaseChart) Refresh() {
+	if base.render != nil {
+		base.render.Refresh()
+	}
+}
+
 func (base *BaseChart) DataChange() {
 	base.updateSeriesVariables()
-	base.render.Refresh()
+	base.Refresh()
 }
 
 func (base *BaseChart) RasterVisibilityChange() {
