@@ -11,6 +11,7 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/theme"
+	"fyne.io/fyne/v2/widget"
 )
 
 type PlaneType string
@@ -44,6 +45,7 @@ type BaseChart struct {
 	fromType       FromType
 	rast           *canvas.Raster
 	render         fyne.WidgetRenderer
+	widget.BaseWidget
 }
 
 func EmptyBaseChart(pType PlaneType, fType FromType) (base *BaseChart) {
@@ -62,19 +64,24 @@ func EmptyBaseChart(pType PlaneType, fType FromType) (base *BaseChart) {
 		base.fromAx = axis.EmptyAxis("", axis.CartesianAxis)
 		base.toAx = axis.EmptyAxis("", axis.CartesianAxis)
 		base.rast = canvas.NewRasterWithPixels(base.PixelGenCartesian)
-		base.render = renderer.EmptyCartesianRenderer(base)
 	} else {
 		base.fromAx = axis.EmptyAxis("", axis.PolarPhiAxis)
 		base.toAx = axis.EmptyAxis("", axis.PolarRAxis)
 		base.rast = canvas.NewRasterWithPixels(base.PixelGenPolar)
-		base.render = renderer.EmptyPolarRenderer(base)
 	}
 	base.updateRangeAndOrigin()
+	base.ExtendBaseWidget(base)
 	return
 }
 
-func (base *BaseChart) GetRenderer() fyne.WidgetRenderer {
-	return base.render
+func (base *BaseChart) CreateRenderer() (r fyne.WidgetRenderer) {
+	if base.planeType == CartesianPlane {
+		base.render = renderer.EmptyCartesianRenderer(base)
+	} else {
+		base.render = renderer.EmptyPolarRenderer(base)
+	}
+	r = base.render
+	return
 }
 
 func (base *BaseChart) CartesianOrientation() (transposed bool) {

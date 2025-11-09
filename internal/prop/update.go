@@ -15,7 +15,7 @@ func (base *BaseChart) RasterVisibilityChange() {
 	}
 }
 
-func (base *BaseChart) Resize(fromSpace float32, toSpace float32) {
+func (base *BaseChart) ChartSizeChange(fromSpace float32, toSpace float32) {
 
 }
 

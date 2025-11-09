@@ -7,13 +7,11 @@ import (
 	"github.com/s-daehling/fyne-charts/pkg/data"
 
 	"fyne.io/fyne/v2"
-	"fyne.io/fyne/v2/widget"
 )
 
 // PolarCategoricalChart implements a polar plane with one categorical c-axis and one numerical r-axis
 type PolarCategoricalChart struct {
 	coordChart
-	widget.BaseWidget
 }
 
 // NewPolarCategoricalChart returns an initialized PolarCategoricalChart
@@ -21,7 +19,6 @@ func NewPolarCategoricalChart() (catChart *PolarCategoricalChart) {
 	catChart = &PolarCategoricalChart{
 		coordChart: emptyCoordChart(coord.PolarPlane, coord.Categorical),
 	}
-	catChart.ExtendBaseWidget(catChart)
 	return
 }
 
@@ -33,7 +30,7 @@ func NewPolarCategoricalChart() (catChart *PolarCategoricalChart) {
 // The range of C is not restricted. The range of Val is restricted to Val>=0.
 func (catChart *PolarCategoricalChart) AddScatterSeries(name string, points []data.CategoricalDataPoint,
 	color color.Color) (css CategoricalScatterSeries, err error) {
-	css.ser, err = catChart.base.AddCategoricalScatterSeries(name, points, color)
+	css.ser, err = catChart.BaseChart.AddCategoricalScatterSeries(name, points, color)
 	return
 }
 
@@ -45,7 +42,7 @@ func (catChart *PolarCategoricalChart) AddScatterSeries(name string, points []da
 // The range of C is not restricted. The range of Val is restricted to Val>=0.
 func (catChart *PolarCategoricalChart) AddLollipopSeries(name string, points []data.CategoricalDataPoint,
 	color color.Color) (cls CategoricalLollipopSeries, err error) {
-	cls.ser, err = catChart.base.AddCategoricalLollipopSeries(name, points, color)
+	cls.ser, err = catChart.BaseChart.AddCategoricalLollipopSeries(name, points, color)
 	return
 }
 
@@ -57,7 +54,7 @@ func (catChart *PolarCategoricalChart) AddLollipopSeries(name string, points []d
 // The range of C is not restricted. The range of Val is restricted to Val>=0.
 func (catChart *PolarCategoricalChart) AddBarSeries(name string, points []data.CategoricalDataPoint,
 	color color.Color) (cbs CategoricalBarSeries, err error) {
-	cbs.ser, err = catChart.base.AddCategoricalBarSeries(name, points, color)
+	cbs.ser, err = catChart.BaseChart.AddCategoricalBarSeries(name, points, color)
 	return
 }
 
@@ -69,35 +66,35 @@ func (catChart *PolarCategoricalChart) AddBarSeries(name string, points []data.C
 // The range of C is not restricted. The range of Val is restricted to Val>=0.
 func (catChart *PolarCategoricalChart) AddStackedBarSeries(name string,
 	points []data.CategoricalDataSeries) (css CategoricalStackedBarSeries, err error) {
-	css.ser, err = catChart.base.AddCategoricalStackedBarSeries(name, points)
+	css.ser, err = catChart.BaseChart.AddCategoricalStackedBarSeries(name, points)
 	return
 }
 
 // SetYAxisLabel sets the label of the y-axis, which will be displayed at the left side
 func (catChart *PolarCategoricalChart) SetRAxisLabel(l string) {
-	catChart.base.SetToAxisLabel(l)
+	catChart.BaseChart.SetToAxisLabel(l)
 }
 
 // SetRRange sets a user defined range for the r-axis;
 // an error is returned if max<0 or if the origin has been defined by the user before and is outside the given range
 func (catChart *PolarCategoricalChart) SetRRange(max float64) (err error) {
-	err = catChart.base.SetToRange(0.0, max)
+	err = catChart.BaseChart.SetToRange(0.0, max)
 	return
 }
 
 // SetAutoRRange overrides a previously user defined range and lets the range be calculated automatically
 func (catChart *PolarCategoricalChart) SetAutoRRange() {
-	catChart.base.SetAutoToRange()
+	catChart.BaseChart.SetAutoToRange()
 }
 
 // SetRTicks sets the list of user defined ticks to be shown on the r-axis
 func (catChart *PolarCategoricalChart) SetRTicks(ts []data.NumericalTick) {
-	catChart.base.SetToTicks(ts)
+	catChart.BaseChart.SetToTicks(ts)
 }
 
 // SetAutoRTicks overrides a previously user defined set of r-axis ticks and lets the ticks be calculated automatically
 func (catChart *PolarCategoricalChart) SetAutoRTicks(autoSupportLine bool) {
-	catChart.base.SetAutoToTicks(autoSupportLine)
+	catChart.BaseChart.SetAutoToTicks(autoSupportLine)
 }
 
 // SetRAxisStyle changes the style of the R-axis
@@ -106,26 +103,26 @@ func (catChart *PolarCategoricalChart) SetAutoRTicks(autoSupportLine bool) {
 // default value axis color: theme.ColorNameForeground
 func (catChart *PolarCategoricalChart) SetRAxisStyle(labelSize fyne.ThemeSizeName,
 	labelColor fyne.ThemeColorName, axisColor fyne.ThemeColorName) {
-	catChart.base.SetToAxisLabelStyle(labelSize, labelColor)
-	catChart.base.SetToAxisStyle(axisColor)
+	catChart.BaseChart.SetToAxisLabelStyle(labelSize, labelColor)
+	catChart.BaseChart.SetToAxisStyle(axisColor)
 }
 
 // SetCAxisLabel sets the label of the c-axis, which will be displayed at the left side
 func (catChart *PolarCategoricalChart) SetCAxisLabel(l string) {
-	catChart.base.SetFromAxisLabel(l)
+	catChart.BaseChart.SetFromAxisLabel(l)
 }
 
 // SetCRange sets a user defined range for the c-axis.
 // This will also determine the ticks and their order on the c-axis.
 // An error is returned if cs is empty.
 func (catChart *PolarCategoricalChart) SetCRange(cs []string) (err error) {
-	err = catChart.base.SetFromCRange(cs)
+	err = catChart.BaseChart.SetFromCRange(cs)
 	return
 }
 
 // SetAutoCRange overrides a previously user defined range and lets the range be calculated automatically
 func (catChart *PolarCategoricalChart) SetAutoCRange() {
-	catChart.base.SetAutoFromRange()
+	catChart.BaseChart.SetAutoFromRange()
 }
 
 // SetCAxisStyle changes the style of the C-axis
@@ -134,6 +131,6 @@ func (catChart *PolarCategoricalChart) SetAutoCRange() {
 // default value axis color: theme.ColorNameForeground
 func (catChart *PolarCategoricalChart) SetCAxisStyle(labelSize fyne.ThemeSizeName,
 	labelColor fyne.ThemeColorName, axisColor fyne.ThemeColorName) {
-	catChart.base.SetFromAxisLabelStyle(labelSize, labelColor)
-	catChart.base.SetFromAxisStyle(axisColor)
+	catChart.BaseChart.SetFromAxisLabelStyle(labelSize, labelColor)
+	catChart.BaseChart.SetFromAxisStyle(axisColor)
 }

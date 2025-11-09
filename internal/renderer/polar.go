@@ -109,7 +109,7 @@ func (r *Polar) Layout(size fyne.Size) {
 	}
 	area.coordToPos = area.radius / float32(rMax)
 
-	r.chart.Resize(2*area.radius*math.Pi, area.radius)
+	r.chart.ChartSizeChange(2*area.radius*math.Pi, area.radius)
 
 	_, _, _, _, phiTicks, _, _ = r.chart.FromAxisElements()
 	_, _, _, _, rTicks, _, _ = r.chart.ToAxisElements()

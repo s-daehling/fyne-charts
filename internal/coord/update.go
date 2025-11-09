@@ -9,14 +9,17 @@ func (base *BaseChart) DataChange() {
 	base.updateRangeAndOrigin()
 	base.updateAxTicks()
 	base.updateSeriesVariables()
-	base.render.Refresh()
+	if base.render != nil {
+		base.render.Refresh()
+		base.render.Layout(base.Size())
+	}
 }
 
 func (base *BaseChart) RasterVisibilityChange() {
 	base.rast.Refresh()
 }
 
-func (base *BaseChart) Resize(fromSpace float32, toSpace float32) {
+func (base *BaseChart) ChartSizeChange(fromSpace float32, toSpace float32) {
 	base.fromAx.SetSpace(fromSpace)
 	base.toAx.SetSpace(toSpace)
 	base.updateAxTicks()

@@ -105,7 +105,7 @@ func (r *Cartesian) Layout(size fyne.Size) {
 	area.maxPos.Y = r.margin + titleHeight
 
 	// update chart with available space
-	r.chart.Resize(area.maxPos.X-area.minPos.X, area.minPos.Y-area.maxPos.Y)
+	r.chart.ChartSizeChange(area.maxPos.X-area.minPos.X, area.minPos.Y-area.maxPos.Y)
 
 	if r.transposed {
 		_, _, _, _, vTicks, _, _ = r.chart.FromAxisElements()

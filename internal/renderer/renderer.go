@@ -11,7 +11,7 @@ type baseChart interface {
 	FromAxisElements() (min float64, max float64, origin float64, label Label, ticks []Tick, arrow Arrow, show bool)
 	ToAxisElements() (min float64, max float64, origin float64, label Label, ticks []Tick, arrow Arrow, show bool)
 	Raster() (r *canvas.Raster)
-	Resize(fromSpace float32, toSpace float32)
+	ChartSizeChange(fromSpace float32, toSpace float32)
 	RefreshTheme()
 }
 

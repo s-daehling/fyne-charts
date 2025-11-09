@@ -8,13 +8,11 @@ import (
 	"github.com/s-daehling/fyne-charts/pkg/data"
 
 	"fyne.io/fyne/v2"
-	"fyne.io/fyne/v2/widget"
 )
 
 // PolarTemporalChart implements a polar plane with one temporal t-axis and one numerical r-axis
 type PolarTemporalChart struct {
 	coordChart
-	widget.BaseWidget
 }
 
 // NewPolarTemporalChart returns an initialized PolarTemporalChart
@@ -22,7 +20,6 @@ func NewPolarTemporalChart() (tempChart *PolarTemporalChart) {
 	tempChart = &PolarTemporalChart{
 		coordChart: emptyCoordChart(coord.PolarPlane, coord.Temporal),
 	}
-	tempChart.ExtendBaseWidget(tempChart)
 	return
 }
 
@@ -34,7 +31,7 @@ func NewPolarTemporalChart() (tempChart *PolarTemporalChart) {
 // The range of T is not restricted. The range of Val is restricted to Val>=0.
 func (tempChart *PolarTemporalChart) AddLineSeries(name string, points []data.TemporalDataPoint,
 	showDots bool, color color.Color) (tls TemporalLineSeries, err error) {
-	tls.ser, err = tempChart.base.AddTemporalLineSeries(name, points, showDots, color)
+	tls.ser, err = tempChart.BaseChart.AddTemporalLineSeries(name, points, showDots, color)
 	return
 }
 
@@ -45,7 +42,7 @@ func (tempChart *PolarTemporalChart) AddLineSeries(name string, points []data.Te
 // The range of T is not restricted. The range of Val is restricted to Val>=0.
 func (tempChart *PolarTemporalChart) AddScatterSeries(name string, points []data.TemporalDataPoint,
 	color color.Color) (tss TemporalScatterSeries, err error) {
-	tss.ser, err = tempChart.base.AddTemporalScatterSeries(name, points, color)
+	tss.ser, err = tempChart.BaseChart.AddTemporalScatterSeries(name, points, color)
 	return
 }
 
@@ -56,7 +53,7 @@ func (tempChart *PolarTemporalChart) AddScatterSeries(name string, points []data
 // The range of T is not restricted. The range of Val is restricted to Val>=0.
 func (tempChart *PolarTemporalChart) AddLollipopSeries(name string, points []data.TemporalDataPoint,
 	color color.Color) (tls TemporalLollipopSeries, err error) {
-	tls.ser, err = tempChart.base.AddTemporalLollipopSeries(name, points, color)
+	tls.ser, err = tempChart.BaseChart.AddTemporalLollipopSeries(name, points, color)
 	return
 }
 
@@ -68,7 +65,7 @@ func (tempChart *PolarTemporalChart) AddLollipopSeries(name string, points []dat
 // The range of T is not restricted. The range of Val is restricted to Val>=0.
 func (tempChart *PolarTemporalChart) AddAreaSeries(name string, points []data.TemporalDataPoint, showDots bool,
 	color color.Color) (tas TemporalAreaSeries, err error) {
-	tas.ser, err = tempChart.base.AddTemporalAreaSeries(name, points, showDots, color)
+	tas.ser, err = tempChart.BaseChart.AddTemporalAreaSeries(name, points, showDots, color)
 	return
 }
 
@@ -81,35 +78,35 @@ func (tempChart *PolarTemporalChart) AddAreaSeries(name string, points []data.Te
 // An error is returned if barWidth < 0
 func (tempChart *PolarTemporalChart) AddBarSeries(name string, points []data.TemporalDataPoint,
 	barWidth time.Duration, color color.Color) (tbs TemporalBarSeries, err error) {
-	tbs.ser, err = tempChart.base.AddTemporalBarSeries(name, points, barWidth, color)
+	tbs.ser, err = tempChart.BaseChart.AddTemporalBarSeries(name, points, barWidth, color)
 	return
 }
 
 // SetRAxisLabel sets the label of the r-axis, which will be displayed at the bottom-right
 func (tempChart *PolarTemporalChart) SetRAxisLabel(l string) {
-	tempChart.base.SetToAxisLabel(l)
+	tempChart.BaseChart.SetToAxisLabel(l)
 }
 
 // SetRRange sets a user defined range for the r-axis;
 // an error is returned if max<0 or if the origin has been defined by the user before and is outside the given range
 func (tempChart *PolarTemporalChart) SetRRange(max float64) (err error) {
-	err = tempChart.base.SetToRange(0.0, max)
+	err = tempChart.BaseChart.SetToRange(0.0, max)
 	return
 }
 
 // SetAutoRRange overrides a previously user defined range and lets the range be calculated automatically
 func (tempChart *PolarTemporalChart) SetAutoRRange() {
-	tempChart.base.SetAutoToRange()
+	tempChart.BaseChart.SetAutoToRange()
 }
 
 // SetRTicks sets the list of user defined ticks to be shown on the r-axis
 func (tempChart *PolarTemporalChart) SetRTicks(ts []data.NumericalTick) {
-	tempChart.base.SetToTicks(ts)
+	tempChart.BaseChart.SetToTicks(ts)
 }
 
 // SetAutoRTicks overrides a previously user defined set of r-axis ticks and lets the ticks be calculated automatically
 func (tempChart *PolarTemporalChart) SetAutoRTicks(autoSupportLine bool) {
-	tempChart.base.SetAutoToTicks(autoSupportLine)
+	tempChart.BaseChart.SetAutoToTicks(autoSupportLine)
 }
 
 // SetRAxisStyle changes the style of the R-axis
@@ -118,47 +115,47 @@ func (tempChart *PolarTemporalChart) SetAutoRTicks(autoSupportLine bool) {
 // default value axis color: theme.ColorNameForeground
 func (tempChart *PolarTemporalChart) SetRAxisStyle(labelSize fyne.ThemeSizeName,
 	labelColor fyne.ThemeColorName, axisColor fyne.ThemeColorName) {
-	tempChart.base.SetToAxisLabelStyle(labelSize, labelColor)
-	tempChart.base.SetToAxisStyle(axisColor)
+	tempChart.BaseChart.SetToAxisLabelStyle(labelSize, labelColor)
+	tempChart.BaseChart.SetToAxisStyle(axisColor)
 }
 
 // SetOrigin sets a user defined origin (crossing of t and r axis).
 // An error is returned, if a range has been defined before and at least one coordinate is outside the range.
 func (tempChart *PolarTemporalChart) SetOrigin(t time.Time, r float64) (err error) {
-	err = tempChart.base.SetTOrigin(t, r)
+	err = tempChart.BaseChart.SetTOrigin(t, r)
 	return
 }
 
 // SetAutoOrigin resets a previously user defined origin and allows the chart to calculate the ideal origin automatically
 func (tempChart *PolarTemporalChart) SetAutoOrigin() {
-	tempChart.base.SetAutoOrigin()
+	tempChart.BaseChart.SetAutoOrigin()
 }
 
 // SetTAxisLabel sets the label of the t-axis, which will be displayed at the left side
 func (tempChart *PolarTemporalChart) SetTAxisLabel(l string) {
-	tempChart.base.SetFromAxisLabel(l)
+	tempChart.BaseChart.SetFromAxisLabel(l)
 }
 
 // SetTRange sets a user defined range for the t-axis.
 // An error is returned, if min after max or if the origin has been defined by the user before and is outside the given range
 func (tempChart *PolarTemporalChart) SetTRange(min time.Time, max time.Time) (err error) {
-	err = tempChart.base.SetFromTRange(min, max)
+	err = tempChart.BaseChart.SetFromTRange(min, max)
 	return
 }
 
 // SetAutoTRange overrides a previously user defined range and lets the range be calculated automatically
 func (tempChart *PolarTemporalChart) SetAutoTRange() {
-	tempChart.base.SetAutoFromRange()
+	tempChart.BaseChart.SetAutoFromRange()
 }
 
 // SetTTicks sets the list of user defined ticks to be shown on the t-axis
 func (tempChart *PolarTemporalChart) SetTTicks(ts []data.TemporalTick, format string) {
-	tempChart.base.SetFromTTicks(ts, format)
+	tempChart.BaseChart.SetFromTTicks(ts, format)
 }
 
 // SetAutoTTicks overrides a previously user defined set of t-axis ticks and lets the ticks be calculated automatically
 func (tempChart *PolarTemporalChart) SetAutoTTicks(autoSupportLine bool) {
-	tempChart.base.SetAutoFromTicks(autoSupportLine)
+	tempChart.BaseChart.SetAutoFromTicks(autoSupportLine)
 }
 
 // SetTAxisStyle changes the style of the T-axis
@@ -167,6 +164,6 @@ func (tempChart *PolarTemporalChart) SetAutoTTicks(autoSupportLine bool) {
 // default value axis color: theme.ColorNameForeground
 func (tempChart *PolarTemporalChart) SetTAxisStyle(labelSize fyne.ThemeSizeName,
 	labelColor fyne.ThemeColorName, axisColor fyne.ThemeColorName) {
-	tempChart.base.SetFromAxisLabelStyle(labelSize, labelColor)
-	tempChart.base.SetFromAxisStyle(axisColor)
+	tempChart.BaseChart.SetFromAxisLabelStyle(labelSize, labelColor)
+	tempChart.BaseChart.SetFromAxisStyle(axisColor)
 }
