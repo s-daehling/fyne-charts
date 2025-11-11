@@ -117,16 +117,11 @@ func legendSize(les []LegendEntry) (w float32, h float32) {
 	return
 }
 
-type CartesianTooltip struct {
-	X       float64
-	Y       float64
+type Tooltip struct {
+	X       float32
+	Y       float32
 	Entries []*canvas.Text
-}
-
-type PolarTooltip struct {
-	Phi     float64
-	R       float64
-	Entries []*canvas.Text
+	Box     *canvas.Rectangle
 }
 
 func tooltipSize(entries []*canvas.Text) (w float32, h float32) {

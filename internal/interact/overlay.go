@@ -12,8 +12,8 @@ import (
 )
 
 type chart interface {
-	MouseIn(pX, pY, w, h float32)
-	MouseMove(pX, pY, w, h float32)
+	MouseIn(pX, pY, w, h, absX, absY float32)
+	MouseMove(pX, pY, w, h, absX, absY float32)
 	MouseOut()
 }
 
@@ -45,12 +45,12 @@ func (ol *Overlay) Tapped(_ *fyne.PointEvent) {
 
 func (ol *Overlay) MouseIn(me *desktop.MouseEvent) {
 	size := ol.rect.Size()
-	ol.chart.MouseIn(me.Position.X, me.Position.Y, size.Width, size.Height)
+	ol.chart.MouseIn(me.Position.X, me.Position.Y, size.Width, size.Height, me.AbsolutePosition.X, me.AbsolutePosition.Y)
 }
 
 func (ol *Overlay) MouseMoved(me *desktop.MouseEvent) {
 	size := ol.rect.Size()
-	ol.chart.MouseMove(me.Position.X, me.Position.Y, size.Width, size.Height)
+	ol.chart.MouseMove(me.Position.X, me.Position.Y, size.Width, size.Height, me.AbsolutePosition.X, me.AbsolutePosition.Y)
 	// size := ol.rect.Size()
 	// rx := me.Position.X / size.Width
 	// ry := (size.Height - me.Position.Y) / size.Height

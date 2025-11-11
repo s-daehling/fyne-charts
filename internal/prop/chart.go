@@ -149,10 +149,6 @@ func (base *BaseChart) CartesianTexts() (ts []renderer.CartesianText) {
 	return
 }
 
-func (base *BaseChart) CartesianTooltip() (tt renderer.CartesianTooltip) {
-	return
-}
-
 func (base *BaseChart) PolarObjects() (canObj []fyne.CanvasObject) {
 	// objects will be drawn in the same order as added here
 
@@ -189,10 +185,6 @@ func (base *BaseChart) PolarTexts() (ts []renderer.PolarText) {
 	return
 }
 
-func (base *BaseChart) PolarTooltip() (tt renderer.PolarTooltip) {
-	return
-}
-
 func (base *BaseChart) Raster() (rs *canvas.Raster) {
 	rs = base.rast
 	return
@@ -221,6 +213,10 @@ func (base *BaseChart) ShowLegend() {
 func (base *BaseChart) HideLegend() {
 	base.legendVisible = false
 	base.DataChange()
+}
+
+func (base *BaseChart) Tooltip() (tt renderer.Tooltip) {
+	return
 }
 
 func (base *BaseChart) SetTitle(l string) {

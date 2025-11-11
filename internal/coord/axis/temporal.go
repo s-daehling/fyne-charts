@@ -45,11 +45,11 @@ func (ax *Axis) AutoTTicks() {
 	}
 	min := ax.tMin
 	max := ax.tMax
-	ts, format := calculateTTicks(ax.space, min, max, ax.autoSupportLine)
+	ts, format, _ := calculateTTicks(ax.space, min, max, ax.autoSupportLine)
 	ax.SetTTicks(ts, format)
 }
 
-func calculateTTicks(space float32, min time.Time, max time.Time, supLine bool) (ts []data.TemporalTick, format string) {
+func calculateTTicks(space float32, min time.Time, max time.Time, supLine bool) (ts []data.TemporalTick, tickFormat string, tipFormat string) {
 	minSpacePerLabel := 100
 	maxTickNum := int(space / float32(minSpacePerLabel))
 	if maxTickNum == 0 {
@@ -66,7 +66,8 @@ func calculateTTicks(space float32, min time.Time, max time.Time, supLine bool) 
 		inc := numYears/maxTickNum + 1
 		coord = time.Date(min.Year(), time.January, 1, 0, 0, 0, 0, time.Local)
 		step = time.Duration(int(time.Hour) * 24 * 365 * inc)
-		format = "2006"
+		tickFormat = "2006"
+		tipFormat = "01.2006"
 		if min.Month() == time.January && min.Day() <= 7 {
 			addMin = true
 		}
@@ -75,7 +76,8 @@ func calculateTTicks(space float32, min time.Time, max time.Time, supLine bool) 
 		inc := (numDays/30)/maxTickNum + 1
 		coord = time.Date(min.Year(), min.Month(), 1, 0, 0, 0, 0, time.Local)
 		step = time.Duration(int(time.Hour) * 24 * 31 * inc)
-		format = "01.2006"
+		tickFormat = "01.2006"
+		tipFormat = "02.01."
 		if min.Day() == 1 {
 			addMin = true
 		}
@@ -84,7 +86,8 @@ func calculateTTicks(space float32, min time.Time, max time.Time, supLine bool) 
 		inc := numDays/maxTickNum + 1
 		coord = time.Date(min.Year(), min.Month(), min.Day(), 0, 0, 0, 0, time.Local)
 		step = time.Duration(int(time.Hour) * 24 * inc)
-		format = "02.01."
+		tickFormat = "02.01."
+		tipFormat = "15h"
 		if min.Hour() < 1 {
 			addMin = true
 		}
@@ -93,7 +96,8 @@ func calculateTTicks(space float32, min time.Time, max time.Time, supLine bool) 
 		inc := int(r.Hours())/maxTickNum + 1
 		coord = time.Date(min.Year(), min.Month(), min.Day(), min.Hour(), 0, 0, 0, time.Local)
 		step = time.Duration(int(time.Hour) * inc)
-		format = "15h"
+		tickFormat = "15h"
+		tipFormat = "15:04"
 		if min.Minute() < 5 {
 			addMin = true
 		}
@@ -102,7 +106,8 @@ func calculateTTicks(space float32, min time.Time, max time.Time, supLine bool) 
 		inc := int(r.Minutes())/maxTickNum + 1
 		coord = time.Date(min.Year(), min.Month(), min.Day(), min.Hour(), min.Minute(), 0, 0, time.Local)
 		step = time.Duration(int(time.Minute) * inc)
-		format = "15:04"
+		tickFormat = "15:04"
+		tipFormat = "15:04:05"
 		if min.Second() < 5 {
 			addMin = true
 		}
@@ -111,7 +116,8 @@ func calculateTTicks(space float32, min time.Time, max time.Time, supLine bool) 
 		inc := int(r.Seconds())/maxTickNum + 1
 		coord = time.Date(min.Year(), min.Month(), min.Day(), min.Hour(), min.Minute(), min.Second(), 0, time.Local)
 		step = time.Duration(int(time.Second) * inc)
-		format = "15:04:05"
+		tickFormat = "15:04:05"
+		tipFormat = "05.000"
 		if min.Sub(coord).Milliseconds() < 25 {
 			addMin = true
 		}
@@ -120,7 +126,8 @@ func calculateTTicks(space float32, min time.Time, max time.Time, supLine bool) 
 		inc := int(r.Milliseconds())/maxTickNum + 1
 		coord = time.Date(min.Year(), min.Month(), min.Day(), min.Hour(), min.Minute(), min.Second(), min.Nanosecond(), time.Local)
 		step = time.Duration(int(time.Millisecond) * inc)
-		format = "05.000"
+		tickFormat = "05.000"
+		tipFormat = "05.000"
 		if min.Sub(coord).Nanoseconds() < 100 {
 			addMin = true
 		}
@@ -150,5 +157,17 @@ func (ax *Axis) TtoN(t time.Time) (n float64) {
 	r := ax.tMax.Sub(ax.tMin).Nanoseconds()
 	p := t.Sub(ax.tMin).Nanoseconds()
 	n = ax.nMin + (float64(p) / float64(r) * (ax.nMax - ax.nMin))
+	return
+}
+
+func (ax *Axis) NtoT(n float64) (t time.Time) {
+	r := ax.tMax.Sub(ax.tMin).Nanoseconds()
+	d := time.Duration(float64(r) * ((n - ax.nMin) / (ax.nMax - ax.nMin)))
+	t = ax.tMin.Add(time.Nanosecond * d)
+	return
+}
+
+func (ax *Axis) TTipFormat() (f string) {
+	_, _, f = calculateTTicks(ax.space, ax.tMin, ax.tMax, true)
 	return
 }

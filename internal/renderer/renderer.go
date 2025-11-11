@@ -9,6 +9,7 @@ import (
 type baseChart interface {
 	Title() (ct *canvas.Text)
 	LegendEntries() (le []LegendEntry)
+	Tooltip() (tt Tooltip)
 	FromAxisElements() (min float64, max float64, origin float64, label Label, ticks []Tick, arrow Arrow, show bool)
 	ToAxisElements() (min float64, max float64, origin float64, label Label, ticks []Tick, arrow Arrow, show bool)
 	Raster() (r *canvas.Raster)

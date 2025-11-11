@@ -178,7 +178,11 @@ func calculatePhiTicks(supLine bool) (as []data.NumericalTick) {
 	return
 }
 
-func (ax *Axis) PtoN(p float64) (n float64) {
-	n = p * (ax.nMax - ax.nMin)
+func (ax *Axis) NTipPrecision() (prec int) {
+	_, orderOfMagn := calculateNTicks(ax.space, ax.nMin, ax.nMax, true)
+	prec = -orderOfMagn + 2
+	if prec < 0 {
+		prec = 0
+	}
 	return
 }

@@ -53,3 +53,13 @@ func (ax *Axis) CtoN(c string) (n float64) {
 	n = ax.nMin + (catSize * (0.5 + float64(pos)))
 	return
 }
+
+func (ax *Axis) NtoC(n float64) (c string) {
+	numCats := len(ax.cs)
+	catSize := (ax.nMax - ax.nMin) / float64(numCats)
+	pos := int(n / catSize)
+	if pos >= 0 && pos < numCats {
+		c = ax.cs[pos]
+	}
+	return
+}

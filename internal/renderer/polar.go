@@ -13,7 +13,6 @@ type PolarChart interface {
 	PolarNodes() (ns []PolarNode)
 	PolarEdges() (es []PolarEdge)
 	PolarTexts() (ts []PolarText)
-	PolarTooltip() (tt PolarTooltip)
 	PolarObjects() (obj []fyne.CanvasObject)
 }
 
@@ -261,10 +260,17 @@ func (r *Polar) Layout(size fyne.Size) {
 	}
 
 	// place tooltip
-	tt := r.chart.PolarTooltip()
+	tt := r.chart.Tooltip()
+	ttWidth, ttHeigth := tooltipSize(tt.Entries)
+	ttPos := fyne.NewPos(area.zeroPos.X-area.radius, area.zeroPos.Y-area.radius).AddXY(tt.X, tt.Y).SubtractXY(ttWidth+5, ttHeigth)
+	if tt.Box != nil {
+		tt.Box.Move(ttPos.SubtractXY(5, 0))
+		tt.Box.Resize(fyne.NewSize(ttWidth+10, ttHeigth))
+	}
 	for i := range tt.Entries {
-		tt.Entries[i].Move(polarCoordinatesToPosition(tt.Phi, tt.R, area))
-		tt.Entries[i].Alignment = fyne.TextAlignTrailing
+		tt.Entries[i].Move(ttPos)
+		tt.Entries[i].Alignment = fyne.TextAlignLeading
+		ttPos = ttPos.AddXY(0, tt.Entries[i].MinSize().Height)
 	}
 
 	// place overlay

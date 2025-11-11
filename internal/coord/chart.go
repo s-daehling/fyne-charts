@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"image/color"
 	"math"
+	"strconv"
 
 	"github.com/s-daehling/fyne-charts/internal/coord/axis"
 	"github.com/s-daehling/fyne-charts/internal/coord/series"
@@ -171,7 +172,10 @@ func (base *BaseChart) CartesianObjects() (canObj []fyne.CanvasObject) {
 	}
 
 	// add tooltip
-	tt := base.CartesianTooltip()
+	tt := base.Tooltip()
+	if tt.Box != nil {
+		canObj = append(canObj, tt.Box)
+	}
 	for i := range tt.Entries {
 		canObj = append(canObj, tt.Entries[i])
 	}
@@ -217,14 +221,6 @@ func (base *BaseChart) CartesianTexts() (ts []renderer.CartesianText) {
 	return
 }
 
-func (base *BaseChart) CartesianTooltip() (tt renderer.CartesianTooltip) {
-	from, to, entries := base.tooltip.GetEntries()
-	tt.X = from
-	tt.Y = to
-	tt.Entries = entries
-	return
-}
-
 func (base *BaseChart) PolarObjects() (canObj []fyne.CanvasObject) {
 	// objects will be drawn in the same order as added here
 
@@ -257,7 +253,10 @@ func (base *BaseChart) PolarObjects() (canObj []fyne.CanvasObject) {
 	}
 
 	// add tooltip
-	tt := base.PolarTooltip()
+	tt := base.Tooltip()
+	if tt.Box != nil {
+		canObj = append(canObj, tt.Box)
+	}
 	for i := range tt.Entries {
 		canObj = append(canObj, tt.Entries[i])
 	}
@@ -294,14 +293,6 @@ func (base *BaseChart) PolarTexts() (ts []renderer.PolarText) {
 	return
 }
 
-func (base *BaseChart) PolarTooltip() (tt renderer.PolarTooltip) {
-	from, to, entries := base.tooltip.GetEntries()
-	tt.Phi = from
-	tt.R = to
-	tt.Entries = entries
-	return
-}
-
 func (base *BaseChart) Raster() (rs *canvas.Raster) {
 	rs = base.rast
 	return
@@ -332,6 +323,11 @@ func (base *BaseChart) HideLegend() {
 	base.DataChange()
 }
 
+func (base *BaseChart) Tooltip() (tt renderer.Tooltip) {
+	tt.X, tt.Y, tt.Entries, tt.Box = base.tooltip.GetEntries()
+	return
+}
+
 func (base *BaseChart) legendVisibility() (v bool) {
 	v = base.legendVisible
 	return
@@ -348,32 +344,64 @@ func (base *BaseChart) SetTitleStyle(sizeName fyne.ThemeSizeName, colorName fyne
 	base.title.Color = theme.Color(colorName)
 }
 
-func (base *BaseChart) MouseIn(pX, pY, w, h float32) {
+func (base *BaseChart) MouseIn(pX, pY, w, h, absX, absY float32) {
 	if base.planeType == CartesianPlane {
 		x, y := base.PositionToCartesianCoordinates(pX, pY, w, h)
-		base.tooltip.MouseIn(x, y)
-		base.tooltip.SetEntries([]string{fmt.Sprintf("x: %f, y: %f", x, y)})
+		base.tooltip.MouseIn(pX, pY)
+		text := ""
+		if base.fromType == Numerical {
+			text = fmt.Sprintf("x: %s, y: %s", strconv.FormatFloat(x, 'f', base.fromAx.NTipPrecision(), 64), strconv.FormatFloat(y, 'f', base.toAx.NTipPrecision(), 64))
+		} else if base.fromType == Temporal {
+			text = fmt.Sprintf("t: %s, y: %s", base.fromAx.NtoT(x).Format(base.fromAx.TTipFormat()), strconv.FormatFloat(y, 'f', base.toAx.NTipPrecision(), 64))
+		} else {
+			text = fmt.Sprintf("c: %s, y: %s", base.fromAx.NtoC(x), strconv.FormatFloat(y, 'f', base.toAx.NTipPrecision(), 64))
+		}
+		base.tooltip.SetEntries([]string{text})
 	} else {
 		phi, r, _, _ := base.PositionToPolarCoordinates(pX, pY, w, h)
-		base.tooltip.MouseIn(phi, r)
-		base.tooltip.SetEntries([]string{fmt.Sprintf("phi: %f, r: %f", phi, r)})
+		base.tooltip.MouseIn(pX, pY)
+		text := ""
+		if base.fromType == Numerical {
+			text = fmt.Sprintf("phi: %s, r: %s", strconv.FormatFloat(phi, 'f', base.fromAx.NTipPrecision(), 64), strconv.FormatFloat(r, 'f', base.toAx.NTipPrecision(), 64))
+		} else if base.fromType == Temporal {
+			text = fmt.Sprintf("t: %s, r: %s", base.fromAx.NtoT(phi).Format(base.fromAx.TTipFormat()), strconv.FormatFloat(r, 'f', base.toAx.NTipPrecision(), 64))
+		} else {
+			text = fmt.Sprintf("c: %s, r: %s", base.fromAx.NtoC(phi), strconv.FormatFloat(r, 'f', base.toAx.NTipPrecision(), 64))
+		}
+		base.tooltip.SetEntries([]string{text})
 	}
 	base.Refresh()
 }
 
-func (base *BaseChart) MouseMove(pX, pY, w, h float32) {
+func (base *BaseChart) MouseMove(pX, pY, w, h, absX, absY float32) {
 	if base.planeType == CartesianPlane {
 		x, y := base.PositionToCartesianCoordinates(pX, pY, w, h)
-		c := base.tooltip.MouseMove(x, y)
-		if c > 5 {
-			base.tooltip.SetEntries([]string{fmt.Sprintf("x: %f, y: %f", x, y)})
+		c := base.tooltip.MouseMove(pX, pY)
+		if c > 3 {
+			text := ""
+			if base.fromType == Numerical {
+				text = fmt.Sprintf("x: %s, y: %s", strconv.FormatFloat(x, 'f', base.fromAx.NTipPrecision(), 64), strconv.FormatFloat(y, 'f', base.toAx.NTipPrecision(), 64))
+			} else if base.fromType == Temporal {
+				text = fmt.Sprintf("t: %s, y: %s", base.fromAx.NtoT(x).Format(base.fromAx.TTipFormat()), strconv.FormatFloat(y, 'f', base.toAx.NTipPrecision(), 64))
+			} else {
+				text = fmt.Sprintf("c: %s, y: %s", base.fromAx.NtoC(x), strconv.FormatFloat(y, 'f', base.toAx.NTipPrecision(), 64))
+			}
+			base.tooltip.SetEntries([]string{text})
 			base.Refresh()
 		}
 	} else {
 		phi, r, _, _ := base.PositionToPolarCoordinates(pX, pY, w, h)
-		c := base.tooltip.MouseMove(phi, r)
-		if c > 5 {
-			base.tooltip.SetEntries([]string{fmt.Sprintf("phi: %f, r: %f", phi, r)})
+		c := base.tooltip.MouseMove(pX, pY)
+		if c > 3 {
+			text := ""
+			if base.fromType == Numerical {
+				text = fmt.Sprintf("phi: %s, r: %s", strconv.FormatFloat(phi, 'f', base.fromAx.NTipPrecision(), 64), strconv.FormatFloat(r, 'f', base.toAx.NTipPrecision(), 64))
+			} else if base.fromType == Temporal {
+				text = fmt.Sprintf("t: %s, r: %s", base.fromAx.NtoT(phi).Format(base.fromAx.TTipFormat()), strconv.FormatFloat(r, 'f', base.toAx.NTipPrecision(), 64))
+			} else {
+				text = fmt.Sprintf("c: %s, r: %s", base.fromAx.NtoC(phi), strconv.FormatFloat(r, 'f', base.toAx.NTipPrecision(), 64))
+			}
+			base.tooltip.SetEntries([]string{text})
 			base.Refresh()
 		}
 	}
