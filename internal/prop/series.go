@@ -27,7 +27,7 @@ func (base *BaseChart) addSeriesIfNotExist(ser *Series) (err error) {
 }
 
 func (base *BaseChart) AddProportionalSeries(name string, points []data.ProportionalPoint) (ser *Series, err error) {
-	pSeries := EmptyProportionalSeries(base, name, base.planeType == PolarPlane)
+	pSeries := EmptyProportionalSeries(base, name)
 	err = pSeries.AddData(points)
 	if err != nil {
 		return
@@ -203,18 +203,16 @@ type Series struct {
 	autoValTextColor bool
 	legendButton     *interact.LegendBox
 	legendLabel      *canvas.Text
-	polar            bool
 	chart            *BaseChart
 }
 
-func EmptyProportionalSeries(chart *BaseChart, name string, polar bool) (ser *Series) {
+func EmptyProportionalSeries(chart *BaseChart, name string) (ser *Series) {
 	ser = &Series{
 		name:             name,
 		visible:          true,
 		showText:         true,
 		autoValTextColor: true,
 		legendLabel:      canvas.NewText(name, theme.Color(theme.ColorNameForeground)),
-		polar:            polar,
 		chart:            chart,
 	}
 	ser.legendButton = interact.NewLegendBox(theme.Color(theme.ColorNameForeground), ser.toggleView)
@@ -228,7 +226,16 @@ func (ser *Series) Name() (n string) {
 	return
 }
 
-func (ser *Series) Delete() {
+func (ser *Series) AddToChart(ch *BaseChart) (err error) {
+	if ser.chart != nil {
+		err = errors.New("series is already part of a chart")
+		return
+	}
+	ser.chart = ch
+	return
+}
+
+func (ser *Series) RemoveFromChart() {
 	ser.chart = nil
 }
 
@@ -333,14 +340,18 @@ func (ser *Series) toggleView() {
 	} else {
 		ser.Show()
 	}
-	if ser.polar {
-		ser.chart.RasterVisibilityChange()
+	if ser.chart != nil {
+		if ser.chart.IsPolar() {
+			ser.chart.RasterVisibilityChange()
+		}
 	}
 }
 
 func (ser *Series) pointVisibilityUpdate(totChange float64) {
 	ser.tot += totChange
-	ser.chart.DataChange()
+	if ser.chart != nil {
+		ser.chart.DataChange()
+	}
 }
 
 func (ser *Series) LegendEntries() (les []renderer.LegendEntry) {
@@ -362,28 +373,19 @@ func (ser *Series) SetHeightAndOffset(h float64, hOffset float64) {
 	}
 }
 
-func (ser *Series) Clear() (err error) {
-	if ser.chart == nil {
-		err = errors.New("series is not part of any chart")
-		return
-	}
-	chart := ser.chart
+func (ser *Series) Clear() {
 	ser.data = []*proportionPoint{}
-	chart.DataChange()
-	return
+	if ser.chart != nil {
+		ser.chart.DataChange()
+	}
 }
 
-func (ser *Series) DeleteDataInRange(cat []string) (c int, err error) {
+func (ser *Series) DeleteDataInRange(cat []string) (c int) {
 	c = 0
 	if len(cat) == 0 {
-		err = errors.New("invald range")
 		return
 	}
 	finalData := []*proportionPoint{}
-	if ser.chart == nil {
-		err = errors.New("series is not part of any chart")
-		return
-	}
 	tot := 0.0
 	for i := range ser.data {
 		del := false
@@ -406,13 +408,14 @@ func (ser *Series) DeleteDataInRange(cat []string) (c int, err error) {
 	ser.data = nil
 	ser.data = finalData
 	ser.tot = tot
-	ser.chart.DataChange()
+	if ser.chart != nil {
+		ser.chart.DataChange()
+	}
 	return
 }
 
 func (ser *Series) AddData(input []data.ProportionalPoint) (err error) {
 	if len(input) == 0 {
-		err = errors.New("no input data")
 		return
 	}
 	for i := range input {
@@ -422,10 +425,6 @@ func (ser *Series) AddData(input []data.ProportionalPoint) (err error) {
 		}
 	}
 
-	if ser.chart == nil {
-		err = errors.New("series is not part of any chart")
-		return
-	}
 	for i := range input {
 		catExist := false
 		for j := range ser.data {
@@ -445,6 +444,8 @@ func (ser *Series) AddData(input []data.ProportionalPoint) (err error) {
 		ser.data = append(ser.data, pPoint)
 		ser.tot += pPoint.val
 	}
-	ser.chart.DataChange()
+	if ser.chart != nil {
+		ser.chart.DataChange()
+	}
 	return
 }

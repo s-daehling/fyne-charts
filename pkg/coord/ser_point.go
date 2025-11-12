@@ -63,12 +63,11 @@ func (ps pointSeries) SetDotSize(ds float32) {
 }
 
 // Clear deletes all data
-func (ps pointSeries) Clear() (err error) {
+func (ps pointSeries) Clear() {
 	if ps.ser == nil {
 		return
 	}
-	err = ps.ser.Clear()
-	return
+	ps.ser.Clear()
 }
 
 // NumericalPointSeries represents an area series over a numerical x-axis

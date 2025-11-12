@@ -380,12 +380,11 @@ func (ser *BoxSeries) SetOutlierSize(os float32) {
 	}
 }
 
-func (ser *BoxSeries) Clear() (err error) {
+func (ser *BoxSeries) Clear() {
 	ser.data = []*boxPoint{}
 	if ser.chart != nil {
 		ser.chart.DataChange()
 	}
-	return
 }
 
 // DeleteDataInRange deletes all boxes with a x-coordinate greater than min and smaller than max

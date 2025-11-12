@@ -63,12 +63,11 @@ func (bs boxSeries) SetOutlierSize(os float32) {
 }
 
 // Clear deletes all data
-func (bs boxSeries) Clear() (err error) {
+func (bs boxSeries) Clear() {
 	if bs.ser == nil {
 		return
 	}
-	err = bs.ser.Clear()
-	return
+	bs.ser.Clear()
 }
 
 // NumericalBoxSeries represents a box series over a numerical x-axis

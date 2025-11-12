@@ -250,12 +250,11 @@ func (ser *CandleStickSeries) SetLineWidth(lw float32) {
 	}
 }
 
-func (ser *CandleStickSeries) Clear() (err error) {
+func (ser *CandleStickSeries) Clear() {
 	ser.data = []*candleStickPoint{}
 	if ser.chart != nil {
 		ser.chart.DataChange()
 	}
-	return
 }
 
 // DeleteDataInRange deletes all candles with a nEnd greater than min and a nStart smaller than max

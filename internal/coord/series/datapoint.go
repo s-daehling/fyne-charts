@@ -759,12 +759,11 @@ func (ser *PointSeries) AddToChart(ch chart) (err error) {
 	return
 }
 
-func (ser *PointSeries) Clear() (err error) {
+func (ser *PointSeries) Clear() {
 	ser.data = []*dataPoint{}
 	if ser.chart != nil {
 		ser.chart.DataChange()
 	}
-	return
 }
 
 func (ser *PointSeries) DeleteNumericalDataInRange(min float64, max float64) (c int) {

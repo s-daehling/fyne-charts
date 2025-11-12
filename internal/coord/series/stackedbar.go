@@ -164,12 +164,11 @@ func (ser *StackedBarSeries) toggleView() {
 	}
 }
 
-func (ser *StackedBarSeries) Clear() (err error) {
+func (ser *StackedBarSeries) Clear() {
 	ser.stack = []*PointSeries{}
 	if ser.chart != nil {
 		ser.chart.DataChange()
 	}
-	return
 }
 
 // DeleteDataInRange deletes all data points with one of the given category

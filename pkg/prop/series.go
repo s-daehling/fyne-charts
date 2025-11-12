@@ -48,25 +48,20 @@ func (ps ProportionalSeries) Hide() {
 }
 
 // Clear deletes all data
-func (ps ProportionalSeries) Clear() (err error) {
+func (ps ProportionalSeries) Clear() {
 	if ps.ser == nil {
 		return
 	}
-	err = ps.ser.Clear()
-	return
+	ps.ser.Clear()
 }
 
 // DeleteDataInRange deletes all data points with one of the given category
 // The return value gives the number of data points that have been removed
-// An error is returned if cat is empty
-func (ps ProportionalSeries) DeleteDataInRange(cat []string) (c int, err error) {
+func (ps ProportionalSeries) DeleteDataInRange(cat []string) (c int) {
 	if ps.ser == nil {
 		return
 	}
-	c, err = ps.ser.DeleteDataInRange(cat)
-	if err != nil {
-		return
-	}
+	c = ps.ser.DeleteDataInRange(cat)
 	return
 }
 

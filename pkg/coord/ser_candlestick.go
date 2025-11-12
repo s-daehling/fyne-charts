@@ -46,12 +46,11 @@ func (cs candleStickSeries) SetLineWidth(lw float32) {
 }
 
 // Clear deletes all data
-func (cs candleStickSeries) Clear() (err error) {
+func (cs candleStickSeries) Clear() {
 	if cs.ser == nil {
 		return
 	}
-	err = cs.ser.Clear()
-	return
+	cs.ser.Clear()
 }
 
 // NumericalCandleStickSeries represents a candle stick series over a numerical x-axis

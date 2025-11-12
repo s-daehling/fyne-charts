@@ -36,12 +36,11 @@ func (ss stackedBarSeries) Hide() {
 }
 
 // Clear deletes all data
-func (ss stackedBarSeries) Clear() (err error) {
+func (ss stackedBarSeries) Clear() {
 	if ss.ser == nil {
 		return
 	}
-	err = ss.ser.Clear()
-	return
+	ss.ser.Clear()
 }
 
 // CategoricalStackedBarSeries represents a stacked bar series over a categorical c-axis
