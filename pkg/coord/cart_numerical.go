@@ -29,7 +29,7 @@ func NewCartesianNumericalChart() (numChart *CartesianNumericalChart) {
 // data does not need to be sorted. It will be sorted by X by the method.
 // The method does not check for duplicates (i.e. data points with same X)
 // The range of X and Val is not restricted
-func (numChart *CartesianNumericalChart) AddLineSeries(name string, points []data.NumericalDataPoint,
+func (numChart *CartesianNumericalChart) AddLineSeries(name string, points []data.NumericalPoint,
 	showDots bool, color color.Color) (nls NumericalLineSeries, err error) {
 	nls.ser, err = numChart.BaseChart.AddNumericalLineSeries(name, points, showDots, color)
 	return
@@ -40,7 +40,7 @@ func (numChart *CartesianNumericalChart) AddLineSeries(name string, points []dat
 // An error is returned,if another series with the same name exists.
 // The method does not check for duplicates (i.e. data points with same X)
 // The range of X and Val is not restricted
-func (numChart *CartesianNumericalChart) AddScatterSeries(name string, points []data.NumericalDataPoint,
+func (numChart *CartesianNumericalChart) AddScatterSeries(name string, points []data.NumericalPoint,
 	color color.Color) (nss NumericalScatterSeries, err error) {
 	nss.ser, err = numChart.BaseChart.AddNumericalScatterSeries(name, points, color)
 	return
@@ -51,7 +51,7 @@ func (numChart *CartesianNumericalChart) AddScatterSeries(name string, points []
 // An error is returned,if another series with the same name exists.
 // The method does not check for duplicates (i.e. data points with same X)
 // The range of X and Val is not restricted
-func (numChart *CartesianNumericalChart) AddLollipopSeries(name string, points []data.NumericalDataPoint,
+func (numChart *CartesianNumericalChart) AddLollipopSeries(name string, points []data.NumericalPoint,
 	color color.Color) (nls NumericalLollipopSeries, err error) {
 	nls.ser, err = numChart.BaseChart.AddNumericalLollipopSeries(name, points, color)
 	return
@@ -85,7 +85,7 @@ func (numChart *CartesianNumericalChart) AddBoxSeries(name string,
 // data does not need to be sorted. It will be sorted by X by the method.
 // The method does not check for duplicates (i.e. data points with same X).
 // The range of X and Val is not restricted
-func (numChart *CartesianNumericalChart) AddAreaSeries(name string, points []data.NumericalDataPoint, showDots bool,
+func (numChart *CartesianNumericalChart) AddAreaSeries(name string, points []data.NumericalPoint, showDots bool,
 	color color.Color) (nas NumericalAreaSeries, err error) {
 	nas.ser, err = numChart.BaseChart.AddNumericalAreaSeries(name, points, showDots, color)
 	return
@@ -98,7 +98,7 @@ func (numChart *CartesianNumericalChart) AddAreaSeries(name string, points []dat
 // The range of X and Val is not restricted
 // The bars are centered around their X value of the data points. barWidth is the width of the bars.
 // An error is returned if barWidth < 0
-func (numChart *CartesianNumericalChart) AddBarSeries(name string, points []data.NumericalDataPoint,
+func (numChart *CartesianNumericalChart) AddBarSeries(name string, points []data.NumericalPoint,
 	barWidth float64, color color.Color) (nbs NumericalBarSeries, err error) {
 	nbs.ser, err = numChart.BaseChart.AddNumericalBarSeries(name, points, barWidth, color)
 	return

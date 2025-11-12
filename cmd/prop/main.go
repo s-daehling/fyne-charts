@@ -39,7 +39,7 @@ func barChart() (propChart *prop.BarChart, err error) {
 	propChart = prop.NewBarChart()
 
 	// Series 1
-	data1 := []data.ProportionalDataPoint{
+	data1 := []data.ProportionalPoint{
 		{
 			Val: rand.Float64() * 222,
 			C:   "One",
@@ -57,7 +57,7 @@ func barChart() (propChart *prop.BarChart, err error) {
 	}
 
 	// Series 2
-	data2 := []data.ProportionalDataPoint{
+	data2 := []data.ProportionalPoint{
 		{
 			Val: rand.Float64() * 222,
 			C:   "One",
@@ -87,7 +87,7 @@ func pieChart() (propChart *prop.PieChart, err error) {
 	propChart = prop.NewPieChart()
 
 	// Series 1
-	data1 := []data.ProportionalDataPoint{
+	data1 := []data.ProportionalPoint{
 		{
 			Val: rand.Float64() * 222,
 			C:   "One",
@@ -105,7 +105,7 @@ func pieChart() (propChart *prop.PieChart, err error) {
 	}
 
 	// Series 2
-	data2 := []data.ProportionalDataPoint{
+	data2 := []data.ProportionalPoint{
 		{
 			Val: rand.Float64() * 222,
 			C:   "One",

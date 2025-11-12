@@ -81,7 +81,7 @@ func (base *BaseChart) updateSeriesVariables() {
 	nBarSeries := 0
 	maxBoxPoints := 5
 	for i := range base.series {
-		if ser, ok := base.series[i].(*series.DataPointSeries); ok {
+		if ser, ok := base.series[i].(*series.PointSeries); ok {
 			if ser.IsBarSeries() {
 				nBarSeries++
 			}
@@ -107,7 +107,7 @@ func (base *BaseChart) updateSeriesVariables() {
 	barOffset := -barWidth * (0.5 * float64(nBarSeries-1))
 	boxWidth := (nFromMax - nFromMin) / float64(maxBoxPoints)
 	for i := range base.series {
-		if ser, ok := base.series[i].(*series.DataPointSeries); ok {
+		if ser, ok := base.series[i].(*series.PointSeries); ok {
 			if ser.IsBarSeries() && base.fromType == Categorical {
 				ser.SetNumericalBarWidthAndShift(barWidth, barOffset)
 				barOffset += barWidth

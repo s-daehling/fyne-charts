@@ -26,7 +26,7 @@ func (base *BaseChart) addSeriesIfNotExist(ser *Series) (err error) {
 	return
 }
 
-func (base *BaseChart) AddProportionalSeries(name string, points []data.ProportionalDataPoint) (ser *Series, err error) {
+func (base *BaseChart) AddProportionalSeries(name string, points []data.ProportionalPoint) (ser *Series, err error) {
 	pSeries := EmptyProportionalSeries(base, name, base.planeType == PolarPlane)
 	err = pSeries.AddData(points)
 	if err != nil {
@@ -410,7 +410,7 @@ func (ser *Series) DeleteDataInRange(cat []string) (c int, err error) {
 	return
 }
 
-func (ser *Series) AddData(input []data.ProportionalDataPoint) (err error) {
+func (ser *Series) AddData(input []data.ProportionalPoint) (err error) {
 	if len(input) == 0 {
 		err = errors.New("no input data")
 		return

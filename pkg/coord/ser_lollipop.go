@@ -10,7 +10,7 @@ import (
 )
 
 type lollipopSeries struct {
-	ser *series.DataPointSeries
+	ser *series.PointSeries
 }
 
 // Name returns the name of the series
@@ -93,7 +93,7 @@ func (nls NumericalLollipopSeries) DeleteDataInRange(min float64, max float64) (
 // AddData adds data points to the series.
 // The method does not check for duplicates (i.e. data points with same X)
 // The range of X and Val is not restricted
-func (nls NumericalLollipopSeries) AddData(input []data.NumericalDataPoint) (err error) {
+func (nls NumericalLollipopSeries) AddData(input []data.NumericalPoint) (err error) {
 	if nls.ser == nil {
 		return
 	}
@@ -126,7 +126,7 @@ func (tls TemporalLollipopSeries) DeleteDataInRange(min time.Time, max time.Time
 // AddData adds data points to the series.
 // The method does not check for duplicates (i.e. data points with same T)
 // The range of T is not restricted. The range of Val is not restricted in a cartesian chart, but Val>=0 in a polar chart
-func (tls TemporalLollipopSeries) AddData(input []data.TemporalDataPoint) (err error) {
+func (tls TemporalLollipopSeries) AddData(input []data.TemporalPoint) (err error) {
 	if tls.ser == nil {
 		return
 	}
@@ -160,7 +160,7 @@ func (cls CategoricalLollipopSeries) DeleteDataInRange(cat []string) (c int, err
 // The method checks for duplicates (i.e. data points with same C).
 // Data points with a C that already exists, will be ignored.
 // The range of C is not restricted. The range of Val is not restricted in a cartesian chart, but Val>=0 in a polar chart
-func (cls CategoricalLollipopSeries) AddData(input []data.CategoricalDataPoint) (err error) {
+func (cls CategoricalLollipopSeries) AddData(input []data.CategoricalPoint) (err error) {
 	if cls.ser == nil {
 		return
 	}

@@ -4,14 +4,14 @@ import (
 	"time"
 )
 
-// TemporalDataPoint represents one data point with a temporal coordinate
-type TemporalDataPoint struct {
+// TemporalPoint represents one data point with a temporal coordinate
+type TemporalPoint struct {
 	T   time.Time
 	Val float64
 }
 
-// DpByTValue is used to sort slices of TemporalDataPoint by the t coordinate
-type DpByTValue []TemporalDataPoint
+// DpByTValue is used to sort slices of TemporalPoint by the t coordinate
+type DpByTValue []TemporalPoint
 
 // Len returns the length of the slice
 func (m DpByTValue) Len() int { return len(m) }

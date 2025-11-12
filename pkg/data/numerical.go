@@ -1,13 +1,13 @@
 package data
 
-// NumericalDataPoint represents one data point with a numerical coordinate
-type NumericalDataPoint struct {
+// NumericalPoint represents one data point with a numerical coordinate
+type NumericalPoint struct {
 	N   float64
 	Val float64
 }
 
-// DpByNValue is used to sort slices of NumericalDataPoint by the x coordinate
-type DpByNValue []NumericalDataPoint
+// DpByNValue is used to sort slices of NumericalPoint by the x coordinate
+type DpByNValue []NumericalPoint
 
 // Len returns the length of the slice
 func (m DpByNValue) Len() int { return len(m) }

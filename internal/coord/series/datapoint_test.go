@@ -10,7 +10,7 @@ import (
 	"github.com/s-daehling/fyne-charts/pkg/data"
 )
 
-var ndpTestSetFull = []data.NumericalDataPoint{
+var ndpTestSetFull = []data.NumericalPoint{
 	{N: -1000, Val: -1000},
 	{N: -1000, Val: -0.000001},
 	{N: -1000, Val: 0},
@@ -48,7 +48,7 @@ var ndpTestSetFull = []data.NumericalDataPoint{
 	{N: 1000, Val: 1000},
 }
 
-var ndpTestSetPosVal = []data.NumericalDataPoint{
+var ndpTestSetPosVal = []data.NumericalPoint{
 	{N: -1000, Val: 0},
 	{N: -1000, Val: 0.000001},
 	{N: -1000, Val: 1000},
@@ -72,7 +72,7 @@ var ndpTestSetPosVal = []data.NumericalDataPoint{
 	{N: 1000, Val: 1000},
 }
 
-var ndpTestSetPosValPolar = []data.NumericalDataPoint{
+var ndpTestSetPosValPolar = []data.NumericalPoint{
 	{N: 0, Val: 0},
 	{N: 0, Val: 0.000001},
 	{N: 0, Val: 1000},
@@ -87,7 +87,7 @@ var ndpTestSetPosValPolar = []data.NumericalDataPoint{
 	{N: 2 * math.Pi, Val: 1000},
 }
 
-var tdpTestSetFull = []data.TemporalDataPoint{
+var tdpTestSetFull = []data.TemporalPoint{
 	{T: time.Now(), Val: -1000},
 	{T: time.Now().Add(-time.Hour), Val: -0.000001},
 	{T: time.Now().Add(time.Hour), Val: 0},
@@ -95,13 +95,13 @@ var tdpTestSetFull = []data.TemporalDataPoint{
 	{T: time.Now().Add(2 * time.Hour), Val: 1000},
 }
 
-var tdpTestSetPosVal = []data.TemporalDataPoint{
+var tdpTestSetPosVal = []data.TemporalPoint{
 	{T: time.Now().Add(time.Hour), Val: 0},
 	{T: time.Now().Add(-2 * time.Hour), Val: 0.000001},
 	{T: time.Now().Add(2 * time.Hour), Val: 1000},
 }
 
-var cdpTestSetFull = []data.CategoricalDataPoint{
+var cdpTestSetFull = []data.CategoricalPoint{
 	{C: "one", Val: -1000},
 	{C: "two", Val: -0.000001},
 	{C: "three", Val: 0},
@@ -109,20 +109,39 @@ var cdpTestSetFull = []data.CategoricalDataPoint{
 	{C: "five", Val: 1000},
 }
 
-var cdpTestSetPosVal = []data.CategoricalDataPoint{
+var cdpTestSetPosVal = []data.CategoricalPoint{
 	{C: "one", Val: 0},
 	{C: "two", Val: 0.000001},
 	{C: "three", Val: 1000},
 }
 
+func EmptyPointSeries(chart chart, name string, color color.Color,
+	polar bool) (ser PointSeries) {
+	ser = PointSeries{
+		valBase:             0,
+		nBarWidth:           0,
+		tBarWidth:           0,
+		nBarShift:           0,
+		tBarShift:           0,
+		showDot:             false,
+		showFromValBaseLine: false,
+		showFromPrevLine:    false,
+		showBar:             false,
+		showArea:            false,
+		sortPoints:          false,
+	}
+	ser.baseSeries = emptyBaseSeries(chart, name, color, polar, ser.toggleView)
+	return
+}
+
 func TestNumericalDataPointRangeCheck(t *testing.T) {
 	for _, tt := range ndpTestSetFull {
-		err := numericalDataPointRangeCheck([]data.NumericalDataPoint{tt}, false, false)
+		err := numericalPointRangeCheck([]data.NumericalPoint{tt}, false, false)
 		if err != nil {
 			t.Errorf("point incorrectly rejected; N: %f, Val: %f, noNegative: %t, polar: %t", tt.N, tt.Val, false, false)
 		}
 
-		err = numericalDataPointRangeCheck([]data.NumericalDataPoint{tt}, true, false)
+		err = numericalPointRangeCheck([]data.NumericalPoint{tt}, true, false)
 		if tt.Val < 0 {
 			if err == nil {
 				t.Errorf("point incorrectly accpeted; N: %f, Val: %f, noNegative: %t, polar: %t", tt.N, tt.Val, true, false)
@@ -131,7 +150,7 @@ func TestNumericalDataPointRangeCheck(t *testing.T) {
 			t.Errorf("point incorrectly rejected; N: %f, Val: %f, noNegative: %t, polar: %t", tt.N, tt.Val, true, false)
 		}
 
-		err = numericalDataPointRangeCheck([]data.NumericalDataPoint{tt}, false, true)
+		err = numericalPointRangeCheck([]data.NumericalPoint{tt}, false, true)
 		if tt.N < 0 || tt.N > 2*math.Pi {
 			if err == nil {
 				t.Errorf("point incorrectly accepted; N: %f, Val: %f, noNegative: %t, polar: %t", tt.N, tt.Val, false, true)
@@ -140,7 +159,7 @@ func TestNumericalDataPointRangeCheck(t *testing.T) {
 			t.Errorf("point incorrectly rejected; N: %f, Val: %f, noNegative: %t, polar: %t", tt.N, tt.Val, false, true)
 		}
 
-		err = numericalDataPointRangeCheck([]data.NumericalDataPoint{tt}, true, true)
+		err = numericalPointRangeCheck([]data.NumericalPoint{tt}, true, true)
 		if (tt.N < 0 || tt.N > 2*math.Pi) || tt.Val < 0 {
 			if err == nil {
 				t.Errorf("point incorrectly accepted; N: %f, Val: %f, noNegative: %t, polar: %t", tt.N, tt.Val, true, true)
@@ -153,11 +172,11 @@ func TestNumericalDataPointRangeCheck(t *testing.T) {
 
 func TestTemporalDataPointRangeCheck(t *testing.T) {
 	for _, tt := range tdpTestSetFull {
-		err := temporalDataPointRangeCheck([]data.TemporalDataPoint{tt}, false)
+		err := temporalPointRangeCheck([]data.TemporalPoint{tt}, false)
 		if err != nil {
 			t.Errorf("point incorrectly rejected; T: %s, Val: %f, noNegative: %t", tt.T.String(), tt.Val, false)
 		}
-		err = temporalDataPointRangeCheck([]data.TemporalDataPoint{tt}, true)
+		err = temporalPointRangeCheck([]data.TemporalPoint{tt}, true)
 		if tt.Val < 0 {
 			if err == nil {
 				t.Errorf("point incorrectly accpeted; T: %s, Val: %f, noNegative: %t", tt.T.String(), tt.Val, true)
@@ -170,11 +189,11 @@ func TestTemporalDataPointRangeCheck(t *testing.T) {
 
 func TestCategoricalDataPointRangeCheck(t *testing.T) {
 	for _, tt := range cdpTestSetFull {
-		err := categoricalDataPointRangeCheck([]data.CategoricalDataPoint{tt}, false)
+		err := categoricalPointRangeCheck([]data.CategoricalPoint{tt}, false)
 		if err != nil {
 			t.Errorf("point incorrectly rejected; C: %s, Val: %f, noNegative: %t", tt.C, tt.Val, false)
 		}
-		err = categoricalDataPointRangeCheck([]data.CategoricalDataPoint{tt}, true)
+		err = categoricalPointRangeCheck([]data.CategoricalPoint{tt}, true)
 		if tt.Val < 0 {
 			if err == nil {
 				t.Errorf("point incorrectly accpeted; C: %s, Val: %f, noNegative: %t", tt.C, tt.Val, true)
@@ -188,7 +207,7 @@ func TestCategoricalDataPointRangeCheck(t *testing.T) {
 func TestDataPointAddNumericalData(t *testing.T) {
 	app.New()
 	var tests = []struct {
-		input        []data.NumericalDataPoint
+		input        []data.NumericalPoint
 		polar        bool
 		expSuccess   bool
 		expNumPoints int
@@ -204,10 +223,10 @@ func TestDataPointAddNumericalData(t *testing.T) {
 		{ndpTestSetPosVal, true, false, 0, true, 0, 0, 0, 0},
 		{ndpTestSetPosValPolar, false, true, len(ndpTestSetPosValPolar), false, 0, 2 * math.Pi, 0, 1000},
 		{ndpTestSetPosValPolar, true, true, len(ndpTestSetPosValPolar), false, 0, 2 * math.Pi, 0, 1000},
-		{[]data.NumericalDataPoint{}, false, false, 0, true, 0, 0, 0, 0},
+		{[]data.NumericalPoint{}, false, false, 0, true, 0, 0, 0, 0},
 	}
 	for i, tt := range tests {
-		temp := EmptyDataPointSeries(chartDummy{}, "test", color.Black, tt.polar)
+		temp := EmptyPointSeries(chartDummy{}, "test", color.Black, tt.polar)
 		ser := &temp
 		err := ser.AddNumericalData(tt.input)
 		if err != nil && tt.expSuccess {
@@ -232,7 +251,7 @@ func TestDataPointAddNumericalData(t *testing.T) {
 func TestDataPointAddTemporalData(t *testing.T) {
 	app.New()
 	var tests = []struct {
-		input        []data.TemporalDataPoint
+		input        []data.TemporalPoint
 		polar        bool
 		expSuccess   bool
 		expNumPoints int
@@ -246,10 +265,10 @@ func TestDataPointAddTemporalData(t *testing.T) {
 		{tdpTestSetFull, true, false, 0, true, time.Now(), time.Now(), 0, 0},
 		{tdpTestSetPosVal, false, true, len(tdpTestSetPosVal), false, tdpTestSetPosVal[1].T, tdpTestSetPosVal[2].T, 0, 1000},
 		{tdpTestSetPosVal, true, true, len(tdpTestSetPosVal), false, tdpTestSetPosVal[1].T, tdpTestSetPosVal[2].T, 0, 1000},
-		{[]data.TemporalDataPoint{}, false, false, 0, true, time.Now(), time.Now(), 0, 0},
+		{[]data.TemporalPoint{}, false, false, 0, true, time.Now(), time.Now(), 0, 0},
 	}
 	for i, tt := range tests {
-		temp := EmptyDataPointSeries(chartDummy{}, "test", color.Black, tt.polar)
+		temp := EmptyPointSeries(chartDummy{}, "test", color.Black, tt.polar)
 		ser := &temp
 		err := ser.AddTemporalData(tt.input)
 		if err != nil && tt.expSuccess {
@@ -274,7 +293,7 @@ func TestDataPointAddTemporalData(t *testing.T) {
 func TestDataPointAddCategoricalData(t *testing.T) {
 	app.New()
 	var tests = []struct {
-		input        []data.CategoricalDataPoint
+		input        []data.CategoricalPoint
 		polar        bool
 		expSuccess   bool
 		expNumPoints int
@@ -287,10 +306,10 @@ func TestDataPointAddCategoricalData(t *testing.T) {
 		{cdpTestSetFull, true, false, 0, true, []string{}, 0, 0},
 		{cdpTestSetPosVal, false, true, len(cdpTestSetPosVal), false, []string{"one", "two", "three"}, 0, 1000},
 		{cdpTestSetPosVal, true, true, len(cdpTestSetPosVal), false, []string{"one", "two", "three"}, 0, 1000},
-		{[]data.CategoricalDataPoint{}, false, false, 0, true, []string{}, 0, 0},
+		{[]data.CategoricalPoint{}, false, false, 0, true, []string{}, 0, 0},
 	}
 	for i, tt := range tests {
-		temp := EmptyDataPointSeries(chartDummy{}, "test", color.Black, tt.polar)
+		temp := EmptyPointSeries(chartDummy{}, "test", color.Black, tt.polar)
 		ser := &temp
 		err := ser.AddCategoricalData(tt.input)
 		if err != nil && tt.expSuccess {
@@ -315,7 +334,7 @@ func TestDataPointAddCategoricalData(t *testing.T) {
 func TestDataPointDeleteNumericalData(t *testing.T) {
 	app.New()
 	var tests = []struct {
-		input         []data.NumericalDataPoint
+		input         []data.NumericalPoint
 		delMin        float64
 		delMax        float64
 		expSuccess    bool
@@ -333,7 +352,7 @@ func TestDataPointDeleteNumericalData(t *testing.T) {
 		{ndpTestSetFull, 1000.000001, -1000.000001, false, 0, false, -1000, 1000, -1000, 1000},
 	}
 	for i, tt := range tests {
-		temp := EmptyDataPointSeries(chartDummy{}, "test", color.Black, false)
+		temp := EmptyPointSeries(chartDummy{}, "test", color.Black, false)
 		ser := &temp
 		ser.AddNumericalData(tt.input)
 		c, err := ser.DeleteNumericalDataInRange(tt.delMin, tt.delMax)
@@ -359,7 +378,7 @@ func TestDataPointDeleteNumericalData(t *testing.T) {
 func TestDataPointDeleteTemporalData(t *testing.T) {
 	app.New()
 	var tests = []struct {
-		input         []data.TemporalDataPoint
+		input         []data.TemporalPoint
 		delMin        time.Time
 		delMax        time.Time
 		expSuccess    bool
@@ -377,7 +396,7 @@ func TestDataPointDeleteTemporalData(t *testing.T) {
 		{tdpTestSetFull, tdpTestSetFull[4].T.Add(-time.Second), tdpTestSetFull[3].T.Add(time.Second), false, 0, false, tdpTestSetFull[3].T, tdpTestSetFull[4].T, -1000, 1000},
 	}
 	for i, tt := range tests {
-		temp := EmptyDataPointSeries(chartDummy{}, "test", color.Black, false)
+		temp := EmptyPointSeries(chartDummy{}, "test", color.Black, false)
 		ser := &temp
 		ser.AddTemporalData(tt.input)
 		c, err := ser.DeleteTemporalDataInRange(tt.delMin, tt.delMax)
@@ -403,7 +422,7 @@ func TestDataPointDeleteTemporalData(t *testing.T) {
 func TestDataPointDeleteCategoricalData(t *testing.T) {
 	app.New()
 	var tests = []struct {
-		input         []data.CategoricalDataPoint
+		input         []data.CategoricalPoint
 		del           []string
 		expSuccess    bool
 		expNumDeleted int
@@ -418,7 +437,7 @@ func TestDataPointDeleteCategoricalData(t *testing.T) {
 		{cdpTestSetFull, []string{"one", "two", "three", "four", "five"}, true, 5, true, []string{}, 0, 0},
 	}
 	for i, tt := range tests {
-		temp := EmptyDataPointSeries(chartDummy{}, "test", color.Black, false)
+		temp := EmptyPointSeries(chartDummy{}, "test", color.Black, false)
 		ser := &temp
 		ser.AddCategoricalData(tt.input)
 		c, err := ser.DeleteCategoricalDataInRange(tt.del)
@@ -444,7 +463,7 @@ func TestDataPointDeleteCategoricalData(t *testing.T) {
 func TestDataPointNodes(t *testing.T) {
 	app.New()
 	var tests = []struct {
-		input        []data.NumericalDataPoint
+		input        []data.NumericalPoint
 		xMin         float64
 		xMax         float64
 		yMin         float64
@@ -460,7 +479,7 @@ func TestDataPointNodes(t *testing.T) {
 	}
 	for i, tt := range tests {
 		app.New()
-		ser := EmptyDataPointSeries(chartDummy{}, "test", color.Black, false)
+		ser := EmptyPointSeries(chartDummy{}, "test", color.Black, false)
 		ser.showDot = true
 		ser.AddNumericalData(tt.input)
 		cns := ser.CartesianNodes(tt.xMin, tt.xMax, tt.yMin, tt.yMax)
@@ -477,7 +496,7 @@ func TestDataPointNodes(t *testing.T) {
 func TestDataPointEdges(t *testing.T) {
 	app.New()
 	var tests = []struct {
-		input               []data.NumericalDataPoint
+		input               []data.NumericalPoint
 		xMin                float64
 		xMax                float64
 		yMin                float64
@@ -495,7 +514,7 @@ func TestDataPointEdges(t *testing.T) {
 	}
 	for i, tt := range tests {
 		app.New()
-		ser := EmptyDataPointSeries(chartDummy{}, "test", color.Black, false)
+		ser := EmptyPointSeries(chartDummy{}, "test", color.Black, false)
 		ser.showFromPrevLine = tt.showFromPrevLine
 		ser.showFromValBaseLine = tt.showFromValBaseLine
 		if ser.showFromPrevLine {
@@ -516,7 +535,7 @@ func TestDataPointEdges(t *testing.T) {
 func TestDataPointRects(t *testing.T) {
 	app.New()
 	var tests = []struct {
-		input        []data.NumericalDataPoint
+		input        []data.NumericalPoint
 		xMin         float64
 		xMax         float64
 		yMin         float64
@@ -531,7 +550,7 @@ func TestDataPointRects(t *testing.T) {
 	}
 	for i, tt := range tests {
 		app.New()
-		ser := EmptyDataPointSeries(chartDummy{}, "test", color.Black, false)
+		ser := EmptyPointSeries(chartDummy{}, "test", color.Black, false)
 		ser.showBar = true
 		ser.AddNumericalData(tt.input)
 		crs := ser.CartesianRects(tt.xMin, tt.xMax, tt.yMin, tt.yMax)

@@ -78,7 +78,7 @@ func cartNumChart() (numChart *coord.CartesianNumericalChart, err error) {
 	numChart = coord.NewCartesianNumericalChart()
 
 	// Area Series
-	data1 := make([]data.NumericalDataPoint, 0)
+	data1 := make([]data.NumericalPoint, 0)
 	for range 50 {
 		data1 = append(data1, randomNumericalDataPoint(-100, 0, -100, 0))
 	}
@@ -109,7 +109,7 @@ func cartNumChart() (numChart *coord.CartesianNumericalChart, err error) {
 	}()
 
 	// Bar Series
-	data3 := make([]data.NumericalDataPoint, 0)
+	data3 := make([]data.NumericalPoint, 0)
 	for range 50 {
 		data3 = append(data3, randomNumericalDataPoint(-110, 110, -110, 110))
 	}
@@ -148,7 +148,7 @@ func cartTempChart() (tempChart *coord.CartesianTemporalChart, err error) {
 	}
 
 	// Lollipop Series
-	data2 := make([]data.TemporalDataPoint, 0)
+	data2 := make([]data.TemporalPoint, 0)
 	for range 10 {
 		data2 = append(data2, randomTemporalDataPoint(time.Now(), time.Now().Add(time.Hour*50), -5, 10))
 	}
@@ -172,7 +172,7 @@ func cartCatChart() (catChart *coord.CartesianCategoricalChart, err error) {
 	catChart = coord.NewCartesianCategoricalChart()
 
 	// Stacked Bar Series
-	data1 := []data.CategoricalDataPoint{
+	data1 := []data.CategoricalPoint{
 		{
 			C:   "One",
 			Val: rand.Float64() * 30,
@@ -186,7 +186,7 @@ func cartCatChart() (catChart *coord.CartesianCategoricalChart, err error) {
 			Val: rand.Float64() * 30,
 		},
 	}
-	data2 := []data.CategoricalDataPoint{
+	data2 := []data.CategoricalPoint{
 		{
 			C:   "One",
 			Val: rand.Float64() * 30,
@@ -214,7 +214,7 @@ func cartCatChart() (catChart *coord.CartesianCategoricalChart, err error) {
 	}
 
 	// Bar Series
-	data3 := []data.CategoricalDataPoint{
+	data3 := []data.CategoricalPoint{
 		{
 			C:   "One",
 			Val: -10 + rand.Float64()*20,
@@ -272,7 +272,7 @@ func polNumChart() (numChart *coord.PolarNumericalChart, err error) {
 	numChart = coord.NewPolarNumericalChart()
 
 	// Area Series
-	data1 := make([]data.NumericalDataPoint, 0)
+	data1 := make([]data.NumericalPoint, 0)
 	for range 100 {
 		data1 = append(data1, randomAngularDataPoint(63.777))
 	}
@@ -282,7 +282,7 @@ func polNumChart() (numChart *coord.PolarNumericalChart, err error) {
 	}
 
 	// Line Series
-	data2 := make([]data.NumericalDataPoint, 0)
+	data2 := make([]data.NumericalPoint, 0)
 	for range 150 {
 		data2 = append(data2, randomSineAngularDataPoint(63.777))
 	}
@@ -306,7 +306,7 @@ func polTempChart() (tempChart *coord.PolarTemporalChart, err error) {
 	tempChart = coord.NewPolarTemporalChart()
 
 	// Lollipop Series
-	data1 := make([]data.TemporalDataPoint, 0)
+	data1 := make([]data.TemporalPoint, 0)
 	for range 50 {
 		data1 = append(data1, randomTemporalDataPoint(time.Now(), time.Now().Add(time.Hour*50), 0, 111))
 	}
@@ -316,7 +316,7 @@ func polTempChart() (tempChart *coord.PolarTemporalChart, err error) {
 	}
 
 	// Scatter Series
-	data2 := make([]data.TemporalDataPoint, 0)
+	data2 := make([]data.TemporalPoint, 0)
 	for range 25 {
 		data2 = append(data2, randomTemporalDataPoint(time.Now(), time.Now().Add(time.Hour*50), 0, 111))
 	}
@@ -339,7 +339,7 @@ func polCatChart() (catChart *coord.PolarCategoricalChart, err error) {
 	catChart = coord.NewPolarCategoricalChart()
 
 	// Stacked Bar Series
-	data1 := []data.CategoricalDataPoint{
+	data1 := []data.CategoricalPoint{
 		{
 			C:   "One",
 			Val: rand.Float64() * 30,
@@ -353,7 +353,7 @@ func polCatChart() (catChart *coord.PolarCategoricalChart, err error) {
 			Val: rand.Float64() * 30,
 		},
 	}
-	data2 := []data.CategoricalDataPoint{
+	data2 := []data.CategoricalPoint{
 		{
 			C:   "One",
 			Val: rand.Float64() * 30,
@@ -381,7 +381,7 @@ func polCatChart() (catChart *coord.PolarCategoricalChart, err error) {
 	}
 
 	// Bar Series
-	data3 := []data.CategoricalDataPoint{
+	data3 := []data.CategoricalPoint{
 		{
 			C:   "One",
 			Val: rand.Float64() * 30,
@@ -409,13 +409,13 @@ func polCatChart() (catChart *coord.PolarCategoricalChart, err error) {
 }
 
 func randomNumericalDataPoint(xMin float64, xMax float64, valMin float64,
-	valMax float64) (ndp data.NumericalDataPoint) {
+	valMax float64) (ndp data.NumericalPoint) {
 	ndp.N = xMin + (rand.Float64() * (xMax - xMin))
 	ndp.Val = valMin + (rand.Float64() * (valMax - valMin))
 	return
 }
 
-func updateSineNumericalData() (ndp []data.NumericalDataPoint) {
+func updateSineNumericalData() (ndp []data.NumericalPoint) {
 	periodInMilliSecond := 10000
 	shift := float64(time.Now().UnixMilli()%int64(periodInMilliSecond)) / float64(periodInMilliSecond) * 2 * math.Pi
 	for range 50 {
@@ -424,14 +424,14 @@ func updateSineNumericalData() (ndp []data.NumericalDataPoint) {
 	return
 }
 
-func randomSineNumericalDataPoint(l float64, amp float64, shift float64) (ndp data.NumericalDataPoint) {
+func randomSineNumericalDataPoint(l float64, amp float64, shift float64) (ndp data.NumericalPoint) {
 	ndp.N = (-l / 2) + (rand.Float64() * l)
 	ndp.Val = amp * math.Sin((ndp.N/(l))*2*math.Pi-shift)
 	return
 }
 
 func randomTemporalDataPoint(tMin time.Time, tMax time.Time, valMin float64,
-	valMax float64) (tdp data.TemporalDataPoint) {
+	valMax float64) (tdp data.TemporalPoint) {
 	tdp.T = time.Unix(rand.Int64N(tMax.Unix()-tMin.Unix())+tMin.Unix(), 0)
 	tdp.Val = valMin + (rand.Float64() * (valMax - valMin))
 	return
@@ -449,13 +449,13 @@ func randomTemporalCandleStick(tStart time.Time, span time.Duration,
 	return
 }
 
-func randomAngularDataPoint(valMax float64) (adp data.NumericalDataPoint) {
+func randomAngularDataPoint(valMax float64) (adp data.NumericalPoint) {
 	adp.N = rand.Float64() * 2 * math.Pi
 	adp.Val = rand.Float64() * valMax
 	return
 }
 
-func randomSineAngularDataPoint(amp float64) (adp data.NumericalDataPoint) {
+func randomSineAngularDataPoint(amp float64) (adp data.NumericalPoint) {
 	adp.N = rand.Float64() * 2 * math.Pi
 	adp.Val = amp + (amp * math.Sin(adp.N))
 	return

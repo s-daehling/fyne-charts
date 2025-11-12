@@ -29,7 +29,7 @@ func NewPolarTemporalChart() (tempChart *PolarTemporalChart) {
 // data does not need to be sorted. It will be sorted by T by the method.
 // The method does not check for duplicates (i.e. data points with same T)
 // The range of T is not restricted. The range of Val is restricted to Val>=0.
-func (tempChart *PolarTemporalChart) AddLineSeries(name string, points []data.TemporalDataPoint,
+func (tempChart *PolarTemporalChart) AddLineSeries(name string, points []data.TemporalPoint,
 	showDots bool, color color.Color) (tls TemporalLineSeries, err error) {
 	tls.ser, err = tempChart.BaseChart.AddTemporalLineSeries(name, points, showDots, color)
 	return
@@ -40,7 +40,7 @@ func (tempChart *PolarTemporalChart) AddLineSeries(name string, points []data.Te
 // An error is returned,if another series with the same name exists.
 // The method does not check for duplicates (i.e. data points with same T)
 // The range of T is not restricted. The range of Val is restricted to Val>=0.
-func (tempChart *PolarTemporalChart) AddScatterSeries(name string, points []data.TemporalDataPoint,
+func (tempChart *PolarTemporalChart) AddScatterSeries(name string, points []data.TemporalPoint,
 	color color.Color) (tss TemporalScatterSeries, err error) {
 	tss.ser, err = tempChart.BaseChart.AddTemporalScatterSeries(name, points, color)
 	return
@@ -51,7 +51,7 @@ func (tempChart *PolarTemporalChart) AddScatterSeries(name string, points []data
 // An error is returned,if another series with the same name exists.
 // The method does not check for duplicates (i.e. data points with same T)
 // The range of T is not restricted. The range of Val is restricted to Val>=0.
-func (tempChart *PolarTemporalChart) AddLollipopSeries(name string, points []data.TemporalDataPoint,
+func (tempChart *PolarTemporalChart) AddLollipopSeries(name string, points []data.TemporalPoint,
 	color color.Color) (tls TemporalLollipopSeries, err error) {
 	tls.ser, err = tempChart.BaseChart.AddTemporalLollipopSeries(name, points, color)
 	return
@@ -63,7 +63,7 @@ func (tempChart *PolarTemporalChart) AddLollipopSeries(name string, points []dat
 // data does not need to be sorted. It will be sorted by T by the method.
 // The method does not check for duplicates (i.e. data points with same T).
 // The range of T is not restricted. The range of Val is restricted to Val>=0.
-func (tempChart *PolarTemporalChart) AddAreaSeries(name string, points []data.TemporalDataPoint, showDots bool,
+func (tempChart *PolarTemporalChart) AddAreaSeries(name string, points []data.TemporalPoint, showDots bool,
 	color color.Color) (tas TemporalAreaSeries, err error) {
 	tas.ser, err = tempChart.BaseChart.AddTemporalAreaSeries(name, points, showDots, color)
 	return
@@ -76,7 +76,7 @@ func (tempChart *PolarTemporalChart) AddAreaSeries(name string, points []data.Te
 // The range of T is not restricted. The range of Val is restricted to Val>=0.
 // The bars are centered around their T value of the data points. barWidth is the width of the bars.
 // An error is returned if barWidth < 0
-func (tempChart *PolarTemporalChart) AddBarSeries(name string, points []data.TemporalDataPoint,
+func (tempChart *PolarTemporalChart) AddBarSeries(name string, points []data.TemporalPoint,
 	barWidth time.Duration, color color.Color) (tbs TemporalBarSeries, err error) {
 	tbs.ser, err = tempChart.BaseChart.AddTemporalBarSeries(name, points, barWidth, color)
 	return

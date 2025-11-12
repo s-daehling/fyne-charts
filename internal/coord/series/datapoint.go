@@ -250,7 +250,7 @@ func (point *dataPoint) RasterColorPolar(phi float64, r float64, x float64,
 	return
 }
 
-type DataPointSeries struct {
+type PointSeries struct {
 	baseSeries
 	data                []*dataPoint
 	valBase             float64
@@ -266,8 +266,8 @@ type DataPointSeries struct {
 	sortPoints          bool
 }
 
-func EmptyAreaSeries(chart chart, name string, showDots bool, color color.Color, polar bool) (ser *DataPointSeries) {
-	ser = &DataPointSeries{
+func EmptyAreaSeries(chart chart, name string, showDots bool, color color.Color, polar bool) (ser *PointSeries) {
+	ser = &PointSeries{
 		valBase:             0,
 		nBarWidth:           0,
 		tBarWidth:           0,
@@ -284,8 +284,8 @@ func EmptyAreaSeries(chart chart, name string, showDots bool, color color.Color,
 	return
 }
 
-func EmptyBarSeries(chart chart, name string, color color.Color, polar bool) (ser *DataPointSeries) {
-	ser = &DataPointSeries{
+func EmptyBarSeries(chart chart, name string, color color.Color, polar bool) (ser *PointSeries) {
+	ser = &PointSeries{
 		valBase:             0,
 		nBarWidth:           0,
 		tBarWidth:           0,
@@ -302,8 +302,8 @@ func EmptyBarSeries(chart chart, name string, color color.Color, polar bool) (se
 	return
 }
 
-func EmptyLineSeries(chart chart, name string, showDots bool, color color.Color, polar bool) (ser *DataPointSeries) {
-	ser = &DataPointSeries{
+func EmptyLineSeries(chart chart, name string, showDots bool, color color.Color, polar bool) (ser *PointSeries) {
+	ser = &PointSeries{
 		valBase:             0,
 		nBarWidth:           0,
 		tBarWidth:           0,
@@ -320,8 +320,8 @@ func EmptyLineSeries(chart chart, name string, showDots bool, color color.Color,
 	return
 }
 
-func EmptyLollipopSeries(chart chart, name string, color color.Color, polar bool) (ser *DataPointSeries) {
-	ser = &DataPointSeries{
+func EmptyLollipopSeries(chart chart, name string, color color.Color, polar bool) (ser *PointSeries) {
+	ser = &PointSeries{
 		valBase:             0,
 		nBarWidth:           0,
 		tBarWidth:           0,
@@ -338,8 +338,8 @@ func EmptyLollipopSeries(chart chart, name string, color color.Color, polar bool
 	return
 }
 
-func EmptyScatterSeries(chart chart, name string, color color.Color, polar bool) (ser *DataPointSeries) {
-	ser = &DataPointSeries{
+func EmptyScatterSeries(chart chart, name string, color color.Color, polar bool) (ser *PointSeries) {
+	ser = &PointSeries{
 		valBase:             0,
 		nBarWidth:           0,
 		tBarWidth:           0,
@@ -356,33 +356,14 @@ func EmptyScatterSeries(chart chart, name string, color color.Color, polar bool)
 	return
 }
 
-func EmptyDataPointSeries(chart chart, name string, color color.Color,
-	polar bool) (ser DataPointSeries) {
-	ser = DataPointSeries{
-		valBase:             0,
-		nBarWidth:           0,
-		tBarWidth:           0,
-		nBarShift:           0,
-		tBarShift:           0,
-		showDot:             false,
-		showFromValBaseLine: false,
-		showFromPrevLine:    false,
-		showBar:             false,
-		showArea:            false,
-		sortPoints:          false,
-	}
-	ser.baseSeries = emptyBaseSeries(chart, name, color, polar, ser.toggleView)
-	return
-}
-
-func (ser *DataPointSeries) CRange() (cs []string) {
+func (ser *PointSeries) CRange() (cs []string) {
 	for i := range ser.data {
 		cs = append(cs, ser.data[i].c)
 	}
 	return
 }
 
-func (ser *DataPointSeries) TRange() (isEmpty bool, min time.Time, max time.Time) {
+func (ser *PointSeries) TRange() (isEmpty bool, min time.Time, max time.Time) {
 	isEmpty = false
 	if len(ser.data) == 0 {
 		isEmpty = true
@@ -411,7 +392,7 @@ func (ser *DataPointSeries) TRange() (isEmpty bool, min time.Time, max time.Time
 	return
 }
 
-func (ser *DataPointSeries) NRange() (isEmpty bool, min float64, max float64) {
+func (ser *PointSeries) NRange() (isEmpty bool, min float64, max float64) {
 	min = 0
 	max = 0
 	isEmpty = false
@@ -442,7 +423,7 @@ func (ser *DataPointSeries) NRange() (isEmpty bool, min float64, max float64) {
 	return
 }
 
-func (ser *DataPointSeries) ValRange() (isEmpty bool, min float64, max float64) {
+func (ser *PointSeries) ValRange() (isEmpty bool, min float64, max float64) {
 	min = 0
 	max = 0
 	isEmpty = false
@@ -481,13 +462,13 @@ func (ser *DataPointSeries) ValRange() (isEmpty bool, min float64, max float64) 
 	return
 }
 
-func (ser *DataPointSeries) ConvertCtoN(cToN func(c string) (n float64)) {
+func (ser *PointSeries) ConvertCtoN(cToN func(c string) (n float64)) {
 	for i := range ser.data {
 		ser.data[i].n = cToN(ser.data[i].c)
 	}
 }
 
-func (ser *DataPointSeries) ConvertTtoN(tToN func(t time.Time) (n float64)) {
+func (ser *PointSeries) ConvertTtoN(tToN func(t time.Time) (n float64)) {
 	for i := range ser.data {
 		ser.data[i].n = tToN(ser.data[i].t)
 		if ser.showBar {
@@ -497,7 +478,7 @@ func (ser *DataPointSeries) ConvertTtoN(tToN func(t time.Time) (n float64)) {
 	}
 }
 
-func (ser *DataPointSeries) CartesianNodes(xMin float64, xMax float64, yMin float64,
+func (ser *PointSeries) CartesianNodes(xMin float64, xMax float64, yMin float64,
 	yMax float64) (ns []renderer.CartesianNode) {
 	for i := range ser.data {
 		ns = append(ns, ser.data[i].cartesianNodes(xMin, xMax, yMin, yMax)...)
@@ -505,7 +486,7 @@ func (ser *DataPointSeries) CartesianNodes(xMin float64, xMax float64, yMin floa
 	return
 }
 
-func (ser *DataPointSeries) CartesianEdges(xMin float64, xMax float64, yMin float64,
+func (ser *PointSeries) CartesianEdges(xMin float64, xMax float64, yMin float64,
 	yMax float64) (es []renderer.CartesianEdge) {
 	for i := range ser.data {
 		if i == 0 {
@@ -518,7 +499,7 @@ func (ser *DataPointSeries) CartesianEdges(xMin float64, xMax float64, yMin floa
 	return
 }
 
-func (ser *DataPointSeries) CartesianRects(xMin float64, xMax float64, yMin float64,
+func (ser *PointSeries) CartesianRects(xMin float64, xMax float64, yMin float64,
 	yMax float64) (fs []renderer.CartesianRect) {
 	for i := range ser.data {
 		fs = append(fs, ser.data[i].cartesianRects(xMin, xMax, yMin, yMax)...)
@@ -526,7 +507,7 @@ func (ser *DataPointSeries) CartesianRects(xMin float64, xMax float64, yMin floa
 	return
 }
 
-func (ser *DataPointSeries) RasterColorCartesian(x float64, y float64) (col color.Color) {
+func (ser *PointSeries) RasterColorCartesian(x float64, y float64) (col color.Color) {
 	col = ser.baseSeries.RasterColorCartesian(x, y)
 	if !ser.visible || !ser.showArea {
 		return
@@ -557,7 +538,7 @@ func (ser *DataPointSeries) RasterColorCartesian(x float64, y float64) (col colo
 	return
 }
 
-func (ser *DataPointSeries) PolarNodes(phiMin float64, phiMax float64, rMin float64,
+func (ser *PointSeries) PolarNodes(phiMin float64, phiMax float64, rMin float64,
 	rMax float64) (ns []renderer.PolarNode) {
 	for i := range ser.data {
 		ns = append(ns, ser.data[i].polarNodes(phiMin, phiMax, rMin, rMax)...)
@@ -565,7 +546,7 @@ func (ser *DataPointSeries) PolarNodes(phiMin float64, phiMax float64, rMin floa
 	return
 }
 
-func (ser *DataPointSeries) PolarEdges(phiMin float64, phiMax float64, rMin float64,
+func (ser *PointSeries) PolarEdges(phiMin float64, phiMax float64, rMin float64,
 	rMax float64) (es []renderer.PolarEdge) {
 	for i := range ser.data {
 		if i == 0 {
@@ -578,7 +559,7 @@ func (ser *DataPointSeries) PolarEdges(phiMin float64, phiMax float64, rMin floa
 	return
 }
 
-func (ser *DataPointSeries) RasterColorPolar(phi float64, r float64, x float64,
+func (ser *PointSeries) RasterColorPolar(phi float64, r float64, x float64,
 	y float64) (col color.Color) {
 	col = ser.baseSeries.RasterColorPolar(phi, r, x, y)
 	if !ser.visible || (!ser.showBar && !ser.showArea) {
@@ -617,7 +598,7 @@ func (ser *DataPointSeries) RasterColorPolar(phi float64, r float64, x float64,
 	return
 }
 
-func (ser *DataPointSeries) SetAndUpdateValBaseCategorical(in []catOffset) (out []catOffset) {
+func (ser *PointSeries) SetAndUpdateValBaseCategorical(in []catOffset) (out []catOffset) {
 	for i := range ser.data {
 		catInOffsetList := false
 		for j := range in {
@@ -651,7 +632,7 @@ func (ser *DataPointSeries) SetAndUpdateValBaseCategorical(in []catOffset) (out 
 	return
 }
 
-func (ser *DataPointSeries) SetValBaseNumerical(vb float64) {
+func (ser *PointSeries) SetValBaseNumerical(vb float64) {
 	ser.valBase = vb
 	for i := range ser.data {
 		ser.data[i].setValBase(vb)
@@ -659,7 +640,7 @@ func (ser *DataPointSeries) SetValBaseNumerical(vb float64) {
 }
 
 // Show makes all elements of the series visible
-func (ser *DataPointSeries) Show() {
+func (ser *PointSeries) Show() {
 	ser.visible = true
 	for i := range ser.data {
 		ser.data[i].show()
@@ -670,7 +651,7 @@ func (ser *DataPointSeries) Show() {
 }
 
 // Hide hides all elements of the series
-func (ser *DataPointSeries) Hide() {
+func (ser *PointSeries) Hide() {
 	ser.visible = false
 	for i := range ser.data {
 		ser.data[i].hide()
@@ -680,7 +661,7 @@ func (ser *DataPointSeries) Hide() {
 	}
 }
 
-func (ser *DataPointSeries) toggleView() {
+func (ser *PointSeries) toggleView() {
 	if ser.visible {
 		ser.Hide()
 	} else {
@@ -688,7 +669,7 @@ func (ser *DataPointSeries) toggleView() {
 	}
 }
 
-func (ser *DataPointSeries) SetColor(col color.Color) {
+func (ser *PointSeries) SetColor(col color.Color) {
 	ser.color = col
 	ser.legendButton.SetRectColor(col)
 	for i := range ser.data {
@@ -696,7 +677,7 @@ func (ser *DataPointSeries) SetColor(col color.Color) {
 	}
 }
 
-func (ser *DataPointSeries) SetLineWidth(lw float32) {
+func (ser *PointSeries) SetLineWidth(lw float32) {
 	if lw < 0 {
 		return
 	}
@@ -705,7 +686,7 @@ func (ser *DataPointSeries) SetLineWidth(lw float32) {
 	}
 }
 
-func (ser *DataPointSeries) SetDotSize(ds float32) {
+func (ser *PointSeries) SetDotSize(ds float32) {
 	if ds < 0 {
 		return
 	}
@@ -714,7 +695,7 @@ func (ser *DataPointSeries) SetDotSize(ds float32) {
 	}
 }
 
-func (ser *DataPointSeries) SetNumericalBarWidthAndShift(width float64, shift float64) (err error) {
+func (ser *PointSeries) SetNumericalBarWidthAndShift(width float64, shift float64) (err error) {
 	if width < 0 || (ser.polar && width > 2*math.Pi) {
 		err = errors.New("invalid width")
 		return
@@ -727,7 +708,7 @@ func (ser *DataPointSeries) SetNumericalBarWidthAndShift(width float64, shift fl
 	return
 }
 
-func (ser *DataPointSeries) SetTemporalBarWidthAndShift(width time.Duration,
+func (ser *PointSeries) SetTemporalBarWidthAndShift(width time.Duration,
 	shift time.Duration) (err error) {
 	if width < 0 {
 		err = errors.New("invalid width")
@@ -741,22 +722,22 @@ func (ser *DataPointSeries) SetTemporalBarWidthAndShift(width time.Duration,
 	return
 }
 
-func (ser *DataPointSeries) IsAreaSeries() (b bool) {
+func (ser *PointSeries) IsAreaSeries() (b bool) {
 	b = ser.showArea
 	return
 }
 
-func (ser *DataPointSeries) IsBarSeries() (b bool) {
+func (ser *PointSeries) IsBarSeries() (b bool) {
 	b = ser.showBar
 	return
 }
 
-func (ser *DataPointSeries) IsLollipopSeries() (b bool) {
+func (ser *PointSeries) IsLollipopSeries() (b bool) {
 	b = ser.showFromValBaseLine && ser.showDot
 	return
 }
 
-func (ser *DataPointSeries) Clear() (err error) {
+func (ser *PointSeries) Clear() (err error) {
 	if ser.chart == nil {
 		err = errors.New("series is not part of any chart")
 		return
@@ -767,7 +748,7 @@ func (ser *DataPointSeries) Clear() (err error) {
 	return
 }
 
-func (ser *DataPointSeries) DeleteNumericalDataInRange(min float64, max float64) (c int, err error) {
+func (ser *PointSeries) DeleteNumericalDataInRange(min float64, max float64) (c int, err error) {
 	c = 0
 	if min > max {
 		err = errors.New("invalid range")
@@ -794,8 +775,8 @@ func (ser *DataPointSeries) DeleteNumericalDataInRange(min float64, max float64)
 	return
 }
 
-func (ser *DataPointSeries) AddNumericalData(input []data.NumericalDataPoint) (err error) {
-	err = numericalDataPointRangeCheck(input, ser.polar, ser.polar)
+func (ser *PointSeries) AddNumericalData(input []data.NumericalPoint) (err error) {
+	err = numericalPointRangeCheck(input, ser.polar, ser.polar)
 	if err != nil {
 		return
 	}
@@ -803,11 +784,11 @@ func (ser *DataPointSeries) AddNumericalData(input []data.NumericalDataPoint) (e
 		err = errors.New("series is not part of any chart")
 		return
 	}
-	var newData []data.NumericalDataPoint
+	var newData []data.NumericalPoint
 	if ser.sortPoints {
-		newData = append(make([]data.NumericalDataPoint, 0, len(input)), input...)
+		newData = append(make([]data.NumericalPoint, 0, len(input)), input...)
 		for i := range ser.data {
-			newData = append(newData, data.NumericalDataPoint{N: ser.data[i].n, Val: ser.data[i].val})
+			newData = append(newData, data.NumericalPoint{N: ser.data[i].n, Val: ser.data[i].val})
 		}
 		sort.Sort(data.DpByNValue(newData))
 		ser.data = []*dataPoint{}
@@ -831,7 +812,7 @@ func (ser *DataPointSeries) AddNumericalData(input []data.NumericalDataPoint) (e
 	return
 }
 
-func (ser *DataPointSeries) DeleteTemporalDataInRange(min time.Time, max time.Time) (c int, err error) {
+func (ser *PointSeries) DeleteTemporalDataInRange(min time.Time, max time.Time) (c int, err error) {
 	c = 0
 	if min.After(max) {
 		err = errors.New("invalid range")
@@ -858,8 +839,8 @@ func (ser *DataPointSeries) DeleteTemporalDataInRange(min time.Time, max time.Ti
 	return
 }
 
-func (ser *DataPointSeries) AddTemporalData(input []data.TemporalDataPoint) (err error) {
-	err = temporalDataPointRangeCheck(input, ser.polar)
+func (ser *PointSeries) AddTemporalData(input []data.TemporalPoint) (err error) {
+	err = temporalPointRangeCheck(input, ser.polar)
 	if err != nil {
 		return
 	}
@@ -867,11 +848,11 @@ func (ser *DataPointSeries) AddTemporalData(input []data.TemporalDataPoint) (err
 		err = errors.New("series is not part of any chart")
 		return
 	}
-	var newData []data.TemporalDataPoint
+	var newData []data.TemporalPoint
 	if ser.sortPoints {
-		newData = append(make([]data.TemporalDataPoint, 0, len(input)), input...)
+		newData = append(make([]data.TemporalPoint, 0, len(input)), input...)
 		for i := range ser.data {
-			newData = append(newData, data.TemporalDataPoint{T: ser.data[i].t, Val: ser.data[i].val})
+			newData = append(newData, data.TemporalPoint{T: ser.data[i].t, Val: ser.data[i].val})
 		}
 		sort.Sort(data.DpByTValue(newData))
 		ser.data = []*dataPoint{}
@@ -895,7 +876,7 @@ func (ser *DataPointSeries) AddTemporalData(input []data.TemporalDataPoint) (err
 	return
 }
 
-func (ser *DataPointSeries) DeleteCategoricalDataInRange(cat []string) (c int, err error) {
+func (ser *PointSeries) DeleteCategoricalDataInRange(cat []string) (c int, err error) {
 	c = 0
 	if len(cat) == 0 {
 		err = errors.New("invalid range")
@@ -929,8 +910,8 @@ func (ser *DataPointSeries) DeleteCategoricalDataInRange(cat []string) (c int, e
 	return
 }
 
-func (ser *DataPointSeries) AddCategoricalData(input []data.CategoricalDataPoint) (err error) {
-	err = categoricalDataPointRangeCheck(input, ser.polar)
+func (ser *PointSeries) AddCategoricalData(input []data.CategoricalPoint) (err error) {
+	err = categoricalPointRangeCheck(input, ser.polar)
 	if err != nil {
 		return
 	}
@@ -962,7 +943,7 @@ func (ser *DataPointSeries) AddCategoricalData(input []data.CategoricalDataPoint
 	return
 }
 
-func numericalDataPointRangeCheck(input []data.NumericalDataPoint, noNegativeVal bool, isPolar bool) (err error) {
+func numericalPointRangeCheck(input []data.NumericalPoint, noNegativeVal bool, isPolar bool) (err error) {
 	if len(input) == 0 {
 		err = errors.New("no input data")
 		return
@@ -979,7 +960,7 @@ func numericalDataPointRangeCheck(input []data.NumericalDataPoint, noNegativeVal
 	return
 }
 
-func temporalDataPointRangeCheck(input []data.TemporalDataPoint, noNegativeVal bool) (err error) {
+func temporalPointRangeCheck(input []data.TemporalPoint, noNegativeVal bool) (err error) {
 	if len(input) == 0 {
 		err = errors.New("no input data")
 		return
@@ -995,7 +976,7 @@ func temporalDataPointRangeCheck(input []data.TemporalDataPoint, noNegativeVal b
 	return
 }
 
-func categoricalDataPointRangeCheck(input []data.CategoricalDataPoint, noNegativeVal bool) (err error) {
+func categoricalPointRangeCheck(input []data.CategoricalPoint, noNegativeVal bool) (err error) {
 	if len(input) == 0 {
 		err = errors.New("no input data")
 		return

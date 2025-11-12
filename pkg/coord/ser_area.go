@@ -10,7 +10,7 @@ import (
 )
 
 type areaSeries struct {
-	ser *series.DataPointSeries
+	ser *series.PointSeries
 }
 
 // Name returns the name of the series
@@ -94,7 +94,7 @@ func (nas NumericalAreaSeries) DeleteDataInRange(min float64, max float64) (c in
 // data does not need to be sorted. It will be sorted by X by the method.
 // The method does not check for duplicates (i.e. data points with same X)
 // The range of X and Val is not restricted
-func (nas NumericalAreaSeries) AddData(input []data.NumericalDataPoint) (err error) {
+func (nas NumericalAreaSeries) AddData(input []data.NumericalPoint) (err error) {
 	if nas.ser == nil {
 		return
 	}
@@ -128,7 +128,7 @@ func (tas TemporalAreaSeries) DeleteDataInRange(min time.Time, max time.Time) (c
 // data does not need to be sorted. It will be sorted by T by the method.
 // The method does not check for duplicates (i.e. data points with same T)
 // The range of T is not restricted. The range of Val is not restricted in a cartesian chart, but Val>=0 in a polar chart
-func (tas TemporalAreaSeries) AddData(input []data.TemporalDataPoint) (err error) {
+func (tas TemporalAreaSeries) AddData(input []data.TemporalPoint) (err error) {
 	if tas.ser == nil {
 		return
 	}

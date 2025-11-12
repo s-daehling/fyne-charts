@@ -21,7 +21,7 @@ func emptyPropChart(planeType prop.PlaneType) (chart propChart) {
 // The method does not check for duplicates (i.e. data points with same C)
 // The range of C is not restricted. The range of Val is restricted to Val>=0
 func (chart *propChart) AddSeries(name string,
-	points []data.ProportionalDataPoint) (ps ProportionalSeries, err error) {
+	points []data.ProportionalPoint) (ps ProportionalSeries, err error) {
 	ps.ser, err = chart.BaseChart.AddProportionalSeries(name, points)
 	return
 }

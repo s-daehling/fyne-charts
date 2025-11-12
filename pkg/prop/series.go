@@ -74,7 +74,7 @@ func (ps ProportionalSeries) DeleteDataInRange(cat []string) (c int, err error) 
 // The method checks for duplicates (i.e. data points with same C).
 // Data points with a C that already exists, will be ignored.
 // The range of C is not restricted. The range of Val is restricted to Val>=0
-func (ps ProportionalSeries) AddData(input []data.ProportionalDataPoint) (err error) {
+func (ps ProportionalSeries) AddData(input []data.ProportionalPoint) (err error) {
 	if ps.ser == nil {
 		return
 	}

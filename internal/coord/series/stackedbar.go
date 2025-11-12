@@ -11,7 +11,7 @@ import (
 
 type StackedBarSeries struct {
 	baseSeries
-	stack []*DataPointSeries
+	stack []*PointSeries
 }
 
 func EmptyStackedBarSeries(chart chart, name string, polar bool) (ser *StackedBarSeries) {
@@ -170,7 +170,7 @@ func (ser *StackedBarSeries) Clear() (err error) {
 		return
 	}
 	chart := ser.chart
-	ser.stack = []*DataPointSeries{}
+	ser.stack = []*PointSeries{}
 	chart.DataChange()
 	return
 }
@@ -199,8 +199,8 @@ func (ser *StackedBarSeries) DeleteCategoricalDataInRange(cat []string) (c int, 
 // If the single series does not exist, nothing is done
 // The method checks for duplicates (i.e. data points with same C).
 // Data points with a C that already exists, will be ignored.
-func (ser *StackedBarSeries) AddCategoricalData(series string, input []data.CategoricalDataPoint) (err error) {
-	err = categoricalDataPointRangeCheck(input, true)
+func (ser *StackedBarSeries) AddCategoricalData(series string, input []data.CategoricalPoint) (err error) {
+	err = categoricalPointRangeCheck(input, true)
 	if err != nil {
 		return
 	}
@@ -222,7 +222,7 @@ func (ser *StackedBarSeries) AddCategoricalSeries(series data.CategoricalDataSer
 		err = errors.New("series already exists")
 		return
 	}
-	err = categoricalDataPointRangeCheck(series.Points, true)
+	err = categoricalPointRangeCheck(series.Points, true)
 	if err != nil {
 		return
 	}

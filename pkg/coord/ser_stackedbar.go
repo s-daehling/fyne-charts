@@ -69,7 +69,7 @@ func (css CategoricalStackedBarSeries) DeleteDataInRange(cat []string) (c int, e
 // The method checks for duplicates (i.e. data points with same C).
 // Data points with a C that already exists, will be ignored.
 // The range of C is not restricted. The range of Val is restricted to Val>=0
-func (css CategoricalStackedBarSeries) AddData(series string, input []data.CategoricalDataPoint) (err error) {
+func (css CategoricalStackedBarSeries) AddData(series string, input []data.CategoricalPoint) (err error) {
 	if css.ser == nil {
 		return
 	}

@@ -10,7 +10,7 @@ import (
 )
 
 type scatterSeries struct {
-	ser *series.DataPointSeries
+	ser *series.PointSeries
 }
 
 // Name returns the name of the series
@@ -85,7 +85,7 @@ func (nss NumericalScatterSeries) DeleteDataInRange(min float64, max float64) (c
 // AddData adds data points to the series.
 // The method does not check for duplicates (i.e. data points with same X)
 // The range of X and Val is not restricted
-func (nss NumericalScatterSeries) AddData(input []data.NumericalDataPoint) (err error) {
+func (nss NumericalScatterSeries) AddData(input []data.NumericalPoint) (err error) {
 	if nss.ser == nil {
 		return
 	}
@@ -118,7 +118,7 @@ func (tss TemporalScatterSeries) DeleteDataInRange(min time.Time, max time.Time)
 // AddData adds data points to the series.
 // The method does not check for duplicates (i.e. data points with same T)
 // The range of T is not restricted. The range of Val is not restricted in a cartesian chart, but Val>=0 in a polar chart
-func (tss TemporalScatterSeries) AddData(input []data.TemporalDataPoint) (err error) {
+func (tss TemporalScatterSeries) AddData(input []data.TemporalPoint) (err error) {
 	if tss.ser == nil {
 		return
 	}
@@ -152,7 +152,7 @@ func (css CategoricalScatterSeries) DeleteDataInRange(cat []string) (c int, err 
 // The method checks for duplicates (i.e. data points with same C).
 // Data points with a C that already exists, will be ignored.
 // The range of C is not restricted. The range of Val is not restricted in a cartesian chart, but Val>=0 in a polar chart
-func (css CategoricalScatterSeries) AddData(input []data.CategoricalDataPoint) (err error) {
+func (css CategoricalScatterSeries) AddData(input []data.CategoricalPoint) (err error) {
 	if css.ser == nil {
 		return
 	}
