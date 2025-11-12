@@ -264,9 +264,10 @@ type PointSeries struct {
 	showBar             bool
 	showArea            bool
 	sortPoints          bool
+	isStacked           bool
 }
 
-func EmptyAreaSeries(chart chart, name string, showDots bool, color color.Color, polar bool) (ser *PointSeries) {
+func EmptyAreaSeries(chart chart, name string, showDots bool, color color.Color) (ser *PointSeries) {
 	ser = &PointSeries{
 		valBase:             0,
 		nBarWidth:           0,
@@ -279,12 +280,13 @@ func EmptyAreaSeries(chart chart, name string, showDots bool, color color.Color,
 		showBar:             false,
 		showArea:            true,
 		sortPoints:          true,
+		isStacked:           false,
 	}
-	ser.baseSeries = emptyBaseSeries(chart, name, color, polar, ser.toggleView)
+	ser.baseSeries = emptyBaseSeries(chart, name, color, ser.toggleView)
 	return
 }
 
-func EmptyBarSeries(chart chart, name string, color color.Color, polar bool) (ser *PointSeries) {
+func EmptyBarSeries(chart chart, name string, color color.Color, stacked bool) (ser *PointSeries) {
 	ser = &PointSeries{
 		valBase:             0,
 		nBarWidth:           0,
@@ -297,12 +299,13 @@ func EmptyBarSeries(chart chart, name string, color color.Color, polar bool) (se
 		showBar:             true,
 		showArea:            false,
 		sortPoints:          false,
+		isStacked:           stacked,
 	}
-	ser.baseSeries = emptyBaseSeries(chart, name, color, polar, ser.toggleView)
+	ser.baseSeries = emptyBaseSeries(chart, name, color, ser.toggleView)
 	return
 }
 
-func EmptyLineSeries(chart chart, name string, showDots bool, color color.Color, polar bool) (ser *PointSeries) {
+func EmptyLineSeries(chart chart, name string, showDots bool, color color.Color) (ser *PointSeries) {
 	ser = &PointSeries{
 		valBase:             0,
 		nBarWidth:           0,
@@ -315,12 +318,13 @@ func EmptyLineSeries(chart chart, name string, showDots bool, color color.Color,
 		showBar:             false,
 		showArea:            false,
 		sortPoints:          true,
+		isStacked:           false,
 	}
-	ser.baseSeries = emptyBaseSeries(chart, name, color, polar, ser.toggleView)
+	ser.baseSeries = emptyBaseSeries(chart, name, color, ser.toggleView)
 	return
 }
 
-func EmptyLollipopSeries(chart chart, name string, color color.Color, polar bool) (ser *PointSeries) {
+func EmptyLollipopSeries(chart chart, name string, color color.Color) (ser *PointSeries) {
 	ser = &PointSeries{
 		valBase:             0,
 		nBarWidth:           0,
@@ -333,12 +337,13 @@ func EmptyLollipopSeries(chart chart, name string, color color.Color, polar bool
 		showBar:             false,
 		showArea:            false,
 		sortPoints:          false,
+		isStacked:           false,
 	}
-	ser.baseSeries = emptyBaseSeries(chart, name, color, polar, ser.toggleView)
+	ser.baseSeries = emptyBaseSeries(chart, name, color, ser.toggleView)
 	return
 }
 
-func EmptyScatterSeries(chart chart, name string, color color.Color, polar bool) (ser *PointSeries) {
+func EmptyScatterSeries(chart chart, name string, color color.Color) (ser *PointSeries) {
 	ser = &PointSeries{
 		valBase:             0,
 		nBarWidth:           0,
@@ -351,8 +356,9 @@ func EmptyScatterSeries(chart chart, name string, color color.Color, polar bool)
 		showBar:             false,
 		showArea:            false,
 		sortPoints:          false,
+		isStacked:           false,
 	}
-	ser.baseSeries = emptyBaseSeries(chart, name, color, polar, ser.toggleView)
+	ser.baseSeries = emptyBaseSeries(chart, name, color, ser.toggleView)
 	return
 }
 
@@ -645,7 +651,7 @@ func (ser *PointSeries) Show() {
 	for i := range ser.data {
 		ser.data[i].show()
 	}
-	if ser.showBar {
+	if ser.showBar && ser.chart != nil {
 		ser.chart.DataChange()
 	}
 }
@@ -656,7 +662,7 @@ func (ser *PointSeries) Hide() {
 	for i := range ser.data {
 		ser.data[i].hide()
 	}
-	if ser.showBar {
+	if ser.showBar && ser.chart != nil {
 		ser.chart.DataChange()
 	}
 }
@@ -696,7 +702,7 @@ func (ser *PointSeries) SetDotSize(ds float32) {
 }
 
 func (ser *PointSeries) SetNumericalBarWidthAndShift(width float64, shift float64) (err error) {
-	if width < 0 || (ser.polar && width > 2*math.Pi) {
+	if width < 0 {
 		err = errors.New("invalid width")
 		return
 	}
@@ -738,27 +744,19 @@ func (ser *PointSeries) IsLollipopSeries() (b bool) {
 }
 
 func (ser *PointSeries) Clear() (err error) {
-	if ser.chart == nil {
-		err = errors.New("series is not part of any chart")
-		return
-	}
-	chart := ser.chart
 	ser.data = []*dataPoint{}
-	chart.DataChange()
+	if ser.chart != nil {
+		ser.chart.DataChange()
+	}
 	return
 }
 
-func (ser *PointSeries) DeleteNumericalDataInRange(min float64, max float64) (c int, err error) {
+func (ser *PointSeries) DeleteNumericalDataInRange(min float64, max float64) (c int) {
 	c = 0
 	if min > max {
-		err = errors.New("invalid range")
 		return
 	}
 	finalData := []*dataPoint{}
-	if ser.chart == nil {
-		err = errors.New("series is not part of any chart")
-		return
-	}
 	for i := range ser.data {
 		if ser.data[i].n > min && ser.data[i].n < max {
 			c++
@@ -771,17 +769,20 @@ func (ser *PointSeries) DeleteNumericalDataInRange(min float64, max float64) (c 
 	}
 	ser.data = nil
 	ser.data = finalData
-	ser.chart.DataChange()
+	if ser.chart != nil {
+		ser.chart.DataChange()
+	}
 	return
 }
 
 func (ser *PointSeries) AddNumericalData(input []data.NumericalPoint) (err error) {
-	err = numericalPointRangeCheck(input, ser.polar, ser.polar)
-	if err != nil {
-		return
+	if ser.chart != nil {
+		err = numericalPointRangeCheck(input, ser.chart.IsPolar(), ser.chart.IsPolar())
+		if err != nil {
+			return
+		}
 	}
-	if ser.chart == nil {
-		err = errors.New("series is not part of any chart")
+	if len(input) == 0 {
 		return
 	}
 	var newData []data.NumericalPoint
@@ -808,21 +809,18 @@ func (ser *PointSeries) AddNumericalData(input []data.NumericalPoint) (err error
 		}
 		ser.data = append(ser.data, dPoint)
 	}
-	ser.chart.DataChange()
+	if ser.chart != nil {
+		ser.chart.DataChange()
+	}
 	return
 }
 
-func (ser *PointSeries) DeleteTemporalDataInRange(min time.Time, max time.Time) (c int, err error) {
+func (ser *PointSeries) DeleteTemporalDataInRange(min time.Time, max time.Time) (c int) {
 	c = 0
 	if min.After(max) {
-		err = errors.New("invalid range")
 		return
 	}
 	finalData := []*dataPoint{}
-	if ser.chart == nil {
-		err = errors.New("series is not part of any chart")
-		return
-	}
 	for i := range ser.data {
 		if ser.data[i].t.After(min) && ser.data[i].t.Before(max) {
 			c++
@@ -835,17 +833,20 @@ func (ser *PointSeries) DeleteTemporalDataInRange(min time.Time, max time.Time) 
 	}
 	ser.data = nil
 	ser.data = finalData
-	ser.chart.DataChange()
+	if ser.chart != nil {
+		ser.chart.DataChange()
+	}
 	return
 }
 
 func (ser *PointSeries) AddTemporalData(input []data.TemporalPoint) (err error) {
-	err = temporalPointRangeCheck(input, ser.polar)
-	if err != nil {
-		return
+	if ser.chart != nil {
+		err = temporalPointRangeCheck(input, ser.chart.IsPolar())
+		if err != nil {
+			return
+		}
 	}
-	if ser.chart == nil {
-		err = errors.New("series is not part of any chart")
+	if len(input) == 0 {
 		return
 	}
 	var newData []data.TemporalPoint
@@ -872,21 +873,18 @@ func (ser *PointSeries) AddTemporalData(input []data.TemporalPoint) (err error) 
 		}
 		ser.data = append(ser.data, dPoint)
 	}
-	ser.chart.DataChange()
+	if ser.chart != nil {
+		ser.chart.DataChange()
+	}
 	return
 }
 
-func (ser *PointSeries) DeleteCategoricalDataInRange(cat []string) (c int, err error) {
+func (ser *PointSeries) DeleteCategoricalDataInRange(cat []string) (c int) {
 	c = 0
 	if len(cat) == 0 {
-		err = errors.New("invalid range")
 		return
 	}
 	finalData := []*dataPoint{}
-	if ser.chart == nil {
-		err = errors.New("series is not part of any chart")
-		return
-	}
 	for i := range ser.data {
 		del := false
 		for j := range cat {
@@ -906,17 +904,20 @@ func (ser *PointSeries) DeleteCategoricalDataInRange(cat []string) (c int, err e
 	}
 	ser.data = nil
 	ser.data = finalData
-	ser.chart.DataChange()
+	if ser.chart != nil {
+		ser.chart.DataChange()
+	}
 	return
 }
 
 func (ser *PointSeries) AddCategoricalData(input []data.CategoricalPoint) (err error) {
-	err = categoricalPointRangeCheck(input, ser.polar)
-	if err != nil {
-		return
+	if ser.chart != nil {
+		err = categoricalPointRangeCheck(input, ser.chart.IsPolar() || ser.isStacked)
+		if err != nil {
+			return
+		}
 	}
-	if ser.chart == nil {
-		err = errors.New("series is not part of any chart")
+	if len(input) == 0 {
 		return
 	}
 	for i := range input {
@@ -939,7 +940,9 @@ func (ser *PointSeries) AddCategoricalData(input []data.CategoricalPoint) (err e
 		}
 		ser.data = append(ser.data, dPoint)
 	}
-	ser.chart.DataChange()
+	if ser.chart != nil {
+		ser.chart.DataChange()
+	}
 	return
 }
 

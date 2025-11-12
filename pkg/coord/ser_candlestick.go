@@ -61,15 +61,11 @@ type NumericalCandleStickSeries struct {
 
 // DeleteDataInRange deletes all candles with a nEnd greater than min and a nStart smaller than max
 // The return value gives the number of candles that have been removed
-// An error is returned if min>max
-func (ncs NumericalCandleStickSeries) DeleteDataInRange(min float64, max float64) (c int, err error) {
+func (ncs NumericalCandleStickSeries) DeleteDataInRange(min float64, max float64) (c int) {
 	if ncs.ser == nil {
 		return
 	}
-	c, err = ncs.ser.DeleteNumericalDataInRange(min, max)
-	if err != nil {
-		return
-	}
+	c = ncs.ser.DeleteNumericalDataInRange(min, max)
 	return
 }
 
@@ -94,15 +90,11 @@ type TemporalCandleStickSeries struct {
 
 // DeleteDataInRange deletes all candles with a tEnd after min and a tStart before max.
 // The return value gives the number of candles that have been removed
-// An error is returned if min after max
-func (tcs TemporalCandleStickSeries) DeleteDataInRange(min time.Time, max time.Time) (c int, err error) {
+func (tcs TemporalCandleStickSeries) DeleteDataInRange(min time.Time, max time.Time) (c int) {
 	if tcs.ser == nil {
 		return
 	}
-	c, err = tcs.ser.DeleteTemporalDataInRange(min, max)
-	if err != nil {
-		return
-	}
+	c = tcs.ser.DeleteTemporalDataInRange(min, max)
 	return
 }
 

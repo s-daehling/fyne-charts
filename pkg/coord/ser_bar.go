@@ -62,15 +62,11 @@ type NumericalBarSeries struct {
 
 // DeleteDataInRange deletes all data points with a x-coordinate greater than min and smaller than max
 // The return value gives the number of data points that have been removed
-// An error is returned if min>max
-func (nbs NumericalBarSeries) DeleteDataInRange(min float64, max float64) (c int, err error) {
+func (nbs NumericalBarSeries) DeleteDataInRange(min float64, max float64) (c int) {
 	if nbs.ser == nil {
 		return
 	}
-	c, err = nbs.ser.DeleteNumericalDataInRange(min, max)
-	if err != nil {
-		return
-	}
+	c = nbs.ser.DeleteNumericalDataInRange(min, max)
 	return
 }
 
@@ -108,15 +104,11 @@ type TemporalBarSeries struct {
 
 // DeleteDataInRange deletes all data points with a t-coordinate after min and before max.
 // The return value gives the number of data points that have been removed
-// An error is returned if min after max
-func (tbs TemporalBarSeries) DeleteDataInRange(min time.Time, max time.Time) (c int, err error) {
+func (tbs TemporalBarSeries) DeleteDataInRange(min time.Time, max time.Time) (c int) {
 	if tbs.ser == nil {
 		return
 	}
-	c, err = tbs.ser.DeleteTemporalDataInRange(min, max)
-	if err != nil {
-		return
-	}
+	c = tbs.ser.DeleteTemporalDataInRange(min, max)
 	return
 }
 
@@ -154,15 +146,11 @@ type CategoricalBarSeries struct {
 
 // DeleteDataInRange deletes all data points with one of the given category
 // The return value gives the number of data points that have been removed
-// An error is returned if cat is empty
-func (cbs CategoricalBarSeries) DeleteDataInRange(cat []string) (c int, err error) {
+func (cbs CategoricalBarSeries) DeleteDataInRange(cat []string) (c int) {
 	if cbs.ser == nil {
 		return
 	}
-	c, err = cbs.ser.DeleteCategoricalDataInRange(cat)
-	if err != nil {
-		return
-	}
+	c = cbs.ser.DeleteCategoricalDataInRange(cat)
 	return
 }
 

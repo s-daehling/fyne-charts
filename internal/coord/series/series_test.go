@@ -8,8 +8,11 @@ import (
 	"time"
 )
 
-type chartDummy struct{}
+type chartDummy struct {
+	polar bool
+}
 
+func (cd chartDummy) IsPolar() bool           { return cd.polar }
 func (cd chartDummy) DataChange()             {}
 func (cd chartDummy) RasterVisibilityChange() {}
 

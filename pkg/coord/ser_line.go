@@ -78,15 +78,11 @@ type NumericalLineSeries struct {
 
 // DeleteDataInRange deletes all data points with a x-coordinate greater than min and smaller than max
 // The return value gives the number of data points that have been removed
-// An error is returned if min>max
-func (nls NumericalLineSeries) DeleteDataInRange(min float64, max float64) (c int, err error) {
+func (nls NumericalLineSeries) DeleteDataInRange(min float64, max float64) (c int) {
 	if nls.ser == nil {
 		return
 	}
-	c, err = nls.ser.DeleteNumericalDataInRange(min, max)
-	if err != nil {
-		return
-	}
+	c = nls.ser.DeleteNumericalDataInRange(min, max)
 	return
 }
 
@@ -112,15 +108,11 @@ type TemporalLineSeries struct {
 
 // DeleteDataInRange deletes all data points with a t-coordinate after min and before max.
 // The return value gives the number of data points that have been removed
-// An error is returned if min after max
-func (tls TemporalLineSeries) DeleteDataInRange(min time.Time, max time.Time) (c int, err error) {
+func (tls TemporalLineSeries) DeleteDataInRange(min time.Time, max time.Time) (c int) {
 	if tls.ser == nil {
 		return
 	}
-	c, err = tls.ser.DeleteTemporalDataInRange(min, max)
-	if err != nil {
-		return
-	}
+	c = tls.ser.DeleteTemporalDataInRange(min, max)
 	return
 }
 

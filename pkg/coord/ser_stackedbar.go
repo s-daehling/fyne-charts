@@ -51,15 +51,11 @@ type CategoricalStackedBarSeries struct {
 
 // DeleteDataInRange deletes all data points with one of the given category
 // The return value gives the number of data points that have been removed
-// An error iis returned if cat is empty
-func (css CategoricalStackedBarSeries) DeleteDataInRange(cat []string) (c int, err error) {
+func (css CategoricalStackedBarSeries) DeleteDataInRange(cat []string) (c int) {
 	if css.ser == nil {
 		return
 	}
-	c, err = css.ser.DeleteCategoricalDataInRange(cat)
-	if err != nil {
-		return
-	}
+	c = css.ser.DeleteCategoricalDataInRange(cat)
 	return
 }
 

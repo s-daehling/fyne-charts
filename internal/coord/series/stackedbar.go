@@ -14,9 +14,9 @@ type StackedBarSeries struct {
 	stack []*PointSeries
 }
 
-func EmptyStackedBarSeries(chart chart, name string, polar bool) (ser *StackedBarSeries) {
+func EmptyStackedBarSeries(chart chart, name string) (ser *StackedBarSeries) {
 	ser = &StackedBarSeries{}
-	ser.baseSeries = emptyBaseSeries(chart, name, theme.Color(theme.ColorNameForeground), polar, ser.toggleView)
+	ser.baseSeries = emptyBaseSeries(chart, name, theme.Color(theme.ColorNameForeground), ser.toggleView)
 	ser.legendButton.UseGradient(theme.Color(theme.ColorNameForeground), theme.Color(theme.ColorNameBackground))
 	return
 }
@@ -165,31 +165,22 @@ func (ser *StackedBarSeries) toggleView() {
 }
 
 func (ser *StackedBarSeries) Clear() (err error) {
-	if ser.chart == nil {
-		err = errors.New("series is not part of any chart")
-		return
-	}
-	chart := ser.chart
 	ser.stack = []*PointSeries{}
-	chart.DataChange()
+	if ser.chart != nil {
+		ser.chart.DataChange()
+	}
 	return
 }
 
 // DeleteDataInRange deletes all data points with one of the given category
 // The return value gives the number of data points that have been removed
-func (ser *StackedBarSeries) DeleteCategoricalDataInRange(cat []string) (c int, err error) {
+func (ser *StackedBarSeries) DeleteCategoricalDataInRange(cat []string) (c int) {
 	c = 0
 	if len(cat) == 0 {
-		err = errors.New("invald range")
 		return
 	}
 	for i := range ser.stack {
-		var cs int
-		cs, err = ser.stack[i].DeleteCategoricalDataInRange(cat)
-		if err != nil {
-			return
-		}
-		c += cs
+		c += ser.stack[i].DeleteCategoricalDataInRange(cat)
 	}
 	return
 }
@@ -200,10 +191,6 @@ func (ser *StackedBarSeries) DeleteCategoricalDataInRange(cat []string) (c int, 
 // The method checks for duplicates (i.e. data points with same C).
 // Data points with a C that already exists, will be ignored.
 func (ser *StackedBarSeries) AddCategoricalData(series string, input []data.CategoricalPoint) (err error) {
-	err = categoricalPointRangeCheck(input, true)
-	if err != nil {
-		return
-	}
 	for i := range ser.stack {
 		if ser.stack[i].name == series {
 			err = ser.stack[i].AddCategoricalData(input)
@@ -222,11 +209,7 @@ func (ser *StackedBarSeries) AddCategoricalSeries(series data.CategoricalDataSer
 		err = errors.New("series already exists")
 		return
 	}
-	err = categoricalPointRangeCheck(series.Points, true)
-	if err != nil {
-		return
-	}
-	bs := EmptyBarSeries(ser.chart, series.Name, series.Col, ser.polar)
+	bs := EmptyBarSeries(ser.chart, series.Name, series.Col, true)
 	err = bs.AddCategoricalData(series.Points)
 	if err != nil {
 		return

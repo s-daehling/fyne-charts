@@ -194,9 +194,9 @@ type BoxSeries struct {
 	data []*boxPoint
 }
 
-func EmptyBoxSeries(chart chart, name string, color color.Color, polar bool) (ser *BoxSeries) {
+func EmptyBoxSeries(chart chart, name string, color color.Color) (ser *BoxSeries) {
 	ser = &BoxSeries{}
-	ser.baseSeries = emptyBaseSeries(chart, name, color, polar, ser.toggleView)
+	ser.baseSeries = emptyBaseSeries(chart, name, color, ser.toggleView)
 	return
 }
 
@@ -381,29 +381,21 @@ func (ser *BoxSeries) SetOutlierSize(os float32) {
 }
 
 func (ser *BoxSeries) Clear() (err error) {
-	if ser.chart == nil {
-		err = errors.New("series is not part of any chart")
-		return
-	}
-	chart := ser.chart
 	ser.data = []*boxPoint{}
-	chart.DataChange()
+	if ser.chart != nil {
+		ser.chart.DataChange()
+	}
 	return
 }
 
 // DeleteDataInRange deletes all boxes with a x-coordinate greater than min and smaller than max
 // The return value gives the number of boxes that have been removed
-func (ser *BoxSeries) DeleteNumericalDataInRange(min float64, max float64) (c int, err error) {
+func (ser *BoxSeries) DeleteNumericalDataInRange(min float64, max float64) (c int) {
 	c = 0
 	if min > max {
-		err = errors.New("invalid range")
 		return
 	}
 	finalData := []*boxPoint{}
-	if ser.chart == nil {
-		err = errors.New("series is not part of any chart")
-		return
-	}
 	for i := range ser.data {
 		if ser.data[i].n > min && ser.data[i].n < max {
 			c++
@@ -416,7 +408,9 @@ func (ser *BoxSeries) DeleteNumericalDataInRange(min float64, max float64) (c in
 	}
 	ser.data = nil
 	ser.data = finalData
-	ser.chart.DataChange()
+	if ser.chart != nil {
+		ser.chart.DataChange()
+	}
 	return
 }
 
@@ -424,7 +418,6 @@ func (ser *BoxSeries) DeleteNumericalDataInRange(min float64, max float64) (c in
 // The method does not check for duplicates (i.e. boxes with same X)
 func (ser *BoxSeries) AddNumericalData(input []data.NumericalBox) (err error) {
 	if len(input) == 0 {
-		err = errors.New("no input data")
 		return
 	}
 	for i := range input {
@@ -433,10 +426,6 @@ func (ser *BoxSeries) AddNumericalData(input []data.NumericalBox) (err error) {
 			err = errors.New("invalid data")
 			return
 		}
-	}
-	if ser.chart == nil {
-		err = errors.New("series is not part of any chart")
-		return
 	}
 	for i := range input {
 		bPoint := emptyBoxPoint(len(input[i].Outlier), ser.color)
@@ -449,23 +438,20 @@ func (ser *BoxSeries) AddNumericalData(input []data.NumericalBox) (err error) {
 		bPoint.outlier = append(bPoint.outlier, input[i].Outlier...)
 		ser.data = append(ser.data, bPoint)
 	}
-	ser.chart.DataChange()
+	if ser.chart != nil {
+		ser.chart.DataChange()
+	}
 	return
 }
 
 // DeleteDataInRange deletes all boxes with a t-coordinate after min and before max.
 // The return value gives the number of boxes that have been removed
-func (ser *BoxSeries) DeleteTemporalDataInRange(min time.Time, max time.Time) (c int, err error) {
+func (ser *BoxSeries) DeleteTemporalDataInRange(min time.Time, max time.Time) (c int) {
 	c = 0
 	if min.After(max) {
-		err = errors.New("invalid range")
 		return
 	}
 	finalData := []*boxPoint{}
-	if ser.chart == nil {
-		err = errors.New("series is not part of any chart")
-		return
-	}
 	for i := range ser.data {
 		if ser.data[i].t.After(min) && ser.data[i].t.Before(max) {
 			c++
@@ -478,7 +464,9 @@ func (ser *BoxSeries) DeleteTemporalDataInRange(min time.Time, max time.Time) (c
 	}
 	ser.data = nil
 	ser.data = finalData
-	ser.chart.DataChange()
+	if ser.chart != nil {
+		ser.chart.DataChange()
+	}
 	return
 }
 
@@ -486,7 +474,6 @@ func (ser *BoxSeries) DeleteTemporalDataInRange(min time.Time, max time.Time) (c
 // The method does not check for duplicates (i.e. boxes with same T)
 func (ser *BoxSeries) AddTemporalData(input []data.TemporalBox) (err error) {
 	if len(input) == 0 {
-		err = errors.New("no input data")
 		return
 	}
 	for i := range input {
@@ -495,10 +482,6 @@ func (ser *BoxSeries) AddTemporalData(input []data.TemporalBox) (err error) {
 			err = errors.New("invalid data")
 			return
 		}
-	}
-	if ser.chart == nil {
-		err = errors.New("series is not part of any chart")
-		return
 	}
 	for i := range input {
 		bPoint := emptyBoxPoint(len(input[i].Outlier), ser.color)
@@ -511,23 +494,20 @@ func (ser *BoxSeries) AddTemporalData(input []data.TemporalBox) (err error) {
 		bPoint.outlier = append(bPoint.outlier, input[i].Outlier...)
 		ser.data = append(ser.data, bPoint)
 	}
-	ser.chart.DataChange()
+	if ser.chart != nil {
+		ser.chart.DataChange()
+	}
 	return
 }
 
 // DeleteDataInRange deletes all boxes with one of the given category
 // The return value gives the number of boxes that have been removed
-func (ser *BoxSeries) DeleteCategoricalDataInRange(cat []string) (c int, err error) {
+func (ser *BoxSeries) DeleteCategoricalDataInRange(cat []string) (c int) {
 	c = 0
 	if len(cat) == 0 {
-		err = errors.New("invalid range")
 		return
 	}
 	finalData := []*boxPoint{}
-	if ser.chart == nil {
-		err = errors.New("series is not part of any chart")
-		return
-	}
 	for i := range ser.data {
 		del := false
 		for j := range cat {
@@ -547,7 +527,9 @@ func (ser *BoxSeries) DeleteCategoricalDataInRange(cat []string) (c int, err err
 	}
 	ser.data = nil
 	ser.data = finalData
-	ser.chart.DataChange()
+	if ser.chart != nil {
+		ser.chart.DataChange()
+	}
 	return
 }
 
@@ -556,7 +538,6 @@ func (ser *BoxSeries) DeleteCategoricalDataInRange(cat []string) (c int, err err
 // Boxes with a C that already exists, will be ignored.
 func (ser *BoxSeries) AddCategoricalData(input []data.CategoricalBox) (err error) {
 	if len(input) == 0 {
-		err = errors.New("no input data")
 		return
 	}
 	for i := range input {
@@ -565,10 +546,6 @@ func (ser *BoxSeries) AddCategoricalData(input []data.CategoricalBox) (err error
 			err = errors.New("invalid data")
 			return
 		}
-	}
-	if ser.chart == nil {
-		err = errors.New("series is not part of any chart")
-		return
 	}
 	for i := range input {
 		catExist := false
@@ -591,6 +568,8 @@ func (ser *BoxSeries) AddCategoricalData(input []data.CategoricalBox) (err error
 		bPoint.outlier = append(bPoint.outlier, input[i].Outlier...)
 		ser.data = append(ser.data, bPoint)
 	}
-	ser.chart.DataChange()
+	if ser.chart != nil {
+		ser.chart.DataChange()
+	}
 	return
 }

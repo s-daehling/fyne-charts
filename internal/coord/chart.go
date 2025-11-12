@@ -96,6 +96,11 @@ func (base *BaseChart) WidgetSize() (size fyne.Size) {
 	return
 }
 
+func (base *BaseChart) IsPolar() (b bool) {
+	b = (base.planeType == PolarPlane)
+	return
+}
+
 func (base *BaseChart) CartesianOrientation() (transposed bool) {
 	transposed = false
 	return
@@ -124,7 +129,7 @@ func (base *BaseChart) DeleteSeries(name string) {
 		if base.series[i].Name() != name {
 			newSeries = append(newSeries, base.series[i])
 		} else {
-			base.series[i].Delete()
+			base.series[i].RemoveFromChart()
 		}
 	}
 	base.series = newSeries

@@ -1,6 +1,7 @@
 package series
 
 import (
+	"errors"
 	"image/color"
 	"time"
 
@@ -16,18 +17,16 @@ type baseSeries struct {
 	color        color.Color
 	legendButton *interact.LegendBox
 	legendLabel  *canvas.Text
-	polar        bool
 	chart        chart
 }
 
-func emptyBaseSeries(chart chart, name string, col color.Color, polar bool, togView func()) (ser baseSeries) {
+func emptyBaseSeries(chart chart, name string, col color.Color, togView func()) (ser baseSeries) {
 	ser = baseSeries{
 		name:         name,
 		visible:      true,
 		color:        col,
 		legendButton: interact.NewLegendBox(col, togView),
 		legendLabel:  canvas.NewText(name, theme.Color(theme.ColorNameForeground)),
-		polar:        polar,
 		chart:        chart,
 	}
 	return
@@ -49,8 +48,25 @@ func (ser *baseSeries) LegendEntries() (les []renderer.LegendEntry) {
 	return
 }
 
-func (ser *baseSeries) Delete() {
+func (ser *baseSeries) AddToChart(ch chart) (err error) {
+	if ser.chart != nil {
+		err = errors.New("series is already part of a chart")
+		return
+	}
+	ser.chart = ch
+	return
+}
+
+func (ser *baseSeries) RemoveFromChart() {
 	ser.chart = nil
+}
+
+func (ser *baseSeries) HasChart() (b bool) {
+	b = false
+	if ser.chart != nil {
+		b = true
+	}
+	return
 }
 
 func (ser *baseSeries) CRange() (cs []string) { return }
@@ -128,7 +144,8 @@ func (ser *baseSeries) RefreshTheme() {
 type Series interface {
 	LegendEntries() (les []renderer.LegendEntry)
 	Name() (n string)
-	Delete()
+	AddToChart(ch chart) (err error)
+	RemoveFromChart()
 	Hide()
 	Show()
 	CRange() (cs []string)
@@ -151,6 +168,7 @@ type Series interface {
 }
 
 type chart interface {
+	IsPolar() (b bool)
 	DataChange()
 	RasterVisibilityChange()
 }

@@ -70,15 +70,11 @@ type NumericalScatterSeries struct {
 
 // DeleteDataInRange deletes all data points with a x-coordinate greater than min and smaller than max
 // The return value gives the number of data points that have been removed
-// An error is returned if min>max
-func (nss NumericalScatterSeries) DeleteDataInRange(min float64, max float64) (c int, err error) {
+func (nss NumericalScatterSeries) DeleteDataInRange(min float64, max float64) (c int) {
 	if nss.ser == nil {
 		return
 	}
-	c, err = nss.ser.DeleteNumericalDataInRange(min, max)
-	if err != nil {
-		return
-	}
+	c = nss.ser.DeleteNumericalDataInRange(min, max)
 	return
 }
 
@@ -103,15 +99,11 @@ type TemporalScatterSeries struct {
 
 // DeleteDataInRange deletes all data points with a t-coordinate after min and before max.
 // The return value gives the number of data points that have been removed
-// An error is returned if min after max
-func (tss TemporalScatterSeries) DeleteDataInRange(min time.Time, max time.Time) (c int, err error) {
+func (tss TemporalScatterSeries) DeleteDataInRange(min time.Time, max time.Time) (c int) {
 	if tss.ser == nil {
 		return
 	}
-	c, err = tss.ser.DeleteTemporalDataInRange(min, max)
-	if err != nil {
-		return
-	}
+	c = tss.ser.DeleteTemporalDataInRange(min, max)
 	return
 }
 
@@ -136,15 +128,11 @@ type CategoricalScatterSeries struct {
 
 // DeleteDataInRange deletes all data points with one of the given category
 // The return value gives the number of data points that have been removed
-// An error is returned if cat is empty
-func (css CategoricalScatterSeries) DeleteDataInRange(cat []string) (c int, err error) {
+func (css CategoricalScatterSeries) DeleteDataInRange(cat []string) (c int) {
 	if css.ser == nil {
 		return
 	}
-	c, err = css.ser.DeleteCategoricalDataInRange(cat)
-	if err != nil {
-		return
-	}
+	c = css.ser.DeleteCategoricalDataInRange(cat)
 	return
 }
 

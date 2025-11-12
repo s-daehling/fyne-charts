@@ -114,9 +114,9 @@ type CandleStickSeries struct {
 	data []*candleStickPoint
 }
 
-func EmptyCandleStickSeries(chart chart, name string, polar bool) (ser *CandleStickSeries) {
+func EmptyCandleStickSeries(chart chart, name string) (ser *CandleStickSeries) {
 	ser = &CandleStickSeries{}
-	ser.baseSeries = emptyBaseSeries(chart, name, theme.Color(theme.ColorNameForeground), polar, ser.toggleView)
+	ser.baseSeries = emptyBaseSeries(chart, name, theme.Color(theme.ColorNameForeground), ser.toggleView)
 	ser.legendButton.UseGradient(color.RGBA{R: 0xff, G: 0x00, B: 0x00, A: 0xff}, color.RGBA{R: 0x00, G: 0x88, B: 0x00, A: 0xff})
 	return
 }
@@ -251,29 +251,21 @@ func (ser *CandleStickSeries) SetLineWidth(lw float32) {
 }
 
 func (ser *CandleStickSeries) Clear() (err error) {
-	if ser.chart == nil {
-		err = errors.New("series is not part of any chart")
-		return
-	}
-	chart := ser.chart
 	ser.data = []*candleStickPoint{}
-	chart.DataChange()
+	if ser.chart != nil {
+		ser.chart.DataChange()
+	}
 	return
 }
 
 // DeleteDataInRange deletes all candles with a nEnd greater than min and a nStart smaller than max
 // The return value gives the number of candles that have been removed
-func (ser *CandleStickSeries) DeleteNumericalDataInRange(min float64, max float64) (c int, err error) {
+func (ser *CandleStickSeries) DeleteNumericalDataInRange(min float64, max float64) (c int) {
 	c = 0
 	if min > max {
-		err = errors.New("invalid range")
 		return
 	}
 	finalData := []*candleStickPoint{}
-	if ser.chart == nil {
-		err = errors.New("series is not part of any chart")
-		return
-	}
 	for i := range ser.data {
 		if ser.data[i].nStart > min && ser.data[i].nEnd < max {
 			c++
@@ -286,7 +278,9 @@ func (ser *CandleStickSeries) DeleteNumericalDataInRange(min float64, max float6
 	}
 	ser.data = nil
 	ser.data = finalData
-	ser.chart.DataChange()
+	if ser.chart != nil {
+		ser.chart.DataChange()
+	}
 	return
 }
 
@@ -294,7 +288,6 @@ func (ser *CandleStickSeries) DeleteNumericalDataInRange(min float64, max float6
 // The method does not check for duplicates (i.e. candles with same XStart or XEnd)
 func (ser *CandleStickSeries) AddNumericalData(input []data.NumericalCandleStick) (err error) {
 	if len(input) == 0 {
-		err = errors.New("no input data")
 		return
 	}
 	for i := range input {
@@ -302,10 +295,6 @@ func (ser *CandleStickSeries) AddNumericalData(input []data.NumericalCandleStick
 			err = errors.New("invalid data")
 			return
 		}
-	}
-	if ser.chart == nil {
-		err = errors.New("series is not part of any chart")
-		return
 	}
 	for i := range input {
 		csPoint := emptyCandleStickPoint()
@@ -317,23 +306,20 @@ func (ser *CandleStickSeries) AddNumericalData(input []data.NumericalCandleStick
 		csPoint.low = input[i].Low
 		ser.data = append(ser.data, csPoint)
 	}
-	ser.chart.DataChange()
+	if ser.chart != nil {
+		ser.chart.DataChange()
+	}
 	return
 }
 
 // DeleteDataInRange deletes all candles with a tEnd after min and a tStart before max.
 // The return value gives the number of candles that have been removed
-func (ser *CandleStickSeries) DeleteTemporalDataInRange(min time.Time, max time.Time) (c int, err error) {
+func (ser *CandleStickSeries) DeleteTemporalDataInRange(min time.Time, max time.Time) (c int) {
 	c = 0
 	if min.After(max) {
-		err = errors.New("invalid range")
 		return
 	}
 	finalData := []*candleStickPoint{}
-	if ser.chart == nil {
-		err = errors.New("series is not part of any chart")
-		return
-	}
 	for i := range ser.data {
 		if ser.data[i].tStart.After(min) && ser.data[i].tEnd.Before(max) {
 			c++
@@ -346,7 +332,9 @@ func (ser *CandleStickSeries) DeleteTemporalDataInRange(min time.Time, max time.
 	}
 	ser.data = nil
 	ser.data = finalData
-	ser.chart.DataChange()
+	if ser.chart != nil {
+		ser.chart.DataChange()
+	}
 	return
 }
 
@@ -354,7 +342,6 @@ func (ser *CandleStickSeries) DeleteTemporalDataInRange(min time.Time, max time.
 // The method does not check for duplicates (i.e. candles with same TStart or TEnd)
 func (ser *CandleStickSeries) AddTemporalData(input []data.TemporalCandleStick) (err error) {
 	if len(input) == 0 {
-		err = errors.New("no input data")
 		return
 	}
 	for i := range input {
@@ -362,10 +349,6 @@ func (ser *CandleStickSeries) AddTemporalData(input []data.TemporalCandleStick) 
 			err = errors.New("invalid data")
 			return
 		}
-	}
-	if ser.chart == nil {
-		err = errors.New("series is not part of any chart")
-		return
 	}
 	for i := range input {
 		csPoint := emptyCandleStickPoint()
@@ -377,6 +360,8 @@ func (ser *CandleStickSeries) AddTemporalData(input []data.TemporalCandleStick) 
 		csPoint.low = input[i].Low
 		ser.data = append(ser.data, csPoint)
 	}
-	ser.chart.DataChange()
+	if ser.chart != nil {
+		ser.chart.DataChange()
+	}
 	return
 }

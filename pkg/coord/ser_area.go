@@ -78,15 +78,11 @@ type NumericalAreaSeries struct {
 
 // DeleteDataInRange deletes all data points with a x-coordinate greater than min and smaller than max
 // The return value gives the number of data points that have been removed
-// An error is returned if min>max
-func (nas NumericalAreaSeries) DeleteDataInRange(min float64, max float64) (c int, err error) {
+func (nas NumericalAreaSeries) DeleteDataInRange(min float64, max float64) (c int) {
 	if nas.ser == nil {
 		return
 	}
-	c, err = nas.ser.DeleteNumericalDataInRange(min, max)
-	if err != nil {
-		return
-	}
+	c = nas.ser.DeleteNumericalDataInRange(min, max)
 	return
 }
 
@@ -112,15 +108,11 @@ type TemporalAreaSeries struct {
 
 // DeleteDataInRange deletes all data points with a t-coordinate after min and before max.
 // The return value gives the number of data points that have been removed
-// An error is returned if min after max
-func (tas TemporalAreaSeries) DeleteDataInRange(min time.Time, max time.Time) (c int, err error) {
+func (tas TemporalAreaSeries) DeleteDataInRange(min time.Time, max time.Time) (c int) {
 	if tas.ser == nil {
 		return
 	}
-	c, err = tas.ser.DeleteTemporalDataInRange(min, max)
-	if err != nil {
-		return
-	}
+	c = tas.ser.DeleteTemporalDataInRange(min, max)
 	return
 }
 
