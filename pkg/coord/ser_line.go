@@ -10,7 +10,7 @@ import (
 )
 
 type lineSeries struct {
-	ser *series.LineSeries
+	ser *series.DataPointSeries
 }
 
 // Name returns the name of the series

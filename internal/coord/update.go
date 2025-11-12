@@ -81,8 +81,10 @@ func (base *BaseChart) updateSeriesVariables() {
 	nBarSeries := 0
 	maxBoxPoints := 5
 	for i := range base.series {
-		if _, ok := base.series[i].(*series.BarSeries); ok {
-			nBarSeries++
+		if ser, ok := base.series[i].(*series.DataPointSeries); ok {
+			if ser.IsBarSeries() {
+				nBarSeries++
+			}
 		} else if _, ok := base.series[i].(*series.StackedBarSeries); ok {
 			nBarSeries++
 		} else if bs, ok := base.series[i].(*series.BoxSeries); ok {
@@ -105,14 +107,14 @@ func (base *BaseChart) updateSeriesVariables() {
 	barOffset := -barWidth * (0.5 * float64(nBarSeries-1))
 	boxWidth := (nFromMax - nFromMin) / float64(maxBoxPoints)
 	for i := range base.series {
-		if ls, ok := base.series[i].(*series.LollipopSeries); ok {
-			if base.planeType == CartesianPlane {
-				ls.SetValBaseNumerical(base.toAx.NOrigin())
-			}
-		} else if bs, ok := base.series[i].(*series.BarSeries); ok {
-			if base.fromType == Categorical {
-				bs.SetNumericalBarWidthAndShift(barWidth, barOffset)
+		if ser, ok := base.series[i].(*series.DataPointSeries); ok {
+			if ser.IsBarSeries() && base.fromType == Categorical {
+				ser.SetNumericalBarWidthAndShift(barWidth, barOffset)
 				barOffset += barWidth
+			} else if ser.IsLollipopSeries() && base.planeType == CartesianPlane {
+				ser.SetValBaseNumerical(base.toAx.NOrigin())
+			} else if ser.IsAreaSeries() {
+				ser.SetValBaseNumerical(base.toAx.NOrigin())
 			}
 		} else if sbs, ok := base.series[i].(*series.StackedBarSeries); ok {
 			if base.fromType == Categorical {
@@ -122,8 +124,6 @@ func (base *BaseChart) updateSeriesVariables() {
 			sbs.UpdateValOffset()
 		} else if bs, ok := base.series[i].(*series.BoxSeries); ok {
 			bs.SetWidth(boxWidth)
-		} else if as, ok := base.series[i].(*series.AreaSeries); ok {
-			as.SetValBaseNumerical(base.toAx.NOrigin())
 		}
 	}
 

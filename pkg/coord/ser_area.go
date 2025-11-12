@@ -10,7 +10,7 @@ import (
 )
 
 type areaSeries struct {
-	ser *series.AreaSeries
+	ser *series.DataPointSeries
 }
 
 // Name returns the name of the series

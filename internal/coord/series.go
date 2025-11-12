@@ -23,7 +23,7 @@ func (base *BaseChart) addSeriesIfNotExist(ser series.Series) (err error) {
 }
 
 func (base *BaseChart) AddNumericalLineSeries(name string, points []data.NumericalDataPoint, showDots bool,
-	color color.Color) (ser *series.LineSeries, err error) {
+	color color.Color) (ser *series.DataPointSeries, err error) {
 	lSeries := series.EmptyLineSeries(base, name, showDots, color, base.planeType == PolarPlane)
 	err = lSeries.AddNumericalData(points)
 	if err != nil {
@@ -38,7 +38,7 @@ func (base *BaseChart) AddNumericalLineSeries(name string, points []data.Numeric
 }
 
 func (base *BaseChart) AddTemporalLineSeries(name string, points []data.TemporalDataPoint, showDots bool,
-	color color.Color) (ser *series.LineSeries, err error) {
+	color color.Color) (ser *series.DataPointSeries, err error) {
 	lSeries := series.EmptyLineSeries(base, name, showDots, color, base.planeType == PolarPlane)
 	err = lSeries.AddTemporalData(points)
 	if err != nil {
@@ -53,7 +53,7 @@ func (base *BaseChart) AddTemporalLineSeries(name string, points []data.Temporal
 }
 
 func (base *BaseChart) AddNumericalScatterSeries(name string, points []data.NumericalDataPoint,
-	color color.Color) (ser *series.ScatterSeries, err error) {
+	color color.Color) (ser *series.DataPointSeries, err error) {
 	sSeries := series.EmptyScatterSeries(base, name, color, base.planeType == PolarPlane)
 	err = sSeries.AddNumericalData(points)
 	if err != nil {
@@ -68,7 +68,7 @@ func (base *BaseChart) AddNumericalScatterSeries(name string, points []data.Nume
 }
 
 func (base *BaseChart) AddTemporalScatterSeries(name string, points []data.TemporalDataPoint,
-	color color.Color) (ser *series.ScatterSeries, err error) {
+	color color.Color) (ser *series.DataPointSeries, err error) {
 	sSeries := series.EmptyScatterSeries(base, name, color, base.planeType == PolarPlane)
 	err = sSeries.AddTemporalData(points)
 	if err != nil {
@@ -83,7 +83,7 @@ func (base *BaseChart) AddTemporalScatterSeries(name string, points []data.Tempo
 }
 
 func (base *BaseChart) AddCategoricalScatterSeries(name string, points []data.CategoricalDataPoint,
-	color color.Color) (ser *series.ScatterSeries, err error) {
+	color color.Color) (ser *series.DataPointSeries, err error) {
 	sSeries := series.EmptyScatterSeries(base, name, color, base.planeType == PolarPlane)
 	err = sSeries.AddCategoricalData(points)
 	if err != nil {
@@ -98,7 +98,7 @@ func (base *BaseChart) AddCategoricalScatterSeries(name string, points []data.Ca
 }
 
 func (base *BaseChart) AddNumericalLollipopSeries(name string, points []data.NumericalDataPoint,
-	color color.Color) (ser *series.LollipopSeries, err error) {
+	color color.Color) (ser *series.DataPointSeries, err error) {
 	lSeries := series.EmptyLollipopSeries(base, name, color, base.planeType == PolarPlane)
 	err = lSeries.AddNumericalData(points)
 	if err != nil {
@@ -113,7 +113,7 @@ func (base *BaseChart) AddNumericalLollipopSeries(name string, points []data.Num
 }
 
 func (base *BaseChart) AddTemporalLollipopSeries(name string, points []data.TemporalDataPoint,
-	color color.Color) (ser *series.LollipopSeries, err error) {
+	color color.Color) (ser *series.DataPointSeries, err error) {
 	lSeries := series.EmptyLollipopSeries(base, name, color, base.planeType == PolarPlane)
 	err = lSeries.AddTemporalData(points)
 	if err != nil {
@@ -128,7 +128,7 @@ func (base *BaseChart) AddTemporalLollipopSeries(name string, points []data.Temp
 }
 
 func (base *BaseChart) AddCategoricalLollipopSeries(name string, points []data.CategoricalDataPoint,
-	color color.Color) (ser *series.LollipopSeries, err error) {
+	color color.Color) (ser *series.DataPointSeries, err error) {
 	lSeries := series.EmptyLollipopSeries(base, name, color, base.planeType == PolarPlane)
 	err = lSeries.AddCategoricalData(points)
 	if err != nil {
@@ -143,7 +143,7 @@ func (base *BaseChart) AddCategoricalLollipopSeries(name string, points []data.C
 }
 
 func (base *BaseChart) AddNumericalAreaSeries(name string, points []data.NumericalDataPoint, showDots bool,
-	color color.Color) (ser *series.AreaSeries, err error) {
+	color color.Color) (ser *series.DataPointSeries, err error) {
 	aSeries := series.EmptyAreaSeries(base, name, showDots, color, base.planeType == PolarPlane)
 	err = aSeries.AddNumericalData(points)
 	if err != nil {
@@ -158,7 +158,7 @@ func (base *BaseChart) AddNumericalAreaSeries(name string, points []data.Numeric
 }
 
 func (base *BaseChart) AddTemporalAreaSeries(name string, points []data.TemporalDataPoint, showDots bool,
-	color color.Color) (ser *series.AreaSeries, err error) {
+	color color.Color) (ser *series.DataPointSeries, err error) {
 	aSeries := series.EmptyAreaSeries(base, name, showDots, color, base.planeType == PolarPlane)
 	err = aSeries.AddTemporalData(points)
 	if err != nil {
@@ -248,7 +248,7 @@ func (base *BaseChart) AddCategoricalBoxSeries(name string, points []data.Catego
 }
 
 func (base *BaseChart) AddNumericalBarSeries(name string, points []data.NumericalDataPoint,
-	barWidth float64, color color.Color) (ser *series.BarSeries, err error) {
+	barWidth float64, color color.Color) (ser *series.DataPointSeries, err error) {
 	bSeries := series.EmptyBarSeries(base, name, color, base.planeType == PolarPlane)
 	err = bSeries.AddNumericalData(points)
 	if err != nil {
@@ -267,7 +267,7 @@ func (base *BaseChart) AddNumericalBarSeries(name string, points []data.Numerica
 }
 
 func (base *BaseChart) AddTemporalBarSeries(name string, points []data.TemporalDataPoint,
-	barWidth time.Duration, color color.Color) (ser *series.BarSeries, err error) {
+	barWidth time.Duration, color color.Color) (ser *series.DataPointSeries, err error) {
 	bSeries := series.EmptyBarSeries(base, name, color, base.planeType == PolarPlane)
 	err = bSeries.AddTemporalData(points)
 	if err != nil {
@@ -286,7 +286,7 @@ func (base *BaseChart) AddTemporalBarSeries(name string, points []data.TemporalD
 }
 
 func (base *BaseChart) AddCategoricalBarSeries(name string, points []data.CategoricalDataPoint,
-	color color.Color) (ser *series.BarSeries, err error) {
+	color color.Color) (ser *series.DataPointSeries, err error) {
 	bSeries := series.EmptyBarSeries(base, name, color, base.planeType == PolarPlane)
 	err = bSeries.AddCategoricalData(points)
 	if err != nil {

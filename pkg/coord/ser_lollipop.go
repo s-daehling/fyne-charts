@@ -10,7 +10,7 @@ import (
 )
 
 type lollipopSeries struct {
-	ser *series.LollipopSeries
+	ser *series.DataPointSeries
 }
 
 // Name returns the name of the series

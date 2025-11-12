@@ -10,7 +10,7 @@ import (
 )
 
 type scatterSeries struct {
-	ser *series.ScatterSeries
+	ser *series.DataPointSeries
 }
 
 // Name returns the name of the series

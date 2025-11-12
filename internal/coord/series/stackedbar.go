@@ -11,7 +11,7 @@ import (
 
 type StackedBarSeries struct {
 	baseSeries
-	stack []*BarSeries
+	stack []*DataPointSeries
 }
 
 func EmptyStackedBarSeries(chart chart, name string, polar bool) (ser *StackedBarSeries) {
@@ -170,7 +170,7 @@ func (ser *StackedBarSeries) Clear() (err error) {
 		return
 	}
 	chart := ser.chart
-	ser.stack = []*BarSeries{}
+	ser.stack = []*DataPointSeries{}
 	chart.DataChange()
 	return
 }
