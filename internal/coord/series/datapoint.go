@@ -673,6 +673,9 @@ func (ser *PointSeries) toggleView() {
 	} else {
 		ser.Show()
 	}
+	if ser.showArea && ser.chart != nil {
+		ser.chart.RasterVisibilityChange()
+	}
 }
 
 func (ser *PointSeries) SetColor(col color.Color) {
@@ -740,6 +743,19 @@ func (ser *PointSeries) IsBarSeries() (b bool) {
 
 func (ser *PointSeries) IsLollipopSeries() (b bool) {
 	b = ser.showFromValBaseLine && ser.showDot
+	return
+}
+
+func (ser *PointSeries) AddToChart(ch chart) (err error) {
+	if ch.IsPolar() {
+		for i := range ser.data {
+			if ser.data[i].val < 0 {
+				err = errors.New("invalid data, negative val not allowed for polar charts")
+				return
+			}
+		}
+	}
+	err = ser.baseSeries.AddToChart(ch)
 	return
 }
 

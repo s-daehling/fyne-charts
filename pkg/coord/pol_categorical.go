@@ -29,7 +29,7 @@ func NewPolarCategoricalChart() (catChart *PolarCategoricalChart) {
 // Data points with a C that already exists, will be ignored.
 // The range of C is not restricted. The range of Val is restricted to Val>=0.
 func (catChart *PolarCategoricalChart) AddScatterSeries(name string, points []data.CategoricalPoint,
-	color color.Color) (css CategoricalScatterSeries, err error) {
+	color color.Color) (css CategoricalPointSeries, err error) {
 	css.ser, err = catChart.BaseChart.AddCategoricalScatterSeries(name, points, color)
 	return
 }
@@ -41,7 +41,7 @@ func (catChart *PolarCategoricalChart) AddScatterSeries(name string, points []da
 // Data points with a C that already exists, will be ignored.
 // The range of C is not restricted. The range of Val is restricted to Val>=0.
 func (catChart *PolarCategoricalChart) AddLollipopSeries(name string, points []data.CategoricalPoint,
-	color color.Color) (cls CategoricalLollipopSeries, err error) {
+	color color.Color) (cls CategoricalPointSeries, err error) {
 	cls.ser, err = catChart.BaseChart.AddCategoricalLollipopSeries(name, points, color)
 	return
 }
@@ -53,7 +53,7 @@ func (catChart *PolarCategoricalChart) AddLollipopSeries(name string, points []d
 // Data points with a C that already exists, will be ignored.
 // The range of C is not restricted. The range of Val is restricted to Val>=0.
 func (catChart *PolarCategoricalChart) AddBarSeries(name string, points []data.CategoricalPoint,
-	color color.Color) (cbs CategoricalBarSeries, err error) {
+	color color.Color) (cbs CategoricalPointSeries, err error) {
 	cbs.ser, err = catChart.BaseChart.AddCategoricalBarSeries(name, points, color)
 	return
 }
