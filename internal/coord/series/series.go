@@ -20,14 +20,14 @@ type baseSeries struct {
 	chart        chart
 }
 
-func emptyBaseSeries(chart chart, name string, col color.Color, togView func()) (ser baseSeries) {
+func emptyBaseSeries(name string, col color.Color, togView func()) (ser baseSeries) {
 	ser = baseSeries{
 		name:         name,
 		visible:      true,
 		color:        col,
 		legendButton: interact.NewLegendBox(col, togView),
 		legendLabel:  canvas.NewText(name, theme.Color(theme.ColorNameForeground)),
-		chart:        chart,
+		chart:        nil,
 	}
 	return
 }
@@ -48,7 +48,7 @@ func (ser *baseSeries) LegendEntries() (les []renderer.LegendEntry) {
 	return
 }
 
-func (ser *baseSeries) AddToChart(ch chart) (err error) {
+func (ser *baseSeries) Bind(ch chart) (err error) {
 	if ser.chart != nil {
 		err = errors.New("series is already part of a chart")
 		return
@@ -57,7 +57,7 @@ func (ser *baseSeries) AddToChart(ch chart) (err error) {
 	return
 }
 
-func (ser *baseSeries) RemoveFromChart() {
+func (ser *baseSeries) Release() {
 	ser.chart = nil
 }
 
@@ -144,8 +144,8 @@ func (ser *baseSeries) RefreshTheme() {
 type Series interface {
 	LegendEntries() (les []renderer.LegendEntry)
 	Name() (n string)
-	AddToChart(ch chart) (err error)
-	RemoveFromChart()
+	Bind(ch chart) (err error)
+	Release()
 	Hide()
 	Show()
 	CRange() (cs []string)

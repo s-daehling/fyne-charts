@@ -58,6 +58,11 @@ type NumericalCandleStickSeries struct {
 	candleStickSeries
 }
 
+func NewNumericalCandleStickSeries(name string) (ncs NumericalCandleStickSeries) {
+	ncs.ser = series.EmptyCandleStickSeries(name)
+	return
+}
+
 // DeleteDataInRange deletes all candles with a nEnd greater than min and a nStart smaller than max
 // The return value gives the number of candles that have been removed
 func (ncs NumericalCandleStickSeries) DeleteDataInRange(min float64, max float64) (c int) {
@@ -85,6 +90,11 @@ func (ncs NumericalCandleStickSeries) AddData(input []data.NumericalCandleStick)
 // TemporalCandleStickSeries represents a candle stick series over a temporal t-axis
 type TemporalCandleStickSeries struct {
 	candleStickSeries
+}
+
+func NewTemporalCandleStickSeries(name string) (tcs TemporalCandleStickSeries) {
+	tcs.ser = series.EmptyCandleStickSeries(name)
+	return
 }
 
 // DeleteDataInRange deletes all candles with a tEnd after min and a tStart before max.

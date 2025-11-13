@@ -75,6 +75,11 @@ type NumericalBoxSeries struct {
 	boxSeries
 }
 
+func NewNumericalBoxSeries(name string, col color.Color) (nbs NumericalBoxSeries) {
+	nbs.ser = series.EmptyBoxSeries(name, col)
+	return
+}
+
 // DeleteDataInRange deletes all data points with a x-coordinate greater than min and smaller than max
 // The return value gives the number of data points that have been removed
 func (nbs NumericalBoxSeries) DeleteDataInRange(min float64, max float64) (c int) {
@@ -104,6 +109,11 @@ type TemporalBoxSeries struct {
 	boxSeries
 }
 
+func NewTemporalBoxSeries(name string, col color.Color) (tbs TemporalBoxSeries) {
+	tbs.ser = series.EmptyBoxSeries(name, col)
+	return
+}
+
 // DeleteDataInRange deletes all data points with a t-coordinate after min and before max.
 // The return value gives the number of data points that have been removed
 func (tbs TemporalBoxSeries) DeleteDataInRange(min time.Time, max time.Time) (c int) {
@@ -131,6 +141,11 @@ func (tbs TemporalBoxSeries) AddData(input []data.TemporalBox) (err error) {
 // CategoricalBoxSeries represents a box series over a categorical c-axis
 type CategoricalBoxSeries struct {
 	boxSeries
+}
+
+func NewCategoricalBoxSeries(name string, col color.Color) (cbs CategoricalBoxSeries) {
+	cbs.ser = series.EmptyBoxSeries(name, col)
+	return
 }
 
 // DeleteDataInRange deletes all data points with one of the given category

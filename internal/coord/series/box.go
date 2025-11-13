@@ -194,9 +194,9 @@ type BoxSeries struct {
 	data []*boxPoint
 }
 
-func EmptyBoxSeries(chart chart, name string, color color.Color) (ser *BoxSeries) {
+func EmptyBoxSeries(name string, color color.Color) (ser *BoxSeries) {
 	ser = &BoxSeries{}
-	ser.baseSeries = emptyBaseSeries(chart, name, color, ser.toggleView)
+	ser.baseSeries = emptyBaseSeries(name, color, ser.toggleView)
 	return
 }
 

@@ -267,26 +267,25 @@ type PointSeries struct {
 	isStacked           bool
 }
 
-func EmptyAreaSeries(chart chart, name string, showDots bool, color color.Color) (ser *PointSeries) {
+func EmptyPointSeries(name string, color color.Color) (ser *PointSeries) {
 	ser = &PointSeries{
 		valBase:             0,
 		nBarWidth:           0,
 		tBarWidth:           0,
 		nBarShift:           0,
 		tBarShift:           0,
-		showDot:             showDots,
+		showDot:             false,
 		showFromValBaseLine: false,
-		showFromPrevLine:    true,
+		showFromPrevLine:    false,
 		showBar:             false,
-		showArea:            true,
+		showArea:            false,
 		sortPoints:          true,
-		isStacked:           false,
 	}
-	ser.baseSeries = emptyBaseSeries(chart, name, color, ser.toggleView)
+	ser.baseSeries = emptyBaseSeries(name, color, ser.toggleView)
 	return
 }
 
-func EmptyBarSeries(chart chart, name string, color color.Color, stacked bool) (ser *PointSeries) {
+func EmptyBarSeries(name string, color color.Color, stacked bool) (ser *PointSeries) {
 	ser = &PointSeries{
 		valBase:             0,
 		nBarWidth:           0,
@@ -301,65 +300,50 @@ func EmptyBarSeries(chart chart, name string, color color.Color, stacked bool) (
 		sortPoints:          false,
 		isStacked:           stacked,
 	}
-	ser.baseSeries = emptyBaseSeries(chart, name, color, ser.toggleView)
+	ser.baseSeries = emptyBaseSeries(name, color, ser.toggleView)
 	return
 }
 
-func EmptyLineSeries(chart chart, name string, showDots bool, color color.Color) (ser *PointSeries) {
-	ser = &PointSeries{
-		valBase:             0,
-		nBarWidth:           0,
-		tBarWidth:           0,
-		nBarShift:           0,
-		tBarShift:           0,
-		showDot:             showDots,
-		showFromValBaseLine: false,
-		showFromPrevLine:    true,
-		showBar:             false,
-		showArea:            false,
-		sortPoints:          true,
-		isStacked:           false,
+func (ser *PointSeries) MakeBar() {
+	ser.showBar = true
+	for i := range ser.data {
+		ser.data[i].showBar = true
 	}
-	ser.baseSeries = emptyBaseSeries(chart, name, color, ser.toggleView)
-	return
 }
 
-func EmptyLollipopSeries(chart chart, name string, color color.Color) (ser *PointSeries) {
-	ser = &PointSeries{
-		valBase:             0,
-		nBarWidth:           0,
-		tBarWidth:           0,
-		nBarShift:           0,
-		tBarShift:           0,
-		showDot:             true,
-		showFromValBaseLine: true,
-		showFromPrevLine:    false,
-		showBar:             false,
-		showArea:            false,
-		sortPoints:          false,
-		isStacked:           false,
+func (ser *PointSeries) MakeArea(showDot bool) {
+	ser.showDot = showDot
+	ser.showFromPrevLine = true
+	ser.showArea = true
+	for i := range ser.data {
+		ser.data[i].showDot = showDot
+		ser.data[i].showFromPrevLine = true
 	}
-	ser.baseSeries = emptyBaseSeries(chart, name, color, ser.toggleView)
-	return
 }
 
-func EmptyScatterSeries(chart chart, name string, color color.Color) (ser *PointSeries) {
-	ser = &PointSeries{
-		valBase:             0,
-		nBarWidth:           0,
-		tBarWidth:           0,
-		nBarShift:           0,
-		tBarShift:           0,
-		showDot:             true,
-		showFromValBaseLine: false,
-		showFromPrevLine:    false,
-		showBar:             false,
-		showArea:            false,
-		sortPoints:          false,
-		isStacked:           false,
+func (ser *PointSeries) MakeLine(showDot bool) {
+	ser.showDot = showDot
+	ser.showFromPrevLine = true
+	for i := range ser.data {
+		ser.data[i].showDot = showDot
+		ser.data[i].showFromPrevLine = true
 	}
-	ser.baseSeries = emptyBaseSeries(chart, name, color, ser.toggleView)
-	return
+}
+
+func (ser *PointSeries) MakeLollipop() {
+	ser.showDot = true
+	ser.showFromValBaseLine = true
+	for i := range ser.data {
+		ser.data[i].showDot = true
+		ser.data[i].showFromValBaseLine = true
+	}
+}
+
+func (ser *PointSeries) MakeScatter() {
+	ser.showDot = true
+	for i := range ser.data {
+		ser.data[i].showDot = true
+	}
 }
 
 func (ser *PointSeries) CRange() (cs []string) {
@@ -746,7 +730,7 @@ func (ser *PointSeries) IsLollipopSeries() (b bool) {
 	return
 }
 
-func (ser *PointSeries) AddToChart(ch chart) (err error) {
+func (ser *PointSeries) Bind(ch chart) (err error) {
 	if ch.IsPolar() {
 		for i := range ser.data {
 			if ser.data[i].val < 0 {
@@ -755,7 +739,7 @@ func (ser *PointSeries) AddToChart(ch chart) (err error) {
 			}
 		}
 	}
-	err = ser.baseSeries.AddToChart(ch)
+	err = ser.baseSeries.Bind(ch)
 	return
 }
 

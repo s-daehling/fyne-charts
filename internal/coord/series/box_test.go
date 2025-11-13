@@ -49,7 +49,7 @@ func TestBoxAddNumericalData(t *testing.T) {
 		{nBoxTestSet, true, len(nBoxTestSet), false, -1000, 1000, -1001, 1005},
 	}
 	for i, tt := range tests {
-		ser := EmptyBoxSeries(chartDummy{polar: false}, "test", color.Black)
+		ser := EmptyBoxSeries("test", color.Black)
 		err := ser.AddNumericalData(tt.input)
 		if err != nil && tt.expSuccess {
 			t.Errorf("adding data failed incorrectly, set %d, %s", i, err.Error())
@@ -85,7 +85,7 @@ func TestBoxAddTemporalData(t *testing.T) {
 		{tBoxTestSet, true, len(tBoxTestSet), false, tBoxTestSet[0].T, tBoxTestSet[4].T, -1001, 1005},
 	}
 	for i, tt := range tests {
-		ser := EmptyBoxSeries(chartDummy{polar: false}, "test", color.Black)
+		ser := EmptyBoxSeries("test", color.Black)
 		err := ser.AddTemporalData(tt.input)
 		if err != nil && tt.expSuccess {
 			t.Errorf("adding data failed incorrectly, set %d, %s", i, err.Error())
@@ -120,7 +120,7 @@ func TestBoxAddCategoricalData(t *testing.T) {
 		{cBoxTestSet, true, len(cBoxTestSet), false, []string{"one", "two", "three", "four", "five"}, -1001, 1005},
 	}
 	for i, tt := range tests {
-		ser := EmptyBoxSeries(chartDummy{polar: false}, "test", color.Black)
+		ser := EmptyBoxSeries("test", color.Black)
 		err := ser.AddCategoricalData(tt.input)
 		if err != nil && tt.expSuccess {
 			t.Errorf("adding data failed incorrectly, set %d, %s", i, err.Error())
@@ -158,7 +158,7 @@ func TestBoxDeleteNumericalData(t *testing.T) {
 		{nBoxTestSet, -1000.000001, 0, true, 1, false, 0, 1000, -2, 1005},
 	}
 	for i, tt := range tests {
-		ser := EmptyBoxSeries(chartDummy{polar: false}, "test", color.Black)
+		ser := EmptyBoxSeries("test", color.Black)
 		ser.AddNumericalData(tt.input)
 		c := ser.DeleteNumericalDataInRange(tt.delMin, tt.delMax)
 		if c != tt.expNumDeleted {
@@ -192,7 +192,7 @@ func TestBoxDeleteTemporalData(t *testing.T) {
 		{tBoxTestSet, tBoxTestSet[0].T.Add(-time.Second), tBoxTestSet[0].T.Add(time.Second), true, 1, false, tBoxTestSet[1].T, tBoxTestSet[4].T, -2, 1005},
 	}
 	for i, tt := range tests {
-		ser := EmptyBoxSeries(chartDummy{polar: false}, "test", color.Black)
+		ser := EmptyBoxSeries("test", color.Black)
 		ser.AddTemporalData(tt.input)
 		c := ser.DeleteTemporalDataInRange(tt.delMin, tt.delMax)
 		if c != tt.expNumDeleted {
@@ -224,7 +224,7 @@ func TestBoxDeleteCategoricalData(t *testing.T) {
 		{cBoxTestSet, []string{"one"}, true, 1, false, []string{"two", "three", "four", "five"}, -2, 1005},
 	}
 	for i, tt := range tests {
-		ser := EmptyBoxSeries(chartDummy{polar: false}, "test", color.Black)
+		ser := EmptyBoxSeries("test", color.Black)
 		ser.AddCategoricalData(tt.input)
 		c := ser.DeleteCategoricalDataInRange(tt.del)
 		if c != tt.expNumDeleted {
@@ -257,7 +257,7 @@ func TestBoxNodes(t *testing.T) {
 	}
 	for i, tt := range tests {
 		app.New()
-		ser := EmptyBoxSeries(chartDummy{polar: false}, "test", color.Black)
+		ser := EmptyBoxSeries("test", color.Black)
 		ser.AddNumericalData(tt.input)
 		cns := ser.CartesianNodes(tt.xMin, tt.xMax, tt.yMin, tt.yMax)
 		if len(cns) != tt.expEdges {
@@ -282,7 +282,7 @@ func TestBoxEdges(t *testing.T) {
 	}
 	for i, tt := range tests {
 		app.New()
-		ser := EmptyBoxSeries(chartDummy{polar: false}, "test", color.Black)
+		ser := EmptyBoxSeries("test", color.Black)
 		ser.AddNumericalData(tt.input)
 		cns := ser.CartesianEdges(tt.xMin, tt.xMax, tt.yMin, tt.yMax)
 		if len(cns) != tt.expEdges {
@@ -307,7 +307,7 @@ func TestBoxRects(t *testing.T) {
 	}
 	for i, tt := range tests {
 		app.New()
-		ser := EmptyBoxSeries(chartDummy{polar: false}, "test", color.Black)
+		ser := EmptyBoxSeries("test", color.Black)
 		ser.AddNumericalData(tt.input)
 		cns := ser.CartesianRects(tt.xMin, tt.xMax, tt.yMin, tt.yMax)
 		if len(cns) != tt.expRects {

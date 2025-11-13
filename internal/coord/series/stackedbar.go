@@ -14,11 +14,30 @@ type StackedBarSeries struct {
 	stack []*PointSeries
 }
 
-func EmptyStackedBarSeries(chart chart, name string) (ser *StackedBarSeries) {
+func EmptyStackedBarSeries(name string) (ser *StackedBarSeries) {
 	ser = &StackedBarSeries{}
-	ser.baseSeries = emptyBaseSeries(chart, name, theme.Color(theme.ColorNameForeground), ser.toggleView)
+	ser.baseSeries = emptyBaseSeries(name, theme.Color(theme.ColorNameForeground), ser.toggleView)
 	ser.legendButton.UseGradient(theme.Color(theme.ColorNameForeground), theme.Color(theme.ColorNameBackground))
 	return
+}
+
+func (ser *StackedBarSeries) IsPolar() (b bool) {
+	if ser.chart != nil {
+		b = ser.chart.IsPolar()
+	}
+	return
+}
+
+func (ser *StackedBarSeries) DataChange() {
+	if ser.chart != nil {
+		ser.chart.DataChange()
+	}
+}
+
+func (ser *StackedBarSeries) RasterVisibilityChange() {
+	if ser.chart != nil {
+		ser.chart.RasterVisibilityChange()
+	}
 }
 
 func (ser *StackedBarSeries) CRange() (cs []string) {
@@ -208,7 +227,11 @@ func (ser *StackedBarSeries) AddCategoricalSeries(series data.CategoricalDataSer
 		err = errors.New("series already exists")
 		return
 	}
-	bs := EmptyBarSeries(ser.chart, series.Name, series.Col, true)
+	bs := EmptyBarSeries(series.Name, series.Col, true)
+	err = bs.Bind(ser)
+	if err != nil {
+		return
+	}
 	err = bs.AddCategoricalData(series.Points)
 	if err != nil {
 		return

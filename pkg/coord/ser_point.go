@@ -75,6 +75,11 @@ type NumericalPointSeries struct {
 	pointSeries
 }
 
+func NewNumericalPointSeries(name string, col color.Color) (nps NumericalPointSeries) {
+	nps.ser = series.EmptyPointSeries(name, col)
+	return
+}
+
 // DeleteDataInRange deletes all data points with a x-coordinate greater than min and smaller than max
 // The return value gives the number of data points that have been removed
 func (nps NumericalPointSeries) DeleteDataInRange(min float64, max float64) (c int) {
@@ -119,6 +124,11 @@ type TemporalPointSeries struct {
 	pointSeries
 }
 
+func NewTemporalPointSeries(name string, col color.Color) (tps TemporalPointSeries) {
+	tps.ser = series.EmptyPointSeries(name, col)
+	return
+}
+
 // DeleteDataInRange deletes all data points with a t-coordinate after min and before max.
 // The return value gives the number of data points that have been removed
 func (tps TemporalPointSeries) DeleteDataInRange(min time.Time, max time.Time) (c int) {
@@ -161,6 +171,11 @@ func (tps TemporalPointSeries) SetBarWidth(w time.Duration) (err error) {
 // CategoricalPointSeries represents a bar series over a categorical c-axis
 type CategoricalPointSeries struct {
 	pointSeries
+}
+
+func NewCategoricalPointSeries(name string, col color.Color) (cps CategoricalPointSeries) {
+	cps.ser = series.EmptyPointSeries(name, col)
+	return
 }
 
 // DeleteDataInRange deletes all data points with one of the given category

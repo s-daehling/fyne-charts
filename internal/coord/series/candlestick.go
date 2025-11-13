@@ -114,9 +114,9 @@ type CandleStickSeries struct {
 	data []*candleStickPoint
 }
 
-func EmptyCandleStickSeries(chart chart, name string) (ser *CandleStickSeries) {
+func EmptyCandleStickSeries(name string) (ser *CandleStickSeries) {
 	ser = &CandleStickSeries{}
-	ser.baseSeries = emptyBaseSeries(chart, name, theme.Color(theme.ColorNameForeground), ser.toggleView)
+	ser.baseSeries = emptyBaseSeries(name, theme.Color(theme.ColorNameForeground), ser.toggleView)
 	ser.legendButton.UseGradient(color.RGBA{R: 0xff, G: 0x00, B: 0x00, A: 0xff}, color.RGBA{R: 0x00, G: 0x88, B: 0x00, A: 0xff})
 	return
 }

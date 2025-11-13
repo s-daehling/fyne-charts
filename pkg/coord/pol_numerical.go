@@ -1,8 +1,6 @@
 package coord
 
 import (
-	"image/color"
-
 	"github.com/s-daehling/fyne-charts/internal/coord"
 	"github.com/s-daehling/fyne-charts/pkg/data"
 
@@ -29,9 +27,8 @@ func NewPolarNumericalChart() (numChart *PolarNumericalChart) {
 // data does not need to be sorted. It will be sorted by A by the method.
 // The method does not check for duplicates (i.e. data points with same A)
 // The range of A and Val is restricted (0<=A<=2pi; Val>0)
-func (numChart *PolarNumericalChart) AddLineSeries(name string, points []data.NumericalPoint, showDots bool,
-	color color.Color) (nls NumericalPointSeries, err error) {
-	nls.ser, err = numChart.base.AddNumericalLineSeries(name, points, showDots, color)
+func (numChart *PolarNumericalChart) AddLineSeries(nps NumericalPointSeries, showDots bool) (err error) {
+	err = numChart.base.AddLineSeries(nps.ser, showDots)
 	return
 }
 
@@ -40,9 +37,8 @@ func (numChart *PolarNumericalChart) AddLineSeries(name string, points []data.Nu
 // An error is returned,if another series with the same name exists.
 // The method does not check for duplicates (i.e. data points with same A)
 // The range of A and Val is restricted (0<=A<=2pi; Val>0)
-func (numChart *PolarNumericalChart) AddScatterSeries(name string, points []data.NumericalPoint,
-	color color.Color) (nss NumericalPointSeries, err error) {
-	nss.ser, err = numChart.base.AddNumericalScatterSeries(name, points, color)
+func (numChart *PolarNumericalChart) AddScatterSeries(nps NumericalPointSeries) (err error) {
+	err = numChart.base.AddScatterSeries(nps.ser)
 	return
 }
 
@@ -51,9 +47,8 @@ func (numChart *PolarNumericalChart) AddScatterSeries(name string, points []data
 // An error is returned,if another series with the same name exists.
 // The method does not check for duplicates (i.e. data points with same A)
 // The range of A and Val is restricted (0<=A<=2pi; Val>0)
-func (numChart *PolarNumericalChart) AddLollipopSeries(name string, points []data.NumericalPoint,
-	color color.Color) (nls NumericalPointSeries, err error) {
-	nls.ser, err = numChart.base.AddNumericalLollipopSeries(name, points, color)
+func (numChart *PolarNumericalChart) AddLollipopSeries(nps NumericalPointSeries) (err error) {
+	err = numChart.base.AddLollipopSeries(nps.ser)
 	return
 }
 
@@ -63,9 +58,8 @@ func (numChart *PolarNumericalChart) AddLollipopSeries(name string, points []dat
 // data does not need to be sorted. It will be sorted by A by the method.
 // The method does not check for duplicates (i.e. data points with same A).
 // The range of A and Val is restricted (0<=A<=2pi; Val>0)
-func (numChart *PolarNumericalChart) AddAreaSeries(name string, points []data.NumericalPoint, showDots bool,
-	color color.Color) (nas NumericalPointSeries, err error) {
-	nas.ser, err = numChart.base.AddNumericalAreaSeries(name, points, showDots, color)
+func (numChart *PolarNumericalChart) AddAreaSeries(nps NumericalPointSeries, showDots bool) (err error) {
+	err = numChart.base.AddAreaSeries(nps.ser, showDots)
 	return
 }
 
@@ -76,9 +70,12 @@ func (numChart *PolarNumericalChart) AddAreaSeries(name string, points []data.Nu
 // The range of A and Val is restricted (0<=A<=2pi; Val>0)
 // The bars are centered around their A value of the data points. barWidth is the width of the bars.
 // An error is returned if barWidth < 0
-func (numChart *PolarNumericalChart) AddBarSeries(name string, points []data.NumericalPoint,
-	barWidth float64, color color.Color) (nbs NumericalPointSeries, err error) {
-	nbs.ser, err = numChart.base.AddNumericalBarSeries(name, points, barWidth, color)
+func (numChart *PolarNumericalChart) AddBarSeries(nps NumericalPointSeries, barWidth float64) (err error) {
+	err = nps.SetBarWidth(barWidth)
+	if err != nil {
+		return
+	}
+	err = numChart.base.AddBarSeries(nps.ser)
 	return
 }
 

@@ -1,8 +1,6 @@
 package coord
 
 import (
-	"image/color"
-
 	"github.com/s-daehling/fyne-charts/internal/coord"
 	"github.com/s-daehling/fyne-charts/pkg/data"
 
@@ -29,9 +27,8 @@ func NewPolarCategoricalChart() (catChart *PolarCategoricalChart) {
 // The method checks for duplicates (i.e. data points with same C).
 // Data points with a C that already exists, will be ignored.
 // The range of C is not restricted. The range of Val is restricted to Val>=0.
-func (catChart *PolarCategoricalChart) AddScatterSeries(name string, points []data.CategoricalPoint,
-	color color.Color) (css CategoricalPointSeries, err error) {
-	css.ser, err = catChart.base.AddCategoricalScatterSeries(name, points, color)
+func (catChart *PolarCategoricalChart) AddScatterSeries(cps CategoricalPointSeries) (err error) {
+	err = catChart.base.AddScatterSeries(cps.ser)
 	return
 }
 
@@ -41,9 +38,8 @@ func (catChart *PolarCategoricalChart) AddScatterSeries(name string, points []da
 // The method checks for duplicates (i.e. data points with same C).
 // Data points with a C that already exists, will be ignored.
 // The range of C is not restricted. The range of Val is restricted to Val>=0.
-func (catChart *PolarCategoricalChart) AddLollipopSeries(name string, points []data.CategoricalPoint,
-	color color.Color) (cls CategoricalPointSeries, err error) {
-	cls.ser, err = catChart.base.AddCategoricalLollipopSeries(name, points, color)
+func (catChart *PolarCategoricalChart) AddLollipopSeries(cps CategoricalPointSeries) (err error) {
+	err = catChart.base.AddLollipopSeries(cps.ser)
 	return
 }
 
@@ -53,9 +49,8 @@ func (catChart *PolarCategoricalChart) AddLollipopSeries(name string, points []d
 // The method checks for duplicates (i.e. data points with same C).
 // Data points with a C that already exists, will be ignored.
 // The range of C is not restricted. The range of Val is restricted to Val>=0.
-func (catChart *PolarCategoricalChart) AddBarSeries(name string, points []data.CategoricalPoint,
-	color color.Color) (cbs CategoricalPointSeries, err error) {
-	cbs.ser, err = catChart.base.AddCategoricalBarSeries(name, points, color)
+func (catChart *PolarCategoricalChart) AddBarSeries(cps CategoricalPointSeries) (err error) {
+	err = catChart.base.AddBarSeries(cps.ser)
 	return
 }
 

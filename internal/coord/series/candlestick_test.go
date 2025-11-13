@@ -31,7 +31,7 @@ func TestCandleStickAddNumericalData(t *testing.T) {
 		{nCandleStickTestSet, true, len(nCandleStickTestSet), false, -1001, -999, -1000, -1000},
 	}
 	for i, tt := range tests {
-		ser := EmptyCandleStickSeries(chartDummy{polar: false}, "test")
+		ser := EmptyCandleStickSeries("test")
 		err := ser.AddNumericalData(tt.input)
 		if err != nil && tt.expSuccess {
 			t.Errorf("adding data failed incorrectly, set %d, %s", i, err.Error())
@@ -67,7 +67,7 @@ func TestCandleStickAddTemporalData(t *testing.T) {
 		{tCandleStickTestSet, true, len(tCandleStickTestSet), false, tCandleStickTestSet[0].TStart, tCandleStickTestSet[0].TEnd, -1000, -1000},
 	}
 	for i, tt := range tests {
-		ser := EmptyCandleStickSeries(chartDummy{polar: false}, "test")
+		ser := EmptyCandleStickSeries("test")
 		err := ser.AddTemporalData(tt.input)
 		if err != nil && tt.expSuccess {
 			t.Errorf("adding data failed incorrectly, set %d, %s", i, err.Error())
@@ -105,7 +105,7 @@ func TestCandleStickDeleteNumericalData(t *testing.T) {
 		{nCandleStickTestSet, -1000, 0, true, 0, false, -1001, -999, -1000, -1000},
 	}
 	for i, tt := range tests {
-		ser := EmptyCandleStickSeries(chartDummy{polar: false}, "test")
+		ser := EmptyCandleStickSeries("test")
 		ser.AddNumericalData(tt.input)
 		c := ser.DeleteNumericalDataInRange(tt.delMin, tt.delMax)
 		if c != tt.expNumDeleted {
@@ -139,7 +139,7 @@ func TestCandleStickDeleteTemporalData(t *testing.T) {
 		{tCandleStickTestSet, tCandleStickTestSet[0].TEnd.Add(-time.Second), tCandleStickTestSet[0].TEnd.Add(time.Second), true, 0, false, tCandleStickTestSet[0].TStart, tCandleStickTestSet[0].TEnd, -1000, -1000},
 	}
 	for i, tt := range tests {
-		ser := EmptyCandleStickSeries(chartDummy{polar: false}, "test")
+		ser := EmptyCandleStickSeries("test")
 		ser.AddTemporalData(tt.input)
 		c := ser.DeleteTemporalDataInRange(tt.delMin, tt.delMax)
 		if c != tt.expNumDeleted {
@@ -171,7 +171,7 @@ func TestCandleStickEdges(t *testing.T) {
 	}
 	for i, tt := range tests {
 		app.New()
-		ser := EmptyCandleStickSeries(chartDummy{polar: false}, "test")
+		ser := EmptyCandleStickSeries("test")
 		ser.AddNumericalData(tt.input)
 		cns := ser.CartesianEdges(tt.xMin, tt.xMax, tt.yMin, tt.yMax)
 		if len(cns) != tt.expEdges {
@@ -195,7 +195,7 @@ func TestCandleStickRects(t *testing.T) {
 	}
 	for i, tt := range tests {
 		app.New()
-		ser := EmptyCandleStickSeries(chartDummy{polar: false}, "test")
+		ser := EmptyCandleStickSeries("test")
 		ser.AddNumericalData(tt.input)
 		cns := ser.CartesianRects(tt.xMin, tt.xMax, tt.yMin, tt.yMax)
 		if len(cns) != tt.expRects {

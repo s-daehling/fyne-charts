@@ -85,13 +85,23 @@ func cartNumChart() (numChart *coord.CartesianNumericalChart, err error) {
 	for range 50 {
 		data1 = append(data1, randomNumericalDataPoint(0, 100, 0, 100))
 	}
-	_, err = numChart.AddAreaSeries("area", data1, true, color.RGBA{R: 0xff, G: 0x00, B: 0x00, A: 0xff})
+	as := coord.NewNumericalPointSeries("area", color.RGBA{R: 0xff, G: 0x00, B: 0x00, A: 0xff})
+	err = as.AddData(data1)
+	if err != nil {
+		return
+	}
+	err = numChart.AddAreaSeries(as, true)
 	if err != nil {
 		return
 	}
 
 	// Line Series
-	ls, err := numChart.AddLineSeries("line", updateSineNumericalData(), true, color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff})
+	ls := coord.NewNumericalPointSeries("line", color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff})
+	err = ls.AddData(updateSineNumericalData())
+	if err != nil {
+		return
+	}
+	err = numChart.AddLineSeries(ls, true)
 	if err != nil {
 		return
 	}
@@ -113,7 +123,12 @@ func cartNumChart() (numChart *coord.CartesianNumericalChart, err error) {
 	for range 50 {
 		data3 = append(data3, randomNumericalDataPoint(-110, 110, -110, 110))
 	}
-	_, err = numChart.AddBarSeries("bar", data3, 2, color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff})
+	bs := coord.NewNumericalPointSeries("bar", color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff})
+	err = bs.AddData(data3)
+	if err != nil {
+		return
+	}
+	err = numChart.AddBarSeries(bs, 2)
 	if err != nil {
 		return
 	}
@@ -142,7 +157,12 @@ func cartTempChart() (tempChart *coord.CartesianTemporalChart, err error) {
 		tStart = tStart.Add(span)
 		close = cs.Close
 	}
-	_, err = tempChart.AddCandleStickSeries("candlestick", data1)
+	tcs := coord.NewTemporalCandleStickSeries("candlestick")
+	err = tcs.AddData(data1)
+	if err != nil {
+		return
+	}
+	err = tempChart.AddCandleStickSeries(tcs)
 	if err != nil {
 		return
 	}
@@ -152,11 +172,16 @@ func cartTempChart() (tempChart *coord.CartesianTemporalChart, err error) {
 	for range 10 {
 		data2 = append(data2, randomTemporalDataPoint(time.Now(), time.Now().Add(time.Hour*50), -5, 10))
 	}
-	tls, err := tempChart.AddLollipopSeries("lollipop", data2, color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff})
+	tps := coord.NewTemporalPointSeries("lollipop", color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff})
+	err = tps.AddData(data2)
 	if err != nil {
 		return
 	}
-	tls.SetDotSize(3)
+	err = tempChart.AddLollipopSeries(tps)
+	if err != nil {
+		return
+	}
+	tps.SetDotSize(3)
 
 	// Examples of methods for altering the chart appearance
 	tempChart.SetOrigin(time.Now().Add(time.Hour*20), 4)
@@ -228,7 +253,12 @@ func cartCatChart() (catChart *coord.CartesianCategoricalChart, err error) {
 			Val: -10 + rand.Float64()*20,
 		},
 	}
-	_, err = catChart.AddBarSeries("bar", data3, color.RGBA{R: 0xff, G: 0xff, B: 0x00, A: 0xff})
+	bs := coord.NewCategoricalPointSeries("bar", color.RGBA{R: 0xff, G: 0xff, B: 0x00, A: 0xff})
+	err = bs.AddData(data3)
+	if err != nil {
+		return
+	}
+	err = catChart.AddBarSeries(bs)
 	if err != nil {
 		return
 	}
@@ -254,7 +284,12 @@ func cartCatChart() (catChart *coord.CartesianCategoricalChart, err error) {
 			Outlier:       []float64{21.3, 20.3, 12.45, 7.8},
 		},
 	}
-	_, err = catChart.AddBoxSeries("box", data4, color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff})
+	cbs := coord.NewCategoricalBoxSeries("box", color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff})
+	err = cbs.AddData(data4)
+	if err != nil {
+		return
+	}
+	err = catChart.AddBoxSeries(cbs)
 	if err != nil {
 		return
 	}
@@ -276,7 +311,12 @@ func polNumChart() (numChart *coord.PolarNumericalChart, err error) {
 	for range 100 {
 		data1 = append(data1, randomAngularDataPoint(63.777))
 	}
-	_, err = numChart.AddAreaSeries("area", data1, true, color.RGBA{R: 0xff, G: 0x00, B: 0x00, A: 0xff})
+	as := coord.NewNumericalPointSeries("area", color.RGBA{R: 0xff, G: 0x00, B: 0x00, A: 0xff})
+	err = as.AddData(data1)
+	if err != nil {
+		return
+	}
+	err = numChart.AddAreaSeries(as, true)
 	if err != nil {
 		return
 	}
@@ -286,7 +326,12 @@ func polNumChart() (numChart *coord.PolarNumericalChart, err error) {
 	for range 150 {
 		data2 = append(data2, randomSineAngularDataPoint(63.777))
 	}
-	ls, err := numChart.AddLineSeries("line", data2, false, color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff})
+	ls := coord.NewNumericalPointSeries("line", color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff})
+	err = ls.AddData(data2)
+	if err != nil {
+		return
+	}
+	err = numChart.AddLineSeries(ls, false)
 	if err != nil {
 		return
 	}
@@ -310,7 +355,12 @@ func polTempChart() (tempChart *coord.PolarTemporalChart, err error) {
 	for range 50 {
 		data1 = append(data1, randomTemporalDataPoint(time.Now(), time.Now().Add(time.Hour*50), 0, 111))
 	}
-	_, err = tempChart.AddLollipopSeries("lollipop", data1, color.RGBA{R: 0xff, G: 0xff, B: 0x00, A: 0xff})
+	tps1 := coord.NewTemporalPointSeries("lollipop", color.RGBA{R: 0xff, G: 0xff, B: 0x00, A: 0xff})
+	err = tps1.AddData(data1)
+	if err != nil {
+		return
+	}
+	err = tempChart.AddLollipopSeries(tps1)
 	if err != nil {
 		return
 	}
@@ -320,7 +370,12 @@ func polTempChart() (tempChart *coord.PolarTemporalChart, err error) {
 	for range 25 {
 		data2 = append(data2, randomTemporalDataPoint(time.Now(), time.Now().Add(time.Hour*50), 0, 111))
 	}
-	_, err = tempChart.AddScatterSeries("scatter", data2, color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff})
+	tps2 := coord.NewTemporalPointSeries("scatter", color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff})
+	err = tps2.AddData(data2)
+	if err != nil {
+		return
+	}
+	err = tempChart.AddScatterSeries(tps2)
 	if err != nil {
 		return
 	}
@@ -395,7 +450,12 @@ func polCatChart() (catChart *coord.PolarCategoricalChart, err error) {
 			Val: rand.Float64() * 30,
 		},
 	}
-	_, err = catChart.AddBarSeries("bar", data3, color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff})
+	bs := coord.NewCategoricalPointSeries("bar", color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff})
+	err = bs.AddData(data3)
+	if err != nil {
+		return
+	}
+	err = catChart.AddBarSeries(bs)
 	if err != nil {
 		return
 	}

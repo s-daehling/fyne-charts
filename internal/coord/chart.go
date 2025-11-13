@@ -121,7 +121,7 @@ func (base *BaseChart) DeleteSeries(name string) {
 		if base.series[i].Name() != name {
 			newSeries = append(newSeries, base.series[i])
 		} else {
-			base.series[i].RemoveFromChart()
+			base.series[i].Release()
 		}
 	}
 	base.series = newSeries

@@ -1,7 +1,6 @@
 package coord
 
 import (
-	"image/color"
 	"time"
 
 	"github.com/s-daehling/fyne-charts/internal/coord"
@@ -31,9 +30,8 @@ func NewCartesianTemporalChart() (tempChart *CartesianTemporalChart) {
 // data does not need to be sorted. It will be sorted by T by the method.
 // The method does not check for duplicates (i.e. data points with same T)
 // The range of T and Val is not restricted
-func (tempChart *CartesianTemporalChart) AddLineSeries(name string, points []data.TemporalPoint,
-	showDots bool, color color.Color) (tls TemporalPointSeries, err error) {
-	tls.ser, err = tempChart.base.AddTemporalLineSeries(name, points, showDots, color)
+func (tempChart *CartesianTemporalChart) AddLineSeries(tps TemporalPointSeries, showDots bool) (err error) {
+	err = tempChart.base.AddLineSeries(tps.ser, showDots)
 	return
 }
 
@@ -42,9 +40,8 @@ func (tempChart *CartesianTemporalChart) AddLineSeries(name string, points []dat
 // An error is returned,if another series with the same name exists.
 // The method does not check for duplicates (i.e. data points with same T)
 // The range of T and Val is not restricted
-func (tempChart *CartesianTemporalChart) AddScatterSeries(name string, points []data.TemporalPoint,
-	color color.Color) (tss TemporalPointSeries, err error) {
-	tss.ser, err = tempChart.base.AddTemporalScatterSeries(name, points, color)
+func (tempChart *CartesianTemporalChart) AddScatterSeries(tps TemporalPointSeries) (err error) {
+	err = tempChart.base.AddScatterSeries(tps.ser)
 	return
 }
 
@@ -53,9 +50,8 @@ func (tempChart *CartesianTemporalChart) AddScatterSeries(name string, points []
 // An error is returned,if another series with the same name exists.
 // The method does not check for duplicates (i.e. data points with same T)
 // The range of T and Val is not restricted
-func (tempChart *CartesianTemporalChart) AddLollipopSeries(name string, points []data.TemporalPoint,
-	color color.Color) (tls TemporalPointSeries, err error) {
-	tls.ser, err = tempChart.base.AddTemporalLollipopSeries(name, points, color)
+func (tempChart *CartesianTemporalChart) AddLollipopSeries(tps TemporalPointSeries) (err error) {
+	err = tempChart.base.AddLollipopSeries(tps.ser)
 	return
 }
 
@@ -64,9 +60,8 @@ func (tempChart *CartesianTemporalChart) AddLollipopSeries(name string, points [
 // An error is returned,if another series with the same name exists.
 // The method does not check for duplicates (i.e. data points with same T)
 // The range of TStart, TEnd and values is not restricted
-func (tempChart *CartesianTemporalChart) AddCandleStickSeries(name string,
-	points []data.TemporalCandleStick) (tcs TemporalCandleStickSeries, err error) {
-	tcs.ser, err = tempChart.base.AddTemporalCandleStickSeries(name, points)
+func (tempChart *CartesianTemporalChart) AddCandleStickSeries(tcs TemporalCandleStickSeries) (err error) {
+	err = tempChart.base.AddCandleStickSeries(tcs.ser)
 	return
 }
 
@@ -75,9 +70,8 @@ func (tempChart *CartesianTemporalChart) AddCandleStickSeries(name string,
 // An error is returned,if another series with the same name exists.
 // The method does not check for duplicates (i.e. data points with same T)
 // The range of T and values is not restricted
-func (tempChart *CartesianTemporalChart) AddBoxSeries(name string,
-	points []data.TemporalBox, col color.Color) (tbs TemporalBoxSeries, err error) {
-	tbs.ser, err = tempChart.base.AddTemporalBoxSeries(name, points, col)
+func (tempChart *CartesianTemporalChart) AddBoxSeries(tbs TemporalBoxSeries) (err error) {
+	err = tempChart.base.AddBoxSeries(tbs.ser)
 	return
 }
 
@@ -87,9 +81,8 @@ func (tempChart *CartesianTemporalChart) AddBoxSeries(name string,
 // data does not need to be sorted. It will be sorted by T by the method.
 // The method does not check for duplicates (i.e. data points with same T).
 // The range of T and Val is not restricted
-func (tempChart *CartesianTemporalChart) AddAreaSeries(name string, points []data.TemporalPoint,
-	showDots bool, color color.Color) (tas TemporalPointSeries, err error) {
-	tas.ser, err = tempChart.base.AddTemporalAreaSeries(name, points, showDots, color)
+func (tempChart *CartesianTemporalChart) AddAreaSeries(tps TemporalPointSeries, showDots bool) (err error) {
+	err = tempChart.base.AddAreaSeries(tps.ser, showDots)
 	return
 }
 
@@ -100,9 +93,12 @@ func (tempChart *CartesianTemporalChart) AddAreaSeries(name string, points []dat
 // The range of T and Val is not restricted
 // The bars are centered around their T value of the data points. barWidth is the width of the bars.
 // An error is returned if barWidth < 0
-func (tempChart *CartesianTemporalChart) AddBarSeries(name string, points []data.TemporalPoint,
-	barWidth time.Duration, color color.Color) (tbs TemporalPointSeries, err error) {
-	tbs.ser, err = tempChart.base.AddTemporalBarSeries(name, points, barWidth, color)
+func (tempChart *CartesianTemporalChart) AddBarSeries(tps TemporalPointSeries, barWidth time.Duration) (err error) {
+	err = tps.SetBarWidth(barWidth)
+	if err != nil {
+		return
+	}
+	err = tempChart.base.AddBarSeries(tps.ser)
 	return
 }
 

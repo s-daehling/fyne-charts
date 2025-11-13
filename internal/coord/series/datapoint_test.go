@@ -115,24 +115,6 @@ var cdpTestSetPosVal = []data.CategoricalPoint{
 	{C: "three", Val: 1000},
 }
 
-func EmptyPointSeries(chart chart, name string, color color.Color) (ser PointSeries) {
-	ser = PointSeries{
-		valBase:             0,
-		nBarWidth:           0,
-		tBarWidth:           0,
-		nBarShift:           0,
-		tBarShift:           0,
-		showDot:             false,
-		showFromValBaseLine: false,
-		showFromPrevLine:    false,
-		showBar:             false,
-		showArea:            false,
-		sortPoints:          false,
-	}
-	ser.baseSeries = emptyBaseSeries(chart, name, color, ser.toggleView)
-	return
-}
-
 func TestDataPointAddNumericalData(t *testing.T) {
 	app.New()
 	var tests = []struct {
@@ -155,8 +137,7 @@ func TestDataPointAddNumericalData(t *testing.T) {
 		{[]data.NumericalPoint{}, false, false, 0, true, 0, 0, 0, 0},
 	}
 	for i, tt := range tests {
-		temp := EmptyPointSeries(chartDummy{polar: tt.polar}, "test", color.Black)
-		ser := &temp
+		ser := EmptyPointSeries("test", color.Black)
 		ser.AddNumericalData(tt.input)
 		if len(ser.data) != tt.expNumPoints {
 			t.Errorf("wrong number of data, set %d, exp %d, have %d", i, tt.expNumPoints, len(ser.data))
@@ -192,8 +173,7 @@ func TestDataPointAddTemporalData(t *testing.T) {
 		{[]data.TemporalPoint{}, false, false, 0, true, time.Now(), time.Now(), 0, 0},
 	}
 	for i, tt := range tests {
-		temp := EmptyPointSeries(chartDummy{polar: tt.polar}, "test", color.Black)
-		ser := &temp
+		ser := EmptyPointSeries("test", color.Black)
 		ser.AddTemporalData(tt.input)
 		if len(ser.data) != tt.expNumPoints {
 			t.Errorf("wrong number of data, set %d, exp %d, have %d", i, tt.expNumPoints, len(ser.data))
@@ -228,8 +208,7 @@ func TestDataPointAddCategoricalData(t *testing.T) {
 		{[]data.CategoricalPoint{}, false, false, 0, true, []string{}, 0, 0},
 	}
 	for i, tt := range tests {
-		temp := EmptyPointSeries(chartDummy{polar: tt.polar}, "test", color.Black)
-		ser := &temp
+		ser := EmptyPointSeries("test", color.Black)
 		ser.AddCategoricalData(tt.input)
 		if len(ser.data) != tt.expNumPoints {
 			t.Errorf("wrong number of data, set %d, exp %d, have %d", i, tt.expNumPoints, len(ser.data))
@@ -266,8 +245,7 @@ func TestDataPointDeleteNumericalData(t *testing.T) {
 		{ndpTestSetFull, 1000.000001, -1000.000001, false, 0, false, -1000, 1000, -1000, 1000},
 	}
 	for i, tt := range tests {
-		temp := EmptyPointSeries(chartDummy{polar: false}, "test", color.Black)
-		ser := &temp
+		ser := EmptyPointSeries("test", color.Black)
 		ser.AddNumericalData(tt.input)
 		c := ser.DeleteNumericalDataInRange(tt.delMin, tt.delMax)
 		if c != tt.expNumDeleted {
@@ -305,8 +283,7 @@ func TestDataPointDeleteTemporalData(t *testing.T) {
 		{tdpTestSetFull, tdpTestSetFull[4].T.Add(-time.Second), tdpTestSetFull[3].T.Add(time.Second), false, 0, false, tdpTestSetFull[3].T, tdpTestSetFull[4].T, -1000, 1000},
 	}
 	for i, tt := range tests {
-		temp := EmptyPointSeries(chartDummy{polar: false}, "test", color.Black)
-		ser := &temp
+		ser := EmptyPointSeries("test", color.Black)
 		ser.AddTemporalData(tt.input)
 		c := ser.DeleteTemporalDataInRange(tt.delMin, tt.delMax)
 		if c != tt.expNumDeleted {
@@ -341,8 +318,7 @@ func TestDataPointDeleteCategoricalData(t *testing.T) {
 		{cdpTestSetFull, []string{"one", "two", "three", "four", "five"}, true, 5, true, []string{}, 0, 0},
 	}
 	for i, tt := range tests {
-		temp := EmptyPointSeries(chartDummy{polar: false}, "test", color.Black)
-		ser := &temp
+		ser := EmptyPointSeries("test", color.Black)
 		ser.AddCategoricalData(tt.input)
 		c := ser.DeleteCategoricalDataInRange(tt.del)
 		if c != tt.expNumDeleted {
@@ -378,7 +354,7 @@ func TestDataPointNodes(t *testing.T) {
 	}
 	for i, tt := range tests {
 		app.New()
-		ser := EmptyPointSeries(chartDummy{polar: false}, "test", color.Black)
+		ser := EmptyPointSeries("test", color.Black)
 		ser.showDot = true
 		ser.AddNumericalData(tt.input)
 		cns := ser.CartesianNodes(tt.xMin, tt.xMax, tt.yMin, tt.yMax)
@@ -413,7 +389,7 @@ func TestDataPointEdges(t *testing.T) {
 	}
 	for i, tt := range tests {
 		app.New()
-		ser := EmptyPointSeries(chartDummy{polar: false}, "test", color.Black)
+		ser := EmptyPointSeries("test", color.Black)
 		ser.showFromPrevLine = tt.showFromPrevLine
 		ser.showFromValBaseLine = tt.showFromValBaseLine
 		if ser.showFromPrevLine {
@@ -449,7 +425,7 @@ func TestDataPointRects(t *testing.T) {
 	}
 	for i, tt := range tests {
 		app.New()
-		ser := EmptyPointSeries(chartDummy{polar: false}, "test", color.Black)
+		ser := EmptyPointSeries("test", color.Black)
 		ser.showBar = true
 		ser.AddNumericalData(tt.input)
 		crs := ser.CartesianRects(tt.xMin, tt.xMax, tt.yMin, tt.yMax)
