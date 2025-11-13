@@ -2,17 +2,28 @@ package prop
 
 import (
 	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/widget"
 	"github.com/s-daehling/fyne-charts/internal/prop"
 	"github.com/s-daehling/fyne-charts/pkg/data"
 )
 
 type propChart struct {
-	*prop.BaseChart
+	base *prop.BaseChart
+	widget.BaseWidget
 }
 
 func emptyPropChart(planeType prop.PlaneType) (chart propChart) {
-	chart.BaseChart = prop.EmptyBaseChart(planeType)
+	chart.base = prop.EmptyBaseChart(planeType)
 	return
+}
+
+func (chart *propChart) CreateRenderer() (r fyne.WidgetRenderer) {
+	r = chart.base.CreateRenderer(chart.Size)
+	return
+}
+
+func (chart *propChart) Refresh() {
+	chart.base.Refresh()
 }
 
 // AddSeries adds a series of data which is visualized as proportional bar chart.
@@ -22,33 +33,33 @@ func emptyPropChart(planeType prop.PlaneType) (chart propChart) {
 // The range of C is not restricted. The range of Val is restricted to Val>=0
 func (chart *propChart) AddSeries(name string,
 	points []data.ProportionalPoint) (ps ProportionalSeries, err error) {
-	ps.ser, err = chart.BaseChart.AddProportionalSeries(name, points)
+	ps.ser, err = chart.base.AddProportionalSeries(name, points)
 	return
 }
 
 // DeleteSeries deletes the series with the specified name if it exists
 func (chart *propChart) DeleteSeries(name string) {
-	chart.BaseChart.DeleteSeries(name)
+	chart.base.DeleteSeries(name)
 }
 
 // SetTitle sets the title of the chart, which will be displayed at the top
 func (chart *propChart) SetTitle(l string) {
-	chart.BaseChart.SetTitle(l)
+	chart.base.SetTitle(l)
 }
 
 // SetTitleStyle changes the style of the chart title
 // default value title size: theme.SizeNameSubHeadingText
 // default value title color: theme.ColorNameForeground
 func (chart *propChart) SetTitleStyle(titleSize fyne.ThemeSizeName, titleColor fyne.ThemeColorName) {
-	chart.BaseChart.SetTitleStyle(titleSize, titleColor)
+	chart.base.SetTitleStyle(titleSize, titleColor)
 }
 
 // HideLegend hides the legend and uses the full space for the chart
 func (chart *propChart) HideLegend() {
-	chart.BaseChart.HideLegend()
+	chart.base.HideLegend()
 }
 
 // ShowLegend shows the legend on the right side
 func (chart *propChart) ShowLegend() {
-	chart.BaseChart.ShowLegend()
+	chart.base.ShowLegend()
 }

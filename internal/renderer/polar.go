@@ -34,9 +34,9 @@ type Polar struct {
 	prevPhiAxisTickLabelWidth float32
 }
 
-func EmptyPolarRenderer(chart PolarChart) (r *Polar) {
+func EmptyPolarRenderer(chart PolarChart, ws func() fyne.Size) (r *Polar) {
 	r = &Polar{
-		baseRenderer: emptyBaseRenderer(),
+		baseRenderer: emptyBaseRenderer(ws),
 		rot:          0.0,
 		mathPos:      true,
 		chart:        chart,
@@ -348,7 +348,7 @@ func (r *Polar) Refresh() {
 		obj[i].Refresh()
 	}
 
-	r.Layout(r.chart.WidgetSize())
+	r.Layout(r.widgetSize())
 	// 	r.chart.resetHasChanged()
 	// }
 }

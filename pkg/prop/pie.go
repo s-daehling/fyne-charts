@@ -14,5 +14,6 @@ func NewPieChart() (pieChart *PieChart) {
 	pieChart = &PieChart{
 		propChart: emptyPropChart(prop.PolarPlane),
 	}
+	pieChart.ExtendBaseWidget(pieChart)
 	return
 }

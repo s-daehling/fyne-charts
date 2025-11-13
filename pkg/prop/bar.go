@@ -14,5 +14,6 @@ func NewBarChart() (barChart *BarChart) {
 	barChart = &BarChart{
 		propChart: emptyPropChart(prop.CartesianPlane),
 	}
+	barChart.ExtendBaseWidget(barChart)
 	return
 }

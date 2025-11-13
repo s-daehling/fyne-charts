@@ -19,6 +19,7 @@ func NewPolarNumericalChart() (numChart *PolarNumericalChart) {
 	numChart = &PolarNumericalChart{
 		coordChart: emptyCoordChart(coord.PolarPlane, coord.Numerical),
 	}
+	numChart.ExtendBaseWidget(numChart)
 	return
 }
 
@@ -30,7 +31,7 @@ func NewPolarNumericalChart() (numChart *PolarNumericalChart) {
 // The range of A and Val is restricted (0<=A<=2pi; Val>0)
 func (numChart *PolarNumericalChart) AddLineSeries(name string, points []data.NumericalPoint, showDots bool,
 	color color.Color) (nls NumericalPointSeries, err error) {
-	nls.ser, err = numChart.BaseChart.AddNumericalLineSeries(name, points, showDots, color)
+	nls.ser, err = numChart.base.AddNumericalLineSeries(name, points, showDots, color)
 	return
 }
 
@@ -41,7 +42,7 @@ func (numChart *PolarNumericalChart) AddLineSeries(name string, points []data.Nu
 // The range of A and Val is restricted (0<=A<=2pi; Val>0)
 func (numChart *PolarNumericalChart) AddScatterSeries(name string, points []data.NumericalPoint,
 	color color.Color) (nss NumericalPointSeries, err error) {
-	nss.ser, err = numChart.BaseChart.AddNumericalScatterSeries(name, points, color)
+	nss.ser, err = numChart.base.AddNumericalScatterSeries(name, points, color)
 	return
 }
 
@@ -52,7 +53,7 @@ func (numChart *PolarNumericalChart) AddScatterSeries(name string, points []data
 // The range of A and Val is restricted (0<=A<=2pi; Val>0)
 func (numChart *PolarNumericalChart) AddLollipopSeries(name string, points []data.NumericalPoint,
 	color color.Color) (nls NumericalPointSeries, err error) {
-	nls.ser, err = numChart.BaseChart.AddNumericalLollipopSeries(name, points, color)
+	nls.ser, err = numChart.base.AddNumericalLollipopSeries(name, points, color)
 	return
 }
 
@@ -64,7 +65,7 @@ func (numChart *PolarNumericalChart) AddLollipopSeries(name string, points []dat
 // The range of A and Val is restricted (0<=A<=2pi; Val>0)
 func (numChart *PolarNumericalChart) AddAreaSeries(name string, points []data.NumericalPoint, showDots bool,
 	color color.Color) (nas NumericalPointSeries, err error) {
-	nas.ser, err = numChart.BaseChart.AddNumericalAreaSeries(name, points, showDots, color)
+	nas.ser, err = numChart.base.AddNumericalAreaSeries(name, points, showDots, color)
 	return
 }
 
@@ -77,35 +78,35 @@ func (numChart *PolarNumericalChart) AddAreaSeries(name string, points []data.Nu
 // An error is returned if barWidth < 0
 func (numChart *PolarNumericalChart) AddBarSeries(name string, points []data.NumericalPoint,
 	barWidth float64, color color.Color) (nbs NumericalPointSeries, err error) {
-	nbs.ser, err = numChart.BaseChart.AddNumericalBarSeries(name, points, barWidth, color)
+	nbs.ser, err = numChart.base.AddNumericalBarSeries(name, points, barWidth, color)
 	return
 }
 
 // SetRAxisLabel sets the label of the r-axis, which will be displayed at the bottom-right
 func (numChart *PolarNumericalChart) SetRAxisLabel(l string) {
-	numChart.BaseChart.SetToAxisLabel(l)
+	numChart.base.SetToAxisLabel(l)
 }
 
 // SetRRange sets a user defined range for the r-axis;
 // an error is returned if max<0 or if the origin has been defined by the user before and is outside the given range
 func (numChart *PolarNumericalChart) SetRRange(max float64) (err error) {
-	err = numChart.BaseChart.SetToRange(0.0, max)
+	err = numChart.base.SetToRange(0.0, max)
 	return
 }
 
 // SetAutoRRange overrides a previously user defined range and lets the range be calculated automatically
 func (numChart *PolarNumericalChart) SetAutoRRange() {
-	numChart.BaseChart.SetAutoToRange()
+	numChart.base.SetAutoToRange()
 }
 
 // SetRTicks sets the list of user defined ticks to be shown on the r-axis
 func (numChart *PolarNumericalChart) SetRTicks(ts []data.NumericalTick) {
-	numChart.BaseChart.SetToTicks(ts)
+	numChart.base.SetToTicks(ts)
 }
 
 // SetAutoRTicks overrides a previously user defined set of r-axis ticks and lets the ticks be calculated automatically
 func (numChart *PolarNumericalChart) SetAutoRTicks(autoSupportLine bool) {
-	numChart.BaseChart.SetAutoToTicks(autoSupportLine)
+	numChart.base.SetAutoToTicks(autoSupportLine)
 }
 
 // SetRAxisStyle changes the style of the R-axis
@@ -114,35 +115,35 @@ func (numChart *PolarNumericalChart) SetAutoRTicks(autoSupportLine bool) {
 // default value axis color: theme.ColorNameForeground
 func (numChart *PolarNumericalChart) SetRAxisStyle(labelSize fyne.ThemeSizeName,
 	labelColor fyne.ThemeColorName, axisColor fyne.ThemeColorName) {
-	numChart.BaseChart.SetToAxisLabelStyle(labelSize, labelColor)
-	numChart.BaseChart.SetToAxisStyle(axisColor)
+	numChart.base.SetToAxisLabelStyle(labelSize, labelColor)
+	numChart.base.SetToAxisStyle(axisColor)
 }
 
 // SetOrigin sets a user defined origin (crossing of phi and r axis).
 // An error is returned, if a range has been defined before and at least one coordinate is outside the range.
 func (numChart *PolarNumericalChart) SetOrigin(phi float64, r float64) (err error) {
-	err = numChart.BaseChart.SetNOrigin(phi, r)
+	err = numChart.base.SetNOrigin(phi, r)
 	return
 }
 
 // SetAutoOrigin resets a previously user defined origin and allows the chart to calculate the ideal origin automatically
 func (numChart *PolarNumericalChart) SetAutoOrigin() {
-	numChart.BaseChart.SetAutoOrigin()
+	numChart.base.SetAutoOrigin()
 }
 
 // SetPhiAxisLabel sets the label of the phi-axis, which will be displayed at the left side
 func (numChart *PolarNumericalChart) SetPhiAxisLabel(l string) {
-	numChart.BaseChart.SetFromAxisLabel(l)
+	numChart.base.SetFromAxisLabel(l)
 }
 
 // SetPhiTicks sets the list of user defined ticks to be shown on the phi-axis
 func (numChart *PolarNumericalChart) SetPhiTicks(ts []data.NumericalTick) {
-	numChart.BaseChart.SetFromNTicks(ts)
+	numChart.base.SetFromNTicks(ts)
 }
 
 // SetAutoPhiTicks overrides a previously user defined set of phi-axis ticks and lets the ticks be calculated automatically
 func (numChart *PolarNumericalChart) SetAutoPhiTicks(autoSupportLine bool) {
-	numChart.BaseChart.SetAutoFromTicks(autoSupportLine)
+	numChart.base.SetAutoFromTicks(autoSupportLine)
 }
 
 // SetPhiAxisStyle changes the style of the Phi-axis
@@ -151,6 +152,6 @@ func (numChart *PolarNumericalChart) SetAutoPhiTicks(autoSupportLine bool) {
 // default value axis color: theme.ColorNameForeground
 func (numChart *PolarNumericalChart) SetPhiAxisStyle(labelSize fyne.ThemeSizeName,
 	labelColor fyne.ThemeColorName, axisColor fyne.ThemeColorName) {
-	numChart.BaseChart.SetFromAxisLabelStyle(labelSize, labelColor)
-	numChart.BaseChart.SetFromAxisStyle(axisColor)
+	numChart.base.SetFromAxisLabelStyle(labelSize, labelColor)
+	numChart.base.SetFromAxisStyle(axisColor)
 }

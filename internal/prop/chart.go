@@ -10,7 +10,6 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/theme"
-	"fyne.io/fyne/v2/widget"
 )
 
 type PlaneType string
@@ -34,7 +33,6 @@ type BaseChart struct {
 	fromMax        float64
 	toMin          float64
 	toMax          float64
-	widget.BaseWidget
 }
 
 func EmptyBaseChart(pType PlaneType) (base *BaseChart) {
@@ -55,22 +53,16 @@ func EmptyBaseChart(pType PlaneType) (base *BaseChart) {
 		base.rast = canvas.NewRasterWithPixels(base.PixelGenPolar)
 		base.fromMax = 2 * math.Pi
 	}
-	base.ExtendBaseWidget(base)
 	return
 }
 
-func (base *BaseChart) CreateRenderer() (r fyne.WidgetRenderer) {
+func (base *BaseChart) CreateRenderer(ws func() fyne.Size) (r fyne.WidgetRenderer) {
 	if base.planeType == CartesianPlane {
-		base.render = renderer.EmptyCartesianRenderer(base)
+		base.render = renderer.EmptyCartesianRenderer(base, ws)
 	} else {
-		base.render = renderer.EmptyPolarRenderer(base)
+		base.render = renderer.EmptyPolarRenderer(base, ws)
 	}
 	r = base.render
-	return
-}
-
-func (base *BaseChart) WidgetSize() (size fyne.Size) {
-	size = base.Size()
 	return
 }
 

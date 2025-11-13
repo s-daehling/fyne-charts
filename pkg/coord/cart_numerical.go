@@ -20,6 +20,7 @@ func NewCartesianNumericalChart() (numChart *CartesianNumericalChart) {
 	numChart = &CartesianNumericalChart{
 		coordChart: emptyCoordChart(coord.CartesianPlane, coord.Numerical),
 	}
+	numChart.ExtendBaseWidget(numChart)
 	return
 }
 
@@ -31,7 +32,7 @@ func NewCartesianNumericalChart() (numChart *CartesianNumericalChart) {
 // The range of X and Val is not restricted
 func (numChart *CartesianNumericalChart) AddLineSeries(name string, points []data.NumericalPoint,
 	showDots bool, color color.Color) (nls NumericalPointSeries, err error) {
-	nls.ser, err = numChart.BaseChart.AddNumericalLineSeries(name, points, showDots, color)
+	nls.ser, err = numChart.base.AddNumericalLineSeries(name, points, showDots, color)
 	return
 }
 
@@ -42,7 +43,7 @@ func (numChart *CartesianNumericalChart) AddLineSeries(name string, points []dat
 // The range of X and Val is not restricted
 func (numChart *CartesianNumericalChart) AddScatterSeries(name string, points []data.NumericalPoint,
 	color color.Color) (nss NumericalPointSeries, err error) {
-	nss.ser, err = numChart.BaseChart.AddNumericalScatterSeries(name, points, color)
+	nss.ser, err = numChart.base.AddNumericalScatterSeries(name, points, color)
 	return
 }
 
@@ -53,7 +54,7 @@ func (numChart *CartesianNumericalChart) AddScatterSeries(name string, points []
 // The range of X and Val is not restricted
 func (numChart *CartesianNumericalChart) AddLollipopSeries(name string, points []data.NumericalPoint,
 	color color.Color) (nls NumericalPointSeries, err error) {
-	nls.ser, err = numChart.BaseChart.AddNumericalLollipopSeries(name, points, color)
+	nls.ser, err = numChart.base.AddNumericalLollipopSeries(name, points, color)
 	return
 }
 
@@ -64,7 +65,7 @@ func (numChart *CartesianNumericalChart) AddLollipopSeries(name string, points [
 // The range of XStart, XEnd and values is not restricted
 func (numChart *CartesianNumericalChart) AddCandleStickSeries(name string,
 	points []data.NumericalCandleStick) (ncs NumericalCandleStickSeries, err error) {
-	ncs.ser, err = numChart.BaseChart.AddNumericalCandleStickSeries(name, points)
+	ncs.ser, err = numChart.base.AddNumericalCandleStickSeries(name, points)
 	return
 }
 
@@ -75,7 +76,7 @@ func (numChart *CartesianNumericalChart) AddCandleStickSeries(name string,
 // The range of X and values is not restricted
 func (numChart *CartesianNumericalChart) AddBoxSeries(name string,
 	points []data.NumericalBox, col color.Color) (nbs NumericalBoxSeries, err error) {
-	nbs.ser, err = numChart.BaseChart.AddNumericalBoxSeries(name, points, col)
+	nbs.ser, err = numChart.base.AddNumericalBoxSeries(name, points, col)
 	return
 }
 
@@ -87,7 +88,7 @@ func (numChart *CartesianNumericalChart) AddBoxSeries(name string,
 // The range of X and Val is not restricted
 func (numChart *CartesianNumericalChart) AddAreaSeries(name string, points []data.NumericalPoint, showDots bool,
 	color color.Color) (nas NumericalPointSeries, err error) {
-	nas.ser, err = numChart.BaseChart.AddNumericalAreaSeries(name, points, showDots, color)
+	nas.ser, err = numChart.base.AddNumericalAreaSeries(name, points, showDots, color)
 	return
 }
 
@@ -100,35 +101,35 @@ func (numChart *CartesianNumericalChart) AddAreaSeries(name string, points []dat
 // An error is returned if barWidth < 0
 func (numChart *CartesianNumericalChart) AddBarSeries(name string, points []data.NumericalPoint,
 	barWidth float64, color color.Color) (nbs NumericalPointSeries, err error) {
-	nbs.ser, err = numChart.BaseChart.AddNumericalBarSeries(name, points, barWidth, color)
+	nbs.ser, err = numChart.base.AddNumericalBarSeries(name, points, barWidth, color)
 	return
 }
 
 // SetYAxisLabel sets the label of the y-axis, which will be displayed at the left side
 func (numChart *CartesianNumericalChart) SetYAxisLabel(l string) {
-	numChart.BaseChart.SetToAxisLabel(l)
+	numChart.base.SetToAxisLabel(l)
 }
 
 // SetYRange sets a user defined range for the y-axis;
 // an error is returned if min>max or if the origin has been defined by the user before and is outside the given range
 func (numChart *CartesianNumericalChart) SetYRange(min float64, max float64) (err error) {
-	err = numChart.BaseChart.SetToRange(min, max)
+	err = numChart.base.SetToRange(min, max)
 	return
 }
 
 // SetAutoYRange overrides a previously user defined range and lets the range be calculated automatically
 func (numChart *CartesianNumericalChart) SetAutoYRange() {
-	numChart.BaseChart.SetAutoToRange()
+	numChart.base.SetAutoToRange()
 }
 
 // SetYTicks sets the list of user defined ticks to be shown on the y-axis
 func (numChart *CartesianNumericalChart) SetYTicks(ts []data.NumericalTick) {
-	numChart.BaseChart.SetToTicks(ts)
+	numChart.base.SetToTicks(ts)
 }
 
 // SetAutoYTicks overrides a previously user defined set of y-axis ticks and lets the ticks be calculated automatically
 func (numChart *CartesianNumericalChart) SetAutoYTicks(autoSupportLine bool) {
-	numChart.BaseChart.SetAutoToTicks(autoSupportLine)
+	numChart.base.SetAutoToTicks(autoSupportLine)
 }
 
 // SetYAxisStyle changes the style of the Y-axis
@@ -137,47 +138,47 @@ func (numChart *CartesianNumericalChart) SetAutoYTicks(autoSupportLine bool) {
 // default value axis color: theme.ColorNameForeground
 func (numChart *CartesianNumericalChart) SetYAxisStyle(labelSize fyne.ThemeSizeName,
 	labelColor fyne.ThemeColorName, axisColor fyne.ThemeColorName) {
-	numChart.BaseChart.SetToAxisLabelStyle(labelSize, labelColor)
-	numChart.BaseChart.SetToAxisStyle(axisColor)
+	numChart.base.SetToAxisLabelStyle(labelSize, labelColor)
+	numChart.base.SetToAxisStyle(axisColor)
 }
 
 // SetOrigin sets a user defined origin (crossing of x and y axis).
 // An error is returned, if a range has been defined before and at least one coordinate is outside the range.
 func (numChart *CartesianNumericalChart) SetOrigin(x float64, y float64) (err error) {
-	err = numChart.BaseChart.SetNOrigin(x, y)
+	err = numChart.base.SetNOrigin(x, y)
 	return
 }
 
 // SetAutoOrigin resets a previously user defined origin and allows the chart to calculate the ideal origin automatically
 func (numChart *CartesianNumericalChart) SetAutoOrigin() {
-	numChart.BaseChart.SetAutoOrigin()
+	numChart.base.SetAutoOrigin()
 }
 
 // SetXAxisLabel sets the label of the x-axis, which will be displayed at the bottom
 func (numChart *CartesianNumericalChart) SetXAxisLabel(l string) {
-	numChart.BaseChart.SetFromAxisLabel(l)
+	numChart.base.SetFromAxisLabel(l)
 }
 
 // SetXRange sets a user defined range for the x-axis.
 // An error is returned, if min>max or if the origin has been defined by the user before and is outside the given range
 func (numChart *CartesianNumericalChart) SetXRange(min float64, max float64) (err error) {
-	err = numChart.BaseChart.SetFromNRange(min, max)
+	err = numChart.base.SetFromNRange(min, max)
 	return
 }
 
 // SetAutoXRange overrides a previously user defined range and lets the range be calculated automatically
 func (numChart *CartesianNumericalChart) SetAutoXRange() {
-	numChart.BaseChart.SetAutoFromRange()
+	numChart.base.SetAutoFromRange()
 }
 
 // SetXTicks sets the list of user defined ticks to be shown on the x-axis
 func (numChart *CartesianNumericalChart) SetXTicks(ts []data.NumericalTick) {
-	numChart.BaseChart.SetFromNTicks(ts)
+	numChart.base.SetFromNTicks(ts)
 }
 
 // SetAutoXTicks overrides a previously user defined set of x-axis ticks and lets the ticks be calculated automatically
 func (numChart *CartesianNumericalChart) SetAutoXTicks(autoSupportLine bool) {
-	numChart.BaseChart.SetAutoFromTicks(autoSupportLine)
+	numChart.base.SetAutoFromTicks(autoSupportLine)
 }
 
 // SetXAxisStyle changes the style of the X-axis
@@ -186,6 +187,6 @@ func (numChart *CartesianNumericalChart) SetAutoXTicks(autoSupportLine bool) {
 // default value axis color: theme.ColorNameForeground
 func (numChart *CartesianNumericalChart) SetXAxisStyle(labelSize fyne.ThemeSizeName,
 	labelColor fyne.ThemeColorName, axisColor fyne.ThemeColorName) {
-	numChart.BaseChart.SetFromAxisLabelStyle(labelSize, labelColor)
-	numChart.BaseChart.SetFromAxisStyle(axisColor)
+	numChart.base.SetFromAxisLabelStyle(labelSize, labelColor)
+	numChart.base.SetFromAxisStyle(axisColor)
 }
