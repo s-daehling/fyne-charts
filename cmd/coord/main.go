@@ -211,6 +211,11 @@ func cartCatChart() (catChart *coord.CartesianCategoricalChart, err error) {
 			Val: rand.Float64() * 30,
 		},
 	}
+	sbs1 := coord.NewCategoricalPointSeries("Test1", color.RGBA{R: 0xff, G: 0x00, B: 0x00, A: 0xff})
+	err = sbs1.AddData(data1)
+	if err != nil {
+		return
+	}
 	data2 := []data.CategoricalPoint{
 		{
 			C:   "One",
@@ -221,19 +226,21 @@ func cartCatChart() (catChart *coord.CartesianCategoricalChart, err error) {
 			Val: rand.Float64() * 30,
 		},
 	}
-	catSer := []data.CategoricalDataSeries{
-		{
-			Name:   "Test1",
-			Col:    color.RGBA{R: 0xff, G: 0x00, B: 0x00, A: 0xff},
-			Points: data1,
-		},
-		{
-			Name:   "Test2",
-			Col:    color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff},
-			Points: data2,
-		},
+	sbs2 := coord.NewCategoricalPointSeries("Test2", color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff})
+	err = sbs2.AddData(data2)
+	if err != nil {
+		return
 	}
-	_, err = catChart.AddStackedBarSeries("stacked bar", catSer)
+	catSer := coord.NewCategoricalStackedSeries("stacked bar")
+	err = catSer.AddSeries(sbs1)
+	if err != nil {
+		return
+	}
+	err = catSer.AddSeries(sbs2)
+	if err != nil {
+		return
+	}
+	err = catChart.AddStackedBarSeries(catSer)
 	if err != nil {
 		return
 	}
@@ -408,6 +415,11 @@ func polCatChart() (catChart *coord.PolarCategoricalChart, err error) {
 			Val: rand.Float64() * 30,
 		},
 	}
+	sbs1 := coord.NewCategoricalPointSeries("Test1", color.RGBA{R: 0xff, G: 0x00, B: 0x00, A: 0xff})
+	err = sbs1.AddData(data1)
+	if err != nil {
+		return
+	}
 	data2 := []data.CategoricalPoint{
 		{
 			C:   "One",
@@ -418,19 +430,21 @@ func polCatChart() (catChart *coord.PolarCategoricalChart, err error) {
 			Val: rand.Float64() * 30,
 		},
 	}
-	catSer := []data.CategoricalDataSeries{
-		{
-			Name:   "Test1",
-			Col:    color.RGBA{R: 0xff, G: 0x00, B: 0x00, A: 0xff},
-			Points: data1,
-		},
-		{
-			Name:   "Test2",
-			Col:    color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff},
-			Points: data2,
-		},
+	sbs2 := coord.NewCategoricalPointSeries("Test2", color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff})
+	err = sbs2.AddData(data2)
+	if err != nil {
+		return
 	}
-	_, err = catChart.AddStackedBarSeries("stacked bar", catSer)
+	catSer := coord.NewCategoricalStackedSeries("stacked bar")
+	err = catSer.AddSeries(sbs1)
+	if err != nil {
+		return
+	}
+	err = catSer.AddSeries(sbs2)
+	if err != nil {
+		return
+	}
+	err = catChart.AddStackedBarSeries(catSer)
 	if err != nil {
 		return
 	}

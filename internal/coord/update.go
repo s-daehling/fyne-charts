@@ -85,7 +85,7 @@ func (base *BaseChart) updateSeriesVariables() {
 			if ser.IsBarSeries() {
 				nBarSeries++
 			}
-		} else if _, ok := base.series[i].(*series.StackedBarSeries); ok {
+		} else if _, ok := base.series[i].(*series.StackedSeries); ok {
 			nBarSeries++
 		} else if bs, ok := base.series[i].(*series.BoxSeries); ok {
 			n := bs.NumberOfPoints()
@@ -116,7 +116,7 @@ func (base *BaseChart) updateSeriesVariables() {
 			} else if ser.IsAreaSeries() {
 				ser.SetValBaseNumerical(base.toAx.NOrigin())
 			}
-		} else if sbs, ok := base.series[i].(*series.StackedBarSeries); ok {
+		} else if sbs, ok := base.series[i].(*series.StackedSeries); ok {
 			if base.fromType == Categorical {
 				sbs.SetNumericalBarWidthAndShift(barWidth, barOffset)
 				barOffset += barWidth

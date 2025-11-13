@@ -17,7 +17,7 @@ type baseSeries struct {
 	color        color.Color
 	legendButton *interact.LegendBox
 	legendLabel  *canvas.Text
-	chart        chart
+	cont         container
 }
 
 func emptyBaseSeries(name string, col color.Color, togView func()) (ser baseSeries) {
@@ -27,7 +27,7 @@ func emptyBaseSeries(name string, col color.Color, togView func()) (ser baseSeri
 		color:        col,
 		legendButton: interact.NewLegendBox(col, togView),
 		legendLabel:  canvas.NewText(name, theme.Color(theme.ColorNameForeground)),
-		chart:        nil,
+		cont:         nil,
 	}
 	return
 }
@@ -48,22 +48,22 @@ func (ser *baseSeries) LegendEntries() (les []renderer.LegendEntry) {
 	return
 }
 
-func (ser *baseSeries) Bind(ch chart) (err error) {
-	if ser.chart != nil {
+func (ser *baseSeries) BindToChart(ch container) (err error) {
+	if ser.cont != nil {
 		err = errors.New("series is already part of a chart")
 		return
 	}
-	ser.chart = ch
+	ser.cont = ch
 	return
 }
 
 func (ser *baseSeries) Release() {
-	ser.chart = nil
+	ser.cont = nil
 }
 
 func (ser *baseSeries) HasChart() (b bool) {
 	b = false
-	if ser.chart != nil {
+	if ser.cont != nil {
 		b = true
 	}
 	return
@@ -144,7 +144,7 @@ func (ser *baseSeries) RefreshTheme() {
 type Series interface {
 	LegendEntries() (les []renderer.LegendEntry)
 	Name() (n string)
-	Bind(ch chart) (err error)
+	BindToChart(ch container) (err error)
 	Release()
 	Hide()
 	Show()
@@ -167,7 +167,7 @@ type Series interface {
 	RefreshTheme()
 }
 
-type chart interface {
+type container interface {
 	IsPolar() (b bool)
 	DataChange()
 	RasterVisibilityChange()

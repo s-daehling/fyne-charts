@@ -6,41 +6,40 @@ import (
 
 	"fyne.io/fyne/v2/theme"
 	"github.com/s-daehling/fyne-charts/internal/renderer"
-	"github.com/s-daehling/fyne-charts/pkg/data"
 )
 
-type StackedBarSeries struct {
+type StackedSeries struct {
 	baseSeries
 	stack []*PointSeries
 }
 
-func EmptyStackedBarSeries(name string) (ser *StackedBarSeries) {
-	ser = &StackedBarSeries{}
+func EmptyStackedSeries(name string) (ser *StackedSeries) {
+	ser = &StackedSeries{}
 	ser.baseSeries = emptyBaseSeries(name, theme.Color(theme.ColorNameForeground), ser.toggleView)
 	ser.legendButton.UseGradient(theme.Color(theme.ColorNameForeground), theme.Color(theme.ColorNameBackground))
 	return
 }
 
-func (ser *StackedBarSeries) IsPolar() (b bool) {
-	if ser.chart != nil {
-		b = ser.chart.IsPolar()
+func (ser *StackedSeries) IsPolar() (b bool) {
+	if ser.cont != nil {
+		b = ser.cont.IsPolar()
 	}
 	return
 }
 
-func (ser *StackedBarSeries) DataChange() {
-	if ser.chart != nil {
-		ser.chart.DataChange()
+func (ser *StackedSeries) DataChange() {
+	if ser.cont != nil {
+		ser.cont.DataChange()
 	}
 }
 
-func (ser *StackedBarSeries) RasterVisibilityChange() {
-	if ser.chart != nil {
-		ser.chart.RasterVisibilityChange()
+func (ser *StackedSeries) RasterVisibilityChange() {
+	if ser.cont != nil {
+		ser.cont.RasterVisibilityChange()
 	}
 }
 
-func (ser *StackedBarSeries) CRange() (cs []string) {
+func (ser *StackedSeries) CRange() (cs []string) {
 	for i := range ser.stack {
 		cats := ser.stack[i].CRange()
 		for j := range cats {
@@ -59,7 +58,7 @@ func (ser *StackedBarSeries) CRange() (cs []string) {
 	return
 }
 
-func (ser *StackedBarSeries) ValRange() (isEmpty bool, min float64, max float64) {
+func (ser *StackedSeries) ValRange() (isEmpty bool, min float64, max float64) {
 	ser.UpdateValOffset()
 	min = 0
 	max = 0
@@ -89,13 +88,13 @@ func (ser *StackedBarSeries) ValRange() (isEmpty bool, min float64, max float64)
 	return
 }
 
-func (ser *StackedBarSeries) ConvertCtoN(cToN func(c string) (n float64)) {
+func (ser *StackedSeries) ConvertCtoN(cToN func(c string) (n float64)) {
 	for i := range ser.stack {
 		ser.stack[i].ConvertCtoN(cToN)
 	}
 }
 
-func (ser *StackedBarSeries) CartesianRects(xMin float64, xMax float64, yMin float64,
+func (ser *StackedSeries) CartesianRects(xMin float64, xMax float64, yMin float64,
 	yMax float64) (fs []renderer.CartesianRect) {
 	for i := range ser.stack {
 		fs = append(fs, ser.stack[i].CartesianRects(xMin, xMax, yMin, yMax)...)
@@ -103,7 +102,7 @@ func (ser *StackedBarSeries) CartesianRects(xMin float64, xMax float64, yMin flo
 	return
 }
 
-func (ser *StackedBarSeries) RasterColorPolar(phi float64, r float64, x float64, y float64) (col color.Color) {
+func (ser *StackedSeries) RasterColorPolar(phi float64, r float64, x float64, y float64) (col color.Color) {
 	col = ser.baseSeries.RasterColorPolar(phi, r, x, y)
 	if !ser.visible {
 		return
@@ -119,7 +118,7 @@ func (ser *StackedBarSeries) RasterColorPolar(phi float64, r float64, x float64,
 	return
 }
 
-func (ser *StackedBarSeries) LegendEntries() (les []renderer.LegendEntry) {
+func (ser *StackedSeries) LegendEntries() (les []renderer.LegendEntry) {
 	les = append(les, ser.baseSeries.LegendEntries()...)
 	for i := range ser.stack {
 		subLes := ser.stack[i].LegendEntries()
@@ -131,7 +130,7 @@ func (ser *StackedBarSeries) LegendEntries() (les []renderer.LegendEntry) {
 	return
 }
 
-func (ser *StackedBarSeries) RefreshTheme() {
+func (ser *StackedSeries) RefreshTheme() {
 	ser.legendLabel.Color = theme.Color(theme.ColorNameForeground)
 	ser.color = theme.Color(theme.ColorNameForeground)
 	// ser.legendButton.SetRectColor(theme.Color(theme.ColorNameForeground))
@@ -142,7 +141,7 @@ func (ser *StackedBarSeries) RefreshTheme() {
 }
 
 // setWidthAndOffset sets width of bars and offset from x coordinate for this series
-func (ser *StackedBarSeries) SetNumericalBarWidthAndShift(width float64, shift float64) (err error) {
+func (ser *StackedSeries) SetNumericalBarWidthAndShift(width float64, shift float64) (err error) {
 	for i := range ser.stack {
 		err = ser.stack[i].SetNumericalBarWidthAndShift(width, shift)
 		if err != nil {
@@ -152,7 +151,7 @@ func (ser *StackedBarSeries) SetNumericalBarWidthAndShift(width float64, shift f
 	return
 }
 
-func (ser *StackedBarSeries) UpdateValOffset() {
+func (ser *StackedSeries) UpdateValOffset() {
 	valOffset := []catOffset{}
 	for i := range ser.stack {
 		valOffset = ser.stack[i].SetAndUpdateValBaseCategorical(valOffset)
@@ -160,7 +159,7 @@ func (ser *StackedBarSeries) UpdateValOffset() {
 }
 
 // Show makes the bars of the series visible
-func (ser *StackedBarSeries) Show() {
+func (ser *StackedSeries) Show() {
 	ser.visible = true
 	for i := range ser.stack {
 		ser.stack[i].Show()
@@ -168,14 +167,14 @@ func (ser *StackedBarSeries) Show() {
 }
 
 // Hide hides the bars of the series
-func (ser *StackedBarSeries) Hide() {
+func (ser *StackedSeries) Hide() {
 	ser.visible = false
 	for i := range ser.stack {
 		ser.stack[i].Hide()
 	}
 }
 
-func (ser *StackedBarSeries) toggleView() {
+func (ser *StackedSeries) toggleView() {
 	if ser.visible {
 		ser.Hide()
 	} else {
@@ -183,16 +182,16 @@ func (ser *StackedBarSeries) toggleView() {
 	}
 }
 
-func (ser *StackedBarSeries) Clear() {
+func (ser *StackedSeries) Clear() {
 	ser.stack = []*PointSeries{}
-	if ser.chart != nil {
-		ser.chart.DataChange()
+	if ser.cont != nil {
+		ser.cont.DataChange()
 	}
 }
 
 // DeleteDataInRange deletes all data points with one of the given category
 // The return value gives the number of data points that have been removed
-func (ser *StackedBarSeries) DeleteCategoricalDataInRange(cat []string) (c int) {
+func (ser *StackedSeries) DeleteCategoricalDataInRange(cat []string) (c int) {
 	c = 0
 	if len(cat) == 0 {
 		return
@@ -203,44 +202,39 @@ func (ser *StackedBarSeries) DeleteCategoricalDataInRange(cat []string) (c int) 
 	return
 }
 
-// AddData adds data points to the stacked series.
-// If the single series exists, the data points will be added to it
-// If the single series does not exist, nothing is done
-// The method checks for duplicates (i.e. data points with same C).
-// Data points with a C that already exists, will be ignored.
-func (ser *StackedBarSeries) AddCategoricalData(series string, input []data.CategoricalPoint) (err error) {
+func (ser *StackedSeries) RemovePointSeries(name string) {
+	newStack := make([]*PointSeries, 0)
 	for i := range ser.stack {
-		if ser.stack[i].name == series {
-			err = ser.stack[i].AddCategoricalData(input)
-			break
+		if ser.stack[i].name != name {
+			newStack = append(newStack, ser.stack[i])
+		} else {
+			ser.stack[i].Release()
 		}
 	}
-	return
+	ser.stack = newStack
+	if ser.cont != nil {
+		ser.cont.DataChange()
+	}
 }
 
-// AddSeries adds a new single series to the stacked bar series.
-// If the single series already exists, nothing will be done.
-// The method checks for duplicates (i.e. data points with same C).
-// Data points with a C that already exists, will be ignored.
-func (ser *StackedBarSeries) AddCategoricalSeries(series data.CategoricalDataSeries) (err error) {
-	if ser.seriesExist(series.Name) {
+func (ser *StackedSeries) AddPointSeries(ps *PointSeries) (err error) {
+	if ser.seriesExist(ps.name) {
 		err = errors.New("series already exists")
 		return
 	}
-	bs := EmptyBarSeries(series.Name, series.Col, true)
-	err = bs.Bind(ser)
+	ps.MakeBar()
+	err = ps.BindToStack(ser)
 	if err != nil {
 		return
 	}
-	err = bs.AddCategoricalData(series.Points)
-	if err != nil {
-		return
+	ser.stack = append(ser.stack, ps)
+	if ser.cont != nil {
+		ser.cont.DataChange()
 	}
-	ser.stack = append(ser.stack, bs)
 	return
 }
 
-func (ser *StackedBarSeries) seriesExist(name string) (exist bool) {
+func (ser *StackedSeries) seriesExist(name string) (exist bool) {
 	exist = false
 	for i := range ser.stack {
 		if ser.stack[i].name == name {

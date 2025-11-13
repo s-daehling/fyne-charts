@@ -252,8 +252,8 @@ func (ser *CandleStickSeries) SetLineWidth(lw float32) {
 
 func (ser *CandleStickSeries) Clear() {
 	ser.data = []*candleStickPoint{}
-	if ser.chart != nil {
-		ser.chart.DataChange()
+	if ser.cont != nil {
+		ser.cont.DataChange()
 	}
 }
 
@@ -277,8 +277,8 @@ func (ser *CandleStickSeries) DeleteNumericalDataInRange(min float64, max float6
 	}
 	ser.data = nil
 	ser.data = finalData
-	if ser.chart != nil {
-		ser.chart.DataChange()
+	if ser.cont != nil {
+		ser.cont.DataChange()
 	}
 	return
 }
@@ -305,8 +305,8 @@ func (ser *CandleStickSeries) AddNumericalData(input []data.NumericalCandleStick
 		csPoint.low = input[i].Low
 		ser.data = append(ser.data, csPoint)
 	}
-	if ser.chart != nil {
-		ser.chart.DataChange()
+	if ser.cont != nil {
+		ser.cont.DataChange()
 	}
 	return
 }
@@ -331,8 +331,8 @@ func (ser *CandleStickSeries) DeleteTemporalDataInRange(min time.Time, max time.
 	}
 	ser.data = nil
 	ser.data = finalData
-	if ser.chart != nil {
-		ser.chart.DataChange()
+	if ser.cont != nil {
+		ser.cont.DataChange()
 	}
 	return
 }
@@ -359,8 +359,8 @@ func (ser *CandleStickSeries) AddTemporalData(input []data.TemporalCandleStick) 
 		csPoint.low = input[i].Low
 		ser.data = append(ser.data, csPoint)
 	}
-	if ser.chart != nil {
-		ser.chart.DataChange()
+	if ser.cont != nil {
+		ser.cont.DataChange()
 	}
 	return
 }

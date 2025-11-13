@@ -4,8 +4,6 @@ import (
 	"errors"
 
 	"github.com/s-daehling/fyne-charts/internal/coord/series"
-
-	"github.com/s-daehling/fyne-charts/pkg/data"
 )
 
 func (base *BaseChart) addSeriesIfNotExist(ser series.Series) (err error) {
@@ -15,7 +13,7 @@ func (base *BaseChart) addSeriesIfNotExist(ser series.Series) (err error) {
 			return
 		}
 	}
-	err = ser.Bind(base)
+	err = ser.BindToChart(base)
 	if err != nil {
 		return
 	}
@@ -64,19 +62,7 @@ func (base *BaseChart) AddBoxSeries(bs *series.BoxSeries) (err error) {
 	return
 }
 
-func (base *BaseChart) AddCategoricalStackedBarSeries(name string,
-	dataSeries []data.CategoricalDataSeries) (ser *series.StackedBarSeries, err error) {
-	sbSeries := series.EmptyStackedBarSeries(name)
-	for i := range dataSeries {
-		err = sbSeries.AddCategoricalSeries(dataSeries[i])
-		if err != nil {
-			return
-		}
-	}
-	err = base.addSeriesIfNotExist(sbSeries)
-	if err != nil {
-		return
-	}
-	ser = sbSeries
+func (base *BaseChart) AddStackedBarSeries(sbs *series.StackedSeries) (err error) {
+	err = base.addSeriesIfNotExist(sbs)
 	return
 }

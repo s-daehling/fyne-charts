@@ -382,8 +382,8 @@ func (ser *BoxSeries) SetOutlierSize(os float32) {
 
 func (ser *BoxSeries) Clear() {
 	ser.data = []*boxPoint{}
-	if ser.chart != nil {
-		ser.chart.DataChange()
+	if ser.cont != nil {
+		ser.cont.DataChange()
 	}
 }
 
@@ -407,8 +407,8 @@ func (ser *BoxSeries) DeleteNumericalDataInRange(min float64, max float64) (c in
 	}
 	ser.data = nil
 	ser.data = finalData
-	if ser.chart != nil {
-		ser.chart.DataChange()
+	if ser.cont != nil {
+		ser.cont.DataChange()
 	}
 	return
 }
@@ -437,8 +437,8 @@ func (ser *BoxSeries) AddNumericalData(input []data.NumericalBox) (err error) {
 		bPoint.outlier = append(bPoint.outlier, input[i].Outlier...)
 		ser.data = append(ser.data, bPoint)
 	}
-	if ser.chart != nil {
-		ser.chart.DataChange()
+	if ser.cont != nil {
+		ser.cont.DataChange()
 	}
 	return
 }
@@ -463,8 +463,8 @@ func (ser *BoxSeries) DeleteTemporalDataInRange(min time.Time, max time.Time) (c
 	}
 	ser.data = nil
 	ser.data = finalData
-	if ser.chart != nil {
-		ser.chart.DataChange()
+	if ser.cont != nil {
+		ser.cont.DataChange()
 	}
 	return
 }
@@ -493,8 +493,8 @@ func (ser *BoxSeries) AddTemporalData(input []data.TemporalBox) (err error) {
 		bPoint.outlier = append(bPoint.outlier, input[i].Outlier...)
 		ser.data = append(ser.data, bPoint)
 	}
-	if ser.chart != nil {
-		ser.chart.DataChange()
+	if ser.cont != nil {
+		ser.cont.DataChange()
 	}
 	return
 }
@@ -526,8 +526,8 @@ func (ser *BoxSeries) DeleteCategoricalDataInRange(cat []string) (c int) {
 	}
 	ser.data = nil
 	ser.data = finalData
-	if ser.chart != nil {
-		ser.chart.DataChange()
+	if ser.cont != nil {
+		ser.cont.DataChange()
 	}
 	return
 }
@@ -567,8 +567,8 @@ func (ser *BoxSeries) AddCategoricalData(input []data.CategoricalBox) (err error
 		bPoint.outlier = append(bPoint.outlier, input[i].Outlier...)
 		ser.data = append(ser.data, bPoint)
 	}
-	if ser.chart != nil {
-		ser.chart.DataChange()
+	if ser.cont != nil {
+		ser.cont.DataChange()
 	}
 	return
 }

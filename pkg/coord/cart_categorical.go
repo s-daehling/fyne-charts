@@ -49,9 +49,8 @@ func (catChart *CartesianCategoricalChart) AddBarSeries(cps CategoricalPointSeri
 // The method checks for duplicates (i.e. data points with same C).
 // Data points with a C that already exists, will be ignored.
 // The range of C is not restricted. The range of Val is restricted to Val>=0.
-func (catChart *CartesianCategoricalChart) AddStackedBarSeries(name string,
-	points []data.CategoricalDataSeries) (css CategoricalStackedBarSeries, err error) {
-	css.ser, err = catChart.base.AddCategoricalStackedBarSeries(name, points)
+func (catChart *CartesianCategoricalChart) AddStackedBarSeries(css CategoricalStackedSeries) (err error) {
+	err = catChart.base.AddStackedBarSeries(css.ser)
 	return
 }
 
