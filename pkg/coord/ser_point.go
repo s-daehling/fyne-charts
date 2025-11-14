@@ -14,7 +14,7 @@ type pointSeries struct {
 }
 
 // Name returns the name of the series
-func (ps pointSeries) Name() (n string) {
+func (ps *pointSeries) Name() (n string) {
 	if ps.ser == nil {
 		return
 	}
@@ -23,7 +23,7 @@ func (ps pointSeries) Name() (n string) {
 }
 
 // Show makes the elements of the series visible
-func (ps pointSeries) Show() {
+func (ps *pointSeries) Show() {
 	if ps.ser == nil {
 		return
 	}
@@ -31,7 +31,7 @@ func (ps pointSeries) Show() {
 }
 
 // Hide makes the elements of the series invisible
-func (ps pointSeries) Hide() {
+func (ps *pointSeries) Hide() {
 	if ps.ser == nil {
 		return
 	}
@@ -39,7 +39,7 @@ func (ps pointSeries) Hide() {
 }
 
 // SetColor changes the color of series elements
-func (ps pointSeries) SetColor(col color.Color) {
+func (ps *pointSeries) SetColor(col color.Color) {
 	if ps.ser == nil {
 		return
 	}
@@ -47,7 +47,7 @@ func (ps pointSeries) SetColor(col color.Color) {
 }
 
 // SetLineWidth sets the width of the line
-func (ps pointSeries) SetLineWidth(lw float32) {
+func (ps *pointSeries) SetLineWidth(lw float32) {
 	if ps.ser == nil {
 		return
 	}
@@ -55,7 +55,7 @@ func (ps pointSeries) SetLineWidth(lw float32) {
 }
 
 // SetDotSize sets the size of the dots at series data points
-func (ps pointSeries) SetDotSize(ds float32) {
+func (ps *pointSeries) SetDotSize(ds float32) {
 	if ps.ser == nil {
 		return
 	}
@@ -63,7 +63,7 @@ func (ps pointSeries) SetDotSize(ds float32) {
 }
 
 // Clear deletes all data
-func (ps pointSeries) Clear() {
+func (ps *pointSeries) Clear() {
 	if ps.ser == nil {
 		return
 	}
@@ -75,14 +75,22 @@ type NumericalPointSeries struct {
 	pointSeries
 }
 
-func NewNumericalPointSeries(name string, col color.Color) (nps NumericalPointSeries) {
-	nps.ser = series.EmptyPointSeries(name, col)
+func NewNumericalPointSeries(name string, col color.Color, input []data.NumericalPoint) (nps *NumericalPointSeries, err error) {
+	nps = &NumericalPointSeries{
+		pointSeries: pointSeries{
+			ser: series.EmptyPointSeries(name, col),
+		},
+	}
+	err = nps.AddData(input)
+	if err != nil {
+		nps = nil
+	}
 	return
 }
 
 // DeleteDataInRange deletes all data points with a x-coordinate greater than min and smaller than max
 // The return value gives the number of data points that have been removed
-func (nps NumericalPointSeries) DeleteDataInRange(min float64, max float64) (c int) {
+func (nps *NumericalPointSeries) DeleteDataInRange(min float64, max float64) (c int) {
 	if nps.ser == nil {
 		return
 	}
@@ -94,21 +102,18 @@ func (nps NumericalPointSeries) DeleteDataInRange(min float64, max float64) (c i
 // data does not need to be sorted. It will be sorted by X by the method.
 // The method does not check for duplicates (i.e. data points with same X)
 // The range of X and Val is not restricted
-func (nps NumericalPointSeries) AddData(input []data.NumericalPoint) (err error) {
+func (nps *NumericalPointSeries) AddData(input []data.NumericalPoint) (err error) {
 	if nps.ser == nil {
 		return
 	}
 	err = nps.ser.AddNumericalData(input)
-	if err != nil {
-		return
-	}
 	return
 }
 
 // SetBarWidth sets the width of the bars. The bars are centered around their X value of the data points
 // An error is returned in w < 0
 // only effective if series is displayed as bar series
-func (nps NumericalPointSeries) SetBarWidth(w float64) (err error) {
+func (nps *NumericalPointSeries) SetBarWidth(w float64) (err error) {
 	if nps.ser == nil {
 		return
 	}
@@ -124,14 +129,22 @@ type TemporalPointSeries struct {
 	pointSeries
 }
 
-func NewTemporalPointSeries(name string, col color.Color) (tps TemporalPointSeries) {
-	tps.ser = series.EmptyPointSeries(name, col)
+func NewTemporalPointSeries(name string, col color.Color, input []data.TemporalPoint) (tps *TemporalPointSeries, err error) {
+	tps = &TemporalPointSeries{
+		pointSeries: pointSeries{
+			ser: series.EmptyPointSeries(name, col),
+		},
+	}
+	err = tps.AddData(input)
+	if err != nil {
+		tps = nil
+	}
 	return
 }
 
 // DeleteDataInRange deletes all data points with a t-coordinate after min and before max.
 // The return value gives the number of data points that have been removed
-func (tps TemporalPointSeries) DeleteDataInRange(min time.Time, max time.Time) (c int) {
+func (tps *TemporalPointSeries) DeleteDataInRange(min time.Time, max time.Time) (c int) {
 	if tps.ser == nil {
 		return
 	}
@@ -143,21 +156,18 @@ func (tps TemporalPointSeries) DeleteDataInRange(min time.Time, max time.Time) (
 // data does not need to be sorted. It will be sorted by T by the method.
 // The method does not check for duplicates (i.e. data points with same T)
 // The range of T is not restricted. The range of Val is not restricted in a cartesian chart, but Val>=0 in a polar chart
-func (tps TemporalPointSeries) AddData(input []data.TemporalPoint) (err error) {
+func (tps *TemporalPointSeries) AddData(input []data.TemporalPoint) (err error) {
 	if tps.ser == nil {
 		return
 	}
 	err = tps.ser.AddTemporalData(input)
-	if err != nil {
-		return
-	}
 	return
 }
 
 // SetBarWidth sets the width of the bars. The bars are centered around their T value of the data points
 // An error is returned in w < 0
 // only effective if series is displayed as bar series
-func (tps TemporalPointSeries) SetBarWidth(w time.Duration) (err error) {
+func (tps *TemporalPointSeries) SetBarWidth(w time.Duration) (err error) {
 	if tps.ser == nil {
 		return
 	}
@@ -173,14 +183,22 @@ type CategoricalPointSeries struct {
 	pointSeries
 }
 
-func NewCategoricalPointSeries(name string, col color.Color) (cps CategoricalPointSeries) {
-	cps.ser = series.EmptyPointSeries(name, col)
+func NewCategoricalPointSeries(name string, col color.Color, input []data.CategoricalPoint) (cps *CategoricalPointSeries, err error) {
+	cps = &CategoricalPointSeries{
+		pointSeries: pointSeries{
+			ser: series.EmptyPointSeries(name, col),
+		},
+	}
+	err = cps.AddData(input)
+	if err != nil {
+		cps = nil
+	}
 	return
 }
 
 // DeleteDataInRange deletes all data points with one of the given category
 // The return value gives the number of data points that have been removed
-func (cps CategoricalPointSeries) DeleteDataInRange(cat []string) (c int) {
+func (cps *CategoricalPointSeries) DeleteDataInRange(cat []string) (c int) {
 	if cps.ser == nil {
 		return
 	}
@@ -192,13 +210,10 @@ func (cps CategoricalPointSeries) DeleteDataInRange(cat []string) (c int) {
 // The method checks for duplicates (i.e. data points with same C).
 // Data points with a C that already exists, will be ignored.
 // The range of C is not restricted. The range of Val is not restricted in a cartesian chart, but Val>=0 in a polar chart
-func (cps CategoricalPointSeries) AddData(input []data.CategoricalPoint) (err error) {
+func (cps *CategoricalPointSeries) AddData(input []data.CategoricalPoint) (err error) {
 	if cps.ser == nil {
 		return
 	}
 	err = cps.ser.AddCategoricalData(input)
-	if err != nil {
-		return
-	}
 	return
 }

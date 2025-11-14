@@ -9,7 +9,7 @@ type stackedSeries struct {
 }
 
 // Name returns the name of the series
-func (ss stackedSeries) Name() (n string) {
+func (ss *stackedSeries) Name() (n string) {
 	if ss.ser == nil {
 		return
 	}
@@ -18,7 +18,7 @@ func (ss stackedSeries) Name() (n string) {
 }
 
 // Show makes the elements of the series visible
-func (ss stackedSeries) Show() {
+func (ss *stackedSeries) Show() {
 	if ss.ser == nil {
 		return
 	}
@@ -26,7 +26,7 @@ func (ss stackedSeries) Show() {
 }
 
 // Hide makes the elements of the series invisible
-func (ss stackedSeries) Hide() {
+func (ss *stackedSeries) Hide() {
 	if ss.ser == nil {
 		return
 	}
@@ -34,7 +34,7 @@ func (ss stackedSeries) Hide() {
 }
 
 // Clear deletes all data
-func (ss stackedSeries) Clear() {
+func (ss *stackedSeries) Clear() {
 	if ss.ser == nil {
 		return
 	}
@@ -46,14 +46,25 @@ type CategoricalStackedSeries struct {
 	stackedSeries
 }
 
-func NewCategoricalStackedSeries(name string) (cps CategoricalStackedSeries) {
-	cps.ser = series.EmptyStackedSeries(name)
+func NewCategoricalStackedSeries(name string, input []*CategoricalPointSeries) (cps *CategoricalStackedSeries, err error) {
+	cps = &CategoricalStackedSeries{
+		stackedSeries: stackedSeries{
+			ser: series.EmptyStackedSeries(name),
+		},
+	}
+	for i := range input {
+		err = cps.AddSeries(input[i])
+		if err != nil {
+			cps = nil
+			return
+		}
+	}
 	return
 }
 
 // DeleteDataInRange deletes all data points with one of the given category
 // The return value gives the number of data points that have been removed
-func (css CategoricalStackedSeries) DeleteDataInRange(cat []string) (c int) {
+func (css *CategoricalStackedSeries) DeleteDataInRange(cat []string) (c int) {
 	if css.ser == nil {
 		return
 	}
@@ -61,14 +72,14 @@ func (css CategoricalStackedSeries) DeleteDataInRange(cat []string) (c int) {
 	return
 }
 
-func (css CategoricalStackedSeries) RemoveSeries(name string) {
+func (css *CategoricalStackedSeries) RemoveSeries(name string) {
 	if css.ser == nil {
 		return
 	}
 	css.ser.RemovePointSeries(name)
 }
 
-func (css CategoricalStackedSeries) AddSeries(cps CategoricalPointSeries) (err error) {
+func (css *CategoricalStackedSeries) AddSeries(cps *CategoricalPointSeries) (err error) {
 	if css.ser == nil {
 		return
 	}

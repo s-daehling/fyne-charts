@@ -27,7 +27,7 @@ func NewPolarCategoricalChart() (catChart *PolarCategoricalChart) {
 // The method checks for duplicates (i.e. data points with same C).
 // Data points with a C that already exists, will be ignored.
 // The range of C is not restricted. The range of Val is restricted to Val>=0.
-func (catChart *PolarCategoricalChart) AddScatterSeries(cps CategoricalPointSeries) (err error) {
+func (catChart *PolarCategoricalChart) AddScatterSeries(cps *CategoricalPointSeries) (err error) {
 	err = catChart.base.AddScatterSeries(cps.ser)
 	return
 }
@@ -38,7 +38,7 @@ func (catChart *PolarCategoricalChart) AddScatterSeries(cps CategoricalPointSeri
 // The method checks for duplicates (i.e. data points with same C).
 // Data points with a C that already exists, will be ignored.
 // The range of C is not restricted. The range of Val is restricted to Val>=0.
-func (catChart *PolarCategoricalChart) AddLollipopSeries(cps CategoricalPointSeries) (err error) {
+func (catChart *PolarCategoricalChart) AddLollipopSeries(cps *CategoricalPointSeries) (err error) {
 	err = catChart.base.AddLollipopSeries(cps.ser)
 	return
 }
@@ -49,7 +49,7 @@ func (catChart *PolarCategoricalChart) AddLollipopSeries(cps CategoricalPointSer
 // The method checks for duplicates (i.e. data points with same C).
 // Data points with a C that already exists, will be ignored.
 // The range of C is not restricted. The range of Val is restricted to Val>=0.
-func (catChart *PolarCategoricalChart) AddBarSeries(cps CategoricalPointSeries) (err error) {
+func (catChart *PolarCategoricalChart) AddBarSeries(cps *CategoricalPointSeries) (err error) {
 	err = catChart.base.AddBarSeries(cps.ser)
 	return
 }
@@ -60,7 +60,7 @@ func (catChart *PolarCategoricalChart) AddBarSeries(cps CategoricalPointSeries) 
 // The method checks for duplicates (i.e. data points with same C).
 // Data points with a C that already exists, will be ignored.
 // The range of C is not restricted. The range of Val is restricted to Val>=0.
-func (catChart *PolarCategoricalChart) AddStackedBarSeries(css CategoricalStackedSeries) (err error) {
+func (catChart *PolarCategoricalChart) AddStackedBarSeries(css *CategoricalStackedSeries) (err error) {
 	err = catChart.base.AddStackedBarSeries(css.ser)
 	return
 }

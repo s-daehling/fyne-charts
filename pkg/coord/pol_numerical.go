@@ -27,7 +27,7 @@ func NewPolarNumericalChart() (numChart *PolarNumericalChart) {
 // data does not need to be sorted. It will be sorted by A by the method.
 // The method does not check for duplicates (i.e. data points with same A)
 // The range of A and Val is restricted (0<=A<=2pi; Val>0)
-func (numChart *PolarNumericalChart) AddLineSeries(nps NumericalPointSeries, showDots bool) (err error) {
+func (numChart *PolarNumericalChart) AddLineSeries(nps *NumericalPointSeries, showDots bool) (err error) {
 	err = numChart.base.AddLineSeries(nps.ser, showDots)
 	return
 }
@@ -37,7 +37,7 @@ func (numChart *PolarNumericalChart) AddLineSeries(nps NumericalPointSeries, sho
 // An error is returned,if another series with the same name exists.
 // The method does not check for duplicates (i.e. data points with same A)
 // The range of A and Val is restricted (0<=A<=2pi; Val>0)
-func (numChart *PolarNumericalChart) AddScatterSeries(nps NumericalPointSeries) (err error) {
+func (numChart *PolarNumericalChart) AddScatterSeries(nps *NumericalPointSeries) (err error) {
 	err = numChart.base.AddScatterSeries(nps.ser)
 	return
 }
@@ -47,7 +47,7 @@ func (numChart *PolarNumericalChart) AddScatterSeries(nps NumericalPointSeries) 
 // An error is returned,if another series with the same name exists.
 // The method does not check for duplicates (i.e. data points with same A)
 // The range of A and Val is restricted (0<=A<=2pi; Val>0)
-func (numChart *PolarNumericalChart) AddLollipopSeries(nps NumericalPointSeries) (err error) {
+func (numChart *PolarNumericalChart) AddLollipopSeries(nps *NumericalPointSeries) (err error) {
 	err = numChart.base.AddLollipopSeries(nps.ser)
 	return
 }
@@ -58,7 +58,7 @@ func (numChart *PolarNumericalChart) AddLollipopSeries(nps NumericalPointSeries)
 // data does not need to be sorted. It will be sorted by A by the method.
 // The method does not check for duplicates (i.e. data points with same A).
 // The range of A and Val is restricted (0<=A<=2pi; Val>0)
-func (numChart *PolarNumericalChart) AddAreaSeries(nps NumericalPointSeries, showDots bool) (err error) {
+func (numChart *PolarNumericalChart) AddAreaSeries(nps *NumericalPointSeries, showDots bool) (err error) {
 	err = numChart.base.AddAreaSeries(nps.ser, showDots)
 	return
 }
@@ -70,7 +70,7 @@ func (numChart *PolarNumericalChart) AddAreaSeries(nps NumericalPointSeries, sho
 // The range of A and Val is restricted (0<=A<=2pi; Val>0)
 // The bars are centered around their A value of the data points. barWidth is the width of the bars.
 // An error is returned if barWidth < 0
-func (numChart *PolarNumericalChart) AddBarSeries(nps NumericalPointSeries, barWidth float64) (err error) {
+func (numChart *PolarNumericalChart) AddBarSeries(nps *NumericalPointSeries, barWidth float64) (err error) {
 	err = nps.SetBarWidth(barWidth)
 	if err != nil {
 		return

@@ -27,7 +27,7 @@ func NewCartesianCategoricalChart() (catChart *CartesianCategoricalChart) {
 // The method checks for duplicates (i.e. data points with same C).
 // Data points with a C that already exists, will be ignored.
 // The range of C and Val is not restricted
-func (catChart *CartesianCategoricalChart) AddScatterSeries(cps CategoricalPointSeries) (err error) {
+func (catChart *CartesianCategoricalChart) AddScatterSeries(cps *CategoricalPointSeries) (err error) {
 	err = catChart.base.AddScatterSeries(cps.ser)
 	return
 }
@@ -38,7 +38,7 @@ func (catChart *CartesianCategoricalChart) AddScatterSeries(cps CategoricalPoint
 // The method checks for duplicates (i.e. data points with same C).
 // Data points with a C that already exists, will be ignored.
 // The range of C and Val is not restricted
-func (catChart *CartesianCategoricalChart) AddBarSeries(cps CategoricalPointSeries) (err error) {
+func (catChart *CartesianCategoricalChart) AddBarSeries(cps *CategoricalPointSeries) (err error) {
 	err = catChart.base.AddBarSeries(cps.ser)
 	return
 }
@@ -49,7 +49,7 @@ func (catChart *CartesianCategoricalChart) AddBarSeries(cps CategoricalPointSeri
 // The method checks for duplicates (i.e. data points with same C).
 // Data points with a C that already exists, will be ignored.
 // The range of C is not restricted. The range of Val is restricted to Val>=0.
-func (catChart *CartesianCategoricalChart) AddStackedBarSeries(css CategoricalStackedSeries) (err error) {
+func (catChart *CartesianCategoricalChart) AddStackedBarSeries(css *CategoricalStackedSeries) (err error) {
 	err = catChart.base.AddStackedBarSeries(css.ser)
 	return
 }
@@ -60,7 +60,7 @@ func (catChart *CartesianCategoricalChart) AddStackedBarSeries(css CategoricalSt
 // The method checks for duplicates (i.e. data points with same C).
 // Data points with a C that already exists, will be ignored.
 // The range of C and Val is not restricted
-func (catChart *CartesianCategoricalChart) AddLollipopSeries(cps CategoricalPointSeries) (err error) {
+func (catChart *CartesianCategoricalChart) AddLollipopSeries(cps *CategoricalPointSeries) (err error) {
 	err = catChart.base.AddLollipopSeries(cps.ser)
 	return
 }
@@ -71,7 +71,7 @@ func (catChart *CartesianCategoricalChart) AddLollipopSeries(cps CategoricalPoin
 // The method checks for duplicates (i.e. boxes with same C).
 // Boxes with a C that already exists, will be ignored.
 // The range of C and values is not restricted.
-func (catChart *CartesianCategoricalChart) AddBoxSeries(cbs CategoricalBoxSeries) (err error) {
+func (catChart *CartesianCategoricalChart) AddBoxSeries(cbs *CategoricalBoxSeries) (err error) {
 	err = catChart.base.AddBoxSeries(cbs.ser)
 	return
 }

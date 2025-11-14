@@ -13,7 +13,7 @@ type candleStickSeries struct {
 }
 
 // Name returns the name of the series
-func (cs candleStickSeries) Name() (n string) {
+func (cs *candleStickSeries) Name() (n string) {
 	if cs.ser == nil {
 		return
 	}
@@ -22,7 +22,7 @@ func (cs candleStickSeries) Name() (n string) {
 }
 
 // Show makes the elements of the series visible
-func (cs candleStickSeries) Show() {
+func (cs *candleStickSeries) Show() {
 	if cs.ser == nil {
 		return
 	}
@@ -30,7 +30,7 @@ func (cs candleStickSeries) Show() {
 }
 
 // Hide makes the elements of the series invisible
-func (cs candleStickSeries) Hide() {
+func (cs *candleStickSeries) Hide() {
 	if cs.ser == nil {
 		return
 	}
@@ -38,7 +38,7 @@ func (cs candleStickSeries) Hide() {
 }
 
 // SetLineWidth sets the width of the high and low line
-func (cs candleStickSeries) SetLineWidth(lw float32) {
+func (cs *candleStickSeries) SetLineWidth(lw float32) {
 	if cs.ser == nil {
 		return
 	}
@@ -46,7 +46,7 @@ func (cs candleStickSeries) SetLineWidth(lw float32) {
 }
 
 // Clear deletes all data
-func (cs candleStickSeries) Clear() {
+func (cs *candleStickSeries) Clear() {
 	if cs.ser == nil {
 		return
 	}
@@ -58,14 +58,22 @@ type NumericalCandleStickSeries struct {
 	candleStickSeries
 }
 
-func NewNumericalCandleStickSeries(name string) (ncs NumericalCandleStickSeries) {
-	ncs.ser = series.EmptyCandleStickSeries(name)
+func NewNumericalCandleStickSeries(name string, input []data.NumericalCandleStick) (ncs *NumericalCandleStickSeries, err error) {
+	ncs = &NumericalCandleStickSeries{
+		candleStickSeries: candleStickSeries{
+			ser: series.EmptyCandleStickSeries(name),
+		},
+	}
+	err = ncs.AddData(input)
+	if err != nil {
+		ncs = nil
+	}
 	return
 }
 
 // DeleteDataInRange deletes all candles with a nEnd greater than min and a nStart smaller than max
 // The return value gives the number of candles that have been removed
-func (ncs NumericalCandleStickSeries) DeleteDataInRange(min float64, max float64) (c int) {
+func (ncs *NumericalCandleStickSeries) DeleteDataInRange(min float64, max float64) (c int) {
 	if ncs.ser == nil {
 		return
 	}
@@ -76,14 +84,11 @@ func (ncs NumericalCandleStickSeries) DeleteDataInRange(min float64, max float64
 // AddData adds candles to the series.
 // The method does not check for duplicates (i.e. candles with same XStart or XEnd)
 // The range of XStart, XEnd and values is not restricted
-func (ncs NumericalCandleStickSeries) AddData(input []data.NumericalCandleStick) (err error) {
+func (ncs *NumericalCandleStickSeries) AddData(input []data.NumericalCandleStick) (err error) {
 	if ncs.ser == nil {
 		return
 	}
 	err = ncs.ser.AddNumericalData(input)
-	if err != nil {
-		return
-	}
 	return
 }
 
@@ -92,14 +97,22 @@ type TemporalCandleStickSeries struct {
 	candleStickSeries
 }
 
-func NewTemporalCandleStickSeries(name string) (tcs TemporalCandleStickSeries) {
-	tcs.ser = series.EmptyCandleStickSeries(name)
+func NewTemporalCandleStickSeries(name string, input []data.TemporalCandleStick) (tcs *TemporalCandleStickSeries, err error) {
+	tcs = &TemporalCandleStickSeries{
+		candleStickSeries: candleStickSeries{
+			ser: series.EmptyCandleStickSeries(name),
+		},
+	}
+	err = tcs.AddData(input)
+	if err != nil {
+		tcs = nil
+	}
 	return
 }
 
 // DeleteDataInRange deletes all candles with a tEnd after min and a tStart before max.
 // The return value gives the number of candles that have been removed
-func (tcs TemporalCandleStickSeries) DeleteDataInRange(min time.Time, max time.Time) (c int) {
+func (tcs *TemporalCandleStickSeries) DeleteDataInRange(min time.Time, max time.Time) (c int) {
 	if tcs.ser == nil {
 		return
 	}
@@ -110,13 +123,10 @@ func (tcs TemporalCandleStickSeries) DeleteDataInRange(min time.Time, max time.T
 // AddData adds candles to the series.
 // The method does not check for duplicates (i.e. candles with same TStart or TEnd)
 // The range of TStart, TEnd and values is not restricted
-func (tcs TemporalCandleStickSeries) AddData(input []data.TemporalCandleStick) (err error) {
+func (tcs *TemporalCandleStickSeries) AddData(input []data.TemporalCandleStick) (err error) {
 	if tcs.ser == nil {
 		return
 	}
 	err = tcs.ser.AddTemporalData(input)
-	if err != nil {
-		return
-	}
 	return
 }

@@ -85,8 +85,7 @@ func cartNumChart() (numChart *coord.CartesianNumericalChart, err error) {
 	for range 50 {
 		data1 = append(data1, randomNumericalDataPoint(0, 100, 0, 100))
 	}
-	as := coord.NewNumericalPointSeries("area", color.RGBA{R: 0xff, G: 0x00, B: 0x00, A: 0xff})
-	err = as.AddData(data1)
+	as, err := coord.NewNumericalPointSeries("area", color.RGBA{R: 0xff, G: 0x00, B: 0x00, A: 0xff}, data1)
 	if err != nil {
 		return
 	}
@@ -96,8 +95,7 @@ func cartNumChart() (numChart *coord.CartesianNumericalChart, err error) {
 	}
 
 	// Line Series
-	ls := coord.NewNumericalPointSeries("line", color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff})
-	err = ls.AddData(updateSineNumericalData())
+	ls, err := coord.NewNumericalPointSeries("line", color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff}, updateSineNumericalData())
 	if err != nil {
 		return
 	}
@@ -123,8 +121,7 @@ func cartNumChart() (numChart *coord.CartesianNumericalChart, err error) {
 	for range 50 {
 		data3 = append(data3, randomNumericalDataPoint(-110, 110, -110, 110))
 	}
-	bs := coord.NewNumericalPointSeries("bar", color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff})
-	err = bs.AddData(data3)
+	bs, err := coord.NewNumericalPointSeries("bar", color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff}, data3)
 	if err != nil {
 		return
 	}
@@ -157,8 +154,7 @@ func cartTempChart() (tempChart *coord.CartesianTemporalChart, err error) {
 		tStart = tStart.Add(span)
 		close = cs.Close
 	}
-	tcs := coord.NewTemporalCandleStickSeries("candlestick")
-	err = tcs.AddData(data1)
+	tcs, err := coord.NewTemporalCandleStickSeries("candlestick", data1)
 	if err != nil {
 		return
 	}
@@ -172,8 +168,7 @@ func cartTempChart() (tempChart *coord.CartesianTemporalChart, err error) {
 	for range 10 {
 		data2 = append(data2, randomTemporalDataPoint(time.Now(), time.Now().Add(time.Hour*50), -5, 10))
 	}
-	tps := coord.NewTemporalPointSeries("lollipop", color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff})
-	err = tps.AddData(data2)
+	tps, err := coord.NewTemporalPointSeries("lollipop", color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff}, data2)
 	if err != nil {
 		return
 	}
@@ -211,8 +206,7 @@ func cartCatChart() (catChart *coord.CartesianCategoricalChart, err error) {
 			Val: rand.Float64() * 30,
 		},
 	}
-	sbs1 := coord.NewCategoricalPointSeries("Test1", color.RGBA{R: 0xff, G: 0x00, B: 0x00, A: 0xff})
-	err = sbs1.AddData(data1)
+	sbs1, err := coord.NewCategoricalPointSeries("Test1", color.RGBA{R: 0xff, G: 0x00, B: 0x00, A: 0xff}, data1)
 	if err != nil {
 		return
 	}
@@ -226,17 +220,11 @@ func cartCatChart() (catChart *coord.CartesianCategoricalChart, err error) {
 			Val: rand.Float64() * 30,
 		},
 	}
-	sbs2 := coord.NewCategoricalPointSeries("Test2", color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff})
-	err = sbs2.AddData(data2)
+	sbs2, err := coord.NewCategoricalPointSeries("Test2", color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff}, data2)
 	if err != nil {
 		return
 	}
-	catSer := coord.NewCategoricalStackedSeries("stacked bar")
-	err = catSer.AddSeries(sbs1)
-	if err != nil {
-		return
-	}
-	err = catSer.AddSeries(sbs2)
+	catSer, err := coord.NewCategoricalStackedSeries("stacked bar", []*coord.CategoricalPointSeries{sbs1, sbs2})
 	if err != nil {
 		return
 	}
@@ -260,8 +248,7 @@ func cartCatChart() (catChart *coord.CartesianCategoricalChart, err error) {
 			Val: -10 + rand.Float64()*20,
 		},
 	}
-	bs := coord.NewCategoricalPointSeries("bar", color.RGBA{R: 0xff, G: 0xff, B: 0x00, A: 0xff})
-	err = bs.AddData(data3)
+	bs, err := coord.NewCategoricalPointSeries("bar", color.RGBA{R: 0xff, G: 0xff, B: 0x00, A: 0xff}, data3)
 	if err != nil {
 		return
 	}
@@ -291,8 +278,7 @@ func cartCatChart() (catChart *coord.CartesianCategoricalChart, err error) {
 			Outlier:       []float64{21.3, 20.3, 12.45, 7.8},
 		},
 	}
-	cbs := coord.NewCategoricalBoxSeries("box", color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff})
-	err = cbs.AddData(data4)
+	cbs, err := coord.NewCategoricalBoxSeries("box", color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff}, data4)
 	if err != nil {
 		return
 	}
@@ -318,8 +304,7 @@ func polNumChart() (numChart *coord.PolarNumericalChart, err error) {
 	for range 100 {
 		data1 = append(data1, randomAngularDataPoint(63.777))
 	}
-	as := coord.NewNumericalPointSeries("area", color.RGBA{R: 0xff, G: 0x00, B: 0x00, A: 0xff})
-	err = as.AddData(data1)
+	as, err := coord.NewNumericalPointSeries("area", color.RGBA{R: 0xff, G: 0x00, B: 0x00, A: 0xff}, data1)
 	if err != nil {
 		return
 	}
@@ -333,8 +318,7 @@ func polNumChart() (numChart *coord.PolarNumericalChart, err error) {
 	for range 150 {
 		data2 = append(data2, randomSineAngularDataPoint(63.777))
 	}
-	ls := coord.NewNumericalPointSeries("line", color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff})
-	err = ls.AddData(data2)
+	ls, err := coord.NewNumericalPointSeries("line", color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff}, data2)
 	if err != nil {
 		return
 	}
@@ -362,8 +346,7 @@ func polTempChart() (tempChart *coord.PolarTemporalChart, err error) {
 	for range 50 {
 		data1 = append(data1, randomTemporalDataPoint(time.Now(), time.Now().Add(time.Hour*50), 0, 111))
 	}
-	tps1 := coord.NewTemporalPointSeries("lollipop", color.RGBA{R: 0xff, G: 0xff, B: 0x00, A: 0xff})
-	err = tps1.AddData(data1)
+	tps1, err := coord.NewTemporalPointSeries("lollipop", color.RGBA{R: 0xff, G: 0xff, B: 0x00, A: 0xff}, data1)
 	if err != nil {
 		return
 	}
@@ -377,8 +360,7 @@ func polTempChart() (tempChart *coord.PolarTemporalChart, err error) {
 	for range 25 {
 		data2 = append(data2, randomTemporalDataPoint(time.Now(), time.Now().Add(time.Hour*50), 0, 111))
 	}
-	tps2 := coord.NewTemporalPointSeries("scatter", color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff})
-	err = tps2.AddData(data2)
+	tps2, err := coord.NewTemporalPointSeries("scatter", color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff}, data2)
 	if err != nil {
 		return
 	}
@@ -415,8 +397,7 @@ func polCatChart() (catChart *coord.PolarCategoricalChart, err error) {
 			Val: rand.Float64() * 30,
 		},
 	}
-	sbs1 := coord.NewCategoricalPointSeries("Test1", color.RGBA{R: 0xff, G: 0x00, B: 0x00, A: 0xff})
-	err = sbs1.AddData(data1)
+	sbs1, err := coord.NewCategoricalPointSeries("Test1", color.RGBA{R: 0xff, G: 0x00, B: 0x00, A: 0xff}, data1)
 	if err != nil {
 		return
 	}
@@ -430,17 +411,11 @@ func polCatChart() (catChart *coord.PolarCategoricalChart, err error) {
 			Val: rand.Float64() * 30,
 		},
 	}
-	sbs2 := coord.NewCategoricalPointSeries("Test2", color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff})
-	err = sbs2.AddData(data2)
+	sbs2, err := coord.NewCategoricalPointSeries("Test2", color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff}, data2)
 	if err != nil {
 		return
 	}
-	catSer := coord.NewCategoricalStackedSeries("stacked bar")
-	err = catSer.AddSeries(sbs1)
-	if err != nil {
-		return
-	}
-	err = catSer.AddSeries(sbs2)
+	catSer, err := coord.NewCategoricalStackedSeries("stacked bar", []*coord.CategoricalPointSeries{sbs1, sbs2})
 	if err != nil {
 		return
 	}
@@ -464,8 +439,7 @@ func polCatChart() (catChart *coord.PolarCategoricalChart, err error) {
 			Val: rand.Float64() * 30,
 		},
 	}
-	bs := coord.NewCategoricalPointSeries("bar", color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff})
-	err = bs.AddData(data3)
+	bs, err := coord.NewCategoricalPointSeries("bar", color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff}, data3)
 	if err != nil {
 		return
 	}

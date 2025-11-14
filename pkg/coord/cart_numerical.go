@@ -28,7 +28,7 @@ func NewCartesianNumericalChart() (numChart *CartesianNumericalChart) {
 // data does not need to be sorted. It will be sorted by X by the method.
 // The method does not check for duplicates (i.e. data points with same X)
 // The range of X and Val is not restricted
-func (numChart *CartesianNumericalChart) AddLineSeries(nps NumericalPointSeries, showDots bool) (err error) {
+func (numChart *CartesianNumericalChart) AddLineSeries(nps *NumericalPointSeries, showDots bool) (err error) {
 	err = numChart.base.AddLineSeries(nps.ser, showDots)
 	return
 }
@@ -38,7 +38,7 @@ func (numChart *CartesianNumericalChart) AddLineSeries(nps NumericalPointSeries,
 // An error is returned,if another series with the same name exists.
 // The method does not check for duplicates (i.e. data points with same X)
 // The range of X and Val is not restricted
-func (numChart *CartesianNumericalChart) AddScatterSeries(nps NumericalPointSeries) (err error) {
+func (numChart *CartesianNumericalChart) AddScatterSeries(nps *NumericalPointSeries) (err error) {
 	err = numChart.base.AddScatterSeries(nps.ser)
 	return
 }
@@ -48,7 +48,7 @@ func (numChart *CartesianNumericalChart) AddScatterSeries(nps NumericalPointSeri
 // An error is returned,if another series with the same name exists.
 // The method does not check for duplicates (i.e. data points with same X)
 // The range of X and Val is not restricted
-func (numChart *CartesianNumericalChart) AddLollipopSeries(nps NumericalPointSeries) (err error) {
+func (numChart *CartesianNumericalChart) AddLollipopSeries(nps *NumericalPointSeries) (err error) {
 	err = numChart.base.AddLollipopSeries(nps.ser)
 	return
 }
@@ -58,7 +58,7 @@ func (numChart *CartesianNumericalChart) AddLollipopSeries(nps NumericalPointSer
 // An error is returned,if another series with the same name exists.
 // The method does not check for duplicates (i.e. data points with same X)
 // The range of XStart, XEnd and values is not restricted
-func (numChart *CartesianNumericalChart) AddCandleStickSeries(ncs NumericalCandleStickSeries) (err error) {
+func (numChart *CartesianNumericalChart) AddCandleStickSeries(ncs *NumericalCandleStickSeries) (err error) {
 	err = numChart.base.AddCandleStickSeries(ncs.ser)
 	return
 }
@@ -68,7 +68,7 @@ func (numChart *CartesianNumericalChart) AddCandleStickSeries(ncs NumericalCandl
 // An error is returned,if another series with the same name exists.
 // The method does not check for duplicates (i.e. data points with same X)
 // The range of X and values is not restricted
-func (numChart *CartesianNumericalChart) AddBoxSeries(nbs NumericalBoxSeries) (err error) {
+func (numChart *CartesianNumericalChart) AddBoxSeries(nbs *NumericalBoxSeries) (err error) {
 	err = numChart.base.AddBoxSeries(nbs.ser)
 	return
 }
@@ -79,7 +79,7 @@ func (numChart *CartesianNumericalChart) AddBoxSeries(nbs NumericalBoxSeries) (e
 // data does not need to be sorted. It will be sorted by X by the method.
 // The method does not check for duplicates (i.e. data points with same X).
 // The range of X and Val is not restricted
-func (numChart *CartesianNumericalChart) AddAreaSeries(nps NumericalPointSeries, showDots bool) (err error) {
+func (numChart *CartesianNumericalChart) AddAreaSeries(nps *NumericalPointSeries, showDots bool) (err error) {
 	err = numChart.base.AddAreaSeries(nps.ser, showDots)
 	return
 }
@@ -91,7 +91,7 @@ func (numChart *CartesianNumericalChart) AddAreaSeries(nps NumericalPointSeries,
 // The range of X and Val is not restricted
 // The bars are centered around their X value of the data points. barWidth is the width of the bars.
 // An error is returned if barWidth < 0
-func (numChart *CartesianNumericalChart) AddBarSeries(nps NumericalPointSeries, barWidth float64) (err error) {
+func (numChart *CartesianNumericalChart) AddBarSeries(nps *NumericalPointSeries, barWidth float64) (err error) {
 	err = nps.SetBarWidth(barWidth)
 	if err != nil {
 		return

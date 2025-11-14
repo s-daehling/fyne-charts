@@ -14,7 +14,7 @@ type boxSeries struct {
 }
 
 // Name returns the name of the series
-func (bs boxSeries) Name() (n string) {
+func (bs *boxSeries) Name() (n string) {
 	if bs.ser == nil {
 		return
 	}
@@ -23,7 +23,7 @@ func (bs boxSeries) Name() (n string) {
 }
 
 // Show makes the elements of the series visible
-func (bs boxSeries) Show() {
+func (bs *boxSeries) Show() {
 	if bs.ser == nil {
 		return
 	}
@@ -31,7 +31,7 @@ func (bs boxSeries) Show() {
 }
 
 // Hide makes the elements of the series invisible
-func (bs boxSeries) Hide() {
+func (bs *boxSeries) Hide() {
 	if bs.ser == nil {
 		return
 	}
@@ -39,7 +39,7 @@ func (bs boxSeries) Hide() {
 }
 
 // SetColor changes the color of series elements
-func (bs boxSeries) SetColor(col color.Color) {
+func (bs *boxSeries) SetColor(col color.Color) {
 	if bs.ser == nil {
 		return
 	}
@@ -47,7 +47,7 @@ func (bs boxSeries) SetColor(col color.Color) {
 }
 
 // SetLineWidth sets the width of the line
-func (bs boxSeries) SetLineWidth(lw float32) {
+func (bs *boxSeries) SetLineWidth(lw float32) {
 	if bs.ser == nil {
 		return
 	}
@@ -55,7 +55,7 @@ func (bs boxSeries) SetLineWidth(lw float32) {
 }
 
 // SetOutlierSize sets the size of the dots at outlier points
-func (bs boxSeries) SetOutlierSize(os float32) {
+func (bs *boxSeries) SetOutlierSize(os float32) {
 	if bs.ser == nil {
 		return
 	}
@@ -63,7 +63,7 @@ func (bs boxSeries) SetOutlierSize(os float32) {
 }
 
 // Clear deletes all data
-func (bs boxSeries) Clear() {
+func (bs *boxSeries) Clear() {
 	if bs.ser == nil {
 		return
 	}
@@ -75,14 +75,22 @@ type NumericalBoxSeries struct {
 	boxSeries
 }
 
-func NewNumericalBoxSeries(name string, col color.Color) (nbs NumericalBoxSeries) {
-	nbs.ser = series.EmptyBoxSeries(name, col)
+func NewNumericalBoxSeries(name string, col color.Color, input []data.NumericalBox) (nbs *NumericalBoxSeries, err error) {
+	nbs = &NumericalBoxSeries{
+		boxSeries: boxSeries{
+			ser: series.EmptyBoxSeries(name, col),
+		},
+	}
+	err = nbs.AddData(input)
+	if err != nil {
+		nbs = nil
+	}
 	return
 }
 
 // DeleteDataInRange deletes all data points with a x-coordinate greater than min and smaller than max
 // The return value gives the number of data points that have been removed
-func (nbs NumericalBoxSeries) DeleteDataInRange(min float64, max float64) (c int) {
+func (nbs *NumericalBoxSeries) DeleteDataInRange(min float64, max float64) (c int) {
 	if nbs.ser == nil {
 		return
 	}
@@ -93,14 +101,11 @@ func (nbs NumericalBoxSeries) DeleteDataInRange(min float64, max float64) (c int
 // AddData adds data points to the series.
 // The method does not check for duplicates (i.e. data points with same X)
 // The range of X and Val is not restricted
-func (nbs NumericalBoxSeries) AddData(input []data.NumericalBox) (err error) {
+func (nbs *NumericalBoxSeries) AddData(input []data.NumericalBox) (err error) {
 	if nbs.ser == nil {
 		return
 	}
 	err = nbs.ser.AddNumericalData(input)
-	if err != nil {
-		return
-	}
 	return
 }
 
@@ -109,14 +114,22 @@ type TemporalBoxSeries struct {
 	boxSeries
 }
 
-func NewTemporalBoxSeries(name string, col color.Color) (tbs TemporalBoxSeries) {
-	tbs.ser = series.EmptyBoxSeries(name, col)
+func NewTemporalBoxSeries(name string, col color.Color, input []data.TemporalBox) (tbs *TemporalBoxSeries, err error) {
+	tbs = &TemporalBoxSeries{
+		boxSeries: boxSeries{
+			ser: series.EmptyBoxSeries(name, col),
+		},
+	}
+	err = tbs.AddData(input)
+	if err != nil {
+		tbs = nil
+	}
 	return
 }
 
 // DeleteDataInRange deletes all data points with a t-coordinate after min and before max.
 // The return value gives the number of data points that have been removed
-func (tbs TemporalBoxSeries) DeleteDataInRange(min time.Time, max time.Time) (c int) {
+func (tbs *TemporalBoxSeries) DeleteDataInRange(min time.Time, max time.Time) (c int) {
 	if tbs.ser == nil {
 		return
 	}
@@ -127,14 +140,11 @@ func (tbs TemporalBoxSeries) DeleteDataInRange(min time.Time, max time.Time) (c 
 // AddData adds data points to the series.
 // The method does not check for duplicates (i.e. data points with same T)
 // The range of T and values is not restricted
-func (tbs TemporalBoxSeries) AddData(input []data.TemporalBox) (err error) {
+func (tbs *TemporalBoxSeries) AddData(input []data.TemporalBox) (err error) {
 	if tbs.ser == nil {
 		return
 	}
 	err = tbs.ser.AddTemporalData(input)
-	if err != nil {
-		return
-	}
 	return
 }
 
@@ -143,14 +153,22 @@ type CategoricalBoxSeries struct {
 	boxSeries
 }
 
-func NewCategoricalBoxSeries(name string, col color.Color) (cbs CategoricalBoxSeries) {
-	cbs.ser = series.EmptyBoxSeries(name, col)
+func NewCategoricalBoxSeries(name string, col color.Color, input []data.CategoricalBox) (cbs *CategoricalBoxSeries, err error) {
+	cbs = &CategoricalBoxSeries{
+		boxSeries: boxSeries{
+			ser: series.EmptyBoxSeries(name, col),
+		},
+	}
+	err = cbs.AddData(input)
+	if err != nil {
+		cbs = nil
+	}
 	return
 }
 
 // DeleteDataInRange deletes all data points with one of the given category
 // The return value gives the number of data points that have been removed
-func (cbs CategoricalBoxSeries) DeleteDataInRange(cat []string) (c int) {
+func (cbs *CategoricalBoxSeries) DeleteDataInRange(cat []string) (c int) {
 	if cbs.ser == nil {
 		return
 	}
@@ -162,13 +180,10 @@ func (cbs CategoricalBoxSeries) DeleteDataInRange(cat []string) (c int) {
 // The method checks for duplicates (i.e. data points with same C).
 // Data points with a C that already exists, will be ignored.
 // The range of C and values is not restricted.
-func (cbs CategoricalBoxSeries) AddData(input []data.CategoricalBox) (err error) {
+func (cbs *CategoricalBoxSeries) AddData(input []data.CategoricalBox) (err error) {
 	if cbs.ser == nil {
 		return
 	}
 	err = cbs.ser.AddCategoricalData(input)
-	if err != nil {
-		return
-	}
 	return
 }
