@@ -22,50 +22,42 @@ func NewPolarCategoricalChart() (catChart *PolarCategoricalChart) {
 }
 
 // AddScatterSeries adds a series of data which is visualized as scatter chart.
-// The series can be accessed via the name later, it must be unique throughout the chart.
-// An error is returned,if another series with the same name exists.
-// The method checks for duplicates (i.e. data points with same C).
-// Data points with a C that already exists, will be ignored.
-// The range of C is not restricted. The range of Val is restricted to Val>=0.
+// The series must have a unique name throughout the chart.
+// Only points with a Val equal or greater than zero can be added
+// An error is returned,if another series with the same name exists, if the series is already added to another chart or if Val < 0 for one or more points
 func (catChart *PolarCategoricalChart) AddScatterSeries(cps *CategoricalPointSeries) (err error) {
 	err = catChart.base.AddScatterSeries(cps.ser)
 	return
 }
 
 // AddLollipopSeries adds a series of data which is visualized as lollipop chart.
-// The series can be accessed via the name later, it must be unique throughout the chart.
-// An error is returned,if another series with the same name exists.
-// The method checks for duplicates (i.e. data points with same C).
-// Data points with a C that already exists, will be ignored.
-// The range of C is not restricted. The range of Val is restricted to Val>=0.
+// The series must have a unique name throughout the chart.
+// Only points with a Val equal or greater than zero can be added
+// An error is returned,if another series with the same name exists, if the series is already added to another chart or if Val < 0 for one or more points
 func (catChart *PolarCategoricalChart) AddLollipopSeries(cps *CategoricalPointSeries) (err error) {
 	err = catChart.base.AddLollipopSeries(cps.ser)
 	return
 }
 
 // AddBarSeries adds a series of data which is visualized as bar chart.
-// The series can be accessed via the name later, it must be unique throughout the chart.
-// An error is returned,if another series with the same name exists.
-// The method checks for duplicates (i.e. data points with same C).
-// Data points with a C that already exists, will be ignored.
-// The range of C is not restricted. The range of Val is restricted to Val>=0.
+// The series must have a unique name throughout the chart.
+// Only points with a Val equal or greater than zero can be added
+// An error is returned,if another series with the same name exists, if the series is already added to another chart or if Val < 0 for one or more points
 func (catChart *PolarCategoricalChart) AddBarSeries(cps *CategoricalPointSeries) (err error) {
 	err = catChart.base.AddBarSeries(cps.ser)
 	return
 }
 
 // AddStackedBarSeries adds a series of data which is visualized as stacked bar chart.
-// The series can be accessed via the name later, it must be unique throughout the chart.
-// An error is returned,if another series with the same name exists.
-// The method checks for duplicates (i.e. data points with same C).
-// Data points with a C that already exists, will be ignored.
-// The range of C is not restricted. The range of Val is restricted to Val>=0.
+// The series must have a unique name throughout the chart.
+// Only points with a Val equal or greater than zero can be added
+// An error is returned,if another series with the same name exists or if the series is already added to another chart
 func (catChart *PolarCategoricalChart) AddStackedBarSeries(css *CategoricalStackedSeries) (err error) {
 	err = catChart.base.AddStackedBarSeries(css.ser)
 	return
 }
 
-// SetYAxisLabel sets the label of the y-axis, which will be displayed at the left side
+// SetRAxisLabel sets the label of the r-axis, which will be displayed at the bottom
 func (catChart *PolarCategoricalChart) SetRAxisLabel(l string) {
 	catChart.base.SetToAxisLabel(l)
 }

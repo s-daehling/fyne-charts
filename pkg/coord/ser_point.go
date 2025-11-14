@@ -75,6 +75,10 @@ type NumericalPointSeries struct {
 	pointSeries
 }
 
+// NewNumericalPointSeries creates a new NumericalPointSeries and populates it with input data
+// A series can only be added to a polar chart is Val >= 0 for all points
+// In a polar chart only points with 0 <= N <= 2pi are displayed
+// An error is returned if the input data is invalid
 func NewNumericalPointSeries(name string, col color.Color, input []data.NumericalPoint) (nps *NumericalPointSeries, err error) {
 	nps = &NumericalPointSeries{
 		pointSeries: pointSeries{
@@ -99,9 +103,9 @@ func (nps *NumericalPointSeries) DeleteDataInRange(min float64, max float64) (c 
 }
 
 // AddData adds data points to the series.
-// data does not need to be sorted. It will be sorted by X by the method.
-// The method does not check for duplicates (i.e. data points with same X)
-// The range of X and Val is not restricted
+// If the series has been added to a polar chart only points with Val >= 0 are allowed
+// In a polar chart only points with 0 <= N <= 2pi are displayed
+// An error is returned if the input data is invalid
 func (nps *NumericalPointSeries) AddData(input []data.NumericalPoint) (err error) {
 	if nps.ser == nil {
 		return
@@ -110,7 +114,7 @@ func (nps *NumericalPointSeries) AddData(input []data.NumericalPoint) (err error
 	return
 }
 
-// SetBarWidth sets the width of the bars. The bars are centered around their X value of the data points
+// SetBarWidth sets the width of the bars. The bars are centered around the N value of the data points
 // An error is returned in w < 0
 // only effective if series is displayed as bar series
 func (nps *NumericalPointSeries) SetBarWidth(w float64) (err error) {
@@ -129,6 +133,9 @@ type TemporalPointSeries struct {
 	pointSeries
 }
 
+// NewTemporalPointSeries creates a new TemporalPointSeries and populates it with input data
+// A series can only be added to a polar chart is Val >= 0 for all points
+// An error is returned if the input data is invalid
 func NewTemporalPointSeries(name string, col color.Color, input []data.TemporalPoint) (tps *TemporalPointSeries, err error) {
 	tps = &TemporalPointSeries{
 		pointSeries: pointSeries{
@@ -153,9 +160,8 @@ func (tps *TemporalPointSeries) DeleteDataInRange(min time.Time, max time.Time) 
 }
 
 // AddData adds data points to the series.
-// data does not need to be sorted. It will be sorted by T by the method.
-// The method does not check for duplicates (i.e. data points with same T)
-// The range of T is not restricted. The range of Val is not restricted in a cartesian chart, but Val>=0 in a polar chart
+// If the series has been added to a polar chart only points with Val >= 0 are allowed
+// An error is returned if the input data is invalid
 func (tps *TemporalPointSeries) AddData(input []data.TemporalPoint) (err error) {
 	if tps.ser == nil {
 		return
@@ -164,8 +170,7 @@ func (tps *TemporalPointSeries) AddData(input []data.TemporalPoint) (err error) 
 	return
 }
 
-// SetBarWidth sets the width of the bars. The bars are centered around their T value of the data points
-// An error is returned in w < 0
+// SetBarWidth sets the width of the bars. The bars are centered around the T value of the data points
 // only effective if series is displayed as bar series
 func (tps *TemporalPointSeries) SetBarWidth(w time.Duration) (err error) {
 	if tps.ser == nil {
@@ -183,6 +188,11 @@ type CategoricalPointSeries struct {
 	pointSeries
 }
 
+// NewCategoricalPointSeries creates a new CategoricalPointSeries and populates it with input data
+// The method checks for duplicates (i.e. data points with same C).
+// If multiple entries with the same C exist only the first is added to the series
+// A series can only be added to a polar chart is Val >= 0 for all points
+// An error is returned if the input data is invalid
 func NewCategoricalPointSeries(name string, col color.Color, input []data.CategoricalPoint) (cps *CategoricalPointSeries, err error) {
 	cps = &CategoricalPointSeries{
 		pointSeries: pointSeries{
@@ -208,8 +218,9 @@ func (cps *CategoricalPointSeries) DeleteDataInRange(cat []string) (c int) {
 
 // AddData adds data points to the series.
 // The method checks for duplicates (i.e. data points with same C).
-// Data points with a C that already exists, will be ignored.
-// The range of C is not restricted. The range of Val is not restricted in a cartesian chart, but Val>=0 in a polar chart
+// If multiple entries with the same C exist only the first is added to the series
+// If the series has been added to a polar chart only points with Val >= 0 are allowed
+// An error is returned if the input data is invalid
 func (cps *CategoricalPointSeries) AddData(input []data.CategoricalPoint) (err error) {
 	if cps.ser == nil {
 		return

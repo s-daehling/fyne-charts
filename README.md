@@ -48,11 +48,19 @@ func main() {
     myWindow := myApp.NewWindow("fyne-charts")
 
     nc := coord.NewCartesianNumericalChart()
-    _, err := nc.AddLineSeries("line", randomSine(50, 100, 40), true, color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff})
+    nps1, err := coord.NewNumericalPointSeries("line", color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff}, randomSine(50, 100, 40))
     if err != nil {
         panic(err)
     }
-    _, err = nc.AddScatterSeries("scatter", randomSine(50, 60, 60), color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff})
+    err = nc.AddLineSeries(nps1, true)
+    if err != nil {
+        panic(err)
+    }
+    nps2, err := coord.NewNumericalPointSeries("scatter", color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff}, randomSine(50, 60, 60))
+    if err != nil {
+        panic(err)
+    }
+    err = nc.AddScatterSeries(nps2)
     if err != nil {
         panic(err)
     }
@@ -63,9 +71,9 @@ func main() {
     myWindow.ShowAndRun()
 }
 
-func randomSine(n int, l float64, amp float64) (ndp []data.NumericalDataPoint) {
+func randomSine(n int, l float64, amp float64) (ndp []data.NumericalPoint) {
     for range n {
-        var p data.NumericalDataPoint
+        var p data.NumericalPoint
         p.N = (-l / 2) + (rand.Float64() * l)
         p.Val = amp * math.Sin((p.N/(l))*2*math.Pi)
         ndp = append(ndp, p)

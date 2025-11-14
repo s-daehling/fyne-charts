@@ -9,7 +9,7 @@ type BarChart struct {
 	propChart
 }
 
-// NewBarChart returns an initialized CartesianProportionalChart
+// NewBarChart returns an initialized BarChart
 func NewBarChart() (barChart *BarChart) {
 	barChart = &BarChart{
 		propChart: emptyPropChart(prop.CartesianPlane),

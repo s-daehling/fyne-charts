@@ -12,6 +12,11 @@ type Series struct {
 	ser *prop.Series
 }
 
+// NewSeries creates a new Series and populates it with input data
+// The method checks for duplicates (i.e. data points with same C).
+// Data points with a C that already exists, will be ignored.
+// Val is restricted to Val>=0
+// An error is returned if the input data is invalid
 func NewSeries(name string, input []data.ProportionalPoint) (ps *Series, err error) {
 	ps = &Series{
 		ser: prop.EmptyProportionalSeries(name),
@@ -79,7 +84,8 @@ func (ps *Series) DeleteDataInRange(cat []string) (c int) {
 // AddData adds data points to the series.
 // The method checks for duplicates (i.e. data points with same C).
 // Data points with a C that already exists, will be ignored.
-// The range of C is not restricted. The range of Val is restricted to Val>=0
+// Val is restricted to Val>=0
+// An error is returned if the input data is invalid
 func (ps *Series) AddData(input []data.ProportionalPoint) (err error) {
 	if ps.ser == nil {
 		return

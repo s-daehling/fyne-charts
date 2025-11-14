@@ -46,6 +46,9 @@ type CategoricalStackedSeries struct {
 	stackedSeries
 }
 
+// NewCategoricalStackedSeries creates a new CategoricalPointSeries and populates it with input data
+// A series can only be added to a stacked series if Val >= 0 for all points
+// An error is returned if the input data is invalid
 func NewCategoricalStackedSeries(name string, input []*CategoricalPointSeries) (cps *CategoricalStackedSeries, err error) {
 	cps = &CategoricalStackedSeries{
 		stackedSeries: stackedSeries{
@@ -72,6 +75,7 @@ func (css *CategoricalStackedSeries) DeleteDataInRange(cat []string) (c int) {
 	return
 }
 
+// RemoveSeries removes the series with the given name from the stacked series
 func (css *CategoricalStackedSeries) RemoveSeries(name string) {
 	if css.ser == nil {
 		return
@@ -79,6 +83,9 @@ func (css *CategoricalStackedSeries) RemoveSeries(name string) {
 	css.ser.RemovePointSeries(name)
 }
 
+// AddSeries adds another series to the stacked series
+// A series can only be added to a stacked series if Val >= 0 for all points
+// An error is returned if the input data is invalid
 func (css *CategoricalStackedSeries) AddSeries(cps *CategoricalPointSeries) (err error) {
 	if css.ser == nil {
 		return

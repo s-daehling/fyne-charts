@@ -75,6 +75,8 @@ type NumericalBoxSeries struct {
 	boxSeries
 }
 
+// NewNumericalBoxSeries creates a new NumericalBoxSeries and populates it with input data
+// An error is returned if the input data is invalid
 func NewNumericalBoxSeries(name string, col color.Color, input []data.NumericalBox) (nbs *NumericalBoxSeries, err error) {
 	nbs = &NumericalBoxSeries{
 		boxSeries: boxSeries{
@@ -99,8 +101,7 @@ func (nbs *NumericalBoxSeries) DeleteDataInRange(min float64, max float64) (c in
 }
 
 // AddData adds data points to the series.
-// The method does not check for duplicates (i.e. data points with same X)
-// The range of X and Val is not restricted
+// An error is returned if the input data is invalid
 func (nbs *NumericalBoxSeries) AddData(input []data.NumericalBox) (err error) {
 	if nbs.ser == nil {
 		return
@@ -114,6 +115,8 @@ type TemporalBoxSeries struct {
 	boxSeries
 }
 
+// NewTemporalBoxSeries creates a new TemporalBoxSeries and populates it with input data
+// An error is returned if the input data is invalid
 func NewTemporalBoxSeries(name string, col color.Color, input []data.TemporalBox) (tbs *TemporalBoxSeries, err error) {
 	tbs = &TemporalBoxSeries{
 		boxSeries: boxSeries{
@@ -138,8 +141,7 @@ func (tbs *TemporalBoxSeries) DeleteDataInRange(min time.Time, max time.Time) (c
 }
 
 // AddData adds data points to the series.
-// The method does not check for duplicates (i.e. data points with same T)
-// The range of T and values is not restricted
+// An error is returned if the input data is invalid
 func (tbs *TemporalBoxSeries) AddData(input []data.TemporalBox) (err error) {
 	if tbs.ser == nil {
 		return
@@ -153,6 +155,10 @@ type CategoricalBoxSeries struct {
 	boxSeries
 }
 
+// NewCategoricalBoxSeries creates a new CategoricalBoxSeries and populates it with input data
+// The method checks for duplicates (i.e. entries with same C).
+// If multiple entries with the same C exist only the first is added to the series
+// An error is returned if the input data is invalid
 func NewCategoricalBoxSeries(name string, col color.Color, input []data.CategoricalBox) (cbs *CategoricalBoxSeries, err error) {
 	cbs = &CategoricalBoxSeries{
 		boxSeries: boxSeries{
@@ -178,8 +184,8 @@ func (cbs *CategoricalBoxSeries) DeleteDataInRange(cat []string) (c int) {
 
 // AddData adds data points to the series.
 // The method checks for duplicates (i.e. data points with same C).
-// Data points with a C that already exists, will be ignored.
-// The range of C and values is not restricted.
+// If multiple entries with the same C exist only the first is added to the series
+// An error is returned if the input data is invalid
 func (cbs *CategoricalBoxSeries) AddData(input []data.CategoricalBox) (err error) {
 	if cbs.ser == nil {
 		return

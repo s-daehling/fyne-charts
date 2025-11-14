@@ -801,14 +801,18 @@ func (ser *PointSeries) DeleteNumericalDataInRange(min float64, max float64) (c 
 }
 
 func (ser *PointSeries) AddNumericalData(input []data.NumericalPoint) (err error) {
-	if ser.cont != nil {
-		err = numericalPointRangeCheck(input, ser.cont.IsPolar(), ser.cont.IsPolar())
-		if err != nil {
-			return
-		}
-	}
 	if len(input) == 0 {
 		return
+	}
+	if ser.cont != nil {
+		if ser.cont.IsPolar() || ser.isStacked {
+			for i := range input {
+				if input[i].Val < 0 {
+					err = errors.New("negative val not allowed")
+					return
+				}
+			}
+		}
 	}
 	var newData []data.NumericalPoint
 	if ser.sortPoints {
@@ -865,14 +869,18 @@ func (ser *PointSeries) DeleteTemporalDataInRange(min time.Time, max time.Time) 
 }
 
 func (ser *PointSeries) AddTemporalData(input []data.TemporalPoint) (err error) {
-	if ser.cont != nil {
-		err = temporalPointRangeCheck(input, ser.cont.IsPolar())
-		if err != nil {
-			return
-		}
-	}
 	if len(input) == 0 {
 		return
+	}
+	if ser.cont != nil {
+		if ser.cont.IsPolar() || ser.isStacked {
+			for i := range input {
+				if input[i].Val < 0 {
+					err = errors.New("negative val not allowed")
+					return
+				}
+			}
+		}
 	}
 	var newData []data.TemporalPoint
 	if ser.sortPoints {
@@ -936,14 +944,18 @@ func (ser *PointSeries) DeleteCategoricalDataInRange(cat []string) (c int) {
 }
 
 func (ser *PointSeries) AddCategoricalData(input []data.CategoricalPoint) (err error) {
-	if ser.cont != nil {
-		err = categoricalPointRangeCheck(input, ser.cont.IsPolar() || ser.isStacked)
-		if err != nil {
-			return
-		}
-	}
 	if len(input) == 0 {
 		return
+	}
+	if ser.cont != nil {
+		if ser.cont.IsPolar() || ser.isStacked {
+			for i := range input {
+				if input[i].Val < 0 {
+					err = errors.New("negative val not allowed")
+					return
+				}
+			}
+		}
 	}
 	for i := range input {
 		catExist := false
@@ -967,55 +979,6 @@ func (ser *PointSeries) AddCategoricalData(input []data.CategoricalPoint) (err e
 	}
 	if ser.cont != nil {
 		ser.cont.DataChange()
-	}
-	return
-}
-
-func numericalPointRangeCheck(input []data.NumericalPoint, noNegativeVal bool, isPolar bool) (err error) {
-	if len(input) == 0 {
-		err = errors.New("no input data")
-		return
-	}
-	if isPolar || noNegativeVal {
-		for i := range input {
-			if (isPolar && (input[i].N < 0 || input[i].N > 2*math.Pi)) ||
-				(noNegativeVal && input[i].Val < 0) {
-				err = errors.New("invalid data")
-				return
-			}
-		}
-	}
-	return
-}
-
-func temporalPointRangeCheck(input []data.TemporalPoint, noNegativeVal bool) (err error) {
-	if len(input) == 0 {
-		err = errors.New("no input data")
-		return
-	}
-	if noNegativeVal {
-		for i := range input {
-			if input[i].Val < 0 {
-				err = errors.New("invalid data")
-				return
-			}
-		}
-	}
-	return
-}
-
-func categoricalPointRangeCheck(input []data.CategoricalPoint, noNegativeVal bool) (err error) {
-	if len(input) == 0 {
-		err = errors.New("no input data")
-		return
-	}
-	if noNegativeVal {
-		for i := range input {
-			if input[i].Val < 0 {
-				err = errors.New("invalid data")
-				return
-			}
-		}
 	}
 	return
 }

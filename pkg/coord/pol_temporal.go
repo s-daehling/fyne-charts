@@ -24,54 +24,48 @@ func NewPolarTemporalChart() (tempChart *PolarTemporalChart) {
 }
 
 // AddLineSeries adds a series of data which is visualized as line chart.
-// The series can be accessed via the name later, it must be unique throughout the chart.
-// An error is returned,if another series with the same name exists.
-// data does not need to be sorted. It will be sorted by T by the method.
-// The method does not check for duplicates (i.e. data points with same T)
-// The range of T is not restricted. The range of Val is restricted to Val>=0.
+// If showDots is true, dots are displayed at the osition of the series points.
+// The series must have a unique name throughout the chart.
+// Only points with a Val equal or greater than zero can be added
+// An error is returned,if another series with the same name exists, if the series is already added to another chart or if Val < 0 for one or more points
 func (tempChart *PolarTemporalChart) AddLineSeries(tps *TemporalPointSeries, showDots bool) (err error) {
 	err = tempChart.base.AddLineSeries(tps.ser, showDots)
 	return
 }
 
 // AddScatterSeries adds a series of data which is visualized as scatter chart.
-// The series can be accessed via the name later, it must be unique throughout the chart.
-// An error is returned,if another series with the same name exists.
-// The method does not check for duplicates (i.e. data points with same T)
-// The range of T is not restricted. The range of Val is restricted to Val>=0.
+// The series must have a unique name throughout the chart.
+// Only points with a Val equal or greater than zero can be added
+// An error is returned,if another series with the same name exists, if the series is already added to another chart or if Val < 0 for one or more points
 func (tempChart *PolarTemporalChart) AddScatterSeries(tps *TemporalPointSeries) (err error) {
 	err = tempChart.base.AddScatterSeries(tps.ser)
 	return
 }
 
 // AddLollipopSeries adds a series of data which is visualized as lollipop chart.
-// The series can be accessed via the name later, it must be unique throughout the chart.
-// An error is returned,if another series with the same name exists.
-// The method does not check for duplicates (i.e. data points with same T)
-// The range of T is not restricted. The range of Val is restricted to Val>=0.
+// The series must have a unique name throughout the chart.
+// Only points with a Val equal or greater than zero can be added
+// An error is returned,if another series with the same name exists, if the series is already added to another chart or if Val < 0 for one or more points
 func (tempChart *PolarTemporalChart) AddLollipopSeries(tps *TemporalPointSeries) (err error) {
 	err = tempChart.base.AddLollipopSeries(tps.ser)
 	return
 }
 
 // AddAreaSeries adds a series of data which is visualized as area chart.
-// The series can be accessed via the name later, it must be unique throughout the chart.
-// An error is returned,if another series with the same name exists.
-// data does not need to be sorted. It will be sorted by T by the method.
-// The method does not check for duplicates (i.e. data points with same T).
-// The range of T is not restricted. The range of Val is restricted to Val>=0.
+// If showDots is true, dots are displayed at the osition of the series points.
+// The series must have a unique name throughout the chart.
+// Only points with a Val equal or greater than zero can be added
+// An error is returned,if another series with the same name exists, if the series is already added to another chart or if Val < 0 for one or more points
 func (tempChart *PolarTemporalChart) AddAreaSeries(tps *TemporalPointSeries, showDots bool) (err error) {
 	err = tempChart.base.AddAreaSeries(tps.ser, showDots)
 	return
 }
 
 // AddBarSeries adds a series of data which is visualized as bar chart.
-// The series can be accessed via the name later, it must be unique throughout the chart.
-// An error is returned,if another series with the same name exists.
-// The method does not check for duplicates (i.e. data points with same T)
-// The range of T is not restricted. The range of Val is restricted to Val>=0.
+// The series must have a unique name throughout the chart.
+// Only points with a Val equal or greater than zero can be added
 // The bars are centered around their T value of the data points. barWidth is the width of the bars.
-// An error is returned if barWidth < 0
+// An error is returned,if another series with the same name exists, if the series is already added to another chart or if Val < 0 for one or more points
 func (tempChart *PolarTemporalChart) AddBarSeries(tps *TemporalPointSeries, barWidth time.Duration) (err error) {
 	err = tps.SetBarWidth(barWidth)
 	if err != nil {

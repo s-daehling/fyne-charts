@@ -58,6 +58,8 @@ type NumericalCandleStickSeries struct {
 	candleStickSeries
 }
 
+// NewNumericalCandleStickSeries creates a new NumericalCandleStickSeries and populates it with input data
+// An error is returned if the input data is invalid
 func NewNumericalCandleStickSeries(name string, input []data.NumericalCandleStick) (ncs *NumericalCandleStickSeries, err error) {
 	ncs = &NumericalCandleStickSeries{
 		candleStickSeries: candleStickSeries{
@@ -82,8 +84,7 @@ func (ncs *NumericalCandleStickSeries) DeleteDataInRange(min float64, max float6
 }
 
 // AddData adds candles to the series.
-// The method does not check for duplicates (i.e. candles with same XStart or XEnd)
-// The range of XStart, XEnd and values is not restricted
+// An error is returned if the input data is invalid
 func (ncs *NumericalCandleStickSeries) AddData(input []data.NumericalCandleStick) (err error) {
 	if ncs.ser == nil {
 		return
@@ -97,6 +98,8 @@ type TemporalCandleStickSeries struct {
 	candleStickSeries
 }
 
+// NewTemporalCandleStickSeries creates a new TemporalCandleStickSeries and populates it with input data
+// An error is returned if the input data is invalid
 func NewTemporalCandleStickSeries(name string, input []data.TemporalCandleStick) (tcs *TemporalCandleStickSeries, err error) {
 	tcs = &TemporalCandleStickSeries{
 		candleStickSeries: candleStickSeries{
@@ -121,8 +124,7 @@ func (tcs *TemporalCandleStickSeries) DeleteDataInRange(min time.Time, max time.
 }
 
 // AddData adds candles to the series.
-// The method does not check for duplicates (i.e. candles with same TStart or TEnd)
-// The range of TStart, TEnd and values is not restricted
+// An error is returned if the input data is invalid
 func (tcs *TemporalCandleStickSeries) AddData(input []data.TemporalCandleStick) (err error) {
 	if tcs.ser == nil {
 		return

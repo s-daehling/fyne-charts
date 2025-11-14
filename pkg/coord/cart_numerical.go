@@ -23,74 +23,59 @@ func NewCartesianNumericalChart() (numChart *CartesianNumericalChart) {
 }
 
 // AddLineSeries adds a series of data which is visualized as line chart.
-// The series can be accessed via the name later, it must be unique throughout the chart.
-// An error is returned,if another series with the same name exists.
-// data does not need to be sorted. It will be sorted by X by the method.
-// The method does not check for duplicates (i.e. data points with same X)
-// The range of X and Val is not restricted
+// If showDots is true, dots are displayed at the osition of the series points.
+// The series must have a unique name throughout the chart.
+// An error is returned,if another series with the same name exists or if the series is already added to another chart
 func (numChart *CartesianNumericalChart) AddLineSeries(nps *NumericalPointSeries, showDots bool) (err error) {
 	err = numChart.base.AddLineSeries(nps.ser, showDots)
 	return
 }
 
 // AddScatterSeries adds a series of data which is visualized as scatter chart.
-// The series can be accessed via the name later, it must be unique throughout the chart.
-// An error is returned,if another series with the same name exists.
-// The method does not check for duplicates (i.e. data points with same X)
-// The range of X and Val is not restricted
+// The series must have a unique name throughout the chart.
+// An error is returned,if another series with the same name exists or if the series is already added to another chart
 func (numChart *CartesianNumericalChart) AddScatterSeries(nps *NumericalPointSeries) (err error) {
 	err = numChart.base.AddScatterSeries(nps.ser)
 	return
 }
 
 // AddLollipopSeries adds a series of data which is visualized as lollipop chart.
-// The series can be accessed via the name later, it must be unique throughout the chart.
-// An error is returned,if another series with the same name exists.
-// The method does not check for duplicates (i.e. data points with same X)
-// The range of X and Val is not restricted
+// The series must have a unique name throughout the chart.
+// An error is returned,if another series with the same name exists or if the series is already added to another chart
 func (numChart *CartesianNumericalChart) AddLollipopSeries(nps *NumericalPointSeries) (err error) {
 	err = numChart.base.AddLollipopSeries(nps.ser)
 	return
 }
 
 // AddCandleStickSeries adds a series of data which is visualized as canlde stick chart.
-// The series can be accessed via the name later, it must be unique throughout the chart.
-// An error is returned,if another series with the same name exists.
-// The method does not check for duplicates (i.e. data points with same X)
-// The range of XStart, XEnd and values is not restricted
+// The series must have a unique name throughout the chart.
+// An error is returned,if another series with the same name exists or if the series is already added to another chart
 func (numChart *CartesianNumericalChart) AddCandleStickSeries(ncs *NumericalCandleStickSeries) (err error) {
 	err = numChart.base.AddCandleStickSeries(ncs.ser)
 	return
 }
 
 // AddBoxSeries adds a series of data which is visualized as box chart.
-// The series can be accessed via the name later, it must be unique throughout the chart.
-// An error is returned,if another series with the same name exists.
-// The method does not check for duplicates (i.e. data points with same X)
-// The range of X and values is not restricted
+// The series must have a unique name throughout the chart.
+// An error is returned,if another series with the same name exists or if the series is already added to another chart
 func (numChart *CartesianNumericalChart) AddBoxSeries(nbs *NumericalBoxSeries) (err error) {
 	err = numChart.base.AddBoxSeries(nbs.ser)
 	return
 }
 
 // AddAreaSeries adds a series of data which is visualized as area chart.
-// The series can be accessed via the name later, it must be unique throughout the chart.
-// An error is returned,if another series with the same name exists.
-// data does not need to be sorted. It will be sorted by X by the method.
-// The method does not check for duplicates (i.e. data points with same X).
-// The range of X and Val is not restricted
+// If showDots is true, dots are displayed at the osition of the series points.
+// The series must have a unique name throughout the chart.
+// An error is returned,if another series with the same name exists or if the series is already added to another chart
 func (numChart *CartesianNumericalChart) AddAreaSeries(nps *NumericalPointSeries, showDots bool) (err error) {
 	err = numChart.base.AddAreaSeries(nps.ser, showDots)
 	return
 }
 
 // AddBarSeries adds a series of data which is visualized as bar chart.
-// The series can be accessed via the name later, it must be unique throughout the chart.
-// An error is returned,if another series with the same name exists.
-// The method does not check for duplicates (i.e. data points with same X)
-// The range of X and Val is not restricted
-// The bars are centered around their X value of the data points. barWidth is the width of the bars.
-// An error is returned if barWidth < 0
+// The series must have a unique name throughout the chart.
+// The bars are centered around their N value of the data points. barWidth is the width of the bars.
+// An error is returned,if another series with the same name exists, if the series is already added to another chart or if barWidth < 0
 func (numChart *CartesianNumericalChart) AddBarSeries(nps *NumericalPointSeries, barWidth float64) (err error) {
 	err = nps.SetBarWidth(barWidth)
 	if err != nil {

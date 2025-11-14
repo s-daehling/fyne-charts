@@ -21,15 +21,15 @@ func (chart *propChart) CreateRenderer() (r fyne.WidgetRenderer) {
 	return
 }
 
+// Refresh chart
+// chart is automatically refreshed after data changes
 func (chart *propChart) Refresh() {
 	chart.base.Refresh()
 }
 
-// AddSeries adds a series of data which is visualized as proportional bar chart.
-// The series can be accessed via the name later, it must be unique throughout the chart.
-// An error is returned,if another series with the same name exists.
-// The method does not check for duplicates (i.e. data points with same C)
-// The range of C is not restricted. The range of Val is restricted to Val>=0
+// AddSeries adds a series of data
+// The series must have a unique name throughout the chart.
+// An error is returned,if another series with the same name exists or if the series is already added to another chart
 func (chart *propChart) AddSeries(ps *Series) (err error) {
 	err = chart.base.AddSeries(ps.ser)
 	return

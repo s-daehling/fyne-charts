@@ -22,54 +22,53 @@ func NewPolarNumericalChart() (numChart *PolarNumericalChart) {
 }
 
 // AddLineSeries adds a series of data which is visualized as line chart.
-// The series can be accessed via the name later, it must be unique throughout the chart.
-// An error is returned,if another series with the same name exists.
-// data does not need to be sorted. It will be sorted by A by the method.
-// The method does not check for duplicates (i.e. data points with same A)
-// The range of A and Val is restricted (0<=A<=2pi; Val>0)
+// If showDots is true, dots are displayed at the osition of the series points.
+// The series must have a unique name throughout the chart.
+// Only points with a Val equal or greater than zero can be added
+// Only points in the range of 0 <= N <= 2pi are displayed
+// An error is returned,if another series with the same name exists, if the series is already added to another chart or if Val < 0 for one or more points
 func (numChart *PolarNumericalChart) AddLineSeries(nps *NumericalPointSeries, showDots bool) (err error) {
 	err = numChart.base.AddLineSeries(nps.ser, showDots)
 	return
 }
 
 // AddScatterSeries adds a series of data which is visualized as scatter chart.
-// The series can be accessed via the name later, it must be unique throughout the chart.
-// An error is returned,if another series with the same name exists.
-// The method does not check for duplicates (i.e. data points with same A)
-// The range of A and Val is restricted (0<=A<=2pi; Val>0)
+// The series must have a unique name throughout the chart.
+// Only points with a Val equal or greater than zero can be added
+// Only points in the range of 0 <= N <= 2pi are displayed
+// An error is returned,if another series with the same name exists, if the series is already added to another chart or if Val < 0 for one or more points
 func (numChart *PolarNumericalChart) AddScatterSeries(nps *NumericalPointSeries) (err error) {
 	err = numChart.base.AddScatterSeries(nps.ser)
 	return
 }
 
 // AddLollipopSeries adds a series of data which is visualized as lollipop chart.
-// The series can be accessed via the name later, it must be unique throughout the chart.
-// An error is returned,if another series with the same name exists.
-// The method does not check for duplicates (i.e. data points with same A)
-// The range of A and Val is restricted (0<=A<=2pi; Val>0)
+// The series must have a unique name throughout the chart.
+// Only points with a Val equal or greater than zero can be added
+// Only points in the range of 0 <= N <= 2pi are displayed
+// An error is returned,if another series with the same name exists, if the series is already added to another chart or if Val < 0 for one or more points
 func (numChart *PolarNumericalChart) AddLollipopSeries(nps *NumericalPointSeries) (err error) {
 	err = numChart.base.AddLollipopSeries(nps.ser)
 	return
 }
 
 // AddAreaSeries adds a series of data which is visualized as area chart.
-// The series can be accessed via the name later, it must be unique throughout the chart.
-// An error is returned,if another series with the same name exists.
-// data does not need to be sorted. It will be sorted by A by the method.
-// The method does not check for duplicates (i.e. data points with same A).
-// The range of A and Val is restricted (0<=A<=2pi; Val>0)
+// If showDots is true, dots are displayed at the osition of the series points.
+// The series must have a unique name throughout the chart.
+// Only points with a Val equal or greater than zero can be added
+// Only points in the range of 0 <= N <= 2pi are displayed
+// An error is returned,if another series with the same name exists, if the series is already added to another chart or if Val < 0 for one or more points
 func (numChart *PolarNumericalChart) AddAreaSeries(nps *NumericalPointSeries, showDots bool) (err error) {
 	err = numChart.base.AddAreaSeries(nps.ser, showDots)
 	return
 }
 
 // AddBarSeries adds a series of data which is visualized as bar chart.
-// The series can be accessed via the name later, it must be unique throughout the chart.
-// An error is returned,if another series with the same name exists.
-// The method does not check for duplicates (i.e. data points with same A)
-// The range of A and Val is restricted (0<=A<=2pi; Val>0)
-// The bars are centered around their A value of the data points. barWidth is the width of the bars.
-// An error is returned if barWidth < 0
+// The series must have a unique name throughout the chart.
+// Only points with a Val equal or greater than zero can be added
+// Only points in the range of 0 <= N <= 2pi are displayed
+// The bars are centered around their N value of the data points. barWidth is the width of the bars.
+// An error is returned,if another series with the same name exists, if the series is already added to another chart, if Val < 0 for one or more points or if barWidth < 0
 func (numChart *PolarNumericalChart) AddBarSeries(nps *NumericalPointSeries, barWidth float64) (err error) {
 	err = nps.SetBarWidth(barWidth)
 	if err != nil {

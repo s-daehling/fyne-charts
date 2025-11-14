@@ -21,6 +21,8 @@ func (chart *coordChart) CreateRenderer() (r fyne.WidgetRenderer) {
 	return
 }
 
+// Refresh chart
+// chart is automatically refreshed after data changes
 func (chart *coordChart) Refresh() {
 	chart.base.Refresh()
 }

@@ -9,7 +9,7 @@ type PieChart struct {
 	propChart
 }
 
-// NewPieChart returns an initialized PolarProportionalChart
+// NewPieChart returns an initialized PieChart
 func NewPieChart() (pieChart *PieChart) {
 	pieChart = &PieChart{
 		propChart: emptyPropChart(prop.PolarPlane),
