@@ -21,22 +21,17 @@ func (base *BaseChart) addSeriesIfNotExist(ser *Series) (err error) {
 			return
 		}
 	}
+	err = ser.BindToChart(base)
+	if err != nil {
+		return
+	}
 	base.series = append(base.series, ser)
 	base.DataChange()
 	return
 }
 
-func (base *BaseChart) AddProportionalSeries(name string, points []data.ProportionalPoint) (ser *Series, err error) {
-	pSeries := EmptyProportionalSeries(base, name)
-	err = pSeries.AddData(points)
-	if err != nil {
-		return
-	}
-	err = base.addSeriesIfNotExist(pSeries)
-	if err != nil {
-		return
-	}
-	ser = pSeries
+func (base *BaseChart) AddSeries(ps *Series) (err error) {
+	err = base.addSeriesIfNotExist(ps)
 	return
 }
 
@@ -206,14 +201,13 @@ type Series struct {
 	chart            *BaseChart
 }
 
-func EmptyProportionalSeries(chart *BaseChart, name string) (ser *Series) {
+func EmptyProportionalSeries(name string) (ser *Series) {
 	ser = &Series{
 		name:             name,
 		visible:          true,
 		showText:         true,
 		autoValTextColor: true,
 		legendLabel:      canvas.NewText(name, theme.Color(theme.ColorNameForeground)),
-		chart:            chart,
 	}
 	ser.legendButton = interact.NewLegendBox(theme.Color(theme.ColorNameForeground), ser.toggleView)
 	ser.legendButton.UseGradient(theme.Color(theme.ColorNameForeground), theme.Color(theme.ColorNameBackground))
@@ -226,7 +220,7 @@ func (ser *Series) Name() (n string) {
 	return
 }
 
-func (ser *Series) AddToChart(ch *BaseChart) (err error) {
+func (ser *Series) BindToChart(ch *BaseChart) (err error) {
 	if ser.chart != nil {
 		err = errors.New("series is already part of a chart")
 		return
@@ -235,7 +229,7 @@ func (ser *Series) AddToChart(ch *BaseChart) (err error) {
 	return
 }
 
-func (ser *Series) RemoveFromChart() {
+func (ser *Series) Release() {
 	ser.chart = nil
 }
 

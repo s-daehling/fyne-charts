@@ -4,7 +4,6 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/widget"
 	"github.com/s-daehling/fyne-charts/internal/prop"
-	"github.com/s-daehling/fyne-charts/pkg/data"
 )
 
 type propChart struct {
@@ -31,9 +30,8 @@ func (chart *propChart) Refresh() {
 // An error is returned,if another series with the same name exists.
 // The method does not check for duplicates (i.e. data points with same C)
 // The range of C is not restricted. The range of Val is restricted to Val>=0
-func (chart *propChart) AddSeries(name string,
-	points []data.ProportionalPoint) (ps ProportionalSeries, err error) {
-	ps.ser, err = chart.base.AddProportionalSeries(name, points)
+func (chart *propChart) AddSeries(ps *Series) (err error) {
+	err = chart.base.AddSeries(ps.ser)
 	return
 }
 

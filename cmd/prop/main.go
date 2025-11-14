@@ -51,7 +51,11 @@ func barChart() (propChart *prop.BarChart, err error) {
 			Col: color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff},
 		},
 	}
-	_, err = propChart.AddSeries("proportion", data1)
+	ps, err := prop.NewSeries("proportion", data1)
+	if err != nil {
+		return
+	}
+	err = propChart.AddSeries(ps)
 	if err != nil {
 		return
 	}
@@ -74,7 +78,11 @@ func barChart() (propChart *prop.BarChart, err error) {
 			Col: color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff},
 		},
 	}
-	_, err = propChart.AddSeries("proportion 2", data2)
+	ps2, err := prop.NewSeries("proportion 2", data2)
+	if err != nil {
+		return
+	}
+	err = propChart.AddSeries(ps2)
 	if err != nil {
 		return
 	}
@@ -99,7 +107,11 @@ func pieChart() (propChart *prop.PieChart, err error) {
 			Col: color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff},
 		},
 	}
-	_, err = propChart.AddSeries("proportion", data1)
+	ps, err := prop.NewSeries("proportion", data1)
+	if err != nil {
+		return
+	}
+	err = propChart.AddSeries(ps)
 	if err != nil {
 		return
 	}
@@ -122,11 +134,15 @@ func pieChart() (propChart *prop.PieChart, err error) {
 			Col: color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff},
 		},
 	}
-	ser, err := propChart.AddSeries("proportion2", data2)
+	ps2, err := prop.NewSeries("proportion2", data2)
 	if err != nil {
 		return
 	}
-	ser.SetValTextColor(color.Black)
+	err = propChart.AddSeries(ps2)
+	if err != nil {
+		return
+	}
+	ps.SetValTextColor(color.Black)
 
 	propChart.SetTitle("Proportional Pie/Doughnut Chart")
 	return

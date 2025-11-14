@@ -7,13 +7,24 @@ import (
 	"github.com/s-daehling/fyne-charts/pkg/data"
 )
 
-// ProportionalSeries represents a proportional series over a proportional axis
-type ProportionalSeries struct {
+// Series represents a proportional series over a proportional axis
+type Series struct {
 	ser *prop.Series
 }
 
+func NewSeries(name string, input []data.ProportionalPoint) (ps *Series, err error) {
+	ps = &Series{
+		ser: prop.EmptyProportionalSeries(name),
+	}
+	err = ps.AddData(input)
+	if err != nil {
+		ps = nil
+	}
+	return
+}
+
 // Name returns the name of the series
-func (ps ProportionalSeries) Name() (n string) {
+func (ps *Series) Name() (n string) {
 	if ps.ser == nil {
 		return
 	}
@@ -22,17 +33,17 @@ func (ps ProportionalSeries) Name() (n string) {
 }
 
 // SetValTextColor changes the color of value labels
-func (ps *ProportionalSeries) SetValTextColor(col color.Color) {
+func (ps *Series) SetValTextColor(col color.Color) {
 	ps.ser.SetValTextColor(col)
 }
 
 // AutoValTextColor sets the color of value labels to the default (theme.ColorNameForeground)
-func (ps *ProportionalSeries) SetAutoValTextColor() {
+func (ps *Series) SetAutoValTextColor() {
 	ps.ser.SetAutoValTextColor()
 }
 
 // Show makes the elements of the series visible
-func (ps ProportionalSeries) Show() {
+func (ps *Series) Show() {
 	if ps.ser == nil {
 		return
 	}
@@ -40,7 +51,7 @@ func (ps ProportionalSeries) Show() {
 }
 
 // Hide makes the elements of the series invisible
-func (ps ProportionalSeries) Hide() {
+func (ps *Series) Hide() {
 	if ps.ser == nil {
 		return
 	}
@@ -48,7 +59,7 @@ func (ps ProportionalSeries) Hide() {
 }
 
 // Clear deletes all data
-func (ps ProportionalSeries) Clear() {
+func (ps *Series) Clear() {
 	if ps.ser == nil {
 		return
 	}
@@ -57,7 +68,7 @@ func (ps ProportionalSeries) Clear() {
 
 // DeleteDataInRange deletes all data points with one of the given category
 // The return value gives the number of data points that have been removed
-func (ps ProportionalSeries) DeleteDataInRange(cat []string) (c int) {
+func (ps *Series) DeleteDataInRange(cat []string) (c int) {
 	if ps.ser == nil {
 		return
 	}
@@ -69,13 +80,10 @@ func (ps ProportionalSeries) DeleteDataInRange(cat []string) (c int) {
 // The method checks for duplicates (i.e. data points with same C).
 // Data points with a C that already exists, will be ignored.
 // The range of C is not restricted. The range of Val is restricted to Val>=0
-func (ps ProportionalSeries) AddData(input []data.ProportionalPoint) (err error) {
+func (ps *Series) AddData(input []data.ProportionalPoint) (err error) {
 	if ps.ser == nil {
 		return
 	}
 	err = ps.ser.AddData(input)
-	if err != nil {
-		return
-	}
 	return
 }
