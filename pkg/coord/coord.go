@@ -27,9 +27,9 @@ func (chart *coordChart) Refresh() {
 	chart.base.Refresh()
 }
 
-// DeleteSeries deletes the series with the specified name if it exists
-func (chart *coordChart) DeleteSeries(name string) {
-	chart.base.DeleteSeries(name)
+// RemoveSeries deletes the series with the specified name if it exists
+func (chart *coordChart) RemoveSeries(name string) {
+	chart.base.RemoveSeries(name)
 }
 
 // SetTitle sets the title of the chart, which will be displayed at the top

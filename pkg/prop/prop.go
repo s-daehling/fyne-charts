@@ -35,9 +35,9 @@ func (chart *propChart) AddSeries(ps *Series) (err error) {
 	return
 }
 
-// DeleteSeries deletes the series with the specified name if it exists
-func (chart *propChart) DeleteSeries(name string) {
-	chart.base.DeleteSeries(name)
+// RemoveSeries deletes the series with the specified name if it exists
+func (chart *propChart) RemoveSeries(name string) {
+	chart.base.RemoveSeries(name)
 }
 
 // SetTitle sets the title of the chart, which will be displayed at the top

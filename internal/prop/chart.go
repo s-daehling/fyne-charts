@@ -82,7 +82,7 @@ func (base *BaseChart) SeriesExist(n string) (exist bool) {
 	return
 }
 
-func (base *BaseChart) DeleteSeries(name string) {
+func (base *BaseChart) RemoveSeries(name string) {
 	newSeries := make([]*Series, 0)
 	for i := range base.series {
 		if base.series[i].Name() != name {
