@@ -131,13 +131,15 @@ func TestDataPointAddNumericalData(t *testing.T) {
 		{ndpTestSetFull, false, true, len(ndpTestSetFull), false, -1000, 1000, -1000, 1000},
 		{ndpTestSetFull, true, false, 0, true, 0, 0, 0, 0},
 		{ndpTestSetPosVal, false, true, len(ndpTestSetPosVal), false, -1000, 1000, 0, 1000},
-		{ndpTestSetPosVal, true, false, 0, true, 0, 0, 0, 0},
+		{ndpTestSetPosVal, true, true, len(ndpTestSetPosVal), false, -1000, 1000, 0, 1000},
 		{ndpTestSetPosValPolar, false, true, len(ndpTestSetPosValPolar), false, 0, 2 * math.Pi, 0, 1000},
 		{ndpTestSetPosValPolar, true, true, len(ndpTestSetPosValPolar), false, 0, 2 * math.Pi, 0, 1000},
 		{[]data.NumericalPoint{}, false, false, 0, true, 0, 0, 0, 0},
 	}
 	for i, tt := range tests {
 		ser := EmptyPointSeries("test", color.Black)
+		ch := chartDummy{polar: tt.polar}
+		ser.BindToChart(ch)
 		ser.AddNumericalData(tt.input)
 		if len(ser.data) != tt.expNumPoints {
 			t.Errorf("wrong number of data, set %d, exp %d, have %d", i, tt.expNumPoints, len(ser.data))
@@ -174,6 +176,8 @@ func TestDataPointAddTemporalData(t *testing.T) {
 	}
 	for i, tt := range tests {
 		ser := EmptyPointSeries("test", color.Black)
+		ch := chartDummy{polar: tt.polar}
+		ser.BindToChart(ch)
 		ser.AddTemporalData(tt.input)
 		if len(ser.data) != tt.expNumPoints {
 			t.Errorf("wrong number of data, set %d, exp %d, have %d", i, tt.expNumPoints, len(ser.data))
@@ -209,6 +213,8 @@ func TestDataPointAddCategoricalData(t *testing.T) {
 	}
 	for i, tt := range tests {
 		ser := EmptyPointSeries("test", color.Black)
+		ch := chartDummy{polar: tt.polar}
+		ser.BindToChart(ch)
 		ser.AddCategoricalData(tt.input)
 		if len(ser.data) != tt.expNumPoints {
 			t.Errorf("wrong number of data, set %d, exp %d, have %d", i, tt.expNumPoints, len(ser.data))
