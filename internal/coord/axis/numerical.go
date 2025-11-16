@@ -14,10 +14,12 @@ func (ax *Axis) SetNOrigin(o float64) {
 func (ax *Axis) AutoNOrigin() {
 	switch ax.typ {
 	case CartesianAxis:
-		if ax.nMin < 0 && ax.nMax > 0 {
-			ax.nOrigin = 0
-		} else {
+		if ax.nMin < 0 && ax.nMax < 0 {
+			ax.nOrigin = ax.nMax
+		} else if ax.nMin > 0 && ax.nMax > 0 {
 			ax.nOrigin = ax.nMin
+		} else {
+			ax.nOrigin = 0
 		}
 	case PolarPhiAxis:
 		ax.nOrigin = ax.nMin
