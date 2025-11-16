@@ -36,7 +36,7 @@ func main() {
 
 // Stacked Bar Chart
 func barChart() (propChart *prop.BarChart, err error) {
-	propChart = prop.NewBarChart()
+	propChart = prop.NewBarChart("Proportional Bar Chart")
 
 	// Series 1
 	data1 := []data.ProportionalPoint{
@@ -86,13 +86,11 @@ func barChart() (propChart *prop.BarChart, err error) {
 	if err != nil {
 		return
 	}
-
-	propChart.SetTitle("Proportional Bar Chart")
 	return
 }
 
 func pieChart() (propChart *prop.PieChart, err error) {
-	propChart = prop.NewPieChart()
+	propChart = prop.NewPieChart("")
 
 	// Series 1
 	data1 := []data.ProportionalPoint{

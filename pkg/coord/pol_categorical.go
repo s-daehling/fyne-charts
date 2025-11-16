@@ -13,11 +13,12 @@ type PolarCategoricalChart struct {
 }
 
 // NewPolarCategoricalChart returns an initialized PolarCategoricalChart
-func NewPolarCategoricalChart() (catChart *PolarCategoricalChart) {
+func NewPolarCategoricalChart(title string) (catChart *PolarCategoricalChart) {
 	catChart = &PolarCategoricalChart{
 		coordChart: emptyCoordChart(coord.PolarPlane, coord.Categorical),
 	}
 	catChart.ExtendBaseWidget(catChart)
+	catChart.SetTitle(title)
 	return
 }
 

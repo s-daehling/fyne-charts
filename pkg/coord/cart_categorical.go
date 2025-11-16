@@ -13,11 +13,12 @@ type CartesianCategoricalChart struct {
 }
 
 // NewCartesianCategoricalChart returns an initialized CategoricalChart
-func NewCartesianCategoricalChart() (catChart *CartesianCategoricalChart) {
+func NewCartesianCategoricalChart(title string) (catChart *CartesianCategoricalChart) {
 	catChart = &CartesianCategoricalChart{
 		coordChart: emptyCoordChart(coord.CartesianPlane, coord.Categorical),
 	}
 	catChart.ExtendBaseWidget(catChart)
+	catChart.SetTitle(title)
 	return
 }
 

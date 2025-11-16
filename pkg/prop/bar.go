@@ -10,10 +10,11 @@ type BarChart struct {
 }
 
 // NewBarChart returns an initialized BarChart
-func NewBarChart() (barChart *BarChart) {
+func NewBarChart(title string) (barChart *BarChart) {
 	barChart = &BarChart{
 		propChart: emptyPropChart(prop.CartesianPlane),
 	}
 	barChart.ExtendBaseWidget(barChart)
+	barChart.SetTitle(title)
 	return
 }

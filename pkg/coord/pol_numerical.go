@@ -13,11 +13,12 @@ type PolarNumericalChart struct {
 }
 
 // NewPolarNumericalChart returns an initialized PolarNumericalChart
-func NewPolarNumericalChart() (numChart *PolarNumericalChart) {
+func NewPolarNumericalChart(title string) (numChart *PolarNumericalChart) {
 	numChart = &PolarNumericalChart{
 		coordChart: emptyCoordChart(coord.PolarPlane, coord.Numerical),
 	}
 	numChart.ExtendBaseWidget(numChart)
+	numChart.SetTitle(title)
 	return
 }
 

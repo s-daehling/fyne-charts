@@ -15,11 +15,12 @@ type PolarTemporalChart struct {
 }
 
 // NewPolarTemporalChart returns an initialized PolarTemporalChart
-func NewPolarTemporalChart() (tempChart *PolarTemporalChart) {
+func NewPolarTemporalChart(title string) (tempChart *PolarTemporalChart) {
 	tempChart = &PolarTemporalChart{
 		coordChart: emptyCoordChart(coord.PolarPlane, coord.Temporal),
 	}
 	tempChart.ExtendBaseWidget(tempChart)
+	tempChart.SetTitle(title)
 	return
 }
 

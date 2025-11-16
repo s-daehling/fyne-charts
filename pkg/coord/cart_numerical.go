@@ -14,11 +14,12 @@ type CartesianNumericalChart struct {
 }
 
 // NewCartesianNumericalChart returns an initialized CartesianNumericalChart
-func NewCartesianNumericalChart() (numChart *CartesianNumericalChart) {
+func NewCartesianNumericalChart(title string) (numChart *CartesianNumericalChart) {
 	numChart = &CartesianNumericalChart{
 		coordChart: emptyCoordChart(coord.CartesianPlane, coord.Numerical),
 	}
 	numChart.ExtendBaseWidget(numChart)
+	numChart.SetTitle(title)
 	return
 }
 

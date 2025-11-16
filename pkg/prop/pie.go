@@ -10,10 +10,11 @@ type PieChart struct {
 }
 
 // NewPieChart returns an initialized PieChart
-func NewPieChart() (pieChart *PieChart) {
+func NewPieChart(title string) (pieChart *PieChart) {
 	pieChart = &PieChart{
 		propChart: emptyPropChart(prop.PolarPlane),
 	}
 	pieChart.ExtendBaseWidget(pieChart)
+	pieChart.SetTitle(title)
 	return
 }

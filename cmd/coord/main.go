@@ -75,7 +75,7 @@ func polarCharts() (obj fyne.CanvasObject, err error) {
 
 // Cartesian Numerical Chart
 func cartNumChart() (numChart *coord.CartesianNumericalChart, err error) {
-	numChart = coord.NewCartesianNumericalChart()
+	numChart = coord.NewCartesianNumericalChart("Cartesian Numerical Chart")
 
 	// Area Series
 	data1 := make([]data.NumericalPoint, 0)
@@ -134,14 +134,13 @@ func cartNumChart() (numChart *coord.CartesianNumericalChart, err error) {
 	numChart.SetOrigin(0, 0)
 	numChart.SetXAxisLabel("X axis")
 	numChart.SetYAxisLabel("Y axis")
-	numChart.SetTitle("Cartesian Numerical Chart")
 	numChart.HideLegend()
 	return
 }
 
 // Cartesian Temporal Chart
 func cartTempChart() (tempChart *coord.CartesianTemporalChart, err error) {
-	tempChart = coord.NewCartesianTemporalChart()
+	tempChart = coord.NewCartesianTemporalChart("")
 
 	// Candlestick Series
 	data1 := make([]data.TemporalCandleStick, 0)
@@ -189,7 +188,7 @@ func cartTempChart() (tempChart *coord.CartesianTemporalChart, err error) {
 
 // Cartesian Categorical Chart
 func cartCatChart() (catChart *coord.CartesianCategoricalChart, err error) {
-	catChart = coord.NewCartesianCategoricalChart()
+	catChart = coord.NewCartesianCategoricalChart("Cartesian Categorical Chart")
 
 	// Stacked Bar Series
 	data1 := []data.CategoricalPoint{
@@ -290,14 +289,13 @@ func cartCatChart() (catChart *coord.CartesianCategoricalChart, err error) {
 	// Examples of methods for altering the chart appearance
 	catChart.SetCAxisLabel("C axis")
 	catChart.SetYAxisLabel("Y axis")
-	catChart.SetTitle("Cartesian Categorical Chart")
 	catChart.SetTitleStyle(theme.SizeNameText, theme.ColorNameForeground)
 	return
 }
 
 // Polar Numerical Chart
 func polNumChart() (numChart *coord.PolarNumericalChart, err error) {
-	numChart = coord.NewPolarNumericalChart()
+	numChart = coord.NewPolarNumericalChart("Polar Numerical Chart")
 
 	// Area Series
 	data1 := make([]data.NumericalPoint, 0)
@@ -332,14 +330,13 @@ func polNumChart() (numChart *coord.PolarNumericalChart, err error) {
 	numChart.SetOrigin(0, 64)
 	numChart.SetPhiAxisLabel("Phi axis")
 	numChart.SetRAxisLabel("R axis")
-	numChart.SetTitle("Polar Numerical Chart")
 	numChart.SetPhiAxisStyle(theme.SizeNameText, theme.ColorNameForeground, theme.ColorNameSuccess)
 	return
 }
 
 // Polar Temporal Chart
 func polTempChart() (tempChart *coord.PolarTemporalChart, err error) {
-	tempChart = coord.NewPolarTemporalChart()
+	tempChart = coord.NewPolarTemporalChart("Polar Temporal Chart")
 
 	// Lollipop Series
 	data1 := make([]data.TemporalPoint, 0)
@@ -373,14 +370,13 @@ func polTempChart() (tempChart *coord.PolarTemporalChart, err error) {
 	tempChart.SetOrigin(time.Now().Add(time.Hour*10), 120)
 	tempChart.SetTAxisLabel("T axis")
 	tempChart.SetRAxisLabel("R axis")
-	tempChart.SetTitle("Polar Temporal Chart")
 	tempChart.SetTitleStyle(theme.SizeNameHeadingText, theme.ColorNameError)
 	return
 }
 
 // Polar Categorical Chart
 func polCatChart() (catChart *coord.PolarCategoricalChart, err error) {
-	catChart = coord.NewPolarCategoricalChart()
+	catChart = coord.NewPolarCategoricalChart("")
 
 	// Stacked Bar Series
 	data1 := []data.CategoricalPoint{

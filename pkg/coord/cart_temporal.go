@@ -16,11 +16,12 @@ type CartesianTemporalChart struct {
 }
 
 // NewCartesianTemporalChart returns an initialized CartesianTemporalChart
-func NewCartesianTemporalChart() (tempChart *CartesianTemporalChart) {
+func NewCartesianTemporalChart(title string) (tempChart *CartesianTemporalChart) {
 	tempChart = &CartesianTemporalChart{
 		coordChart: emptyCoordChart(coord.CartesianPlane, coord.Temporal),
 	}
 	tempChart.ExtendBaseWidget(tempChart)
+	tempChart.SetTitle(title)
 	return
 }
 
