@@ -669,6 +669,9 @@ func (ser *PointSeries) SetColor(col color.Color) {
 	for i := range ser.data {
 		ser.data[i].setColor(col)
 	}
+	if ser.cont != nil {
+		ser.cont.DataChange()
+	}
 }
 
 func (ser *PointSeries) SetLineWidth(lw float32) {
@@ -678,6 +681,9 @@ func (ser *PointSeries) SetLineWidth(lw float32) {
 	for i := range ser.data {
 		ser.data[i].setLineWidth(lw)
 	}
+	if ser.cont != nil {
+		ser.cont.DataChange()
+	}
 }
 
 func (ser *PointSeries) SetDotSize(ds float32) {
@@ -686,6 +692,9 @@ func (ser *PointSeries) SetDotSize(ds float32) {
 	}
 	for i := range ser.data {
 		ser.data[i].setDotSize(ds)
+	}
+	if ser.cont != nil {
+		ser.cont.DataChange()
 	}
 }
 

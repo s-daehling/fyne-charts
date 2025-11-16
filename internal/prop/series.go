@@ -303,12 +303,18 @@ func (ser *Series) SetValTextColor(col color.Color) {
 	for i := range ser.data {
 		ser.data[i].text.Color = col
 	}
+	if ser.chart != nil {
+		ser.chart.DataChange()
+	}
 }
 
 func (ser *Series) SetAutoValTextColor() {
 	ser.autoValTextColor = true
 	for i := range ser.data {
 		ser.data[i].text.Color = theme.Color(theme.ColorNameForeground)
+	}
+	if ser.chart != nil {
+		ser.chart.DataChange()
 	}
 }
 

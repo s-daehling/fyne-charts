@@ -34,42 +34,52 @@ func (base *BaseChart) ToAxisElements() (min float64, max float64, origin float6
 
 func (base *BaseChart) HideFromAxis() {
 	base.fromAx.Hide()
+	base.Refresh()
 }
 
 func (base *BaseChart) ShowFromAxis() {
 	base.fromAx.Show()
+	base.Refresh()
 }
 
 func (base *BaseChart) SetFromAxisLabel(l string) {
 	base.fromAx.SetLabel(l)
+	base.Refresh()
 }
 
 func (base *BaseChart) SetFromAxisLabelStyle(sizeName fyne.ThemeSizeName, colorName fyne.ThemeColorName) {
 	base.fromAx.SetAxisLabelStyle(sizeName, colorName)
+	base.Refresh()
 }
 
 func (base *BaseChart) SetFromAxisStyle(colorName fyne.ThemeColorName) {
 	base.fromAx.SetAxisStyle(colorName)
+	base.Refresh()
 }
 
 func (base *BaseChart) HideToAxis() {
 	base.toAx.Hide()
+	base.Refresh()
 }
 
 func (base *BaseChart) ShowToAxis() {
 	base.toAx.Show()
+	base.Refresh()
 }
 
 func (base *BaseChart) SetToAxisLabel(l string) {
 	base.toAx.SetLabel(l)
+	base.Refresh()
 }
 
 func (base *BaseChart) SetToAxisLabelStyle(sizeName fyne.ThemeSizeName, colorName fyne.ThemeColorName) {
 	base.toAx.SetAxisLabelStyle(sizeName, colorName)
+	base.Refresh()
 }
 
 func (base *BaseChart) SetToAxisStyle(colorName fyne.ThemeColorName) {
 	base.toAx.SetAxisStyle(colorName)
+	base.Refresh()
 }
 
 // -------------------- origin --------------------

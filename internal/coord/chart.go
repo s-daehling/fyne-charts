@@ -312,12 +312,12 @@ func (base *BaseChart) LegendEntries() (les []renderer.LegendEntry) {
 
 func (base *BaseChart) ShowLegend() {
 	base.legendVisible = true
-	base.DataChange()
+	base.Refresh()
 }
 
 func (base *BaseChart) HideLegend() {
 	base.legendVisible = false
-	base.DataChange()
+	base.Refresh()
 }
 
 func (base *BaseChart) Tooltip() (tt renderer.Tooltip) {
@@ -332,6 +332,7 @@ func (base *BaseChart) legendVisibility() (v bool) {
 
 func (base *BaseChart) SetTitle(l string) {
 	base.title.Text = l
+	base.Refresh()
 }
 
 func (base *BaseChart) SetTitleStyle(sizeName fyne.ThemeSizeName, colorName fyne.ThemeColorName) {
@@ -339,6 +340,7 @@ func (base *BaseChart) SetTitleStyle(sizeName fyne.ThemeSizeName, colorName fyne
 	base.title.TextSize = theme.Size(sizeName)
 	base.titleColorName = colorName
 	base.title.Color = theme.Color(colorName)
+	base.Refresh()
 }
 
 func (base *BaseChart) MouseIn(pX, pY, w, h, absX, absY float32) {

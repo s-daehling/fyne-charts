@@ -354,6 +354,9 @@ func (ser *BoxSeries) SetColor(col color.Color) {
 	for i := range ser.data {
 		ser.data[i].setColor(col)
 	}
+	if ser.cont != nil {
+		ser.cont.DataChange()
+	}
 }
 
 // SetLineWidth changes the width of the Line
@@ -366,6 +369,9 @@ func (ser *BoxSeries) SetLineWidth(lw float32) {
 	for i := range ser.data {
 		ser.data[i].setLineWidth(lw)
 	}
+	if ser.cont != nil {
+		ser.cont.DataChange()
+	}
 }
 
 // SetOutlierSize changes the size of the outlier dots
@@ -377,6 +383,9 @@ func (ser *BoxSeries) SetOutlierSize(os float32) {
 	}
 	for i := range ser.data {
 		ser.data[i].setOutlierSize(os)
+	}
+	if ser.cont != nil {
+		ser.cont.DataChange()
 	}
 }
 

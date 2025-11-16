@@ -248,6 +248,9 @@ func (ser *CandleStickSeries) SetLineWidth(lw float32) {
 	for i := range ser.data {
 		ser.data[i].setLineWidth(lw)
 	}
+	if ser.cont != nil {
+		ser.cont.DataChange()
+	}
 }
 
 func (ser *CandleStickSeries) Clear() {
