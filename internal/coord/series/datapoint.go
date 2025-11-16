@@ -767,6 +767,12 @@ func (ser *PointSeries) Release() {
 	ser.showBar = false
 	ser.showArea = false
 	ser.isStacked = false
+	for i := range ser.data {
+		ser.data[i].showDot = false
+		ser.data[i].showFromPrevLine = false
+		ser.data[i].showFromValBaseLine = false
+		ser.data[i].showBar = false
+	}
 }
 
 func (ser *PointSeries) Clear() {
