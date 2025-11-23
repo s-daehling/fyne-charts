@@ -1,6 +1,8 @@
 package coord
 
 import (
+	"errors"
+
 	"github.com/s-daehling/fyne-charts/internal/coord"
 	"github.com/s-daehling/fyne-charts/pkg/data"
 
@@ -26,6 +28,13 @@ func NewCartesianCategoricalChart(title string) (catChart *CartesianCategoricalC
 // The series must have a unique name throughout the chart.
 // An error is returned,if another series with the same name exists or if the series is already added to another chart
 func (catChart *CartesianCategoricalChart) AddScatterSeries(cps *CategoricalPointSeries) (err error) {
+	if catChart.base == nil || cps == nil {
+		return
+	}
+	if cps.ser == nil {
+		err = errors.New("series not initialized")
+		return
+	}
 	err = catChart.base.AddScatterSeries(cps.ser)
 	return
 }
@@ -34,6 +43,13 @@ func (catChart *CartesianCategoricalChart) AddScatterSeries(cps *CategoricalPoin
 // The series must have a unique name throughout the chart.
 // An error is returned,if another series with the same name exists or if the series is already added to another chart
 func (catChart *CartesianCategoricalChart) AddBarSeries(cps *CategoricalPointSeries) (err error) {
+	if catChart.base == nil || cps == nil {
+		return
+	}
+	if cps.ser == nil {
+		err = errors.New("series not initialized")
+		return
+	}
 	err = catChart.base.AddBarSeries(cps.ser)
 	return
 }
@@ -42,6 +58,13 @@ func (catChart *CartesianCategoricalChart) AddBarSeries(cps *CategoricalPointSer
 // The series must have a unique name throughout the chart.
 // An error is returned,if another series with the same name exists or if the series is already added to another chart
 func (catChart *CartesianCategoricalChart) AddStackedBarSeries(css *CategoricalStackedSeries) (err error) {
+	if catChart.base == nil || css == nil {
+		return
+	}
+	if css.ser == nil {
+		err = errors.New("series not initialized")
+		return
+	}
 	err = catChart.base.AddStackedBarSeries(css.ser)
 	return
 }
@@ -50,6 +73,13 @@ func (catChart *CartesianCategoricalChart) AddStackedBarSeries(css *CategoricalS
 // The series must have a unique name throughout the chart.
 // An error is returned,if another series with the same name exists or if the series is already added to another chart
 func (catChart *CartesianCategoricalChart) AddLollipopSeries(cps *CategoricalPointSeries) (err error) {
+	if catChart.base == nil || cps == nil {
+		return
+	}
+	if cps.ser == nil {
+		err = errors.New("series not initialized")
+		return
+	}
 	err = catChart.base.AddLollipopSeries(cps.ser)
 	return
 }
@@ -58,34 +88,56 @@ func (catChart *CartesianCategoricalChart) AddLollipopSeries(cps *CategoricalPoi
 // The series must have a unique name throughout the chart.
 // An error is returned,if another series with the same name exists or if the series is already added to another chart
 func (catChart *CartesianCategoricalChart) AddBoxSeries(cbs *CategoricalBoxSeries) (err error) {
+	if catChart.base == nil || cbs == nil {
+		return
+	}
+	if cbs.ser == nil {
+		err = errors.New("series not initialized")
+		return
+	}
 	err = catChart.base.AddBoxSeries(cbs.ser)
 	return
 }
 
 // SetYAxisLabel sets the label of the y-axis, which will be displayed at the left side
 func (catChart *CartesianCategoricalChart) SetYAxisLabel(l string) {
+	if catChart.base == nil {
+		return
+	}
 	catChart.base.SetToAxisLabel(l)
 }
 
 // SetYRange sets a user defined range for the y-axis;
 // an error is returned if min>max or if the origin has been defined by the user before and is outside the given range
 func (catChart *CartesianCategoricalChart) SetYRange(min float64, max float64) (err error) {
+	if catChart.base == nil {
+		return
+	}
 	err = catChart.base.SetToRange(min, max)
 	return
 }
 
 // SetAutoYRange overrides a previously user defined range and lets the range be calculated automatically
 func (catChart *CartesianCategoricalChart) SetAutoYRange() {
+	if catChart.base == nil {
+		return
+	}
 	catChart.base.SetAutoToRange()
 }
 
 // SetYTicks sets the list of user defined ticks to be shown on the y-axis
 func (catChart *CartesianCategoricalChart) SetYTicks(ts []data.NumericalTick) {
+	if catChart.base == nil {
+		return
+	}
 	catChart.base.SetToTicks(ts)
 }
 
 // SetAutoYTicks overrides a previously user defined set of y-axis ticks and lets the ticks be calculated automatically
 func (catChart *CartesianCategoricalChart) SetAutoYTicks(autoSupportLine bool) {
+	if catChart.base == nil {
+		return
+	}
 	catChart.base.SetAutoToTicks(autoSupportLine)
 }
 
@@ -95,12 +147,36 @@ func (catChart *CartesianCategoricalChart) SetAutoYTicks(autoSupportLine bool) {
 // default value axis color: theme.ColorNameForeground
 func (catChart *CartesianCategoricalChart) SetYAxisStyle(labelSize fyne.ThemeSizeName,
 	labelColor fyne.ThemeColorName, axisColor fyne.ThemeColorName) {
+	if catChart.base == nil {
+		return
+	}
 	catChart.base.SetToAxisLabelStyle(labelSize, labelColor)
 	catChart.base.SetToAxisStyle(axisColor)
 }
 
+// SetOrigin sets a user defined origin (crossing of c and y axis).
+// An error is returned, if a range has been defined before and at least one coordinate is outside the range.
+func (catChart *CartesianCategoricalChart) SetOrigin(y float64) (err error) {
+	if catChart.base == nil {
+		return
+	}
+	err = catChart.base.SetNOrigin(0.0, y)
+	return
+}
+
+// SetAutoOrigin resets a previously user defined origin and allows the chart to calculate the ideal origin automatically
+func (catChart *CartesianCategoricalChart) SetAutoOrigin() {
+	if catChart.base == nil {
+		return
+	}
+	catChart.base.SetAutoOrigin()
+}
+
 // SetCAxisLabel sets the label of the c-axis, which will be displayed at the bottom
 func (catChart *CartesianCategoricalChart) SetCAxisLabel(l string) {
+	if catChart.base == nil {
+		return
+	}
 	catChart.base.SetFromAxisLabel(l)
 }
 
@@ -108,12 +184,18 @@ func (catChart *CartesianCategoricalChart) SetCAxisLabel(l string) {
 // This will also determine the ticks and their order on the c-axis.
 // An error is returned if cs is empty.
 func (catChart *CartesianCategoricalChart) SetCRange(cs []string) (err error) {
+	if catChart.base == nil {
+		return
+	}
 	err = catChart.base.SetFromCRange(cs)
 	return
 }
 
 // SetAutoCRange overrides a previously user defined set of categories to be shown and lets the set be calculated automatically
 func (catChart *CartesianCategoricalChart) SetAutoCRange() {
+	if catChart.base == nil {
+		return
+	}
 	catChart.base.SetAutoFromRange()
 }
 
@@ -123,6 +205,9 @@ func (catChart *CartesianCategoricalChart) SetAutoCRange() {
 // default value axis color: theme.ColorNameForeground
 func (catChart *CartesianCategoricalChart) SetCAxisStyle(labelSize fyne.ThemeSizeName,
 	labelColor fyne.ThemeColorName, axisColor fyne.ThemeColorName) {
+	if catChart.base == nil {
+		return
+	}
 	catChart.base.SetFromAxisLabelStyle(labelSize, labelColor)
 	catChart.base.SetFromAxisStyle(axisColor)
 }

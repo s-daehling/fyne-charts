@@ -111,6 +111,7 @@ func (base *BaseChart) updateSeriesVariables() {
 			if ser.IsBarSeries() && base.fromType == Categorical {
 				ser.SetNumericalBarWidthAndShift(barWidth, barOffset)
 				barOffset += barWidth
+				ser.SetValBaseNumerical(base.toAx.NOrigin())
 			} else if ser.IsLollipopSeries() && base.planeType == CartesianPlane {
 				ser.SetValBaseNumerical(base.toAx.NOrigin())
 			} else if ser.IsAreaSeries() {

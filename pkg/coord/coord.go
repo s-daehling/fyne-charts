@@ -17,6 +17,10 @@ func emptyCoordChart(planeType coord.PlaneType, fromType coord.FromType) (chart 
 }
 
 func (chart *coordChart) CreateRenderer() (r fyne.WidgetRenderer) {
+	if chart.base == nil {
+		r = widget.NewSimpleRenderer(widget.NewLabel("not initialized"))
+		return
+	}
 	r = chart.base.CreateRenderer(chart.Size)
 	return
 }
@@ -24,16 +28,25 @@ func (chart *coordChart) CreateRenderer() (r fyne.WidgetRenderer) {
 // Refresh chart
 // chart is automatically refreshed after data changes
 func (chart *coordChart) Refresh() {
+	if chart.base == nil {
+		return
+	}
 	chart.base.Refresh()
 }
 
 // RemoveSeries deletes the series with the specified name if it exists
 func (chart *coordChart) RemoveSeries(name string) {
+	if chart.base == nil {
+		return
+	}
 	chart.base.RemoveSeries(name)
 }
 
 // SetTitle sets the title of the chart, which will be displayed at the top
 func (chart *coordChart) SetTitle(l string) {
+	if chart.base == nil {
+		return
+	}
 	chart.base.SetTitle(l)
 }
 
@@ -41,15 +54,24 @@ func (chart *coordChart) SetTitle(l string) {
 // default value title size: theme.SizeNameSubHeadingText
 // default value title color: theme.ColorNameForeground
 func (chart *coordChart) SetTitleStyle(titleSize fyne.ThemeSizeName, titleColor fyne.ThemeColorName) {
+	if chart.base == nil {
+		return
+	}
 	chart.base.SetTitleStyle(titleSize, titleColor)
 }
 
 // HideLegend hides the legend and uses the full space for the chart
 func (chart *coordChart) HideLegend() {
+	if chart.base == nil {
+		return
+	}
 	chart.base.HideLegend()
 }
 
 // ShowLegend shows the legend on the right side
 func (chart *coordChart) ShowLegend() {
+	if chart.base == nil {
+		return
+	}
 	chart.base.ShowLegend()
 }

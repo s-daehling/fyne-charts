@@ -224,17 +224,27 @@ func (point *dataPoint) polarEdges(firstPoint bool, prevPhi float64, prevR float
 }
 
 func (point *dataPoint) cartesianRects(xMin float64, xMax float64, yMin float64,
-	yMax float64) (rs []renderer.CartesianRect) {
+	yMax float64, stacked bool) (rs []renderer.CartesianRect) {
 	if !point.showBar || point.n < xMin || point.n > xMax {
 		return
 	}
-	rs = append(rs, renderer.CartesianRect{
-		X1:   point.n + point.nBarShift - (point.nBarWidth / 2),
-		Y1:   math.Max(math.Min(point.valBase, point.valBase+point.val), yMin),
-		X2:   point.n + point.nBarShift + (point.nBarWidth / 2),
-		Y2:   math.Min(math.Max(point.valBase, point.valBase+point.val), yMax),
-		Rect: point.bar,
-	})
+	if stacked {
+		rs = append(rs, renderer.CartesianRect{
+			X1:   point.n + point.nBarShift - (point.nBarWidth / 2),
+			Y1:   math.Max(math.Min(point.valBase, point.valBase+point.val), yMin),
+			X2:   point.n + point.nBarShift + (point.nBarWidth / 2),
+			Y2:   math.Min(math.Max(point.valBase, point.valBase+point.val), yMax),
+			Rect: point.bar,
+		})
+	} else {
+		rs = append(rs, renderer.CartesianRect{
+			X1:   point.n + point.nBarShift - (point.nBarWidth / 2),
+			Y1:   math.Max(yMin, math.Min(point.valBase, point.val)),
+			X2:   point.n + point.nBarShift + (point.nBarWidth / 2),
+			Y2:   math.Min(yMax, math.Max(point.valBase, point.val)),
+			Rect: point.bar,
+		})
+	}
 	return
 }
 
@@ -493,7 +503,7 @@ func (ser *PointSeries) CartesianEdges(xMin float64, xMax float64, yMin float64,
 func (ser *PointSeries) CartesianRects(xMin float64, xMax float64, yMin float64,
 	yMax float64) (fs []renderer.CartesianRect) {
 	for i := range ser.data {
-		fs = append(fs, ser.data[i].cartesianRects(xMin, xMax, yMin, yMax)...)
+		fs = append(fs, ser.data[i].cartesianRects(xMin, xMax, yMin, yMax, ser.isStacked)...)
 	}
 	return
 }

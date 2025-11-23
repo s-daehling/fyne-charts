@@ -1,6 +1,8 @@
 package coord
 
 import (
+	"errors"
+
 	"github.com/s-daehling/fyne-charts/internal/coord"
 
 	"github.com/s-daehling/fyne-charts/pkg/data"
@@ -28,6 +30,13 @@ func NewCartesianNumericalChart(title string) (numChart *CartesianNumericalChart
 // The series must have a unique name throughout the chart.
 // An error is returned,if another series with the same name exists or if the series is already added to another chart
 func (numChart *CartesianNumericalChart) AddLineSeries(nps *NumericalPointSeries, showDots bool) (err error) {
+	if numChart.base == nil || nps == nil {
+		return
+	}
+	if nps.ser == nil {
+		err = errors.New("series not initialized")
+		return
+	}
 	err = numChart.base.AddLineSeries(nps.ser, showDots)
 	return
 }
@@ -36,6 +45,13 @@ func (numChart *CartesianNumericalChart) AddLineSeries(nps *NumericalPointSeries
 // The series must have a unique name throughout the chart.
 // An error is returned,if another series with the same name exists or if the series is already added to another chart
 func (numChart *CartesianNumericalChart) AddScatterSeries(nps *NumericalPointSeries) (err error) {
+	if numChart.base == nil || nps == nil {
+		return
+	}
+	if nps.ser == nil {
+		err = errors.New("series not initialized")
+		return
+	}
 	err = numChart.base.AddScatterSeries(nps.ser)
 	return
 }
@@ -44,6 +60,13 @@ func (numChart *CartesianNumericalChart) AddScatterSeries(nps *NumericalPointSer
 // The series must have a unique name throughout the chart.
 // An error is returned,if another series with the same name exists or if the series is already added to another chart
 func (numChart *CartesianNumericalChart) AddLollipopSeries(nps *NumericalPointSeries) (err error) {
+	if numChart.base == nil || nps == nil {
+		return
+	}
+	if nps.ser == nil {
+		err = errors.New("series not initialized")
+		return
+	}
 	err = numChart.base.AddLollipopSeries(nps.ser)
 	return
 }
@@ -52,6 +75,13 @@ func (numChart *CartesianNumericalChart) AddLollipopSeries(nps *NumericalPointSe
 // The series must have a unique name throughout the chart.
 // An error is returned,if another series with the same name exists or if the series is already added to another chart
 func (numChart *CartesianNumericalChart) AddCandleStickSeries(ncs *NumericalCandleStickSeries) (err error) {
+	if numChart.base == nil || ncs == nil {
+		return
+	}
+	if ncs.ser == nil {
+		err = errors.New("series not initialized")
+		return
+	}
 	err = numChart.base.AddCandleStickSeries(ncs.ser)
 	return
 }
@@ -60,6 +90,13 @@ func (numChart *CartesianNumericalChart) AddCandleStickSeries(ncs *NumericalCand
 // The series must have a unique name throughout the chart.
 // An error is returned,if another series with the same name exists or if the series is already added to another chart
 func (numChart *CartesianNumericalChart) AddBoxSeries(nbs *NumericalBoxSeries) (err error) {
+	if numChart.base == nil || nbs == nil {
+		return
+	}
+	if nbs.ser == nil {
+		err = errors.New("series not initialized")
+		return
+	}
 	err = numChart.base.AddBoxSeries(nbs.ser)
 	return
 }
@@ -69,6 +106,13 @@ func (numChart *CartesianNumericalChart) AddBoxSeries(nbs *NumericalBoxSeries) (
 // The series must have a unique name throughout the chart.
 // An error is returned,if another series with the same name exists or if the series is already added to another chart
 func (numChart *CartesianNumericalChart) AddAreaSeries(nps *NumericalPointSeries, showDots bool) (err error) {
+	if numChart.base == nil || nps == nil {
+		return
+	}
+	if nps.ser == nil {
+		err = errors.New("series not initialized")
+		return
+	}
 	err = numChart.base.AddAreaSeries(nps.ser, showDots)
 	return
 }
@@ -78,6 +122,13 @@ func (numChart *CartesianNumericalChart) AddAreaSeries(nps *NumericalPointSeries
 // The bars are centered around their N value of the data points. barWidth is the width of the bars.
 // An error is returned,if another series with the same name exists, if the series is already added to another chart or if barWidth < 0
 func (numChart *CartesianNumericalChart) AddBarSeries(nps *NumericalPointSeries, barWidth float64) (err error) {
+	if numChart.base == nil || nps == nil {
+		return
+	}
+	if nps.ser == nil {
+		err = errors.New("series not initialized")
+		return
+	}
 	err = nps.SetBarWidth(barWidth)
 	if err != nil {
 		return
@@ -88,28 +139,43 @@ func (numChart *CartesianNumericalChart) AddBarSeries(nps *NumericalPointSeries,
 
 // SetYAxisLabel sets the label of the y-axis, which will be displayed at the left side
 func (numChart *CartesianNumericalChart) SetYAxisLabel(l string) {
+	if numChart.base == nil {
+		return
+	}
 	numChart.base.SetToAxisLabel(l)
 }
 
 // SetYRange sets a user defined range for the y-axis;
 // an error is returned if min>max or if the origin has been defined by the user before and is outside the given range
 func (numChart *CartesianNumericalChart) SetYRange(min float64, max float64) (err error) {
+	if numChart.base == nil {
+		return
+	}
 	err = numChart.base.SetToRange(min, max)
 	return
 }
 
 // SetAutoYRange overrides a previously user defined range and lets the range be calculated automatically
 func (numChart *CartesianNumericalChart) SetAutoYRange() {
+	if numChart.base == nil {
+		return
+	}
 	numChart.base.SetAutoToRange()
 }
 
 // SetYTicks sets the list of user defined ticks to be shown on the y-axis
 func (numChart *CartesianNumericalChart) SetYTicks(ts []data.NumericalTick) {
+	if numChart.base == nil {
+		return
+	}
 	numChart.base.SetToTicks(ts)
 }
 
 // SetAutoYTicks overrides a previously user defined set of y-axis ticks and lets the ticks be calculated automatically
 func (numChart *CartesianNumericalChart) SetAutoYTicks(autoSupportLine bool) {
+	if numChart.base == nil {
+		return
+	}
 	numChart.base.SetAutoToTicks(autoSupportLine)
 }
 
@@ -119,6 +185,9 @@ func (numChart *CartesianNumericalChart) SetAutoYTicks(autoSupportLine bool) {
 // default value axis color: theme.ColorNameForeground
 func (numChart *CartesianNumericalChart) SetYAxisStyle(labelSize fyne.ThemeSizeName,
 	labelColor fyne.ThemeColorName, axisColor fyne.ThemeColorName) {
+	if numChart.base == nil {
+		return
+	}
 	numChart.base.SetToAxisLabelStyle(labelSize, labelColor)
 	numChart.base.SetToAxisStyle(axisColor)
 }
@@ -126,39 +195,60 @@ func (numChart *CartesianNumericalChart) SetYAxisStyle(labelSize fyne.ThemeSizeN
 // SetOrigin sets a user defined origin (crossing of x and y axis).
 // An error is returned, if a range has been defined before and at least one coordinate is outside the range.
 func (numChart *CartesianNumericalChart) SetOrigin(x float64, y float64) (err error) {
+	if numChart.base == nil {
+		return
+	}
 	err = numChart.base.SetNOrigin(x, y)
 	return
 }
 
 // SetAutoOrigin resets a previously user defined origin and allows the chart to calculate the ideal origin automatically
 func (numChart *CartesianNumericalChart) SetAutoOrigin() {
+	if numChart.base == nil {
+		return
+	}
 	numChart.base.SetAutoOrigin()
 }
 
 // SetXAxisLabel sets the label of the x-axis, which will be displayed at the bottom
 func (numChart *CartesianNumericalChart) SetXAxisLabel(l string) {
+	if numChart.base == nil {
+		return
+	}
 	numChart.base.SetFromAxisLabel(l)
 }
 
 // SetXRange sets a user defined range for the x-axis.
 // An error is returned, if min>max or if the origin has been defined by the user before and is outside the given range
 func (numChart *CartesianNumericalChart) SetXRange(min float64, max float64) (err error) {
+	if numChart.base == nil {
+		return
+	}
 	err = numChart.base.SetFromNRange(min, max)
 	return
 }
 
 // SetAutoXRange overrides a previously user defined range and lets the range be calculated automatically
 func (numChart *CartesianNumericalChart) SetAutoXRange() {
+	if numChart.base == nil {
+		return
+	}
 	numChart.base.SetAutoFromRange()
 }
 
 // SetXTicks sets the list of user defined ticks to be shown on the x-axis
 func (numChart *CartesianNumericalChart) SetXTicks(ts []data.NumericalTick) {
+	if numChart.base == nil {
+		return
+	}
 	numChart.base.SetFromNTicks(ts)
 }
 
 // SetAutoXTicks overrides a previously user defined set of x-axis ticks and lets the ticks be calculated automatically
 func (numChart *CartesianNumericalChart) SetAutoXTicks(autoSupportLine bool) {
+	if numChart.base == nil {
+		return
+	}
 	numChart.base.SetAutoFromTicks(autoSupportLine)
 }
 
@@ -168,6 +258,9 @@ func (numChart *CartesianNumericalChart) SetAutoXTicks(autoSupportLine bool) {
 // default value axis color: theme.ColorNameForeground
 func (numChart *CartesianNumericalChart) SetXAxisStyle(labelSize fyne.ThemeSizeName,
 	labelColor fyne.ThemeColorName, axisColor fyne.ThemeColorName) {
+	if numChart.base == nil {
+		return
+	}
 	numChart.base.SetFromAxisLabelStyle(labelSize, labelColor)
 	numChart.base.SetFromAxisStyle(axisColor)
 }

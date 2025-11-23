@@ -1,18 +1,9 @@
 package data
 
-import "image/color"
-
 // CategoricalPoint represents one data point with a categorical coordinate
 type CategoricalPoint struct {
 	C   string
 	Val float64
-}
-
-// CategoricalDataSeries represents a series of data points with a categorical coordinate
-type CategoricalDataSeries struct {
-	Name   string
-	Col    color.Color
-	Points []CategoricalPoint
 }
 
 // CategoricalBox represents one box in a box series with a categorical coordinate
