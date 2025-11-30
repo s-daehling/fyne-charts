@@ -121,7 +121,7 @@ func (nps *NumericalPointSeries) SetBarWidth(w float64) (err error) {
 	if nps.ser == nil {
 		return
 	}
-	err = nps.ser.SetNumericalBarWidthAndShift(w, 0)
+	err = nps.ser.SetNumericalBarWidth(w)
 	if err != nil {
 		return
 	}
@@ -176,7 +176,7 @@ func (tps *TemporalPointSeries) SetBarWidth(w time.Duration) (err error) {
 	if tps.ser == nil {
 		return
 	}
-	err = tps.ser.SetTemporalBarWidthAndShift(w, 0)
+	err = tps.ser.SetTemporalBarWidth(w)
 	if err != nil {
 		return
 	}

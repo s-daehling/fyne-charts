@@ -718,22 +718,32 @@ func (ser *PointSeries) SetNumericalBarWidthAndShift(width float64, shift float6
 	for i := range ser.data {
 		ser.data[i].setNBarWidthAndShift(width, shift)
 	}
+	return
+}
+
+func (ser *PointSeries) SetNumericalBarWidth(width float64) (err error) {
+	if width < 0 {
+		err = errors.New("invalid width")
+		return
+	}
+	ser.nBarWidth = width
+	for i := range ser.data {
+		ser.data[i].setNBarWidthAndShift(width, ser.nBarShift)
+	}
 	if ser.cont != nil {
 		ser.cont.DataChange()
 	}
 	return
 }
 
-func (ser *PointSeries) SetTemporalBarWidthAndShift(width time.Duration,
-	shift time.Duration) (err error) {
+func (ser *PointSeries) SetTemporalBarWidth(width time.Duration) (err error) {
 	if width < 0 {
 		err = errors.New("invalid width")
 		return
 	}
 	ser.tBarWidth = width
-	ser.tBarShift = shift
 	for i := range ser.data {
-		ser.data[i].setTBarWidthAndShift(width, shift)
+		ser.data[i].setTBarWidthAndShift(width, ser.tBarShift)
 	}
 	if ser.cont != nil {
 		ser.cont.DataChange()
