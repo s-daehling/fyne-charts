@@ -34,7 +34,7 @@ func (base *BaseChart) updateRangeAndOrigin() {
 		if base.autoToRange {
 			base.calculateAutoToRange()
 		}
-		if base.autoFromRange || base.planeType == CartesianPlane {
+		if base.autoFromRange && base.planeType == CartesianPlane {
 			base.calculateAutoFromNRange()
 		}
 		if base.autoOrigin {
@@ -108,13 +108,17 @@ func (base *BaseChart) updateSeriesVariables() {
 	boxWidth := (nFromMax - nFromMin) / float64(maxBoxPoints)
 	for i := range base.series {
 		if ser, ok := base.series[i].(*series.PointSeries); ok {
-			if ser.IsBarSeries() && base.fromType == Categorical {
-				ser.SetNumericalBarWidthAndShift(barWidth, barOffset)
-				barOffset += barWidth
-				ser.SetValBaseNumerical(base.toAx.NOrigin())
+			if ser.IsBarSeries() {
+				if base.fromType == Categorical {
+					ser.SetNumericalBarWidthAndShift(barWidth, barOffset)
+					barOffset += barWidth
+				}
+				if base.planeType == CartesianPlane {
+					ser.SetValBaseNumerical(base.toAx.NOrigin())
+				}
 			} else if ser.IsLollipopSeries() && base.planeType == CartesianPlane {
 				ser.SetValBaseNumerical(base.toAx.NOrigin())
-			} else if ser.IsAreaSeries() {
+			} else if ser.IsAreaSeries() && base.planeType == CartesianPlane {
 				ser.SetValBaseNumerical(base.toAx.NOrigin())
 			}
 		} else if sbs, ok := base.series[i].(*series.StackedSeries); ok {

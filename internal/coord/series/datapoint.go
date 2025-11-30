@@ -718,6 +718,9 @@ func (ser *PointSeries) SetNumericalBarWidthAndShift(width float64, shift float6
 	for i := range ser.data {
 		ser.data[i].setNBarWidthAndShift(width, shift)
 	}
+	if ser.cont != nil {
+		ser.cont.DataChange()
+	}
 	return
 }
 
@@ -731,6 +734,9 @@ func (ser *PointSeries) SetTemporalBarWidthAndShift(width time.Duration,
 	ser.tBarShift = shift
 	for i := range ser.data {
 		ser.data[i].setTBarWidthAndShift(width, shift)
+	}
+	if ser.cont != nil {
+		ser.cont.DataChange()
 	}
 	return
 }
