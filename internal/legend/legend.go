@@ -13,24 +13,29 @@ import (
 
 type LegendBox struct {
 	widget.BaseWidget
-	rectColor      color.Color
-	rect           *canvas.Rectangle
-	grad           *canvas.RadialGradient
-	gradStartColor color.Color
-	gradEndColor   color.Color
-	showGrad       bool
-	tapFct         func()
+	rectColor       color.Color
+	rectToggleColor color.Color
+	rect            *canvas.Rectangle
+	grad            *canvas.RadialGradient
+	gradStartColor  color.Color
+	gradEndColor    color.Color
+	showGrad        bool
+	tapFct          func()
+	hoverFct        func(color.Color)
 }
 
-func NewLegendBox(rectColor color.Color, tapFct func()) *LegendBox {
+func NewLegendBox(rectColor color.Color, tapFct func(), hoverFct func(color.Color)) *LegendBox {
+	grayColor, _ := color.GrayModel.Convert(rectColor).(color.Gray)
 	box := &LegendBox{
-		rect:           canvas.NewRectangle(rectColor),
-		grad:           canvas.NewRadialGradient(theme.Color(theme.ColorNameForeground), theme.Color(theme.ColorNameBackground)),
-		showGrad:       false,
-		rectColor:      rectColor,
-		gradStartColor: theme.Color(theme.ColorNameForeground),
-		gradEndColor:   theme.Color(theme.ColorNameBackground),
-		tapFct:         tapFct,
+		rect:            canvas.NewRectangle(rectColor),
+		grad:            canvas.NewRadialGradient(theme.Color(theme.ColorNameForeground), theme.Color(theme.ColorNameBackground)),
+		showGrad:        false,
+		rectColor:       rectColor,
+		rectToggleColor: grayColor,
+		gradStartColor:  theme.Color(theme.ColorNameForeground),
+		gradEndColor:    theme.Color(theme.ColorNameBackground),
+		tapFct:          tapFct,
+		hoverFct:        hoverFct,
 	}
 	box.grad.Hide()
 	box.ExtendBaseWidget(box)
@@ -52,6 +57,10 @@ func (box *LegendBox) CreateRenderer() fyne.WidgetRenderer {
 	return widget.NewSimpleRenderer(c)
 }
 
+func (box *LegendBox) Cursor() desktop.Cursor {
+	return desktop.PointerCursor
+}
+
 func (box *LegendBox) Tapped(_ *fyne.PointEvent) {
 	box.tapFct()
 }
@@ -63,6 +72,9 @@ func (box *LegendBox) MouseIn(me *desktop.MouseEvent) {
 	box.grad.StartColor = box.gradEndColor
 	box.grad.EndColor = box.gradStartColor
 	box.grad.Refresh()
+	if box.hoverFct != nil {
+		box.hoverFct(box.rect.FillColor)
+	}
 }
 
 func (box *LegendBox) MouseMoved(me *desktop.MouseEvent) {}
@@ -73,6 +85,9 @@ func (box *LegendBox) MouseOut() {
 	box.grad.StartColor = box.gradStartColor
 	box.grad.EndColor = box.gradEndColor
 	box.grad.Refresh()
+	if box.hoverFct != nil {
+		box.hoverFct(box.rect.FillColor)
+	}
 }
 
 func (box *LegendBox) SetRectColor(col color.Color) {
@@ -85,4 +100,10 @@ func (box *LegendBox) SetGradColor(startColor color.Color, endColor color.Color)
 	box.grad.StartColor = startColor
 	box.gradEndColor = endColor
 	box.grad.EndColor = endColor
+}
+
+func (box *LegendBox) ToggleColor() {
+	oldColor := box.rectColor
+	box.SetRectColor(box.rectToggleColor)
+	box.rectToggleColor = oldColor
 }

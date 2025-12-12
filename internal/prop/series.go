@@ -61,11 +61,16 @@ func emptyProportionPoint(showText bool, col color.Color) (point *proportionPoin
 		legendLabel: canvas.NewText("", theme.Color(theme.ColorNameForeground)),
 		visible:     true,
 	}
-	point.legendButton = legend.NewLegendBox(col, point.toggleView)
+	point.legendButton = legend.NewLegendBox(col, point.toggleView, point.setColor)
 	if showText {
 		point.text = canvas.NewText("", theme.Color(theme.ColorNameForeground))
 	}
 	return
+}
+
+func (point *proportionPoint) setColor(newColor color.Color) {
+	point.rect.FillColor = newColor
+	point.ser.chart.DataChange()
 }
 
 func (point *proportionPoint) toggleView() {
@@ -80,6 +85,7 @@ func (point *proportionPoint) hide() {
 	if !point.visible {
 		return
 	}
+	point.legendButton.ToggleColor()
 	point.rect.Hide()
 	if point.text != nil {
 		point.text.Hide()
@@ -94,6 +100,7 @@ func (point *proportionPoint) show() {
 	if point.visible {
 		return
 	}
+	point.legendButton.ToggleColor()
 	point.rect.Show()
 	if point.text != nil {
 		point.text.Show()
@@ -217,7 +224,7 @@ func EmptyProportionalSeries(chart *BaseChart, name string, polar bool) (ser *Se
 		polar:            polar,
 		chart:            chart,
 	}
-	ser.legendButton = legend.NewLegendBox(theme.Color(theme.ColorNameForeground), ser.toggleView)
+	ser.legendButton = legend.NewLegendBox(theme.Color(theme.ColorNameForeground), ser.toggleView, nil)
 	ser.legendButton.UseGradient(theme.Color(theme.ColorNameForeground), theme.Color(theme.ColorNameBackground))
 	return
 }
