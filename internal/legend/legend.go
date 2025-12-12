@@ -52,6 +52,10 @@ func (box *LegendBox) CreateRenderer() fyne.WidgetRenderer {
 	return widget.NewSimpleRenderer(c)
 }
 
+func (box *LegendBox) Cursor() desktop.Cursor {
+	return desktop.PointerCursor
+}
+
 func (box *LegendBox) Tapped(_ *fyne.PointEvent) {
 	box.tapFct()
 }
