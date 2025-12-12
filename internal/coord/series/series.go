@@ -25,7 +25,7 @@ func emptyBaseSeries(chart chart, name string, col color.Color, polar bool, togV
 		name:         name,
 		visible:      true,
 		color:        col,
-		legendButton: legend.NewLegendBox(col, togView),
+		legendButton: legend.NewLegendBox(col, togView, nil),
 		legendLabel:  canvas.NewText(name, theme.Color(theme.ColorNameForeground)),
 		polar:        polar,
 		chart:        chart,
