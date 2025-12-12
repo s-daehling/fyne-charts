@@ -13,24 +13,27 @@ import (
 
 type LegendBox struct {
 	widget.BaseWidget
-	rectColor      color.Color
-	rect           *canvas.Rectangle
-	grad           *canvas.RadialGradient
-	gradStartColor color.Color
-	gradEndColor   color.Color
-	showGrad       bool
-	tapFct         func()
+	rectColor       color.Color
+	rectToggleColor color.Color
+	rect            *canvas.Rectangle
+	grad            *canvas.RadialGradient
+	gradStartColor  color.Color
+	gradEndColor    color.Color
+	showGrad        bool
+	tapFct          func()
 }
 
 func NewLegendBox(rectColor color.Color, tapFct func()) *LegendBox {
+	grayColor, _ := color.GrayModel.Convert(rectColor).(color.Gray)
 	box := &LegendBox{
-		rect:           canvas.NewRectangle(rectColor),
-		grad:           canvas.NewRadialGradient(theme.Color(theme.ColorNameForeground), theme.Color(theme.ColorNameBackground)),
-		showGrad:       false,
-		rectColor:      rectColor,
-		gradStartColor: theme.Color(theme.ColorNameForeground),
-		gradEndColor:   theme.Color(theme.ColorNameBackground),
-		tapFct:         tapFct,
+		rect:            canvas.NewRectangle(rectColor),
+		grad:            canvas.NewRadialGradient(theme.Color(theme.ColorNameForeground), theme.Color(theme.ColorNameBackground)),
+		showGrad:        false,
+		rectColor:       rectColor,
+		rectToggleColor: grayColor,
+		gradStartColor:  theme.Color(theme.ColorNameForeground),
+		gradEndColor:    theme.Color(theme.ColorNameBackground),
+		tapFct:          tapFct,
 	}
 	box.grad.Hide()
 	box.ExtendBaseWidget(box)
@@ -89,4 +92,10 @@ func (box *LegendBox) SetGradColor(startColor color.Color, endColor color.Color)
 	box.grad.StartColor = startColor
 	box.gradEndColor = endColor
 	box.grad.EndColor = endColor
+}
+
+func (box *LegendBox) ToggleColor() {
+	oldColor := box.rectColor
+	box.SetRectColor(box.rectToggleColor)
+	box.rectToggleColor = oldColor
 }

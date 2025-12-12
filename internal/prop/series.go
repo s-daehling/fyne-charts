@@ -80,6 +80,7 @@ func (point *proportionPoint) hide() {
 	if !point.visible {
 		return
 	}
+	point.legendButton.ToggleColor()
 	point.rect.Hide()
 	if point.text != nil {
 		point.text.Hide()
@@ -94,6 +95,7 @@ func (point *proportionPoint) show() {
 	if point.visible {
 		return
 	}
+	point.legendButton.ToggleColor()
 	point.rect.Show()
 	if point.text != nil {
 		point.text.Show()
