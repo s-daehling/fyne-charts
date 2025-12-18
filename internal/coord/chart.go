@@ -45,6 +45,7 @@ type BaseChart struct {
 	autoToRange    bool
 	autoOrigin     bool
 	legendVisible  bool
+	tooltipVisible bool
 	planeType      PlaneType
 	fromType       FromType
 	rast           *canvas.Raster
@@ -53,15 +54,16 @@ type BaseChart struct {
 
 func EmptyBaseChart(pType PlaneType, fType FromType) (base *BaseChart) {
 	base = &BaseChart{
-		title:         canvas.NewText("", theme.Color(theme.ColorNameForeground)),
-		tooltip:       interact.NewTooltip(),
-		changed:       false,
-		autoFromRange: true,
-		autoToRange:   true,
-		autoOrigin:    true,
-		legendVisible: true,
-		planeType:     pType,
-		fromType:      fType,
+		title:          canvas.NewText("", theme.Color(theme.ColorNameForeground)),
+		tooltip:        interact.NewTooltip(),
+		changed:        false,
+		autoFromRange:  true,
+		autoToRange:    true,
+		autoOrigin:     true,
+		legendVisible:  true,
+		tooltipVisible: false,
+		planeType:      pType,
+		fromType:       fType,
 	}
 	base.overlay = interact.NewOverlay(base)
 	base.SetTitleStyle(theme.SizeNameHeadingText, theme.ColorNameForeground)
@@ -168,17 +170,19 @@ func (base *BaseChart) CartesianObjects() (canObj []fyne.CanvasObject) {
 		canObj = append(canObj, base.title)
 	}
 
-	// add tooltip
-	tt := base.Tooltip()
-	if tt.Box != nil {
-		canObj = append(canObj, tt.Box)
-	}
-	for i := range tt.Entries {
-		canObj = append(canObj, tt.Entries[i])
-	}
+	if base.tooltipVisible {
+		// add tooltip
+		tt := base.Tooltip()
+		if tt.Box != nil {
+			canObj = append(canObj, tt.Box)
+		}
+		for i := range tt.Entries {
+			canObj = append(canObj, tt.Entries[i])
+		}
 
-	// add overlay
-	canObj = append(canObj, base.overlay)
+		// add overlay
+		canObj = append(canObj, base.overlay)
+	}
 	return
 }
 
@@ -249,17 +253,19 @@ func (base *BaseChart) PolarObjects() (canObj []fyne.CanvasObject) {
 		canObj = append(canObj, base.title)
 	}
 
-	// add tooltip
-	tt := base.Tooltip()
-	if tt.Box != nil {
-		canObj = append(canObj, tt.Box)
-	}
-	for i := range tt.Entries {
-		canObj = append(canObj, tt.Entries[i])
-	}
+	if base.tooltipVisible {
+		// add tooltip
+		tt := base.Tooltip()
+		if tt.Box != nil {
+			canObj = append(canObj, tt.Box)
+		}
+		for i := range tt.Entries {
+			canObj = append(canObj, tt.Entries[i])
+		}
 
-	// add overlay
-	canObj = append(canObj, base.overlay)
+		// add overlay
+		canObj = append(canObj, base.overlay)
+	}
 	return
 }
 
