@@ -325,10 +325,10 @@ func (base *BaseChart) Tooltip() (tt renderer.Tooltip) {
 	return
 }
 
-func (base *BaseChart) legendVisibility() (v bool) {
-	v = base.legendVisible
-	return
-}
+// func (base *BaseChart) legendVisibility() (v bool) {
+// 	v = base.legendVisible
+// 	return
+// }
 
 func (base *BaseChart) SetTitle(l string) {
 	base.title.Text = l
@@ -348,11 +348,12 @@ func (base *BaseChart) MouseIn(pX, pY, w, h, absX, absY float32) {
 		x, y := base.PositionToCartesianCoordinates(pX, pY, w, h)
 		base.tooltip.MouseIn(pX, pY)
 		text := ""
-		if base.fromType == Numerical {
+		switch base.fromType {
+		case Numerical:
 			text = fmt.Sprintf("x: %s, y: %s", strconv.FormatFloat(x, 'f', base.fromAx.NTipPrecision(), 64), strconv.FormatFloat(y, 'f', base.toAx.NTipPrecision(), 64))
-		} else if base.fromType == Temporal {
+		case Temporal:
 			text = fmt.Sprintf("t: %s, y: %s", base.fromAx.NtoT(x).Format(base.fromAx.TTipFormat()), strconv.FormatFloat(y, 'f', base.toAx.NTipPrecision(), 64))
-		} else {
+		case Categorical:
 			text = fmt.Sprintf("c: %s, y: %s", base.fromAx.NtoC(x), strconv.FormatFloat(y, 'f', base.toAx.NTipPrecision(), 64))
 		}
 		base.tooltip.SetEntries([]string{text})
@@ -360,11 +361,12 @@ func (base *BaseChart) MouseIn(pX, pY, w, h, absX, absY float32) {
 		phi, r, _, _ := base.PositionToPolarCoordinates(pX, pY, w, h)
 		base.tooltip.MouseIn(pX, pY)
 		text := ""
-		if base.fromType == Numerical {
+		switch base.fromType {
+		case Numerical:
 			text = fmt.Sprintf("phi: %s, r: %s", strconv.FormatFloat(phi, 'f', base.fromAx.NTipPrecision(), 64), strconv.FormatFloat(r, 'f', base.toAx.NTipPrecision(), 64))
-		} else if base.fromType == Temporal {
+		case Temporal:
 			text = fmt.Sprintf("t: %s, r: %s", base.fromAx.NtoT(phi).Format(base.fromAx.TTipFormat()), strconv.FormatFloat(r, 'f', base.toAx.NTipPrecision(), 64))
-		} else {
+		case Categorical:
 			text = fmt.Sprintf("c: %s, r: %s", base.fromAx.NtoC(phi), strconv.FormatFloat(r, 'f', base.toAx.NTipPrecision(), 64))
 		}
 		base.tooltip.SetEntries([]string{text})
@@ -378,11 +380,12 @@ func (base *BaseChart) MouseMove(pX, pY, w, h, absX, absY float32) {
 		c := base.tooltip.MouseMove(pX, pY)
 		if c > 3 {
 			text := ""
-			if base.fromType == Numerical {
+			switch base.fromType {
+			case Numerical:
 				text = fmt.Sprintf("x: %s, y: %s", strconv.FormatFloat(x, 'f', base.fromAx.NTipPrecision(), 64), strconv.FormatFloat(y, 'f', base.toAx.NTipPrecision(), 64))
-			} else if base.fromType == Temporal {
+			case Temporal:
 				text = fmt.Sprintf("t: %s, y: %s", base.fromAx.NtoT(x).Format(base.fromAx.TTipFormat()), strconv.FormatFloat(y, 'f', base.toAx.NTipPrecision(), 64))
-			} else {
+			case Categorical:
 				text = fmt.Sprintf("c: %s, y: %s", base.fromAx.NtoC(x), strconv.FormatFloat(y, 'f', base.toAx.NTipPrecision(), 64))
 			}
 			base.tooltip.SetEntries([]string{text})
@@ -393,11 +396,12 @@ func (base *BaseChart) MouseMove(pX, pY, w, h, absX, absY float32) {
 		c := base.tooltip.MouseMove(pX, pY)
 		if c > 3 {
 			text := ""
-			if base.fromType == Numerical {
+			switch base.fromType {
+			case Numerical:
 				text = fmt.Sprintf("phi: %s, r: %s", strconv.FormatFloat(phi, 'f', base.fromAx.NTipPrecision(), 64), strconv.FormatFloat(r, 'f', base.toAx.NTipPrecision(), 64))
-			} else if base.fromType == Temporal {
+			case Temporal:
 				text = fmt.Sprintf("t: %s, r: %s", base.fromAx.NtoT(phi).Format(base.fromAx.TTipFormat()), strconv.FormatFloat(r, 'f', base.toAx.NTipPrecision(), 64))
-			} else {
+			case Categorical:
 				text = fmt.Sprintf("c: %s, r: %s", base.fromAx.NtoC(phi), strconv.FormatFloat(r, 'f', base.toAx.NTipPrecision(), 64))
 			}
 			base.tooltip.SetEntries([]string{text})
