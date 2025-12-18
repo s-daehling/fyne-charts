@@ -149,6 +149,7 @@ func (base *BaseChart) RefreshTheme() {
 	base.toAx.RefreshTheme()
 	base.title.Color = theme.Color(base.titleColorName)
 	base.title.TextSize = theme.Size(base.titleSizeName)
+	base.tooltip.RefreshTheme()
 	for i := range base.series {
 		base.series[i].RefreshTheme()
 	}

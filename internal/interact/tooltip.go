@@ -65,3 +65,11 @@ func (tt *Tooltip) GetEntries() (x float32, y float32, entries []*canvas.Text, b
 	}
 	return
 }
+
+func (tt *Tooltip) RefreshTheme() {
+	tt.box.FillColor = theme.Color(theme.ColorNameBackground)
+	tt.box.StrokeColor = theme.Color(theme.ColorNameForeground)
+	for i := range tt.entries {
+		tt.entries[i].Color = theme.Color(theme.ColorNameForeground)
+	}
+}
