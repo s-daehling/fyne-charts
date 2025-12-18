@@ -318,10 +318,12 @@ func (base *BaseChart) SetAutoFromTicks(autoSupport bool) {
 }
 
 func (base *BaseChart) SetFromNTicks(ts []data.NumericalTick) {
-	if len(ts) < 1 {
+	base.fromAx.SetManualTicks()
+	if len(ts) == 0 {
+		base.fromAx.SetNTicks(ts, 0)
+		base.DataChange()
 		return
 	}
-	base.fromAx.SetManualTicks()
 	min := ts[0].N
 	max := ts[0].N
 	for i := range ts {
@@ -347,6 +349,7 @@ func (base *BaseChart) SetFromNTicks(ts []data.NumericalTick) {
 }
 
 func (base *BaseChart) SetFromTTicks(ts []data.TemporalTick, format string) {
+	base.fromAx.SetManualTicks()
 	base.fromAx.SetTTicks(ts, format)
 	base.DataChange()
 }
