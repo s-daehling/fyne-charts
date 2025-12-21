@@ -89,9 +89,10 @@ func maxTickSize(ts []Tick) (maxWidth float32, maxHeight float32) {
 }
 
 type LegendEntry struct {
-	Button *interact.LegendBox
-	Label  *canvas.Text
-	IsSub  bool
+	Button     *interact.LegendBox
+	Label      *canvas.Text
+	IsSub      bool
+	ShowButton bool
 }
 
 func legendSize(les []LegendEntry) (w float32, h float32) {

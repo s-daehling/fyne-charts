@@ -106,9 +106,10 @@ func (point *proportionPoint) show() {
 
 func (point *proportionPoint) legendEntry() (le renderer.LegendEntry) {
 	le = renderer.LegendEntry{
-		Button: point.legendButton,
-		Label:  point.legendLabel,
-		IsSub:  true,
+		Button:     point.legendButton,
+		Label:      point.legendLabel,
+		IsSub:      true,
+		ShowButton: true,
 	}
 	return
 }
@@ -356,9 +357,10 @@ func (ser *Series) pointVisibilityUpdate(totChange float64) {
 
 func (ser *Series) LegendEntries() (les []renderer.LegendEntry) {
 	les = append(les, renderer.LegendEntry{
-		Button: ser.legendButton,
-		Label:  ser.legendLabel,
-		IsSub:  false,
+		Button:     ser.legendButton,
+		Label:      ser.legendLabel,
+		IsSub:      false,
+		ShowButton: false,
 	})
 	for i := range ser.data {
 		les = append(les, ser.data[i].legendEntry())

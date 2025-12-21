@@ -106,7 +106,10 @@ func (base *BaseChart) CartesianObjects() (canObj []fyne.CanvasObject) {
 	// first get all objects from the series
 	lEntries := base.LegendEntries()
 	for i := range lEntries {
-		canObj = append(canObj, lEntries[i].Button, lEntries[i].Label)
+		if lEntries[i].ShowButton {
+			canObj = append(canObj, lEntries[i].Button)
+		}
+		canObj = append(canObj, lEntries[i].Label)
 	}
 	rects := base.CartesianRects()
 	for i := range rects {
@@ -152,7 +155,10 @@ func (base *BaseChart) PolarObjects() (canObj []fyne.CanvasObject) {
 	// first get all objects from the series
 	lEntries := base.LegendEntries()
 	for i := range lEntries {
-		canObj = append(canObj, lEntries[i].Button, lEntries[i].Label)
+		if lEntries[i].ShowButton {
+			canObj = append(canObj, lEntries[i].Button)
+		}
+		canObj = append(canObj, lEntries[i].Label)
 	}
 	canObj = append(canObj, base.rast)
 	texts := base.PolarTexts()

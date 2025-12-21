@@ -119,7 +119,12 @@ func (ser *StackedSeries) RasterColorPolar(phi float64, r float64, x float64, y 
 }
 
 func (ser *StackedSeries) LegendEntries() (les []renderer.LegendEntry) {
-	les = append(les, ser.baseSeries.LegendEntries()...)
+	les = append(les, renderer.LegendEntry{
+		Button:     ser.legendButton,
+		Label:      ser.legendLabel,
+		IsSub:      false,
+		ShowButton: false,
+	})
 	for i := range ser.stack {
 		subLes := ser.stack[i].LegendEntries()
 		for j := range subLes {

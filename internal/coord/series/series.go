@@ -40,9 +40,10 @@ func (ser *baseSeries) Name() (n string) {
 
 func (ser *baseSeries) LegendEntries() (les []renderer.LegendEntry) {
 	le := renderer.LegendEntry{
-		Button: ser.legendButton,
-		Label:  ser.legendLabel,
-		IsSub:  false,
+		Button:     ser.legendButton,
+		Label:      ser.legendLabel,
+		IsSub:      false,
+		ShowButton: true,
 	}
 	les = append(les, le)
 	return

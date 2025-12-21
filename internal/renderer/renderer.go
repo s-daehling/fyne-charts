@@ -57,9 +57,13 @@ func (r *baseRenderer) placeTitleAndLegend(size fyne.Size, ct *canvas.Text,
 			if les[i].IsSub {
 				subOffset = 20
 			}
-			les[i].Button.Resize(fyne.NewSize(15, 15))
-			les[i].Button.Move(fyne.NewPos(size.Width-r.margin-legendWidth+5+subOffset, yLegend+20*float32(i)))
-			les[i].Label.Move(fyne.NewPos(size.Width-r.margin-legendWidth+25+subOffset, yLegend+20*float32(i)))
+			labelOffset := float32(0.0)
+			if les[i].ShowButton {
+				labelOffset = 20
+				les[i].Button.Resize(fyne.NewSize(15, 15))
+				les[i].Button.Move(fyne.NewPos(size.Width-r.margin-legendWidth+5+subOffset, yLegend+20*float32(i)))
+			}
+			les[i].Label.Move(fyne.NewPos(size.Width-r.margin-legendWidth+5+labelOffset+subOffset, yLegend+20*float32(i)))
 		}
 	}
 	return
