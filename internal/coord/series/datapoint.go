@@ -646,6 +646,7 @@ func (ser *PointSeries) Show() {
 	for i := range ser.data {
 		ser.data[i].show()
 	}
+	ser.legendButton.ToRect()
 	if ser.showBar && ser.cont != nil {
 		ser.cont.DataChange()
 	}
@@ -657,6 +658,7 @@ func (ser *PointSeries) Hide() {
 	for i := range ser.data {
 		ser.data[i].hide()
 	}
+	ser.legendButton.ToCircle()
 	if ser.showBar && ser.cont != nil {
 		ser.cont.DataChange()
 	}

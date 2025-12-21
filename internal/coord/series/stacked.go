@@ -16,7 +16,6 @@ type StackedSeries struct {
 func EmptyStackedSeries(name string) (ser *StackedSeries) {
 	ser = &StackedSeries{}
 	ser.baseSeries = emptyBaseSeries(name, theme.Color(theme.ColorNameForeground), ser.toggleView)
-	ser.legendButton.UseGradient(theme.Color(theme.ColorNameForeground), theme.Color(theme.ColorNameBackground))
 	return
 }
 
@@ -138,8 +137,8 @@ func (ser *StackedSeries) LegendEntries() (les []renderer.LegendEntry) {
 func (ser *StackedSeries) RefreshTheme() {
 	ser.legendLabel.Color = theme.Color(theme.ColorNameForeground)
 	ser.color = theme.Color(theme.ColorNameForeground)
-	// ser.legendButton.SetRectColor(theme.Color(theme.ColorNameForeground))
-	ser.legendButton.SetGradColor(theme.Color(theme.ColorNameForeground), theme.Color(theme.ColorNameBackground))
+	ser.legendButton.SetRectColor(theme.Color(theme.ColorNameForeground))
+	// ser.legendButton.SetGradColor(theme.Color(theme.ColorNameForeground), theme.Color(theme.ColorNameBackground))
 	for i := range ser.stack {
 		ser.stack[i].RefreshTheme()
 	}
@@ -169,6 +168,7 @@ func (ser *StackedSeries) Show() {
 	for i := range ser.stack {
 		ser.stack[i].Show()
 	}
+	ser.legendButton.ToRect()
 }
 
 // Hide hides the bars of the series
@@ -177,6 +177,7 @@ func (ser *StackedSeries) Hide() {
 	for i := range ser.stack {
 		ser.stack[i].Hide()
 	}
+	ser.legendButton.ToCircle()
 }
 
 func (ser *StackedSeries) toggleView() {

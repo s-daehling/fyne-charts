@@ -80,6 +80,7 @@ func (point *proportionPoint) hide() {
 		point.text.Hide()
 	}
 	point.visible = false
+	point.legendButton.ToCircle()
 	if point.ser != nil {
 		point.ser.pointVisibilityUpdate(-point.val)
 	}
@@ -95,6 +96,7 @@ func (point *proportionPoint) show() {
 	}
 	point.visible = true
 	point.ser.visible = true
+	point.legendButton.ToRect()
 	if point.ser != nil {
 		point.ser.pointVisibilityUpdate(point.val)
 	}
@@ -211,7 +213,6 @@ func EmptyProportionalSeries(name string) (ser *Series) {
 		legendLabel:      canvas.NewText(name, theme.Color(theme.ColorNameForeground)),
 	}
 	ser.legendButton = interact.NewLegendBox(theme.Color(theme.ColorNameForeground), ser.toggleView)
-	ser.legendButton.UseGradient(theme.Color(theme.ColorNameForeground), theme.Color(theme.ColorNameBackground))
 	return
 }
 
@@ -289,8 +290,8 @@ func (ser *Series) PolarTexts(phiMin float64, phiMax float64, rMin float64,
 
 func (ser *Series) RefreshTheme() {
 	ser.legendLabel.Color = theme.Color(theme.ColorNameForeground)
-	// ser.legendButton.SetRectColor(theme.Color(theme.ColorNameForeground))
-	ser.legendButton.SetGradColor(theme.Color(theme.ColorNameForeground), theme.Color(theme.ColorNameBackground))
+	ser.legendButton.SetRectColor(theme.Color(theme.ColorNameForeground))
+	// ser.legendButton.SetGradColor(theme.Color(theme.ColorNameForeground), theme.Color(theme.ColorNameBackground))
 	for i := range ser.data {
 		ser.data[i].legendLabel.Color = theme.Color(theme.ColorNameForeground)
 		if ser.autoValTextColor {
@@ -325,6 +326,7 @@ func (ser *Series) Show() {
 	for i := range ser.data {
 		ser.data[i].show()
 	}
+	ser.legendButton.ToRect()
 }
 
 // Hide hides the Barss of the series
@@ -333,6 +335,7 @@ func (ser *Series) Hide() {
 	for i := range ser.data {
 		ser.data[i].hide()
 	}
+	ser.legendButton.ToCircle()
 }
 
 func (ser *Series) toggleView() {

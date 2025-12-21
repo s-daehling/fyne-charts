@@ -3,6 +3,7 @@ package series
 import (
 	"errors"
 	"image/color"
+	"math/rand/v2"
 	"time"
 
 	"github.com/s-daehling/fyne-charts/internal/renderer"
@@ -116,8 +117,8 @@ type CandleStickSeries struct {
 
 func EmptyCandleStickSeries(name string) (ser *CandleStickSeries) {
 	ser = &CandleStickSeries{}
-	ser.baseSeries = emptyBaseSeries(name, theme.Color(theme.ColorNameForeground), ser.toggleView)
-	ser.legendButton.UseGradient(color.RGBA{R: 0xff, G: 0x00, B: 0x00, A: 0xff}, color.RGBA{R: 0x00, G: 0x88, B: 0x00, A: 0xff})
+	ser.baseSeries = emptyBaseSeries(name, color.RGBA{R: uint8(rand.IntN(256)), G: uint8(rand.IntN(256)), B: uint8(rand.IntN(256)), A: 0xff}, ser.toggleView)
+	// ser.legendButton.UseGradient(color.RGBA{R: 0xff, G: 0x00, B: 0x00, A: 0xff}, color.RGBA{R: 0x00, G: 0x88, B: 0x00, A: 0xff})
 	return
 }
 
@@ -220,6 +221,7 @@ func (ser *CandleStickSeries) Show() {
 	for i := range ser.data {
 		ser.data[i].show()
 	}
+	ser.legendButton.ToRect()
 }
 
 // Hide hides all elements of the series
@@ -228,6 +230,7 @@ func (ser *CandleStickSeries) Hide() {
 	for i := range ser.data {
 		ser.data[i].hide()
 	}
+	ser.legendButton.ToCircle()
 }
 
 func (ser *CandleStickSeries) toggleView() {

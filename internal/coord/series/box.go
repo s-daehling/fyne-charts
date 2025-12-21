@@ -329,6 +329,7 @@ func (ser *BoxSeries) Show() {
 	for i := range ser.data {
 		ser.data[i].show()
 	}
+	ser.legendButton.ToRect()
 }
 
 // Hide hides all elements of the bar series
@@ -337,6 +338,7 @@ func (ser *BoxSeries) Hide() {
 	for i := range ser.data {
 		ser.data[i].hide()
 	}
+	ser.legendButton.ToCircle()
 }
 
 func (ser *BoxSeries) toggleView() {
