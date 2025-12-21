@@ -57,8 +57,10 @@ func (box *LegendBox) Tapped(_ *fyne.PointEvent) {
 }
 
 func (box *LegendBox) MouseIn(me *desktop.MouseEvent) {
-	r, g, b, _ := box.rectColor.RGBA()
-	box.rect.FillColor = color.RGBA64{R: uint16(r), G: uint16(g), B: uint16(b), A: 0xaaaa}
+	r, g, b, a := box.rectColor.RGBA()
+	rb, gb, bb, _ := theme.Color(theme.ColorNameBackground).RGBA()
+	// box.rect.FillColor = color.RGBA64{R: uint16(r), G: uint16(g), B: uint16(b), A: 0xaaaa}
+	box.rect.FillColor = color.RGBA64{R: uint16(float32(r+rb) * 0.5), G: uint16(float32(g+gb) * 0.5), B: uint16(float32(b+bb) * 0.5), A: uint16(a)}
 	box.rect.Refresh()
 	box.grad.StartColor = box.gradEndColor
 	box.grad.EndColor = box.gradStartColor
