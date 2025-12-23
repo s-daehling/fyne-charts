@@ -47,7 +47,7 @@ func main() {
     myApp := app.New()
     myWindow := myApp.NewWindow("fyne-charts")
 
-    nc := coord.NewCartesianNumericalChart()
+    nc := coord.NewCartesianNumericalChart("fyne-charts example")
     nps1, err := coord.NewNumericalPointSeries("line", color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff}, randomSine(50, 100, 40))
     if err != nil {
         panic(err)
@@ -64,7 +64,6 @@ func main() {
     if err != nil {
         panic(err)
     }
-    nc.SetTitle("fyne-charts example")
 
     myWindow.SetContent(nc)
     myWindow.Resize(fyne.NewSize(200, 200))
