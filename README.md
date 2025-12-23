@@ -9,7 +9,7 @@ It does not rely on other chart libraries.
 Instead widgets are composed of native Fyne-CanvasObjects like canvas.Line, canvas.Circle or canvas.Rectangle.
 They adapt to the available size, can be updated dynamically and provide some user interaction.
 
-Currently supported are widgets to visualize data in a 2D coordinate systems (cartesian or polar).
+Currently supported are widgets to visualize data in a 2D coordinate systems (cartesian or polar) and proportional data.
 More widgets are planned.
 
 **Note: fyne-charts is in an early development stage. The API might still change in the future.**
