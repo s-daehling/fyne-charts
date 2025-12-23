@@ -65,7 +65,7 @@ func calculateTTicks(space float32, min time.Time, max time.Time, supLine bool) 
 		// #years > #ticks/2 -> use years as ticks
 		inc := numYears/maxTickNum + 1
 		coord = time.Date(min.Year(), time.January, 1, 0, 0, 0, 0, time.Local)
-		step = time.Duration(int(time.Hour) * 24 * 365 * inc)
+		step = time.Hour * 24 * 365 * time.Duration(inc)
 		tickFormat = "2006"
 		tipFormat = "01.2006"
 		if min.Month() == time.January && min.Day() <= 7 {
@@ -75,7 +75,7 @@ func calculateTTicks(space float32, min time.Time, max time.Time, supLine bool) 
 		// #months > #ticks/2 -> use months as ticks
 		inc := (numDays/30)/maxTickNum + 1
 		coord = time.Date(min.Year(), min.Month(), 1, 0, 0, 0, 0, time.Local)
-		step = time.Duration(int(time.Hour) * 24 * 31 * inc)
+		step = time.Hour * 24 * 31 * time.Duration(inc)
 		tickFormat = "01.2006"
 		tipFormat = "02.01."
 		if min.Day() == 1 {
@@ -85,7 +85,7 @@ func calculateTTicks(space float32, min time.Time, max time.Time, supLine bool) 
 		// #days > #ticks/2 -> days as ticks
 		inc := numDays/maxTickNum + 1
 		coord = time.Date(min.Year(), min.Month(), min.Day(), 0, 0, 0, 0, time.Local)
-		step = time.Duration(int(time.Hour) * 24 * inc)
+		step = time.Hour * 24 * time.Duration(inc)
 		tickFormat = "02.01."
 		tipFormat = "15h"
 		if min.Hour() < 1 {
@@ -95,7 +95,7 @@ func calculateTTicks(space float32, min time.Time, max time.Time, supLine bool) 
 		// #hours > #ticks/2 -> hours as ticks
 		inc := int(r.Hours())/maxTickNum + 1
 		coord = time.Date(min.Year(), min.Month(), min.Day(), min.Hour(), 0, 0, 0, time.Local)
-		step = time.Duration(int(time.Hour) * inc)
+		step = time.Hour * time.Duration(inc)
 		tickFormat = "15h"
 		tipFormat = "15:04"
 		if min.Minute() < 5 {
@@ -105,7 +105,7 @@ func calculateTTicks(space float32, min time.Time, max time.Time, supLine bool) 
 		// #mins > #ticks/2 -> mins as ticks
 		inc := int(r.Minutes())/maxTickNum + 1
 		coord = time.Date(min.Year(), min.Month(), min.Day(), min.Hour(), min.Minute(), 0, 0, time.Local)
-		step = time.Duration(int(time.Minute) * inc)
+		step = time.Minute * time.Duration(inc)
 		tickFormat = "15:04"
 		tipFormat = "15:04:05"
 		if min.Second() < 5 {
@@ -115,7 +115,7 @@ func calculateTTicks(space float32, min time.Time, max time.Time, supLine bool) 
 		// #secs > #ticks/2 -> secs as ticks
 		inc := int(r.Seconds())/maxTickNum + 1
 		coord = time.Date(min.Year(), min.Month(), min.Day(), min.Hour(), min.Minute(), min.Second(), 0, time.Local)
-		step = time.Duration(int(time.Second) * inc)
+		step = time.Second * time.Duration(inc)
 		tickFormat = "15:04:05"
 		tipFormat = "05.000"
 		if min.Sub(coord).Milliseconds() < 25 {
@@ -125,7 +125,7 @@ func calculateTTicks(space float32, min time.Time, max time.Time, supLine bool) 
 		// #msecs as ticks
 		inc := int(r.Milliseconds())/maxTickNum + 1
 		coord = time.Date(min.Year(), min.Month(), min.Day(), min.Hour(), min.Minute(), min.Second(), min.Nanosecond(), time.Local)
-		step = time.Duration(int(time.Millisecond) * inc)
+		step = time.Millisecond * time.Duration(inc)
 		tickFormat = "05.000"
 		tipFormat = "05.000"
 		if min.Sub(coord).Nanoseconds() < 100 {
