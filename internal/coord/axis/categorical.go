@@ -26,12 +26,13 @@ func (ax *Axis) SetCTicks(cs []data.CategoricalTick) {
 	maxTickWidth := ax.maxTickWidth()
 	rot := 0.0
 	if spacePerCat < maxTickWidth && ax.typ == CartesianHorAxis {
-		if math.Cos(math.Pi/8)*float64(maxTickWidth) < float64(spacePerCat) {
-			rot = 22.5
-		} else if math.Cos(math.Pi/4)*float64(maxTickWidth) < float64(spacePerCat) {
+		// if math.Cos(math.Pi/8)*float64(maxTickWidth) < float64(spacePerCat) {
+		// 	rot = 22.5
+		// } else
+		if math.Cos(math.Pi/4)*float64(maxTickWidth) < float64(spacePerCat) {
 			rot = 45
-		} else if math.Cos(3*math.Pi/8)*float64(maxTickWidth) < float64(spacePerCat) {
-			rot = 77.5
+			// } else if math.Cos(3*math.Pi/8)*float64(maxTickWidth) < float64(spacePerCat) {
+			// 	rot = 77.5
 		} else {
 			rot = 90
 		}
