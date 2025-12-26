@@ -2,8 +2,6 @@ package renderer
 
 import (
 	"fyne.io/fyne/v2"
-	"fyne.io/fyne/v2/driver/software"
-	"github.com/disintegration/imaging"
 )
 
 type CartesianChart interface {
@@ -64,26 +62,26 @@ func (r *Cartesian) Layout(size fyne.Size) {
 	_, hAxisTickLabelHeight = maxTickSize(hTicks)
 	vAxisTickLabelWidth, _ = maxTickSize(vTicks)
 
-	if hShow && hLabel.Text.Text != "" {
-		c := software.NewTransparentCanvas()
-		c.SetPadded(false)
-		c.SetContent(hLabel.Text)
-		hLabel.Image.Image = c.Capture()
-		hLabel.Image.Resize(hLabel.Text.MinSize())
-		hLabel.Image.SetMinSize(hLabel.Text.MinSize())
-		hAxisLabelHeight = hLabel.Image.MinSize().Height
-	}
+	// if hShow && hLabel.Text.Text != "" {
+	// c := software.NewTransparentCanvas()
+	// c.SetPadded(false)
+	// c.SetContent(hLabel.Text)
+	// hLabel.Image.Image = c.Capture()
+	hLabel.Image.Resize(hLabel.Text.MinSize())
+	hLabel.Image.SetMinSize(hLabel.Text.MinSize())
+	hAxisLabelHeight = hLabel.Image.MinSize().Height
+	// }
 
-	if vShow && vLabel.Text.Text != "" {
-		c := software.NewTransparentCanvas()
-		c.SetPadded(false)
-		c.SetContent(vLabel.Text)
-		img := c.Capture()
-		vLabel.Image.Image = imaging.Rotate90(img)
-		vLabel.Image.Resize(fyne.NewSize(vLabel.Text.MinSize().Height, vLabel.Text.MinSize().Width))
-		vLabel.Image.SetMinSize(fyne.NewSize(vLabel.Text.MinSize().Height, vLabel.Text.MinSize().Width))
-		vAxisLabelWidth = vLabel.Image.MinSize().Width
-	}
+	// if vShow && vLabel.Text.Text != "" {
+	// c := software.NewTransparentCanvas()
+	// c.SetPadded(false)
+	// c.SetContent(vLabel.Text)
+	// img := c.Capture()
+	// vLabel.Image.Image = imaging.Rotate90(vLabel.Image.Image)
+	vLabel.Image.Resize(fyne.NewSize(vLabel.Text.MinSize().Height, vLabel.Text.MinSize().Width))
+	vLabel.Image.SetMinSize(fyne.NewSize(vLabel.Text.MinSize().Height, vLabel.Text.MinSize().Width))
+	vAxisLabelWidth = vLabel.Image.MinSize().Width
+	// }
 
 	// determine the chart area
 	var area cartDrawingArea

@@ -68,8 +68,8 @@ func EmptyBaseChart(pType PlaneType, fType FromType) (base *BaseChart) {
 	base.overlay = interact.NewOverlay(base)
 	base.SetTitleStyle(theme.SizeNameHeadingText, theme.ColorNameForeground)
 	if pType == CartesianPlane {
-		base.fromAx = axis.EmptyAxis("", axis.CartesianAxis)
-		base.toAx = axis.EmptyAxis("", axis.CartesianAxis)
+		base.fromAx = axis.EmptyAxis("", axis.CartesianHorAxis)
+		base.toAx = axis.EmptyAxis("", axis.CartesianVertAxis)
 		base.rast = canvas.NewRasterWithPixels(base.PixelGenCartesian)
 	} else {
 		base.fromAx = axis.EmptyAxis("", axis.PolarPhiAxis)

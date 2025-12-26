@@ -4,8 +4,6 @@ import (
 	"math"
 
 	"fyne.io/fyne/v2"
-	"fyne.io/fyne/v2/driver/software"
-	"github.com/disintegration/imaging"
 )
 
 type PolarChart interface {
@@ -68,26 +66,26 @@ func (r *Polar) Layout(size fyne.Size) {
 		r.prevPhiAxisTickLabelWidth = phiAxisTickLabelWidth
 	}
 
-	if phiShow && phiLabel.Text.Text != "" {
-		c := software.NewTransparentCanvas()
-		c.SetPadded(false)
-		c.SetContent(phiLabel.Text)
-		img := c.Capture()
-		phiLabel.Image.Image = imaging.Rotate90(img)
-		phiLabel.Image.Resize(fyne.NewSize(phiLabel.Text.MinSize().Height, phiLabel.Text.MinSize().Width))
-		phiLabel.Image.SetMinSize(fyne.NewSize(phiLabel.Text.MinSize().Height, phiLabel.Text.MinSize().Width))
-		phiAxisLabelWidth = phiLabel.Image.MinSize().Width
-	}
+	// if phiShow && phiLabel.Text.Text != "" {
+	// 	c := software.NewTransparentCanvas()
+	// 	c.SetPadded(false)
+	// 	c.SetContent(phiLabel.Text)
+	// 	img := c.Capture()
+	// 	phiLabel.Image.Image = imaging.Rotate90(img)
+	phiLabel.Image.Resize(fyne.NewSize(phiLabel.Text.MinSize().Height, phiLabel.Text.MinSize().Width))
+	phiLabel.Image.SetMinSize(fyne.NewSize(phiLabel.Text.MinSize().Height, phiLabel.Text.MinSize().Width))
+	phiAxisLabelWidth = phiLabel.Image.MinSize().Width
+	// }
 
-	if rShow && rLabel.Text.Text != "" {
-		c := software.NewTransparentCanvas()
-		c.SetPadded(false)
-		c.SetContent(rLabel.Text)
-		rLabel.Image.Image = c.Capture()
-		rLabel.Image.Resize(rLabel.Text.MinSize())
-		rLabel.Image.SetMinSize(rLabel.Text.MinSize())
-		rAxisLabelHeight = rLabel.Image.MinSize().Height
-	}
+	// if rShow && rLabel.Text.Text != "" {
+	// 	c := software.NewTransparentCanvas()
+	// 	c.SetPadded(false)
+	// 	c.SetContent(rLabel.Text)
+	// 	rLabel.Image.Image = c.Capture()
+	rLabel.Image.Resize(rLabel.Text.MinSize())
+	rLabel.Image.SetMinSize(rLabel.Text.MinSize())
+	rAxisLabelHeight = rLabel.Image.MinSize().Height
+	// }
 
 	// determine the chart area
 	area := polDrawingArea{

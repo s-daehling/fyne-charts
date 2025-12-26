@@ -9,15 +9,17 @@ import (
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/driver/software"
 	"fyne.io/fyne/v2/theme"
+	"github.com/disintegration/imaging"
 	"github.com/s-daehling/fyne-charts/internal/renderer"
 )
 
 type AxisType string
 
 const (
-	CartesianAxis AxisType = "Cartesian"
-	PolarPhiAxis  AxisType = "PolarPhi"
-	PolarRAxis    AxisType = "PolarR"
+	CartesianHorAxis  AxisType = "CartesianHor"
+	CartesianVertAxis AxisType = "CartesianVert"
+	PolarPhiAxis      AxisType = "PolarPhi"
+	PolarRAxis        AxisType = "PolarR"
 )
 
 type axisTick struct {
@@ -88,6 +90,7 @@ func EmptyAxis(name string, typ AxisType) (ax *Axis) {
 	}
 	ax.circle.StrokeColor = col
 	ax.circle.StrokeWidth = 1
+	ax.SetLabel("")
 	return
 }
 
@@ -148,7 +151,7 @@ func (ax *Axis) Ticks() (ts []renderer.Tick) {
 		if t.NLine > ax.nMin || t.NLine < ax.nMax {
 			t.Line = ax.ticks[i].line
 			if ax.ticks[i].hasSupportLine {
-				if ax.typ == CartesianAxis || ax.typ == PolarPhiAxis {
+				if ax.typ == CartesianHorAxis || ax.typ == CartesianVertAxis || ax.typ == PolarPhiAxis {
 					t.SupLine = ax.ticks[i].supportLine
 				} else {
 					t.SupCircle = ax.ticks[i].supportCircle
@@ -257,6 +260,13 @@ func (ax *Axis) updateAxisColor(col color.Color) {
 func (ax *Axis) SetLabel(l string) {
 	ax.name = l
 	ax.labelText.Text = l
+	c := software.NewTransparentCanvas()
+	c.SetPadded(false)
+	c.SetContent(ax.labelText)
+	ax.label.Image = c.Capture()
+	if ax.typ == CartesianVertAxis || ax.typ == PolarPhiAxis {
+		ax.label.Image = imaging.Rotate90(ax.label.Image)
+	}
 }
 
 func (ax *Axis) Label() (l renderer.Label) {
