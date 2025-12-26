@@ -1,6 +1,9 @@
 package axis
 
-import "github.com/s-daehling/fyne-charts/pkg/data"
+import (
+	"fyne.io/fyne/v2/driver/software"
+	"github.com/s-daehling/fyne-charts/pkg/data"
+)
 
 func (ax *Axis) SetCRange(cs []string) {
 	ax.cs = nil
@@ -16,8 +19,14 @@ func (ax *Axis) SetCTicks(cs []data.CategoricalTick) {
 	ax.adjustNumberOfTicks(len(cs))
 	for i := range cs {
 		ax.ticks[i].c = cs[i].C
-		ax.ticks[i].label.Text = cs[i].C
+		ax.ticks[i].labelText.Text = cs[i].C
 		ax.ticks[i].hasSupportLine = cs[i].SupportLine
+		c := software.NewTransparentCanvas()
+		c.SetPadded(false)
+		c.SetContent(ax.ticks[i].labelText)
+		ax.ticks[i].label.Image = c.Capture()
+		ax.ticks[i].label.Resize(ax.ticks[i].labelText.MinSize())
+		ax.ticks[i].label.SetMinSize(ax.ticks[i].labelText.MinSize())
 	}
 }
 

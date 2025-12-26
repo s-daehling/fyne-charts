@@ -53,14 +53,14 @@ type PolarText struct {
 	Text *canvas.Text
 }
 
-type Label struct {
-	Text  *canvas.Text
-	Image *canvas.Image
-}
+// type Label struct {
+// 	Text  *canvas.Text
+// 	Image *canvas.Image
+// }
 
 type Tick struct {
 	NLabel    float64
-	Label     *canvas.Text
+	Label     *canvas.Image
 	NLine     float64
 	Line      *canvas.Line
 	SupLine   *canvas.Line
@@ -78,11 +78,11 @@ func maxTickSize(ts []Tick) (maxWidth float32, maxHeight float32) {
 	maxWidth = 0
 	maxHeight = 0
 	for i := range ts {
-		if ts[i].Label.MinSize().Width > maxWidth {
-			maxWidth = ts[i].Label.MinSize().Width
+		if ts[i].Label.Size().Width > maxWidth {
+			maxWidth = ts[i].Label.Size().Width
 		}
-		if ts[i].Label.MinSize().Height > maxHeight {
-			maxHeight = ts[i].Label.MinSize().Height
+		if ts[i].Label.Size().Height > maxHeight {
+			maxHeight = ts[i].Label.Size().Height
 		}
 	}
 	return

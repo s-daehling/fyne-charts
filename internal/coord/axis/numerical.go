@@ -4,6 +4,7 @@ import (
 	"math"
 	"strconv"
 
+	"fyne.io/fyne/v2/driver/software"
 	"github.com/s-daehling/fyne-charts/pkg/data"
 )
 
@@ -56,10 +57,16 @@ func (ax *Axis) SetNTicks(ns []data.NumericalTick, orderOfMagn int) {
 		ax.ticks[i].nLine = ns[i].N
 		ax.ticks[i].hasSupportLine = ns[i].SupportLine
 		if ax.typ == PolarPhiAxis {
-			ax.ticks[i].label.Text = strconv.FormatFloat(ns[i].N/math.Pi, 'f', 2, 64) + " pi"
+			ax.ticks[i].labelText.Text = strconv.FormatFloat(ns[i].N/math.Pi, 'f', 2, 64) + " pi"
 		} else {
-			ax.ticks[i].label.Text = strconv.FormatFloat(ns[i].N, 'f', prec, 64)
+			ax.ticks[i].labelText.Text = strconv.FormatFloat(ns[i].N, 'f', prec, 64)
 		}
+		c := software.NewTransparentCanvas()
+		c.SetPadded(false)
+		c.SetContent(ax.ticks[i].labelText)
+		ax.ticks[i].label.Image = c.Capture()
+		ax.ticks[i].label.Resize(ax.ticks[i].labelText.MinSize())
+		ax.ticks[i].label.SetMinSize(ax.ticks[i].labelText.MinSize())
 	}
 }
 

@@ -3,6 +3,7 @@ package axis
 import (
 	"time"
 
+	"fyne.io/fyne/v2/driver/software"
 	"github.com/s-daehling/fyne-charts/pkg/data"
 )
 
@@ -34,8 +35,14 @@ func (ax *Axis) SetTTicks(ts []data.TemporalTick, format string) {
 	ax.adjustNumberOfTicks(len(ts))
 	for i := range ts {
 		ax.ticks[i].t = ts[i].T
-		ax.ticks[i].label.Text = ts[i].T.Format(format)
+		ax.ticks[i].labelText.Text = ts[i].T.Format(format)
 		ax.ticks[i].hasSupportLine = ts[i].SupportLine
+		c := software.NewTransparentCanvas()
+		c.SetPadded(false)
+		c.SetContent(ax.ticks[i].labelText)
+		ax.ticks[i].label.Image = c.Capture()
+		ax.ticks[i].label.Resize(ax.ticks[i].labelText.MinSize())
+		ax.ticks[i].label.SetMinSize(ax.ticks[i].labelText.MinSize())
 	}
 }
 

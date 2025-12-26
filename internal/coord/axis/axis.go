@@ -28,7 +28,8 @@ type axisTick struct {
 	n              float64
 	nLabel         float64
 	nLine          float64
-	label          *canvas.Text // the text label
+	label          *canvas.Image
+	labelText      *canvas.Text // the text label
 	line           *canvas.Line // the tick line
 	hasSupportLine bool         // if true, a orthogonal support line is drawn at the coordLine coordinate, ranging from min to max value of the opposite axis
 	supportLine    *canvas.Line // the support line
@@ -146,6 +147,7 @@ func (ax *Axis) Ticks() (ts []renderer.Tick) {
 			SupLine: nil,
 		}
 		if t.NLabel > ax.nMin || t.NLabel < ax.nMax {
+			// t.Label.Text = ax.ticks[i].labelText
 			t.Label = ax.ticks[i].label
 		}
 		if t.NLine > ax.nMin || t.NLine < ax.nMax {
@@ -168,8 +170,8 @@ func (ax *Axis) Ticks() (ts []renderer.Tick) {
 func (ax *Axis) MaxTickWidth() (maxWidth float32) {
 	maxWidth = 0
 	for i := range ax.ticks {
-		if ax.ticks[i].label.MinSize().Width > maxWidth {
-			maxWidth = ax.ticks[i].label.MinSize().Width
+		if ax.ticks[i].labelText.MinSize().Width > maxWidth {
+			maxWidth = ax.ticks[i].labelText.MinSize().Width
 		}
 	}
 	return
@@ -178,8 +180,8 @@ func (ax *Axis) MaxTickWidth() (maxWidth float32) {
 func (ax *Axis) MaxTickHeight() (maxHeight float32) {
 	maxHeight = 0
 	for i := range ax.ticks {
-		if ax.ticks[i].label.MinSize().Height > maxHeight {
-			maxHeight = ax.ticks[i].label.MinSize().Height
+		if ax.ticks[i].labelText.MinSize().Height > maxHeight {
+			maxHeight = ax.ticks[i].labelText.MinSize().Height
 		}
 	}
 	return
@@ -197,7 +199,7 @@ func (ax *Axis) Hide() {
 	ax.label.Hide()
 	ax.circle.Hide()
 	for i := range ax.ticks {
-		ax.ticks[i].label.Hide()
+		ax.ticks[i].labelText.Hide()
 		ax.ticks[i].line.Hide()
 		ax.ticks[i].supportCircle.Hide()
 		ax.ticks[i].supportLine.Hide()
@@ -212,7 +214,7 @@ func (ax *Axis) Show() {
 	ax.label.Show()
 	ax.circle.Show()
 	for i := range ax.ticks {
-		ax.ticks[i].label.Show()
+		ax.ticks[i].labelText.Show()
 		ax.ticks[i].line.Show()
 		ax.ticks[i].supportCircle.Show()
 		ax.ticks[i].supportLine.Show()
@@ -250,7 +252,7 @@ func (ax *Axis) updateAxisColor(col color.Color) {
 	ax.line.StrokeColor = ax.col
 	ax.circle.StrokeColor = ax.col
 	for i := range ax.ticks {
-		ax.ticks[i].label.Color = ax.col
+		ax.ticks[i].labelText.Color = ax.col
 		ax.ticks[i].line.StrokeColor = ax.col
 		ax.ticks[i].supportCircle.StrokeColor = ax.supCol
 		ax.ticks[i].supportLine.StrokeColor = ax.supCol
@@ -264,14 +266,22 @@ func (ax *Axis) SetLabel(l string) {
 	c.SetPadded(false)
 	c.SetContent(ax.labelText)
 	ax.label.Image = c.Capture()
+	minSize := ax.labelText.MinSize()
+	if l == "" {
+		minSize.Height = 0
+	}
+	ax.label.Resize(minSize)
+	ax.label.SetMinSize(minSize)
 	if ax.typ == CartesianVertAxis || ax.typ == PolarPhiAxis {
 		ax.label.Image = imaging.Rotate90(ax.label.Image)
+		ax.label.Resize(fyne.NewSize(minSize.Height, minSize.Width))
+		ax.label.SetMinSize(fyne.NewSize(minSize.Height, minSize.Width))
 	}
 }
 
-func (ax *Axis) Label() (l renderer.Label) {
-	l.Image = ax.label
-	l.Text = ax.labelText
+func (ax *Axis) Label() (l *canvas.Image) {
+	l = ax.label
+	// l.Text = ax.labelText
 	return
 }
 
@@ -298,7 +308,8 @@ func (ax *Axis) adjustNumberOfTicks(n int) {
 		n = n - len(ax.ticks)
 		for range n {
 			tick := axisTick{
-				label:          canvas.NewText("", ax.col),
+				labelText:      canvas.NewText("", ax.col),
+				label:          canvas.NewImageFromImage(software.NewTransparentCanvas().Capture()),
 				line:           canvas.NewLine(ax.col),
 				hasSupportLine: false,
 				supportLine:    canvas.NewLine(ax.supCol),
@@ -308,7 +319,7 @@ func (ax *Axis) adjustNumberOfTicks(n int) {
 			tick.supportCircle.StrokeWidth = 1
 			tick.supportCircle.StrokeColor = ax.supCol
 			if !ax.visible {
-				tick.label.Hide()
+				tick.labelText.Hide()
 				tick.line.Hide()
 				tick.supportCircle.Hide()
 				tick.supportLine.Hide()

@@ -2,6 +2,7 @@ package renderer
 
 import (
 	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/canvas"
 )
 
 type CartesianChart interface {
@@ -48,7 +49,7 @@ func (r *Cartesian) Layout(size fyne.Size) {
 	hAxisTickLabelHeight := float32(0.0)
 
 	var vMin, vMax, vOrigin, hMin, hMax, hOrigin float64
-	var vLabel, hLabel Label
+	var vLabel, hLabel *canvas.Image
 	var vTicks, hTicks []Tick
 	var vArrow, hArrow Arrow
 	var vShow, hShow bool
@@ -62,26 +63,28 @@ func (r *Cartesian) Layout(size fyne.Size) {
 	_, hAxisTickLabelHeight = maxTickSize(hTicks)
 	vAxisTickLabelWidth, _ = maxTickSize(vTicks)
 
-	// if hShow && hLabel.Text.Text != "" {
-	// c := software.NewTransparentCanvas()
-	// c.SetPadded(false)
-	// c.SetContent(hLabel.Text)
-	// hLabel.Image.Image = c.Capture()
-	hLabel.Image.Resize(hLabel.Text.MinSize())
-	hLabel.Image.SetMinSize(hLabel.Text.MinSize())
-	hAxisLabelHeight = hLabel.Image.MinSize().Height
-	// }
+	if hShow {
+		// //&& hLabel.Text.Text != "" {
+		// c := software.NewTransparentCanvas()
+		// c.SetPadded(false)
+		// c.SetContent(hLabel.Text)
+		// hLabel.Image.Image = c.Capture()
+		// hLabel.Image.Resize(hLabel.Text.MinSize())
+		// hLabel.Image.SetMinSize(hLabel.Text.MinSize())
+		hAxisLabelHeight = hLabel.Size().Height
+	}
 
-	// if vShow && vLabel.Text.Text != "" {
-	// c := software.NewTransparentCanvas()
-	// c.SetPadded(false)
-	// c.SetContent(vLabel.Text)
-	// img := c.Capture()
-	// vLabel.Image.Image = imaging.Rotate90(vLabel.Image.Image)
-	vLabel.Image.Resize(fyne.NewSize(vLabel.Text.MinSize().Height, vLabel.Text.MinSize().Width))
-	vLabel.Image.SetMinSize(fyne.NewSize(vLabel.Text.MinSize().Height, vLabel.Text.MinSize().Width))
-	vAxisLabelWidth = vLabel.Image.MinSize().Width
-	// }
+	if vShow {
+		// && vLabel.Text.Text != "" {
+		// c := software.NewTransparentCanvas()
+		// c.SetPadded(false)
+		// c.SetContent(vLabel.Text)
+		// img := c.Capture()
+		// vLabel.Image.Image = imaging.Rotate90(vLabel.Image.Image)
+		// vLabel.Image.Resize(fyne.NewSize(vLabel.Text.MinSize().Height, vLabel.Text.MinSize().Width))
+		// vLabel.Image.SetMinSize(fyne.NewSize(vLabel.Text.MinSize().Height, vLabel.Text.MinSize().Width))
+		vAxisLabelWidth = vLabel.Size().Width
+	}
 
 	// determine the chart area
 	var area cartDrawingArea
@@ -119,10 +122,10 @@ func (r *Cartesian) Layout(size fyne.Size) {
 
 	// Place horizontal-Axis from hMin to hMax
 	if hShow {
-		if hLabel.Text.Text != "" {
-			hLabel.Image.Move(fyne.NewPos(area.minPos.X+((area.maxPos.X-area.minPos.X)/2)-hLabel.Text.MinSize().Width/2,
-				size.Height-hLabel.Text.MinSize().Height-r.margin))
-		}
+		// if hLabel.Text.Text != "" {
+		hLabel.Move(fyne.NewPos(area.minPos.X+((area.maxPos.X-area.minPos.X)/2)-hLabel.Size().Width/2,
+			size.Height-hLabel.Size().Height-r.margin))
+		// }
 		hArrow.Line.Position1 = cartesianCoordinatesToPosition(hMin, vOrigin, area)
 		hArrow.Line.Position2 = cartesianCoordinatesToPosition(hMax, vOrigin, area)
 		hArrow.HeadOne.Position1 = fyne.NewPos(hArrow.Line.Position2.X-10, hArrow.Line.Position2.Y-5)
@@ -141,17 +144,17 @@ func (r *Cartesian) Layout(size fyne.Size) {
 				hTicks[i].SupLine.Position2 = cartesianCoordinatesToPosition(hTicks[i].NLine, vMax, area)
 			}
 			if hTicks[i].Label != nil {
-				hTicks[i].Label.Move(cartesianCoordinatesToPosition(hTicks[i].NLabel, vOrigin, area).AddXY(0, 5))
-				hTicks[i].Label.Alignment = fyne.TextAlignCenter
+				hTicks[i].Label.Move(cartesianCoordinatesToPosition(hTicks[i].NLabel, vOrigin, area).AddXY(-hTicks[i].Label.Size().Width/2, 5))
+				// hTicks[i].Label.Text.Alignment = fyne.TextAlignCenter
 			}
 		}
 	}
 
 	// Place vertical axis from vMin to vMax
 	if vShow {
-		if vLabel.Text.Text != "" {
-			vLabel.Image.Move(fyne.NewPos(r.margin, area.maxPos.Y+((area.minPos.Y-area.maxPos.Y)/2)-vLabel.Text.MinSize().Width/2))
-		}
+		// if vLabel.Text.Text != "" {
+		vLabel.Move(fyne.NewPos(r.margin, area.maxPos.Y+((area.minPos.Y-area.maxPos.Y)/2)-vLabel.Size().Width/2))
+		// }
 		vArrow.Line.Position1 = cartesianCoordinatesToPosition(hOrigin, vMin, area)
 		vArrow.Line.Position2 = cartesianCoordinatesToPosition(hOrigin, vMax, area)
 		vArrow.HeadOne.Position1 = fyne.NewPos(vArrow.Line.Position2.X-5, vArrow.Line.Position2.Y+10)
@@ -172,8 +175,8 @@ func (r *Cartesian) Layout(size fyne.Size) {
 			}
 			if vTicks[i].Label != nil {
 				vTicks[i].Label.Move(cartesianCoordinatesToPosition(hOrigin,
-					vTicks[i].NLabel, area).SubtractXY(5, vTicks[i].Label.MinSize().Height/2))
-				vTicks[i].Label.Alignment = fyne.TextAlignTrailing
+					vTicks[i].NLabel, area).SubtractXY(5+vTicks[i].Label.Size().Width, vTicks[i].Label.Size().Height/2))
+				// vTicks[i].Label.Text.Alignment = fyne.TextAlignTrailing
 			}
 		}
 	}
@@ -283,7 +286,7 @@ func (r *Cartesian) MinSize() fyne.Size {
 	les := r.chart.LegendEntries()
 	legendWidth, legendHeight = legendSize(les)
 
-	var vLabel, hLabel Label
+	var vLabel, hLabel *canvas.Image
 	var vShow, hShow bool
 	if r.transposed {
 		_, _, _, vLabel, _, _, vShow = r.chart.FromAxisElements()
@@ -293,13 +296,15 @@ func (r *Cartesian) MinSize() fyne.Size {
 		_, _, _, hLabel, _, _, hShow = r.chart.FromAxisElements()
 	}
 
-	if hShow && hLabel.Text.Text != "" {
-		hAxisLabelWidth = hLabel.Image.MinSize().Width
-		hAxisLabelHeight = hLabel.Image.MinSize().Height
+	if hShow {
+		// && hLabel.Text.Text != "" {
+		hAxisLabelWidth = hLabel.Size().Width
+		hAxisLabelHeight = hLabel.Size().Height
 	}
-	if vShow && vLabel.Text.Text != "" {
-		vAxisLabelWidth = vLabel.Image.MinSize().Width
-		vAxisLabelHeight = vLabel.Image.MinSize().Height
+	if vShow {
+		// && vLabel.Text.Text != "" {
+		vAxisLabelWidth = vLabel.Size().Width
+		vAxisLabelHeight = vLabel.Size().Height
 	}
 
 	minHeight := 2*r.margin + titleHeight

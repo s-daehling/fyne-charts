@@ -6,12 +6,13 @@ import (
 	"time"
 
 	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/canvas"
 	"github.com/s-daehling/fyne-charts/internal/renderer"
 	"github.com/s-daehling/fyne-charts/pkg/data"
 )
 
 func (base *BaseChart) FromAxisElements() (min float64, max float64, origin float64,
-	label renderer.Label, ticks []renderer.Tick, arrow renderer.Arrow, show bool) {
+	label *canvas.Image, ticks []renderer.Tick, arrow renderer.Arrow, show bool) {
 	min, max = base.fromAx.NRange()
 	origin = base.fromAx.NOrigin()
 	label = base.fromAx.Label()
@@ -22,7 +23,7 @@ func (base *BaseChart) FromAxisElements() (min float64, max float64, origin floa
 }
 
 func (base *BaseChart) ToAxisElements() (min float64, max float64, origin float64,
-	label renderer.Label, ticks []renderer.Tick, arrow renderer.Arrow, show bool) {
+	label *canvas.Image, ticks []renderer.Tick, arrow renderer.Arrow, show bool) {
 	min, max = base.toAx.NRange()
 	origin = base.toAx.NOrigin()
 	label = base.toAx.Label()

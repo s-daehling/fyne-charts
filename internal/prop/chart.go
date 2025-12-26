@@ -236,10 +236,10 @@ func (base *BaseChart) SetTitleStyle(sizeName fyne.ThemeSizeName, colorName fyne
 }
 
 func (base *BaseChart) FromAxisElements() (min float64, max float64, origin float64,
-	label renderer.Label, ticks []renderer.Tick, arrow renderer.Arrow, show bool) {
+	label *canvas.Image, ticks []renderer.Tick, arrow renderer.Arrow, show bool) {
 	min, max = base.fromMin, base.fromMax
 	origin = 0
-	label = renderer.Label{}
+	label = nil //renderer.Label{}
 	ticks = []renderer.Tick{}
 	arrow = renderer.Arrow{}
 	show = false
@@ -247,10 +247,10 @@ func (base *BaseChart) FromAxisElements() (min float64, max float64, origin floa
 }
 
 func (base *BaseChart) ToAxisElements() (min float64, max float64, origin float64,
-	label renderer.Label, ticks []renderer.Tick, arrow renderer.Arrow, show bool) {
+	label *canvas.Image, ticks []renderer.Tick, arrow renderer.Arrow, show bool) {
 	min, max = base.toMin, base.toMax
 	origin = 0
-	label = renderer.Label{}
+	label = nil //renderer.Label{}
 	ticks = []renderer.Tick{}
 	arrow = renderer.Arrow{}
 	show = false

@@ -4,6 +4,7 @@ import (
 	"math"
 
 	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/canvas"
 )
 
 type PolarChart interface {
@@ -51,7 +52,7 @@ func (r *Polar) Layout(size fyne.Size) {
 	phiAxisTickLabelHeight := float32(0.0)
 
 	var phiOrigin, rMax, rOrigin float64
-	var phiLabel, rLabel Label
+	var phiLabel, rLabel *canvas.Image
 	var phiTicks, rTicks []Tick
 	var phiArrow, rArrow Arrow
 	var phiShow, rShow bool
@@ -66,26 +67,28 @@ func (r *Polar) Layout(size fyne.Size) {
 		r.prevPhiAxisTickLabelWidth = phiAxisTickLabelWidth
 	}
 
-	// if phiShow && phiLabel.Text.Text != "" {
-	// 	c := software.NewTransparentCanvas()
-	// 	c.SetPadded(false)
-	// 	c.SetContent(phiLabel.Text)
-	// 	img := c.Capture()
-	// 	phiLabel.Image.Image = imaging.Rotate90(img)
-	phiLabel.Image.Resize(fyne.NewSize(phiLabel.Text.MinSize().Height, phiLabel.Text.MinSize().Width))
-	phiLabel.Image.SetMinSize(fyne.NewSize(phiLabel.Text.MinSize().Height, phiLabel.Text.MinSize().Width))
-	phiAxisLabelWidth = phiLabel.Image.MinSize().Width
-	// }
+	if phiShow {
+		// && phiLabel.Text.Text != "" {
+		// 	c := software.NewTransparentCanvas()
+		// 	c.SetPadded(false)
+		// 	c.SetContent(phiLabel.Text)
+		// 	img := c.Capture()
+		// 	phiLabel.Image.Image = imaging.Rotate90(img)
+		// phiLabel.Image.Resize(fyne.NewSize(phiLabel.Text.MinSize().Height, phiLabel.Text.MinSize().Width))
+		// phiLabel.Image.SetMinSize(fyne.NewSize(phiLabel.Text.MinSize().Height, phiLabel.Text.MinSize().Width))
+		phiAxisLabelWidth = phiLabel.Size().Width
+	}
 
-	// if rShow && rLabel.Text.Text != "" {
-	// 	c := software.NewTransparentCanvas()
-	// 	c.SetPadded(false)
-	// 	c.SetContent(rLabel.Text)
-	// 	rLabel.Image.Image = c.Capture()
-	rLabel.Image.Resize(rLabel.Text.MinSize())
-	rLabel.Image.SetMinSize(rLabel.Text.MinSize())
-	rAxisLabelHeight = rLabel.Image.MinSize().Height
-	// }
+	if rShow {
+		// && rLabel.Text.Text != "" {
+		// 	c := software.NewTransparentCanvas()
+		// 	c.SetPadded(false)
+		// 	c.SetContent(rLabel.Text)
+		// 	rLabel.Image.Image = c.Capture()
+		// rLabel.Image.Resize(rLabel.Text.MinSize())
+		// rLabel.Image.SetMinSize(rLabel.Text.MinSize())
+		rAxisLabelHeight = rLabel.Size().Height
+	}
 
 	// determine the chart area
 	area := polDrawingArea{
@@ -114,9 +117,9 @@ func (r *Polar) Layout(size fyne.Size) {
 
 	// place phi axis
 	if phiShow {
-		if phiLabel.Text.Text != "" {
-			phiLabel.Image.Move(fyne.NewPos(r.margin, area.zeroPos.Y-phiLabel.Text.MinSize().Width/2))
-		}
+		// if phiLabel.Text.Text != "" {
+		phiLabel.Move(fyne.NewPos(r.margin, area.zeroPos.Y-phiLabel.Size().Width/2))
+		// }
 		phiRadius := area.coordToPos * float32(rOrigin)
 		phiArrow.Circle.Resize(fyne.NewSize(2*phiRadius, 2*phiRadius))
 		phiArrow.Circle.Move(area.zeroPos.SubtractXY(phiRadius, phiRadius))
@@ -141,28 +144,31 @@ func (r *Polar) Layout(size fyne.Size) {
 				lPos := polarCoordinatesToPosition(phiTicks[i].NLabel, rOrigin+5.0/float64(area.coordToPos), area)
 				aLabelAbs := absAngle(phiTicks[i].NLabel, r.mathPos, r.rot)
 				if aLabelAbs > math.Pi/8 && aLabelAbs < 7*math.Pi/8 {
-					lPos = lPos.AddXY(0, -phiTicks[i].Label.MinSize().Height)
+					lPos = lPos.AddXY(0, -phiTicks[i].Label.Size().Height)
 				} else if aLabelAbs < math.Pi/8 || aLabelAbs > 15*math.Pi/8 || (aLabelAbs > 7*math.Pi/8 && aLabelAbs < 9*math.Pi/8) {
-					lPos = lPos.AddXY(0, -phiTicks[i].Label.MinSize().Height/2)
+					lPos = lPos.AddXY(0, -phiTicks[i].Label.Size().Height/2)
+				}
+				// phiTicks[i].Label.Image.Move(lPos)
+				if aLabelAbs < 3*math.Pi/8 || aLabelAbs > 13*math.Pi/8 {
+					// phiTicks[i].Label.Text.Alignment = fyne.TextAlignLeading
+				} else if aLabelAbs > 5*math.Pi/8 && aLabelAbs < 11*math.Pi/8 {
+					lPos = lPos.AddXY(-phiTicks[i].Label.Size().Width, 0)
+					// phiTicks[i].Label.Text.Alignment = fyne.TextAlignTrailing
+				} else {
+					lPos = lPos.AddXY(-phiTicks[i].Label.Size().Width/2, 0)
+					// phiTicks[i].Label.Text.Alignment = fyne.TextAlignCenter
 				}
 				phiTicks[i].Label.Move(lPos)
-				if aLabelAbs < 3*math.Pi/8 || aLabelAbs > 13*math.Pi/8 {
-					phiTicks[i].Label.Alignment = fyne.TextAlignLeading
-				} else if aLabelAbs > 5*math.Pi/8 && aLabelAbs < 11*math.Pi/8 {
-					phiTicks[i].Label.Alignment = fyne.TextAlignTrailing
-				} else {
-					phiTicks[i].Label.Alignment = fyne.TextAlignCenter
-				}
 			}
 		}
 	}
 
 	// place r axis
 	if rShow {
-		if rLabel.Text.Text != "" {
-			rLabel.Image.Move(fyne.NewPos(area.zeroPos.X+(area.radius/2)-rLabel.Text.MinSize().Width/2,
-				size.Height-rLabel.Text.MinSize().Height-r.margin))
-		}
+		// if rLabel.Text.Text != "" {
+		rLabel.Move(fyne.NewPos(area.zeroPos.X+(area.radius/2)-rLabel.Size().Width/2,
+			size.Height-rLabel.Size().Height-r.margin))
+		// }
 		rArrow.Line.Position1 = area.zeroPos
 		rArrow.Line.Position2 = polarCoordinatesToPosition(phiOrigin, rMax, area)
 		ri, ai := arrowCoordinates(rMax, -10, 5, area)
@@ -193,33 +199,40 @@ func (r *Polar) Layout(size fyne.Size) {
 				rTicks[i].SupCircle.Move(area.zeroPos.SubtractXY(supRadius, supRadius))
 			}
 			if rTicks[i].Label != nil {
-				rl, al := arrowCoordinates(rTicks[i].NLabel, math.Sin(phiOriginAbs)*float64(rTicks[i].Label.MinSize().Height/2), 5, area)
+				var lPos fyne.Position
+				rl, al := arrowCoordinates(rTicks[i].NLabel, math.Sin(phiOriginAbs)*float64(rTicks[i].Label.Size().Height/2), 5, area)
 				if !r.mathPos {
 					al = -al
 				}
 
 				if phiOriginAbs < math.Pi/8 {
-					rTicks[i].Label.Move(polarCoordinatesToPosition(phiOrigin-al, rl, area))
-					rTicks[i].Label.Alignment = fyne.TextAlignCenter
+					lPos = polarCoordinatesToPosition(phiOrigin-al, rl, area)
+					lPos = lPos.AddXY(-rTicks[i].Label.Size().Width/2, 0)
+					// rTicks[i].Label.Text.Alignment = fyne.TextAlignCenter
 				} else if phiOriginAbs < math.Pi/2 {
-					rTicks[i].Label.Move(polarCoordinatesToPosition(phiOrigin-al, rl, area))
-					rTicks[i].Label.Alignment = fyne.TextAlignLeading
+					lPos = polarCoordinatesToPosition(phiOrigin-al, rl, area)
+					// rTicks[i].Label.Text.Alignment = fyne.TextAlignLeading
 				} else if phiOriginAbs < 7*math.Pi/8 {
-					rTicks[i].Label.Move(polarCoordinatesToPosition(phiOrigin+al, rl, area))
-					rTicks[i].Label.Alignment = fyne.TextAlignTrailing
+					lPos = polarCoordinatesToPosition(phiOrigin+al, rl, area)
+					lPos = lPos.AddXY(-rTicks[i].Label.Size().Width, 0)
+					// rTicks[i].Label.Text.Alignment = fyne.TextAlignTrailing
 				} else if phiOriginAbs < 9*math.Pi/8 {
-					rTicks[i].Label.Move(polarCoordinatesToPosition(phiOrigin+al, rl, area))
-					rTicks[i].Label.Alignment = fyne.TextAlignCenter
+					lPos = polarCoordinatesToPosition(phiOrigin+al, rl, area)
+					lPos = lPos.AddXY(-rTicks[i].Label.Size().Width/2, 0)
+					// rTicks[i].Label.Text.Alignment = fyne.TextAlignCenter
 				} else if phiOriginAbs < 3*math.Pi/2 {
-					rTicks[i].Label.Move(polarCoordinatesToPosition(phiOrigin+al, rl, area))
-					rTicks[i].Label.Alignment = fyne.TextAlignLeading
+					lPos = polarCoordinatesToPosition(phiOrigin+al, rl, area)
+					// rTicks[i].Label.Text.Alignment = fyne.TextAlignLeading
 				} else if phiOriginAbs < 15*math.Pi/8 {
-					rTicks[i].Label.Move(polarCoordinatesToPosition(phiOrigin-al, rl, area))
-					rTicks[i].Label.Alignment = fyne.TextAlignTrailing
+					lPos = polarCoordinatesToPosition(phiOrigin-al, rl, area)
+					lPos = lPos.AddXY(-rTicks[i].Label.Size().Width, 0)
+					// rTicks[i].Label.Text.Alignment = fyne.TextAlignTrailing
 				} else {
-					rTicks[i].Label.Move(polarCoordinatesToPosition(phiOrigin-al, rl, area))
-					rTicks[i].Label.Alignment = fyne.TextAlignCenter
+					lPos = polarCoordinatesToPosition(phiOrigin-al, rl, area)
+					lPos = lPos.AddXY(-rTicks[i].Label.Size().Width/2, 0)
+					// rTicks[i].Label.Text.Alignment = fyne.TextAlignCenter
 				}
+				rTicks[i].Label.Move(lPos)
 			}
 		}
 	}
@@ -301,18 +314,20 @@ func (r *Polar) MinSize() fyne.Size {
 	les := r.chart.LegendEntries()
 	legendWidth, legendHeight = legendSize(les)
 
-	var phiLabel, rLabel Label
+	var phiLabel, rLabel *canvas.Image
 	var phiShow, rShow bool
 	_, _, _, phiLabel, _, _, phiShow = r.chart.FromAxisElements()
 	_, _, _, rLabel, _, _, rShow = r.chart.ToAxisElements()
 
-	if phiShow && phiLabel.Text.Text != "" {
-		phiAxisLabelWidth = phiLabel.Image.MinSize().Width
-		phiAxisLabelHeight = phiLabel.Image.MinSize().Height
+	if phiShow {
+		// && phiLabel.Text.Text != "" {
+		phiAxisLabelWidth = phiLabel.Size().Width
+		phiAxisLabelHeight = phiLabel.Size().Height
 	}
-	if rShow && rLabel.Text.Text != "" {
-		rAxisLabelWidth = rLabel.Image.MinSize().Width
-		rAxisLabelHeight = rLabel.Image.MinSize().Height
+	if rShow {
+		// && rLabel.Text.Text != "" {
+		rAxisLabelWidth = rLabel.Size().Width
+		rAxisLabelHeight = rLabel.Size().Height
 	}
 
 	minHeight := 2*r.margin + titleHeight
