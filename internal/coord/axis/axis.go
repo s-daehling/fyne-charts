@@ -167,7 +167,7 @@ func (ax *Axis) Ticks() (ts []renderer.Tick) {
 	return
 }
 
-func (ax *Axis) MaxTickWidth() (maxWidth float32) {
+func (ax *Axis) maxTickWidth() (maxWidth float32) {
 	maxWidth = 0
 	for i := range ax.ticks {
 		if ax.ticks[i].labelText.MinSize().Width > maxWidth {
@@ -177,15 +177,15 @@ func (ax *Axis) MaxTickWidth() (maxWidth float32) {
 	return
 }
 
-func (ax *Axis) MaxTickHeight() (maxHeight float32) {
-	maxHeight = 0
-	for i := range ax.ticks {
-		if ax.ticks[i].labelText.MinSize().Height > maxHeight {
-			maxHeight = ax.ticks[i].labelText.MinSize().Height
-		}
-	}
-	return
-}
+// func (ax *Axis) MaxTickHeight() (maxHeight float32) {
+// 	maxHeight = 0
+// 	for i := range ax.ticks {
+// 		if ax.ticks[i].labelText.MinSize().Height > maxHeight {
+// 			maxHeight = ax.ticks[i].labelText.MinSize().Height
+// 		}
+// 	}
+// 	return
+// }
 
 func (ax *Axis) SetSpace(space float32) {
 	ax.space = space

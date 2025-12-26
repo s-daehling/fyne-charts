@@ -1,7 +1,12 @@
 package axis
 
 import (
+	"image/color"
+	"math"
+
+	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/driver/software"
+	"github.com/disintegration/imaging"
 	"github.com/s-daehling/fyne-charts/pkg/data"
 )
 
@@ -17,6 +22,20 @@ func (ax *Axis) CRange() (cs []string) {
 
 func (ax *Axis) SetCTicks(cs []data.CategoricalTick) {
 	ax.adjustNumberOfTicks(len(cs))
+	spacePerCat := ax.space / float32(len(cs))
+	maxTickWidth := ax.maxTickWidth()
+	rot := 0.0
+	if spacePerCat < maxTickWidth && ax.typ == CartesianHorAxis {
+		if math.Cos(math.Pi/8)*float64(maxTickWidth) < float64(spacePerCat) {
+			rot = 22.5
+		} else if math.Cos(math.Pi/4)*float64(maxTickWidth) < float64(spacePerCat) {
+			rot = 45
+		} else if math.Cos(3*math.Pi/8)*float64(maxTickWidth) < float64(spacePerCat) {
+			rot = 77.5
+		} else {
+			rot = 90
+		}
+	}
 	for i := range cs {
 		ax.ticks[i].c = cs[i].C
 		ax.ticks[i].labelText.Text = cs[i].C
@@ -27,6 +46,16 @@ func (ax *Axis) SetCTicks(cs []data.CategoricalTick) {
 		ax.ticks[i].label.Image = c.Capture()
 		ax.ticks[i].label.Resize(ax.ticks[i].labelText.MinSize())
 		ax.ticks[i].label.SetMinSize(ax.ticks[i].labelText.MinSize())
+		if rot > 1 {
+			ax.ticks[i].label.Image = imaging.Rotate(ax.ticks[i].label.Image, rot, color.RGBA{A: 0x00})
+			cos := float32(math.Cos(2 * math.Pi * rot / float64(360)))
+			sin := float32(math.Sin(2 * math.Pi * rot / float64(360)))
+			w := ax.ticks[i].labelText.MinSize().Width
+			h := ax.ticks[i].labelText.MinSize().Height
+			minSize := fyne.NewSize(w*cos+h*sin, w*sin+h*cos)
+			ax.ticks[i].label.Resize(minSize)
+			ax.ticks[i].label.SetMinSize(minSize)
+		}
 	}
 }
 
