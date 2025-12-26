@@ -43,6 +43,7 @@ func (ax *Axis) SetTTicks(ts []data.TemporalTick, format string) {
 		ax.ticks[i].label.Image = c.Capture()
 		ax.ticks[i].label.Resize(ax.ticks[i].labelText.MinSize())
 		ax.ticks[i].label.SetMinSize(ax.ticks[i].labelText.MinSize())
+		ax.ticks[i].label.Refresh()
 	}
 }
 
