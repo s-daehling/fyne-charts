@@ -27,6 +27,7 @@ type BaseChart struct {
 	changed        bool
 	legendVisible  bool
 	planeType      PlaneType
+	transposed     bool
 	rast           *canvas.Raster
 	render         fyne.WidgetRenderer
 	fromMin        float64
@@ -41,6 +42,7 @@ func EmptyBaseChart(pType PlaneType) (base *BaseChart) {
 		changed:       false,
 		legendVisible: true,
 		planeType:     pType,
+		transposed:    false,
 		fromMin:       0,
 		toMin:         0,
 		toMax:         100,
@@ -68,6 +70,18 @@ func (base *BaseChart) CreateRenderer(ws func() fyne.Size) (r fyne.WidgetRendere
 
 func (base *BaseChart) IsPolar() (b bool) {
 	b = (base.planeType == PolarPlane)
+	return
+}
+
+func (base *BaseChart) SetCartesianOrientantion(transposed bool) {
+	if base.transposed != transposed {
+		base.transposed = transposed
+		base.DataChange()
+	}
+}
+
+func (base *BaseChart) CartesianOrientation() (transposed bool) {
+	transposed = base.transposed
 	return
 }
 

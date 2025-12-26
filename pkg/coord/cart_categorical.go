@@ -99,6 +99,13 @@ func (catChart *CartesianCategoricalChart) AddBoxSeries(cbs *CategoricalBoxSerie
 	return
 }
 
+// SetOrientation defines the orientation of axes
+// if transposed is false, the C-axis is the horizontal axis and the Y-axis is the vertical axis
+// if transposed is true, the C-axis is the vertical axis and the Y-axis is the horizontal axis
+func (catChart *CartesianCategoricalChart) SetOrientation(transposed bool) {
+	catChart.base.SetCartesianOrientantion(transposed)
+}
+
 // SetYAxisLabel sets the label of the y-axis, which will be displayed at the left side
 func (catChart *CartesianCategoricalChart) SetYAxisLabel(l string) {
 	if catChart.base == nil {

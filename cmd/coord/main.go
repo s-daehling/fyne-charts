@@ -290,6 +290,13 @@ func cartCatChart() (catChart *coord.CartesianCategoricalChart, err error) {
 	catChart.SetCAxisLabel("C axis")
 	catChart.SetYAxisLabel("Y axis")
 	catChart.SetTitleStyle(theme.SizeNameText, theme.ColorNameForeground)
+
+	go func() {
+		time.Sleep(time.Second * 5)
+		fyne.Do(func() {
+			catChart.SetOrientation(true)
+		})
+	}()
 	return
 }
 

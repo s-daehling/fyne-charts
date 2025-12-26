@@ -47,6 +47,7 @@ type BaseChart struct {
 	legendVisible  bool
 	tooltipVisible bool
 	planeType      PlaneType
+	transposed     bool
 	fromType       FromType
 	rast           *canvas.Raster
 	render         fyne.WidgetRenderer
@@ -63,6 +64,7 @@ func EmptyBaseChart(pType PlaneType, fType FromType) (base *BaseChart) {
 		legendVisible:  true,
 		tooltipVisible: false,
 		planeType:      pType,
+		transposed:     false,
 		fromType:       fType,
 	}
 	base.overlay = interact.NewOverlay(base)
@@ -95,8 +97,17 @@ func (base *BaseChart) IsPolar() (b bool) {
 	return
 }
 
+func (base *BaseChart) SetCartesianOrientantion(transposed bool) {
+	if base.transposed != transposed {
+		base.transposed = transposed
+		base.fromAx.CartesianTranspose()
+		base.toAx.CartesianTranspose()
+		base.DataChange()
+	}
+}
+
 func (base *BaseChart) CartesianOrientation() (transposed bool) {
-	transposed = false
+	transposed = base.transposed
 	return
 }
 
@@ -460,10 +471,9 @@ func (base *BaseChart) PixelGenPolar(pX, pY, w, h int) (col color.Color) {
 }
 
 func (base *BaseChart) PositionToCartesianCoordinates(pX float32, pY float32, w float32, h float32) (x float64, y float64) {
-	trans := false
 	xMin, xMax := base.fromAx.NRange()
 	yMin, yMax := base.toAx.NRange()
-	if trans {
+	if base.transposed {
 		x = xMin + ((float64(h-pY) / float64(h)) * (xMax - xMin))
 		y = yMin + ((float64(pX) / float64(w)) * (yMax - yMin))
 	} else {

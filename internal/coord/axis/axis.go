@@ -285,6 +285,16 @@ func (ax *Axis) Label() (l *canvas.Image) {
 	return
 }
 
+func (ax *Axis) CartesianTranspose() {
+	switch ax.typ {
+	case CartesianVertAxis:
+		ax.typ = CartesianHorAxis
+	case CartesianHorAxis:
+		ax.typ = CartesianVertAxis
+	}
+	ax.SetLabel(ax.name)
+}
+
 func (ax *Axis) SetAutoTicks(autoSupport bool) {
 	ax.autoTicks = true
 	ax.autoSupportLine = autoSupport

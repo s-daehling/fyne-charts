@@ -18,3 +18,10 @@ func NewBarChart(title string) (barChart *BarChart) {
 	barChart.SetTitle(title)
 	return
 }
+
+// SetOrientation defines the orientation of axes
+// if transposed is false, the bar are oriented horizontally
+// if transposed is true, the bars are oriented vertically
+func (barChart *BarChart) SetOrientation(transposed bool) {
+	barChart.base.SetCartesianOrientantion(transposed)
+}
