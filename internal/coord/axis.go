@@ -193,6 +193,9 @@ func (base *BaseChart) calculateAutoFromNRange() {
 	if r*1000 < absMin {
 		min = max - 1
 		max = max + 1
+	} else {
+		max += 0.05 * r
+		min -= 0.05 * r
 	}
 	base.fromAx.SetNRange(min, max)
 }
@@ -243,6 +246,10 @@ func (base *BaseChart) calculateAutoFromTRange() {
 	if min.Equal(max) {
 		min = min.Add(-time.Second)
 		max = max.Add(time.Second)
+	} else if base.planeType == CartesianPlane {
+		r := max.Sub(min)
+		min = min.Add(-time.Duration(float64(r) * 0.05))
+		max = max.Add(time.Duration(float64(r) * 0.05))
 	}
 
 	base.fromAx.SetTRange(min, max)
@@ -411,6 +418,9 @@ func (base *BaseChart) calculateAutoToRange() {
 	if r*1000 < absMin {
 		min = max - 1
 		max = max + 1
+	} else {
+		max += 0.05 * r
+		min -= 0.05 * r
 	}
 
 	if base.planeType == PolarPlane {
