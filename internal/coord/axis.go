@@ -184,18 +184,37 @@ func (base *BaseChart) calculateAutoFromNRange() {
 		}
 	}
 
-	// make sure the min and max are not equal
 	absMin := math.Abs(min)
 	if math.Abs(max) < absMin {
 		absMin = math.Abs(max)
 	}
 	r := math.Abs(max - min)
 	if r*1000 < absMin {
+		// make sure the min and max are not equal
 		min = max - 1
 		max = max + 1
-	} else {
-		max += 0.05 * r
-		min -= 0.05 * r
+	} else if base.planeType == CartesianPlane {
+		// increase range by five percent on each side unless min or max is equal to origin
+		if !base.autoOrigin {
+			origin := base.fromAx.NOrigin()
+			if min < origin-(r/1000.0) {
+				min -= 0.05 * r
+			}
+			if max > origin+(r/1000.0) {
+				max += 0.05 * r
+			}
+		} else {
+			if min > -r/1000.0 && (min-(0.05*r)) < -r/1000.0 {
+				min = 0
+			} else {
+				min -= 0.05 * r
+			}
+			if max < r/1000.0 && (max+(0.05*r)) > r/1000.0 {
+				max = 0
+			} else {
+				max += 0.05 * r
+			}
+		}
 	}
 	base.fromAx.SetNRange(min, max)
 }
@@ -247,9 +266,21 @@ func (base *BaseChart) calculateAutoFromTRange() {
 		min = min.Add(-time.Second)
 		max = max.Add(time.Second)
 	} else if base.planeType == CartesianPlane {
+		// increase range by five percent on each side unless min or max is equal to origin
 		r := max.Sub(min)
-		min = min.Add(-time.Duration(float64(r) * 0.05))
-		max = max.Add(time.Duration(float64(r) * 0.05))
+
+		if !base.autoOrigin {
+			origin := base.fromAx.TOrigin()
+			if min.Before(origin.Add(-time.Duration(r / 1000.0))) {
+				min = min.Add(-time.Duration(float64(r) * 0.05))
+			}
+			if max.After(origin.Add(time.Duration(r / 1000.0))) {
+				max = max.Add(time.Duration(float64(r) * 0.05))
+			}
+		} else {
+			min = min.Add(-time.Duration(float64(r) * 0.05))
+			max = max.Add(time.Duration(float64(r) * 0.05))
+		}
 	}
 
 	base.fromAx.SetTRange(min, max)
@@ -409,18 +440,37 @@ func (base *BaseChart) calculateAutoToRange() {
 		}
 	}
 
-	// make sure the min and max are not equal
 	absMin := math.Abs(min)
 	if math.Abs(max) < absMin {
 		absMin = math.Abs(max)
 	}
 	r := math.Abs(max - min)
 	if r*1000 < absMin {
+		// make sure the min and max are not equal
 		min = max - 1
 		max = max + 1
 	} else {
-		max += 0.05 * r
-		min -= 0.05 * r
+		// increase range by five percent on each side unless min or max is equal to origin
+		if !base.autoOrigin {
+			origin := base.toAx.NOrigin()
+			if min < origin-(r/1000.0) {
+				min -= 0.05 * r
+			}
+			if max > origin+(r/1000.0) {
+				max += 0.05 * r
+			}
+		} else {
+			if min > -r/1000.0 && (min-(0.05*r)) < -r/1000.0 {
+				min = 0
+			} else {
+				min -= 0.05 * r
+			}
+			if max < r/1000.0 && (max+(0.05*r)) > r/1000.0 {
+				max = 0
+			} else {
+				max += 0.05 * r
+			}
+		}
 	}
 
 	if base.planeType == PolarPlane {
