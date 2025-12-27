@@ -95,11 +95,11 @@ func (r *Polar) Layout(size fyne.Size) {
 		rot:     r.rot,
 		mathPos: r.mathPos,
 	}
-	availWidth := size.Width - (2 * r.margin) - legendWidth - (2 * phiAxisTickLabelWidth) - phiAxisLabelWidth
+	availWidth := size.Width - (3 * r.margin) - legendWidth - (2 * phiAxisTickLabelWidth) - phiAxisLabelWidth
 	area.zeroPos.X = r.margin + phiAxisLabelWidth + phiAxisTickLabelWidth + (availWidth / 2)
 
-	availHeight := size.Height - (2 * r.margin) - titleHeight - (2 * phiAxisTickLabelHeight) - rAxisLabelHeight
-	area.zeroPos.Y = r.margin + titleHeight + phiAxisTickLabelHeight + (availHeight / 2)
+	availHeight := size.Height - (3 * r.margin) - titleHeight - (2 * phiAxisTickLabelHeight) - rAxisLabelHeight
+	area.zeroPos.Y = (2 * r.margin) + titleHeight + phiAxisTickLabelHeight + (availHeight / 2)
 
 	area.radius = availHeight / 2
 	if availWidth < availHeight {

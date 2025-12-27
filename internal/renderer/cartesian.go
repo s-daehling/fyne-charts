@@ -104,8 +104,8 @@ func (r *Cartesian) Layout(size fyne.Size) {
 	if area.minPos.Y > size.Height-r.margin-hAxisLabelHeight {
 		area.minPos.Y = size.Height - r.margin - hAxisLabelHeight
 	}
-	area.maxPos.X = size.Width - r.margin - legendWidth
-	area.maxPos.Y = r.margin + titleHeight
+	area.maxPos.X = size.Width - (2 * r.margin) - legendWidth
+	area.maxPos.Y = 2*r.margin + titleHeight
 
 	// update chart with available space
 	r.chart.ChartSizeChange(area.maxPos.X-area.minPos.X, area.minPos.Y-area.maxPos.Y)
