@@ -206,9 +206,6 @@ func (ser *CandleStickSeries) CartesianRects(xMin float64, xMax float64, yMin fl
 }
 
 func (ser *CandleStickSeries) RefreshTheme() {
-	// ser.legendLabel.Color = theme.Color(theme.ColorNameForeground)
-	// ser.color = theme.Color(theme.ColorNameForeground)
-	// ser.legendButton.SetRectColor(theme.Color(theme.ColorNameForeground))
 	for i := range ser.data {
 		ser.data[i].upperLine.StrokeColor = theme.Color(theme.ColorNameForeground)
 		ser.data[i].lowerLine.StrokeColor = theme.Color(theme.ColorNameForeground)

@@ -15,9 +15,7 @@ type baseSeries struct {
 	visible     bool
 	color       color.Color
 	legendEntry *interact.LegendEntry
-	// legendButton *interact.LegendBox
-	// legendLabel  *canvas.Text
-	cont container
+	cont        container
 }
 
 func emptyBaseSeries(name string, col color.Color, togView func()) (ser baseSeries) {
@@ -27,9 +25,7 @@ func emptyBaseSeries(name string, col color.Color, togView func()) (ser baseSeri
 		visible:     true,
 		color:       col,
 		legendEntry: interact.NewLegendEntry(name, "", true, col, togView),
-		// legendButton: interact.NewLegendBox(col, togView),
-		// legendLabel:  canvas.NewText(name, theme.Color(theme.ColorNameForeground)),
-		cont: nil,
+		cont:        nil,
 	}
 	return
 }
@@ -39,11 +35,6 @@ func (ser *baseSeries) Name() (n string) {
 	n = ser.name
 	return
 }
-
-// func (ser *baseSeries) LegendEntries() (les []*interact.LegendEntry) {
-// 	les = append(les, ser.legendEntry)
-// 	return
-// }
 
 func (ser *baseSeries) BindToChart(ch container) (err error) {
 	if ser.cont != nil {
@@ -138,9 +129,7 @@ func (ser *baseSeries) RasterColorPolar(phi float64, r float64, x float64, y flo
 	return
 }
 
-func (ser *baseSeries) RefreshTheme() {
-
-}
+func (ser *baseSeries) RefreshTheme() {}
 
 type Series interface {
 	// LegendEntries() (les []*interact.LegendEntry)

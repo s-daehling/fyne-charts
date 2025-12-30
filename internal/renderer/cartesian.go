@@ -66,25 +66,9 @@ func (r *Cartesian) Layout(size fyne.Size) {
 	vAxisTickLabelWidth, _ = maxTickSize(vTicks)
 
 	if hShow {
-		// //&& hLabel.Text.Text != "" {
-		// c := software.NewTransparentCanvas()
-		// c.SetPadded(false)
-		// c.SetContent(hLabel.Text)
-		// hLabel.Image.Image = c.Capture()
-		// hLabel.Image.Resize(hLabel.Text.MinSize())
-		// hLabel.Image.SetMinSize(hLabel.Text.MinSize())
 		hAxisLabelHeight = hLabel.Size().Height
 	}
-
 	if vShow {
-		// && vLabel.Text.Text != "" {
-		// c := software.NewTransparentCanvas()
-		// c.SetPadded(false)
-		// c.SetContent(vLabel.Text)
-		// img := c.Capture()
-		// vLabel.Image.Image = imaging.Rotate90(vLabel.Image.Image)
-		// vLabel.Image.Resize(fyne.NewSize(vLabel.Text.MinSize().Height, vLabel.Text.MinSize().Width))
-		// vLabel.Image.SetMinSize(fyne.NewSize(vLabel.Text.MinSize().Height, vLabel.Text.MinSize().Width))
 		vAxisLabelWidth = vLabel.Size().Width
 	}
 
@@ -147,16 +131,13 @@ func (r *Cartesian) Layout(size fyne.Size) {
 			}
 			if hTicks[i].Label != nil {
 				hTicks[i].Label.Move(cartesianCoordinatesToPosition(hTicks[i].NLabel, vOrigin, area).AddXY(-hTicks[i].Label.Size().Width/2, 5))
-				// hTicks[i].Label.Text.Alignment = fyne.TextAlignCenter
 			}
 		}
 	}
 
 	// Place vertical axis from vMin to vMax
 	if vShow {
-		// if vLabel.Text.Text != "" {
 		vLabel.Move(fyne.NewPos(r.margin, area.maxPos.Y+((area.minPos.Y-area.maxPos.Y)/2)-vLabel.Size().Width/2))
-		// }
 		vArrow.Line.Position1 = cartesianCoordinatesToPosition(hOrigin, vMin, area)
 		vArrow.Line.Position2 = cartesianCoordinatesToPosition(hOrigin, vMax, area)
 		vArrow.HeadOne.Position1 = fyne.NewPos(vArrow.Line.Position2.X-5, vArrow.Line.Position2.Y+10)
@@ -178,7 +159,6 @@ func (r *Cartesian) Layout(size fyne.Size) {
 			if vTicks[i].Label != nil {
 				vTicks[i].Label.Move(cartesianCoordinatesToPosition(hOrigin,
 					vTicks[i].NLabel, area).SubtractXY(5+vTicks[i].Label.Size().Width, vTicks[i].Label.Size().Height/2))
-				// vTicks[i].Label.Text.Alignment = fyne.TextAlignTrailing
 			}
 		}
 	}
@@ -302,12 +282,10 @@ func (r *Cartesian) MinSize() fyne.Size {
 	}
 
 	if hShow {
-		// && hLabel.Text.Text != "" {
 		hAxisLabelWidth = hLabel.Size().Width
 		hAxisLabelHeight = hLabel.Size().Height
 	}
 	if vShow {
-		// && vLabel.Text.Text != "" {
 		vAxisLabelWidth = vLabel.Size().Width
 		vAxisLabelHeight = vLabel.Size().Height
 	}

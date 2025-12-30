@@ -9,7 +9,6 @@ import (
 type baseChart interface {
 	Title() (ct *canvas.Text)
 	Legend() (l *interact.Legend)
-	// LegendEntries() (le []LegendEntry)
 	Tooltip() (tt Tooltip)
 	FromAxisElements() (min float64, max float64, origin float64, label *canvas.Image, ticks []Tick, arrow Arrow, show bool)
 	ToAxisElements() (min float64, max float64, origin float64, label *canvas.Image, ticks []Tick, arrow Arrow, show bool)
@@ -57,19 +56,6 @@ func (r *baseRenderer) placeTitleAndLegend(size fyne.Size, ct *canvas.Text,
 		yLegend := titleHeight + (size.Height-titleHeight-legendHeight)/2.0
 		xLegend := size.Width - r.margin - legendWidth
 		l.Move(fyne.NewPos(xLegend, yLegend))
-		// for i := range les {
-		// 	subOffset := float32(0.0)
-		// 	if les[i].IsSub {
-		// 		subOffset = 20
-		// 	}
-		// 	labelOffset := float32(0.0)
-		// 	if les[i].ShowButton {
-		// 		labelOffset = 20
-		// 		les[i].Button.Resize(fyne.NewSize(15, 15))
-		// 		les[i].Button.Move(fyne.NewPos(size.Width-r.margin-legendWidth+5+subOffset, yLegend+20*float32(i)))
-		// 	}
-		// 	les[i].Label.Move(fyne.NewPos(size.Width-r.margin-legendWidth+5+labelOffset+subOffset, yLegend+20*float32(i)))
-		// }
 	}
 	return
 }

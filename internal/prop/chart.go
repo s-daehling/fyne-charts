@@ -124,13 +124,6 @@ func (base *BaseChart) CartesianObjects() (canObj []fyne.CanvasObject) {
 	if l != nil {
 		canObj = append(canObj, l)
 	}
-	// lEntries := base.LegendEntries()
-	// for i := range lEntries {
-	// 	if lEntries[i].ShowButton {
-	// 		canObj = append(canObj, lEntries[i].Button)
-	// 	}
-	// 	canObj = append(canObj, lEntries[i].Label)
-	// }
 	rects := base.CartesianRects()
 	for i := range rects {
 		canObj = append(canObj, rects[i].Rect)
@@ -177,13 +170,6 @@ func (base *BaseChart) PolarObjects() (canObj []fyne.CanvasObject) {
 	if l != nil {
 		canObj = append(canObj, l)
 	}
-	// lEntries := base.LegendEntries()
-	// for i := range lEntries {
-	// 	if lEntries[i].ShowButton {
-	// 		canObj = append(canObj, lEntries[i].Button)
-	// 	}
-	// 	canObj = append(canObj, lEntries[i].Label)
-	// }
 	canObj = append(canObj, base.rast)
 	texts := base.PolarTexts()
 	for i := range texts {
@@ -230,16 +216,6 @@ func (base *BaseChart) Legend() (l *interact.Legend) {
 	l = base.legend
 	return
 }
-
-// func (base *BaseChart) LegendEntries() (les []renderer.LegendEntry) {
-// 	if !base.legendVisible {
-// 		return
-// 	}
-// 	for i := range base.series {
-// 		les = append(les, base.series[i].LegendEntries()...)
-// 	}
-// 	return
-// }
 
 func (base *BaseChart) ShowLegend() {
 	base.legendVisible = true

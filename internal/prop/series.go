@@ -110,20 +110,6 @@ func (point *proportionPoint) show() {
 	}
 }
 
-// func (point *proportionPoint) setColor(col color.Color) {
-// 	point.rect.FillColor = col
-// }
-
-// func (point *proportionPoint) legendEntry() (le renderer.LegendEntry) {
-// 	le = renderer.LegendEntry{
-// 		Button:     point.legendButton,
-// 		Label:      point.legendLabel,
-// 		IsSub:      true,
-// 		ShowButton: true,
-// 	}
-// 	return
-// }
-
 func (point *proportionPoint) cartesianRects(xMin float64, xMax float64, yMin float64,
 	yMax float64) (rs []renderer.CartesianRect) {
 	if point.valOffset+point.n < xMin || point.valOffset > xMax {
@@ -305,11 +291,7 @@ func (ser *Series) PolarTexts(phiMin float64, phiMax float64, rMin float64,
 }
 
 func (ser *Series) RefreshTheme() {
-	// ser.legendLabel.Color = theme.Color(theme.ColorNameForeground)
-	// ser.legendButton.SetColor(theme.Color(theme.ColorNameForeground))
-	// ser.legendButton.SetGradColor(theme.Color(theme.ColorNameForeground), theme.Color(theme.ColorNameBackground))
 	for i := range ser.data {
-		// ser.data[i].legendLabel.Color = theme.Color(theme.ColorNameForeground)
 		if ser.autoValTextColor {
 			ser.data[i].text.Color = theme.Color(theme.ColorNameForeground)
 		}
@@ -373,19 +355,6 @@ func (ser *Series) pointVisibilityUpdate(totChange float64) {
 		ser.chart.DataChange()
 	}
 }
-
-// func (ser *Series) LegendEntries() (les []renderer.LegendEntry) {
-// 	les = append(les, renderer.LegendEntry{
-// 		Button:     ser.legendButton,
-// 		Label:      ser.legendLabel,
-// 		IsSub:      false,
-// 		ShowButton: false,
-// 	})
-// 	for i := range ser.data {
-// 		les = append(les, ser.data[i].legendEntry())
-// 	}
-// 	return
-// }
 
 func (ser *Series) SetHeightAndOffset(h float64, hOffset float64) {
 	for i := range ser.data {

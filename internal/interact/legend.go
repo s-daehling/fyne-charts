@@ -135,7 +135,7 @@ type LegendEntry struct {
 	name    string
 	super   string
 	showBox bool
-	box     *LegendBox
+	box     *legendBox
 	label   *canvas.Text
 }
 
@@ -176,7 +176,7 @@ func (le *LegendEntry) Hide() {
 	le.box.ToCircle()
 }
 
-type LegendBox struct {
+type legendBox struct {
 	widget.BaseWidget
 	rectColor color.Color
 	rect      *canvas.Rectangle
@@ -184,8 +184,8 @@ type LegendBox struct {
 	tapFct    func()
 }
 
-func NewLegendBox(col color.Color, tapFct func()) *LegendBox {
-	box := &LegendBox{
+func NewLegendBox(col color.Color, tapFct func()) *legendBox {
+	box := &legendBox{
 		rect:      canvas.NewRectangle(col),
 		circle:    canvas.NewCircle(col),
 		rectColor: col,
@@ -195,17 +195,17 @@ func NewLegendBox(col color.Color, tapFct func()) *LegendBox {
 	return box
 }
 
-func (box *LegendBox) CreateRenderer() fyne.WidgetRenderer {
+func (box *legendBox) CreateRenderer() fyne.WidgetRenderer {
 	// c := container.NewStack(box.rect, box.grad)
 	c := container.NewStack(box.rect, box.circle)
 	return widget.NewSimpleRenderer(c)
 }
 
-func (box *LegendBox) Tapped(_ *fyne.PointEvent) {
+func (box *legendBox) Tapped(_ *fyne.PointEvent) {
 	box.tapFct()
 }
 
-func (box *LegendBox) MouseIn(me *desktop.MouseEvent) {
+func (box *legendBox) MouseIn(me *desktop.MouseEvent) {
 	r, g, b, a := box.rectColor.RGBA()
 	rb, gb, bb, _ := theme.Color(theme.ColorNameBackground).RGBA()
 	// box.rect.FillColor = color.RGBA64{R: uint16(r), G: uint16(g), B: uint16(b), A: 0xaaaa}
@@ -215,25 +215,25 @@ func (box *LegendBox) MouseIn(me *desktop.MouseEvent) {
 	box.circle.Refresh()
 }
 
-func (box *LegendBox) MouseMoved(me *desktop.MouseEvent) {}
+func (box *legendBox) MouseMoved(me *desktop.MouseEvent) {}
 
-func (box *LegendBox) MouseOut() {
+func (box *legendBox) MouseOut() {
 	box.rect.FillColor = box.rectColor
 	box.rect.Refresh()
 	box.circle.FillColor = box.rectColor
 	box.circle.Refresh()
 }
 
-func (box *LegendBox) SetColor(col color.Color) {
+func (box *legendBox) SetColor(col color.Color) {
 	box.rectColor = col
 	box.rect.FillColor = col
 	box.circle.FillColor = col
 }
 
-func (box *LegendBox) ToCircle() {
+func (box *legendBox) ToCircle() {
 	box.rect.Hide()
 }
 
-func (box *LegendBox) ToRect() {
+func (box *legendBox) ToRect() {
 	box.rect.Show()
 }

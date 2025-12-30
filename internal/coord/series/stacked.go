@@ -131,19 +131,8 @@ func (ser *StackedSeries) RasterColorPolar(phi float64, r float64, x float64, y 
 	return
 }
 
-// func (ser *StackedSeries) LegendEntries() (les []*interact.LegendEntry) {
-// 	les = append(les, ser.legendEntry)
-// 	for i := range ser.stack {
-// 		les = append(les, ser.stack[i].legendEntry)
-// 	}
-// 	return
-// }
-
 func (ser *StackedSeries) RefreshTheme() {
-	// ser.legendLabel.Color = theme.Color(theme.ColorNameForeground)
 	ser.color = theme.Color(theme.ColorNameForeground)
-	// ser.legendButton.SetColor(theme.Color(theme.ColorNameForeground))
-	// ser.legendButton.SetGradColor(theme.Color(theme.ColorNameForeground), theme.Color(theme.ColorNameBackground))
 	for i := range ser.stack {
 		ser.stack[i].RefreshTheme()
 	}
