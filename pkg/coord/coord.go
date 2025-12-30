@@ -21,7 +21,7 @@ func (chart *coordChart) CreateRenderer() (r fyne.WidgetRenderer) {
 		r = widget.NewSimpleRenderer(widget.NewLabel("not initialized"))
 		return
 	}
-	r = chart.base.CreateRenderer(chart.Size)
+	r = widget.NewSimpleRenderer(chart.base.MainContainer())
 	return
 }
 

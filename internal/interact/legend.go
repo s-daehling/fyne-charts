@@ -96,7 +96,7 @@ func (lr *legendRenderer) MinSize() (size fyne.Size) {
 		return
 	}
 	for i := range lr.l.les {
-		w := lr.l.les[i].label.MinSize().Width
+		w := 5 + lr.l.les[i].label.MinSize().Width
 		if lr.l.les[i].super != "" {
 			w += lr.l.les[i].box.Size().Width
 		}
