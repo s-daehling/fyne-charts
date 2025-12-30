@@ -25,6 +25,7 @@ type BaseChart struct {
 	titleSizeName  fyne.ThemeSizeName
 	series         []*Series
 	changed        bool
+	legend         *interact.Legend
 	legendVisible  bool
 	planeType      PlaneType
 	transposed     bool
@@ -40,6 +41,7 @@ func EmptyBaseChart(pType PlaneType) (base *BaseChart) {
 	base = &BaseChart{
 		title:         canvas.NewText("", theme.Color(theme.ColorNameForeground)),
 		changed:       false,
+		legend:        interact.NewLegend(),
 		legendVisible: true,
 		planeType:     pType,
 		transposed:    false,
@@ -118,13 +120,17 @@ func (base *BaseChart) CartesianObjects() (canObj []fyne.CanvasObject) {
 	// objects will be drawn in the same order as added here
 
 	// first get all objects from the series
-	lEntries := base.LegendEntries()
-	for i := range lEntries {
-		if lEntries[i].ShowButton {
-			canObj = append(canObj, lEntries[i].Button)
-		}
-		canObj = append(canObj, lEntries[i].Label)
+	l := base.Legend()
+	if l != nil {
+		canObj = append(canObj, l)
 	}
+	// lEntries := base.LegendEntries()
+	// for i := range lEntries {
+	// 	if lEntries[i].ShowButton {
+	// 		canObj = append(canObj, lEntries[i].Button)
+	// 	}
+	// 	canObj = append(canObj, lEntries[i].Label)
+	// }
 	rects := base.CartesianRects()
 	for i := range rects {
 		canObj = append(canObj, rects[i].Rect)
@@ -167,13 +173,17 @@ func (base *BaseChart) PolarObjects() (canObj []fyne.CanvasObject) {
 	// objects will be drawn in the same order as added here
 
 	// first get all objects from the series
-	lEntries := base.LegendEntries()
-	for i := range lEntries {
-		if lEntries[i].ShowButton {
-			canObj = append(canObj, lEntries[i].Button)
-		}
-		canObj = append(canObj, lEntries[i].Label)
+	l := base.Legend()
+	if l != nil {
+		canObj = append(canObj, l)
 	}
+	// lEntries := base.LegendEntries()
+	// for i := range lEntries {
+	// 	if lEntries[i].ShowButton {
+	// 		canObj = append(canObj, lEntries[i].Button)
+	// 	}
+	// 	canObj = append(canObj, lEntries[i].Label)
+	// }
 	canObj = append(canObj, base.rast)
 	texts := base.PolarTexts()
 	for i := range texts {
@@ -212,15 +222,24 @@ func (base *BaseChart) Overlay() (io *interact.Overlay) {
 	return
 }
 
-func (base *BaseChart) LegendEntries() (les []renderer.LegendEntry) {
+func (base *BaseChart) Legend() (l *interact.Legend) {
+	l = nil
 	if !base.legendVisible {
 		return
 	}
-	for i := range base.series {
-		les = append(les, base.series[i].LegendEntries()...)
-	}
+	l = base.legend
 	return
 }
+
+// func (base *BaseChart) LegendEntries() (les []renderer.LegendEntry) {
+// 	if !base.legendVisible {
+// 		return
+// 	}
+// 	for i := range base.series {
+// 		les = append(les, base.series[i].LegendEntries()...)
+// 	}
+// 	return
+// }
 
 func (base *BaseChart) ShowLegend() {
 	base.legendVisible = true

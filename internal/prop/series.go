@@ -35,29 +35,37 @@ func (base *BaseChart) AddSeries(ps *Series) (err error) {
 	return
 }
 
-type proportionPoint struct {
-	c            string
-	n            float64
-	val          float64
-	height       float64
-	hOffset      float64
-	valOffset    float64
-	rect         *canvas.Rectangle
-	text         *canvas.Text
-	visible      bool
-	legendButton *interact.LegendBox
-	legendLabel  *canvas.Text
-	ser          *Series
+func (base *BaseChart) AddLegendEntry(le *interact.LegendEntry) {
+	base.legend.AddEntry(le)
 }
 
-func emptyProportionPoint(showText bool, col color.Color) (point *proportionPoint) {
+func (base *BaseChart) RemoveLegendEntry(name string, super string) {
+	base.legend.RemoveEntry(name, super)
+}
+
+type proportionPoint struct {
+	c           string
+	n           float64
+	val         float64
+	height      float64
+	hOffset     float64
+	valOffset   float64
+	rect        *canvas.Rectangle
+	text        *canvas.Text
+	visible     bool
+	legendEntry *interact.LegendEntry
+	ser         *Series
+}
+
+func emptyProportionPoint(c string, col color.Color, ser *Series) (point *proportionPoint) {
 	point = &proportionPoint{
-		rect:        canvas.NewRectangle(col),
-		legendLabel: canvas.NewText("", theme.Color(theme.ColorNameForeground)),
-		visible:     true,
+		c:       c,
+		rect:    canvas.NewRectangle(col),
+		visible: true,
+		ser:     ser,
 	}
-	point.legendButton = interact.NewLegendBox(col, point.toggleView)
-	if showText {
+	point.legendEntry = interact.NewLegendEntry(c, ser.name, true, col, point.toggleView)
+	if ser.showText {
 		point.text = canvas.NewText("", theme.Color(theme.ColorNameForeground))
 	}
 	return
@@ -80,7 +88,7 @@ func (point *proportionPoint) hide() {
 		point.text.Hide()
 	}
 	point.visible = false
-	point.legendButton.ToCircle()
+	point.legendEntry.Hide()
 	if point.ser != nil {
 		point.ser.pointVisibilityUpdate(-point.val)
 	}
@@ -96,7 +104,7 @@ func (point *proportionPoint) show() {
 	}
 	point.visible = true
 	point.ser.visible = true
-	point.legendButton.ToRect()
+	point.legendEntry.Show()
 	if point.ser != nil {
 		point.ser.pointVisibilityUpdate(point.val)
 	}
@@ -106,15 +114,15 @@ func (point *proportionPoint) show() {
 // 	point.rect.FillColor = col
 // }
 
-func (point *proportionPoint) legendEntry() (le renderer.LegendEntry) {
-	le = renderer.LegendEntry{
-		Button:     point.legendButton,
-		Label:      point.legendLabel,
-		IsSub:      true,
-		ShowButton: true,
-	}
-	return
-}
+// func (point *proportionPoint) legendEntry() (le renderer.LegendEntry) {
+// 	le = renderer.LegendEntry{
+// 		Button:     point.legendButton,
+// 		Label:      point.legendLabel,
+// 		IsSub:      true,
+// 		ShowButton: true,
+// 	}
+// 	return
+// }
 
 func (point *proportionPoint) cartesianRects(xMin float64, xMax float64, yMin float64,
 	yMax float64) (rs []renderer.CartesianRect) {
@@ -199,8 +207,7 @@ type Series struct {
 	name             string
 	visible          bool
 	autoValTextColor bool
-	legendButton     *interact.LegendBox
-	legendLabel      *canvas.Text
+	legendEntry      *interact.LegendEntry
 	chart            *BaseChart
 }
 
@@ -210,9 +217,8 @@ func EmptyProportionalSeries(name string) (ser *Series) {
 		visible:          true,
 		showText:         true,
 		autoValTextColor: true,
-		legendLabel:      canvas.NewText(name, theme.Color(theme.ColorNameForeground)),
 	}
-	ser.legendButton = interact.NewLegendBox(theme.Color(theme.ColorNameForeground), ser.toggleView)
+	ser.legendEntry = interact.NewLegendEntry(name, "", false, theme.Color(theme.ColorNameForeground), ser.toggleView)
 	return
 }
 
@@ -228,10 +234,20 @@ func (ser *Series) BindToChart(ch *BaseChart) (err error) {
 		return
 	}
 	ser.chart = ch
+	ch.AddLegendEntry(ser.legendEntry)
+	for i := range ser.data {
+		ch.AddLegendEntry(ser.data[i].legendEntry)
+	}
 	return
 }
 
 func (ser *Series) Release() {
+	if ser.chart != nil {
+		for i := range ser.data {
+			ser.chart.RemoveLegendEntry(ser.data[i].c, ser.name)
+		}
+		ser.chart.RemoveLegendEntry(ser.name, "")
+	}
 	ser.chart = nil
 }
 
@@ -289,11 +305,11 @@ func (ser *Series) PolarTexts(phiMin float64, phiMax float64, rMin float64,
 }
 
 func (ser *Series) RefreshTheme() {
-	ser.legendLabel.Color = theme.Color(theme.ColorNameForeground)
-	ser.legendButton.SetRectColor(theme.Color(theme.ColorNameForeground))
+	// ser.legendLabel.Color = theme.Color(theme.ColorNameForeground)
+	// ser.legendButton.SetColor(theme.Color(theme.ColorNameForeground))
 	// ser.legendButton.SetGradColor(theme.Color(theme.ColorNameForeground), theme.Color(theme.ColorNameBackground))
 	for i := range ser.data {
-		ser.data[i].legendLabel.Color = theme.Color(theme.ColorNameForeground)
+		// ser.data[i].legendLabel.Color = theme.Color(theme.ColorNameForeground)
 		if ser.autoValTextColor {
 			ser.data[i].text.Color = theme.Color(theme.ColorNameForeground)
 		}
@@ -326,7 +342,7 @@ func (ser *Series) Show() {
 	for i := range ser.data {
 		ser.data[i].show()
 	}
-	ser.legendButton.ToRect()
+	ser.legendEntry.Show()
 }
 
 // Hide hides the Barss of the series
@@ -335,7 +351,7 @@ func (ser *Series) Hide() {
 	for i := range ser.data {
 		ser.data[i].hide()
 	}
-	ser.legendButton.ToCircle()
+	ser.legendEntry.Hide()
 }
 
 func (ser *Series) toggleView() {
@@ -358,18 +374,18 @@ func (ser *Series) pointVisibilityUpdate(totChange float64) {
 	}
 }
 
-func (ser *Series) LegendEntries() (les []renderer.LegendEntry) {
-	les = append(les, renderer.LegendEntry{
-		Button:     ser.legendButton,
-		Label:      ser.legendLabel,
-		IsSub:      false,
-		ShowButton: false,
-	})
-	for i := range ser.data {
-		les = append(les, ser.data[i].legendEntry())
-	}
-	return
-}
+// func (ser *Series) LegendEntries() (les []renderer.LegendEntry) {
+// 	les = append(les, renderer.LegendEntry{
+// 		Button:     ser.legendButton,
+// 		Label:      ser.legendLabel,
+// 		IsSub:      false,
+// 		ShowButton: false,
+// 	})
+// 	for i := range ser.data {
+// 		les = append(les, ser.data[i].legendEntry())
+// 	}
+// 	return
+// }
 
 func (ser *Series) SetHeightAndOffset(h float64, hOffset float64) {
 	for i := range ser.data {
@@ -379,6 +395,11 @@ func (ser *Series) SetHeightAndOffset(h float64, hOffset float64) {
 }
 
 func (ser *Series) Clear() {
+	if ser.chart != nil {
+		for i := range ser.data {
+			ser.chart.RemoveLegendEntry(ser.data[i].c, ser.name)
+		}
+	}
 	ser.data = []*proportionPoint{}
 	if ser.chart != nil {
 		ser.chart.DataChange()
@@ -397,6 +418,9 @@ func (ser *Series) DeleteDataInRange(cat []string) (c int) {
 		for j := range cat {
 			if ser.data[i].c == cat[j] {
 				del = true
+				if ser.chart != nil {
+					ser.chart.RemoveLegendEntry(ser.data[i].c, ser.name)
+				}
 				break
 			}
 		}
@@ -441,13 +465,13 @@ func (ser *Series) AddData(input []data.ProportionalPoint) (err error) {
 		if catExist {
 			continue
 		}
-		pPoint := emptyProportionPoint(ser.showText, input[i].Col)
-		pPoint.c = input[i].C
-		pPoint.legendLabel.Text = input[i].C
+		pPoint := emptyProportionPoint(input[i].C, input[i].Col, ser)
 		pPoint.val = input[i].Val
-		pPoint.ser = ser
 		ser.data = append(ser.data, pPoint)
 		ser.tot += pPoint.val
+		if ser.chart != nil {
+			ser.chart.AddLegendEntry(pPoint.legendEntry)
+		}
 	}
 	if ser.chart != nil {
 		ser.chart.DataChange()

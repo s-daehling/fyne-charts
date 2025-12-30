@@ -44,6 +44,7 @@ type BaseChart struct {
 	autoFromRange  bool
 	autoToRange    bool
 	autoOrigin     bool
+	legend         *interact.Legend
 	legendVisible  bool
 	tooltipVisible bool
 	planeType      PlaneType
@@ -61,6 +62,7 @@ func EmptyBaseChart(pType PlaneType, fType FromType) (base *BaseChart) {
 		autoFromRange:  true,
 		autoToRange:    true,
 		autoOrigin:     true,
+		legend:         interact.NewLegend(),
 		legendVisible:  true,
 		tooltipVisible: false,
 		planeType:      pType,
@@ -150,13 +152,17 @@ func (base *BaseChart) CartesianObjects() (canObj []fyne.CanvasObject) {
 	// objects will be drawn in the same order as added here
 
 	// first get all objects from the series
-	lEntries := base.LegendEntries()
-	for i := range lEntries {
-		if lEntries[i].ShowButton {
-			canObj = append(canObj, lEntries[i].Button)
-		}
-		canObj = append(canObj, lEntries[i].Label)
+	l := base.Legend()
+	if l != nil {
+		canObj = append(canObj, l)
 	}
+	// lEntries := base.LegendEntries()
+	// for i := range lEntries {
+	// 	if lEntries[i].ShowButton {
+	// 		canObj = append(canObj, lEntries[i].Button)
+	// 	}
+	// 	canObj = append(canObj, lEntries[i].Label)
+	// }
 	canObj = append(canObj, base.rast)
 	rects := base.CartesianRects()
 	for i := range rects {
@@ -240,13 +246,17 @@ func (base *BaseChart) PolarObjects() (canObj []fyne.CanvasObject) {
 	// objects will be drawn in the same order as added here
 
 	// first get all objects from the series
-	lEntries := base.LegendEntries()
-	for i := range lEntries {
-		if lEntries[i].ShowButton {
-			canObj = append(canObj, lEntries[i].Button)
-		}
-		canObj = append(canObj, lEntries[i].Label)
+	l := base.Legend()
+	if l != nil {
+		canObj = append(canObj, l)
 	}
+	// lEntries := base.LegendEntries()
+	// for i := range lEntries {
+	// 	if lEntries[i].ShowButton {
+	// 		canObj = append(canObj, lEntries[i].Button)
+	// 	}
+	// 	canObj = append(canObj, lEntries[i].Label)
+	// }
 	canObj = append(canObj, base.rast)
 	edges := base.PolarEdges()
 	for i := range edges {
@@ -323,15 +333,24 @@ func (base *BaseChart) Overlay() (io *interact.Overlay) {
 	return
 }
 
-func (base *BaseChart) LegendEntries() (les []renderer.LegendEntry) {
+func (base *BaseChart) Legend() (l *interact.Legend) {
+	l = nil
 	if !base.legendVisible {
 		return
 	}
-	for i := range base.series {
-		les = append(les, base.series[i].LegendEntries()...)
-	}
+	l = base.legend
 	return
 }
+
+// func (base *BaseChart) LegendEntries() (les []renderer.LegendEntry) {
+// 	if !base.legendVisible {
+// 		return
+// 	}
+// 	for i := range base.series {
+// 		les = append(les, base.series[i].LegendEntries()...)
+// 	}
+// 	return
+// }
 
 func (base *BaseChart) ShowLegend() {
 	base.legendVisible = true

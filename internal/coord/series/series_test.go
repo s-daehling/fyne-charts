@@ -6,6 +6,8 @@ import (
 	"slices"
 	"strings"
 	"time"
+
+	"github.com/s-daehling/fyne-charts/internal/interact"
 )
 
 type chartDummy struct {
@@ -15,6 +17,8 @@ type chartDummy struct {
 func (cd chartDummy) IsPolar() bool           { return cd.polar }
 func (cd chartDummy) DataChange()             {}
 func (cd chartDummy) RasterVisibilityChange() {}
+func (cd chartDummy) AddLegendEntry(le *interact.LegendEntry)
+func (cd chartDummy) RemoveLegendEntry(name string, super string)
 
 func testNRange(ser Series, expIsEmpty bool, expMin float64, expMax float64) (err error) {
 	isEmpty, min, max := ser.NRange()

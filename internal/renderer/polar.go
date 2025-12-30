@@ -45,7 +45,7 @@ func EmptyPolarRenderer(chart PolarChart, ws func() fyne.Size) (r *Polar) {
 
 // Layout is responsible for redrawing the chart widget
 func (r *Polar) Layout(size fyne.Size) {
-	_, titleHeight, legendWidth, _ := r.placeTitleAndLegend(size, r.chart.Title(), r.chart.LegendEntries())
+	_, titleHeight, legendWidth, _ := r.placeTitleAndLegend(size, r.chart.Title(), r.chart.Legend())
 	rAxisLabelHeight := float32(0.0)
 	phiAxisLabelWidth := float32(0.0)
 	phiAxisTickLabelWidth := float32(0.0)
@@ -311,8 +311,11 @@ func (r *Polar) MinSize() fyne.Size {
 		}
 	}
 
-	les := r.chart.LegendEntries()
-	legendWidth, legendHeight = legendSize(les)
+	l := r.chart.Legend()
+	if l != nil {
+		legendWidth = l.MinSize().Width
+		legendHeight = l.MinSize().Height
+	}
 
 	var phiLabel, rLabel *canvas.Image
 	var phiShow, rShow bool

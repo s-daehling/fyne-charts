@@ -5,29 +5,31 @@ import (
 	"image/color"
 	"time"
 
-	"fyne.io/fyne/v2/canvas"
-	"fyne.io/fyne/v2/theme"
 	"github.com/s-daehling/fyne-charts/internal/interact"
 	"github.com/s-daehling/fyne-charts/internal/renderer"
 )
 
 type baseSeries struct {
-	name         string
-	visible      bool
-	color        color.Color
-	legendButton *interact.LegendBox
-	legendLabel  *canvas.Text
-	cont         container
+	name        string
+	super       string
+	visible     bool
+	color       color.Color
+	legendEntry *interact.LegendEntry
+	// legendButton *interact.LegendBox
+	// legendLabel  *canvas.Text
+	cont container
 }
 
 func emptyBaseSeries(name string, col color.Color, togView func()) (ser baseSeries) {
 	ser = baseSeries{
-		name:         name,
-		visible:      true,
-		color:        col,
-		legendButton: interact.NewLegendBox(col, togView),
-		legendLabel:  canvas.NewText(name, theme.Color(theme.ColorNameForeground)),
-		cont:         nil,
+		name:        name,
+		super:       "",
+		visible:     true,
+		color:       col,
+		legendEntry: interact.NewLegendEntry(name, "", true, col, togView),
+		// legendButton: interact.NewLegendBox(col, togView),
+		// legendLabel:  canvas.NewText(name, theme.Color(theme.ColorNameForeground)),
+		cont: nil,
 	}
 	return
 }
@@ -38,16 +40,10 @@ func (ser *baseSeries) Name() (n string) {
 	return
 }
 
-func (ser *baseSeries) LegendEntries() (les []renderer.LegendEntry) {
-	le := renderer.LegendEntry{
-		Button:     ser.legendButton,
-		Label:      ser.legendLabel,
-		IsSub:      false,
-		ShowButton: true,
-	}
-	les = append(les, le)
-	return
-}
+// func (ser *baseSeries) LegendEntries() (les []*interact.LegendEntry) {
+// 	les = append(les, ser.legendEntry)
+// 	return
+// }
 
 func (ser *baseSeries) BindToChart(ch container) (err error) {
 	if ser.cont != nil {
@@ -55,10 +51,14 @@ func (ser *baseSeries) BindToChart(ch container) (err error) {
 		return
 	}
 	ser.cont = ch
+	ch.AddLegendEntry(ser.legendEntry)
 	return
 }
 
 func (ser *baseSeries) Release() {
+	if ser.cont != nil {
+		ser.cont.RemoveLegendEntry(ser.name, ser.super)
+	}
 	ser.cont = nil
 }
 
@@ -139,11 +139,11 @@ func (ser *baseSeries) RasterColorPolar(phi float64, r float64, x float64, y flo
 }
 
 func (ser *baseSeries) RefreshTheme() {
-	ser.legendLabel.Color = theme.Color(theme.ColorNameForeground)
+
 }
 
 type Series interface {
-	LegendEntries() (les []renderer.LegendEntry)
+	// LegendEntries() (les []*interact.LegendEntry)
 	Name() (n string)
 	BindToChart(ch container) (err error)
 	Release()
@@ -172,4 +172,6 @@ type container interface {
 	IsPolar() (b bool)
 	DataChange()
 	RasterVisibilityChange()
+	AddLegendEntry(le *interact.LegendEntry)
+	RemoveLegendEntry(name string, super string)
 }

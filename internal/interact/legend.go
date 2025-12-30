@@ -2,6 +2,7 @@ package interact
 
 import (
 	"image/color"
+	"slices"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
@@ -11,6 +12,170 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
+type Legend struct {
+	widget.BaseWidget
+	les []*LegendEntry
+}
+
+func NewLegend() (l *Legend) {
+	l = &Legend{
+		les: make([]*LegendEntry, 0),
+	}
+	l.ExtendBaseWidget(l)
+	return
+}
+
+func (l *Legend) CreateRenderer() (r fyne.WidgetRenderer) {
+	r = newLegendRenderer(l)
+	return
+}
+
+func (l *Legend) AddEntry(le *LegendEntry) {
+	if le.super == "" {
+		l.les = append(l.les, le)
+		return
+	}
+	superFound := false
+	insertIndex := -1
+	for i := range l.les {
+		if l.les[i].name == le.super {
+			superFound = true
+			continue
+		}
+		if superFound && l.les[i].super != le.super {
+			insertIndex = i
+			break
+		}
+	}
+	if insertIndex == -1 {
+		insertIndex = len(l.les)
+	}
+	l.les = slices.Insert(l.les, insertIndex, le)
+}
+
+func (l *Legend) RemoveEntry(name string, super string) {
+	for i := range l.les {
+		if l.les[i].name == name && l.les[i].super == super {
+			l.les = slices.Delete(l.les, i, i+1)
+			break
+		}
+	}
+}
+
+type legendRenderer struct {
+	l *Legend
+}
+
+func newLegendRenderer(l *Legend) (lr *legendRenderer) {
+	lr = &legendRenderer{
+		l: l,
+	}
+	return
+}
+
+func (lr *legendRenderer) Layout(size fyne.Size) {
+	y := float32(0.0)
+	for i := range lr.l.les {
+		x := float32(0.0)
+		if lr.l.les[i].super != "" {
+			x += lr.l.les[i].box.Size().Width
+		}
+		if lr.l.les[i].showBox {
+			lr.l.les[i].box.Move(fyne.NewPos(x, y+(lr.l.les[i].label.Size().Height-lr.l.les[i].box.Size().Height)/2))
+			x += lr.l.les[i].box.Size().Width + 5
+		}
+		lr.l.les[i].label.Move(fyne.NewPos(x, y))
+		y += lr.l.les[i].label.Size().Height
+	}
+}
+
+func (lr *legendRenderer) MinSize() (size fyne.Size) {
+	size.Width = 0
+	size.Height = 0
+	if len(lr.l.les) == 0 {
+		return
+	}
+	for i := range lr.l.les {
+		w := lr.l.les[i].label.MinSize().Width
+		if lr.l.les[i].super != "" {
+			w += lr.l.les[i].box.Size().Width
+		}
+		if lr.l.les[i].showBox {
+			w += lr.l.les[i].box.Size().Width + 5
+		}
+		if w > size.Width {
+			size.Width = w
+		}
+		size.Height += lr.l.les[i].label.MinSize().Height
+	}
+	return
+}
+
+func (lr *legendRenderer) Refresh() {
+	for i := range lr.l.les {
+		lr.l.les[i].RefreshTheme()
+		lr.l.les[i].box.Refresh()
+		lr.l.les[i].label.Refresh()
+	}
+}
+
+func (lr *legendRenderer) Objects() (canObj []fyne.CanvasObject) {
+	for i := range lr.l.les {
+		if lr.l.les[i].showBox {
+			canObj = append(canObj, lr.l.les[i].box)
+		}
+		canObj = append(canObj, lr.l.les[i].label)
+	}
+	return
+}
+
+func (lr *legendRenderer) Destroy() {}
+
+type LegendEntry struct {
+	name    string
+	super   string
+	showBox bool
+	box     *LegendBox
+	label   *canvas.Text
+}
+
+func NewLegendEntry(name string, super string, showBox bool, col color.Color, tapFct func()) (le *LegendEntry) {
+	le = &LegendEntry{
+		name:    name,
+		super:   super,
+		showBox: showBox,
+		box:     NewLegendBox(col, tapFct),
+		label:   canvas.NewText(name, theme.Color(theme.ColorNameForeground)),
+	}
+	le.label.Resize(le.label.MinSize())
+	le.box.Resize(fyne.NewSize(le.label.MinSize().Height*0.8, le.label.MinSize().Height*0.8))
+	return
+}
+
+func (le *LegendEntry) RefreshTheme() {
+	le.label.Color = theme.Color(theme.ColorNameForeground)
+}
+
+func (le *LegendEntry) SetSuper(super string) {
+	le.super = super
+}
+
+func (le *LegendEntry) HideBox() {
+	le.showBox = false
+}
+
+func (le *LegendEntry) SetColor(col color.Color) {
+	le.box.SetColor(col)
+}
+
+func (le *LegendEntry) Show() {
+	le.box.ToRect()
+}
+
+func (le *LegendEntry) Hide() {
+	le.box.ToCircle()
+}
+
 type LegendBox struct {
 	widget.BaseWidget
 	rectColor color.Color
@@ -19,11 +184,11 @@ type LegendBox struct {
 	tapFct    func()
 }
 
-func NewLegendBox(rectColor color.Color, tapFct func()) *LegendBox {
+func NewLegendBox(col color.Color, tapFct func()) *LegendBox {
 	box := &LegendBox{
-		rect:      canvas.NewRectangle(rectColor),
-		circle:    canvas.NewCircle(rectColor),
-		rectColor: rectColor,
+		rect:      canvas.NewRectangle(col),
+		circle:    canvas.NewCircle(col),
+		rectColor: col,
 		tapFct:    tapFct,
 	}
 	box.ExtendBaseWidget(box)
@@ -59,7 +224,7 @@ func (box *LegendBox) MouseOut() {
 	box.circle.Refresh()
 }
 
-func (box *LegendBox) SetRectColor(col color.Color) {
+func (box *LegendBox) SetColor(col color.Color) {
 	box.rectColor = col
 	box.rect.FillColor = col
 	box.circle.FillColor = col

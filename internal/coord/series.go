@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/s-daehling/fyne-charts/internal/coord/series"
+	"github.com/s-daehling/fyne-charts/internal/interact"
 )
 
 func (base *BaseChart) addSeriesIfNotExist(ser series.Series) (err error) {
@@ -20,6 +21,14 @@ func (base *BaseChart) addSeriesIfNotExist(ser series.Series) (err error) {
 	base.series = append(base.series, ser)
 	base.DataChange()
 	return
+}
+
+func (base *BaseChart) AddLegendEntry(le *interact.LegendEntry) {
+	base.legend.AddEntry(le)
+}
+
+func (base *BaseChart) RemoveLegendEntry(name string, super string) {
+	base.legend.RemoveEntry(name, super)
 }
 
 func (base *BaseChart) AddBarSeries(ls *series.PointSeries) (err error) {

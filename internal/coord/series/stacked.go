@@ -5,6 +5,7 @@ import (
 	"image/color"
 
 	"fyne.io/fyne/v2/theme"
+	"github.com/s-daehling/fyne-charts/internal/interact"
 	"github.com/s-daehling/fyne-charts/internal/renderer"
 )
 
@@ -16,6 +17,7 @@ type StackedSeries struct {
 func EmptyStackedSeries(name string) (ser *StackedSeries) {
 	ser = &StackedSeries{}
 	ser.baseSeries = emptyBaseSeries(name, theme.Color(theme.ColorNameForeground), ser.toggleView)
+	ser.legendEntry.HideBox()
 	return
 }
 
@@ -35,6 +37,18 @@ func (ser *StackedSeries) DataChange() {
 func (ser *StackedSeries) RasterVisibilityChange() {
 	if ser.cont != nil {
 		ser.cont.RasterVisibilityChange()
+	}
+}
+
+func (ser *StackedSeries) AddLegendEntry(le *interact.LegendEntry) {
+	if ser.cont != nil {
+		ser.cont.AddLegendEntry(le)
+	}
+}
+
+func (ser *StackedSeries) RemoveLegendEntry(name string, super string) {
+	if ser.cont != nil {
+		ser.cont.RemoveLegendEntry(name, super)
 	}
 }
 
@@ -117,27 +131,18 @@ func (ser *StackedSeries) RasterColorPolar(phi float64, r float64, x float64, y 
 	return
 }
 
-func (ser *StackedSeries) LegendEntries() (les []renderer.LegendEntry) {
-	les = append(les, renderer.LegendEntry{
-		Button:     ser.legendButton,
-		Label:      ser.legendLabel,
-		IsSub:      false,
-		ShowButton: false,
-	})
-	for i := range ser.stack {
-		subLes := ser.stack[i].LegendEntries()
-		for j := range subLes {
-			subLes[j].IsSub = true
-		}
-		les = append(les, subLes...)
-	}
-	return
-}
+// func (ser *StackedSeries) LegendEntries() (les []*interact.LegendEntry) {
+// 	les = append(les, ser.legendEntry)
+// 	for i := range ser.stack {
+// 		les = append(les, ser.stack[i].legendEntry)
+// 	}
+// 	return
+// }
 
 func (ser *StackedSeries) RefreshTheme() {
-	ser.legendLabel.Color = theme.Color(theme.ColorNameForeground)
+	// ser.legendLabel.Color = theme.Color(theme.ColorNameForeground)
 	ser.color = theme.Color(theme.ColorNameForeground)
-	ser.legendButton.SetRectColor(theme.Color(theme.ColorNameForeground))
+	// ser.legendButton.SetColor(theme.Color(theme.ColorNameForeground))
 	// ser.legendButton.SetGradColor(theme.Color(theme.ColorNameForeground), theme.Color(theme.ColorNameBackground))
 	for i := range ser.stack {
 		ser.stack[i].RefreshTheme()
@@ -168,7 +173,7 @@ func (ser *StackedSeries) Show() {
 	for i := range ser.stack {
 		ser.stack[i].Show()
 	}
-	ser.legendButton.ToRect()
+	ser.legendEntry.Show()
 }
 
 // Hide hides the bars of the series
@@ -177,7 +182,7 @@ func (ser *StackedSeries) Hide() {
 	for i := range ser.stack {
 		ser.stack[i].Hide()
 	}
-	ser.legendButton.ToCircle()
+	ser.legendEntry.Hide()
 }
 
 func (ser *StackedSeries) toggleView() {
@@ -186,6 +191,27 @@ func (ser *StackedSeries) toggleView() {
 	} else {
 		ser.Show()
 	}
+}
+
+func (ser *StackedSeries) BindToChart(ch container) (err error) {
+	err = ser.baseSeries.BindToChart(ch)
+	if err != nil {
+		return
+	}
+	for i := range ser.stack {
+		ch.AddLegendEntry(ser.stack[i].legendEntry)
+	}
+	return
+}
+
+func (ser *StackedSeries) Release() {
+	if ser.cont == nil {
+		return
+	}
+	for i := range ser.stack {
+		ser.cont.RemoveLegendEntry(ser.stack[i].name, ser.stack[i].super)
+	}
+	ser.baseSeries.Release()
 }
 
 func (ser *StackedSeries) Clear() {

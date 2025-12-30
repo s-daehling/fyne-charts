@@ -206,8 +206,8 @@ func (ser *CandleStickSeries) CartesianRects(xMin float64, xMax float64, yMin fl
 }
 
 func (ser *CandleStickSeries) RefreshTheme() {
-	ser.legendLabel.Color = theme.Color(theme.ColorNameForeground)
-	ser.color = theme.Color(theme.ColorNameForeground)
+	// ser.legendLabel.Color = theme.Color(theme.ColorNameForeground)
+	// ser.color = theme.Color(theme.ColorNameForeground)
 	// ser.legendButton.SetRectColor(theme.Color(theme.ColorNameForeground))
 	for i := range ser.data {
 		ser.data[i].upperLine.StrokeColor = theme.Color(theme.ColorNameForeground)
@@ -221,7 +221,7 @@ func (ser *CandleStickSeries) Show() {
 	for i := range ser.data {
 		ser.data[i].show()
 	}
-	ser.legendButton.ToRect()
+	ser.legendEntry.Show()
 }
 
 // Hide hides all elements of the series
@@ -230,7 +230,7 @@ func (ser *CandleStickSeries) Hide() {
 	for i := range ser.data {
 		ser.data[i].hide()
 	}
-	ser.legendButton.ToCircle()
+	ser.legendEntry.Hide()
 }
 
 func (ser *CandleStickSeries) toggleView() {

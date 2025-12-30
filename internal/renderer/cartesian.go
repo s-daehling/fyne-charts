@@ -44,7 +44,7 @@ func EmptyCartesianRenderer(chart CartesianChart, ws func() fyne.Size) (r *Carte
 // Layout is responsible for redrawing the chart widget; here the horizontal and vertical numerical coordinates are converted to fyne positions and objects are placed accordingly
 func (r *Cartesian) Layout(size fyne.Size) {
 	r.transposed = r.chart.CartesianOrientation()
-	_, titleHeight, legendWidth, _ := r.placeTitleAndLegend(size, r.chart.Title(), r.chart.LegendEntries())
+	_, titleHeight, legendWidth, _ := r.placeTitleAndLegend(size, r.chart.Title(), r.chart.Legend())
 	vAxisLabelWidth := float32(0.0)
 	hAxisLabelHeight := float32(0.0)
 	vAxisTickLabelWidth := float32(0.0)
@@ -285,8 +285,11 @@ func (r *Cartesian) MinSize() fyne.Size {
 		}
 	}
 
-	les := r.chart.LegendEntries()
-	legendWidth, legendHeight = legendSize(les)
+	l := r.chart.Legend()
+	if l != nil {
+		legendWidth = l.MinSize().Width
+		legendHeight = l.MinSize().Height
+	}
 
 	var vLabel, hLabel *canvas.Image
 	var vShow, hShow bool

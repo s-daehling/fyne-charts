@@ -8,7 +8,8 @@ import (
 
 type baseChart interface {
 	Title() (ct *canvas.Text)
-	LegendEntries() (le []LegendEntry)
+	Legend() (l *interact.Legend)
+	// LegendEntries() (le []LegendEntry)
 	Tooltip() (tt Tooltip)
 	FromAxisElements() (min float64, max float64, origin float64, label *canvas.Image, ticks []Tick, arrow Arrow, show bool)
 	ToAxisElements() (min float64, max float64, origin float64, label *canvas.Image, ticks []Tick, arrow Arrow, show bool)
@@ -37,7 +38,7 @@ func emptyBaseRenderer(ws func() fyne.Size) (r baseRenderer) {
 func (r *baseRenderer) Destroy() {}
 
 func (r *baseRenderer) placeTitleAndLegend(size fyne.Size, ct *canvas.Text,
-	les []LegendEntry) (titleWidth float32, titleHeight float32, legendWidth float32,
+	l *interact.Legend) (titleWidth float32, titleHeight float32, legendWidth float32,
 	legendHeight float32) {
 	// place title
 	if ct != nil {
@@ -49,22 +50,26 @@ func (r *baseRenderer) placeTitleAndLegend(size fyne.Size, ct *canvas.Text,
 	}
 
 	// place legend
-	if len(les) > 0 {
-		legendWidth, legendHeight = legendSize(les)
+	if l != nil {
+		l.Resize(l.MinSize())
+		legendWidth = l.MinSize().Width
+		legendHeight = l.MinSize().Height
 		yLegend := titleHeight + (size.Height-titleHeight-legendHeight)/2.0
-		for i := range les {
-			subOffset := float32(0.0)
-			if les[i].IsSub {
-				subOffset = 20
-			}
-			labelOffset := float32(0.0)
-			if les[i].ShowButton {
-				labelOffset = 20
-				les[i].Button.Resize(fyne.NewSize(15, 15))
-				les[i].Button.Move(fyne.NewPos(size.Width-r.margin-legendWidth+5+subOffset, yLegend+20*float32(i)))
-			}
-			les[i].Label.Move(fyne.NewPos(size.Width-r.margin-legendWidth+5+labelOffset+subOffset, yLegend+20*float32(i)))
-		}
+		xLegend := size.Width - r.margin - legendWidth
+		l.Move(fyne.NewPos(xLegend, yLegend))
+		// for i := range les {
+		// 	subOffset := float32(0.0)
+		// 	if les[i].IsSub {
+		// 		subOffset = 20
+		// 	}
+		// 	labelOffset := float32(0.0)
+		// 	if les[i].ShowButton {
+		// 		labelOffset = 20
+		// 		les[i].Button.Resize(fyne.NewSize(15, 15))
+		// 		les[i].Button.Move(fyne.NewPos(size.Width-r.margin-legendWidth+5+subOffset, yLegend+20*float32(i)))
+		// 	}
+		// 	les[i].Label.Move(fyne.NewPos(size.Width-r.margin-legendWidth+5+labelOffset+subOffset, yLegend+20*float32(i)))
+		// }
 	}
 	return
 }

@@ -646,7 +646,7 @@ func (ser *PointSeries) Show() {
 	for i := range ser.data {
 		ser.data[i].show()
 	}
-	ser.legendButton.ToRect()
+	ser.legendEntry.Show()
 	if ser.showBar && ser.cont != nil {
 		ser.cont.DataChange()
 	}
@@ -658,7 +658,7 @@ func (ser *PointSeries) Hide() {
 	for i := range ser.data {
 		ser.data[i].hide()
 	}
-	ser.legendButton.ToCircle()
+	ser.legendEntry.Hide()
 	if ser.showBar && ser.cont != nil {
 		ser.cont.DataChange()
 	}
@@ -677,7 +677,7 @@ func (ser *PointSeries) toggleView() {
 
 func (ser *PointSeries) SetColor(col color.Color) {
 	ser.color = col
-	ser.legendButton.SetRectColor(col)
+	ser.legendEntry.SetColor(col)
 	for i := range ser.data {
 		ser.data[i].setColor(col)
 	}
@@ -788,6 +788,8 @@ func (ser *PointSeries) BindToStack(stack *StackedSeries) (err error) {
 			return
 		}
 	}
+	ser.legendEntry.SetSuper(stack.name)
+	ser.super = stack.name
 	err = ser.baseSeries.BindToChart(stack)
 	if err != nil {
 		return
@@ -804,6 +806,8 @@ func (ser *PointSeries) Release() {
 	ser.showBar = false
 	ser.showArea = false
 	ser.isStacked = false
+	ser.legendEntry.SetSuper("")
+	ser.super = ""
 	for i := range ser.data {
 		ser.data[i].showDot = false
 		ser.data[i].showFromPrevLine = false

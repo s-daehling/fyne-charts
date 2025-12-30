@@ -329,7 +329,7 @@ func (ser *BoxSeries) Show() {
 	for i := range ser.data {
 		ser.data[i].show()
 	}
-	ser.legendButton.ToRect()
+	ser.legendEntry.Show()
 }
 
 // Hide hides all elements of the bar series
@@ -338,7 +338,7 @@ func (ser *BoxSeries) Hide() {
 	for i := range ser.data {
 		ser.data[i].hide()
 	}
-	ser.legendButton.ToCircle()
+	ser.legendEntry.Hide()
 }
 
 func (ser *BoxSeries) toggleView() {
@@ -352,7 +352,7 @@ func (ser *BoxSeries) toggleView() {
 // SetColor changes the color of the bar series
 func (ser *BoxSeries) SetColor(col color.Color) {
 	ser.color = col
-	ser.legendButton.SetRectColor(col)
+	ser.legendEntry.SetColor(col)
 	for i := range ser.data {
 		ser.data[i].setColor(col)
 	}
