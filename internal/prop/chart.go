@@ -9,7 +9,9 @@ import (
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
+	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/theme"
+	"fyne.io/fyne/v2/widget"
 )
 
 type PlaneType string
@@ -20,6 +22,7 @@ const (
 )
 
 type BaseChart struct {
+	widget.BaseWidget
 	title          *canvas.Text
 	titleColorName fyne.ThemeColorName
 	titleSizeName  fyne.ThemeSizeName
@@ -35,6 +38,7 @@ type BaseChart struct {
 	fromMax        float64
 	toMin          float64
 	toMax          float64
+	cont           *fyne.Container
 }
 
 func EmptyBaseChart(pType PlaneType) (base *BaseChart) {
@@ -57,16 +61,23 @@ func EmptyBaseChart(pType PlaneType) (base *BaseChart) {
 		base.rast = canvas.NewRasterWithPixels(base.PixelGenPolar)
 		base.fromMax = 2 * math.Pi
 	}
+	base.ExtendBaseWidget(base)
+	base.cont = container.NewBorder(nil, nil, nil, container.NewCenter(base.legend), base)
 	return
 }
 
-func (base *BaseChart) CreateRenderer(ws func() fyne.Size) (r fyne.WidgetRenderer) {
+func (base *BaseChart) CreateRenderer() (r fyne.WidgetRenderer) {
 	if base.planeType == CartesianPlane {
-		base.render = renderer.EmptyCartesianRenderer(base, ws)
+		base.render = renderer.EmptyCartesianRenderer(base, base.Size)
 	} else {
-		base.render = renderer.EmptyPolarRenderer(base, ws)
+		base.render = renderer.EmptyPolarRenderer(base, base.Size)
 	}
 	r = base.render
+	return
+}
+
+func (base *BaseChart) MainContainer() (cont *fyne.Container) {
+	cont = base.cont
 	return
 }
 
@@ -120,10 +131,6 @@ func (base *BaseChart) CartesianObjects() (canObj []fyne.CanvasObject) {
 	// objects will be drawn in the same order as added here
 
 	// first get all objects from the series
-	l := base.Legend()
-	if l != nil {
-		canObj = append(canObj, l)
-	}
 	rects := base.CartesianRects()
 	for i := range rects {
 		canObj = append(canObj, rects[i].Rect)
@@ -166,10 +173,6 @@ func (base *BaseChart) PolarObjects() (canObj []fyne.CanvasObject) {
 	// objects will be drawn in the same order as added here
 
 	// first get all objects from the series
-	l := base.Legend()
-	if l != nil {
-		canObj = append(canObj, l)
-	}
 	canObj = append(canObj, base.rast)
 	texts := base.PolarTexts()
 	for i := range texts {
@@ -208,23 +211,14 @@ func (base *BaseChart) Overlay() (io *interact.Overlay) {
 	return
 }
 
-func (base *BaseChart) Legend() (l *interact.Legend) {
-	l = nil
-	if !base.legendVisible {
-		return
-	}
-	l = base.legend
-	return
-}
-
 func (base *BaseChart) ShowLegend() {
-	base.legendVisible = true
-	base.Refresh()
+	base.legend.Show()
+	base.cont.Refresh()
 }
 
 func (base *BaseChart) HideLegend() {
-	base.legendVisible = false
-	base.Refresh()
+	base.legend.Hide()
+	base.cont.Refresh()
 }
 
 func (base *BaseChart) Tooltip() (tt renderer.Tooltip) {

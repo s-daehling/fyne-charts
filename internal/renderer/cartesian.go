@@ -44,7 +44,7 @@ func EmptyCartesianRenderer(chart CartesianChart, ws func() fyne.Size) (r *Carte
 // Layout is responsible for redrawing the chart widget; here the horizontal and vertical numerical coordinates are converted to fyne positions and objects are placed accordingly
 func (r *Cartesian) Layout(size fyne.Size) {
 	r.transposed = r.chart.CartesianOrientation()
-	_, titleHeight, legendWidth, _ := r.placeTitleAndLegend(size, r.chart.Title(), r.chart.Legend())
+	_, titleHeight := r.placeTitleAndLegend(size, r.chart.Title())
 	vAxisLabelWidth := float32(0.0)
 	hAxisLabelHeight := float32(0.0)
 	vAxisTickLabelWidth := float32(0.0)
@@ -88,7 +88,7 @@ func (r *Cartesian) Layout(size fyne.Size) {
 	if area.minPos.Y > size.Height-r.margin-hAxisLabelHeight {
 		area.minPos.Y = size.Height - r.margin - hAxisLabelHeight
 	}
-	area.maxPos.X = size.Width - (2 * r.margin) - legendWidth
+	area.maxPos.X = size.Width - r.margin
 	area.maxPos.Y = 2*r.margin + titleHeight
 
 	// update chart with available space
@@ -250,8 +250,6 @@ func (r *Cartesian) Layout(size fyne.Size) {
 func (r *Cartesian) MinSize() fyne.Size {
 	titleWidth := float32(0.0)
 	titleHeight := float32(0.0)
-	legendWidth := float32(0.0)
-	legendHeight := float32(0.0)
 	vAxisLabelWidth := float32(0.0)
 	vAxisLabelHeight := float32(0)
 	hAxisLabelWidth := float32(0)
@@ -263,12 +261,6 @@ func (r *Cartesian) MinSize() fyne.Size {
 			titleWidth = ct.MinSize().Width
 			titleHeight = ct.MinSize().Height
 		}
-	}
-
-	l := r.chart.Legend()
-	if l != nil {
-		legendWidth = l.MinSize().Width
-		legendHeight = l.MinSize().Height
 	}
 
 	var vLabel, hLabel *canvas.Image
@@ -290,18 +282,13 @@ func (r *Cartesian) MinSize() fyne.Size {
 		vAxisLabelHeight = vLabel.Size().Height
 	}
 
-	minHeight := 2*r.margin + titleHeight
-	if legendHeight > 20+vAxisLabelHeight+hAxisLabelHeight {
-		minHeight += legendHeight
-	} else {
-		minHeight += 20 + vAxisLabelHeight + hAxisLabelHeight
-	}
+	minHeight := 2*r.margin + titleHeight + 20 + vAxisLabelHeight + hAxisLabelHeight
 
 	minWidth := 2 * r.margin
-	if titleWidth > 20+vAxisLabelWidth+hAxisLabelWidth+legendWidth {
+	if titleWidth > 20+vAxisLabelWidth+hAxisLabelWidth {
 		minWidth += titleWidth
 	} else {
-		minWidth += 20 + vAxisLabelWidth + hAxisLabelWidth + legendWidth
+		minWidth += 20 + vAxisLabelWidth + hAxisLabelWidth
 	}
 
 	return fyne.NewSize(minWidth, minHeight)

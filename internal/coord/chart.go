@@ -320,11 +320,6 @@ func (base *BaseChart) Overlay() (io *interact.Overlay) {
 	return
 }
 
-func (base *BaseChart) Legend() (l *interact.Legend) {
-	l = nil
-	return
-}
-
 func (base *BaseChart) ShowLegend() {
 	base.legend.Show()
 	base.cont.Refresh()
