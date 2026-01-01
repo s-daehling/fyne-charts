@@ -44,7 +44,7 @@ func EmptyCartesianRenderer(chart CartesianChart, ws func() fyne.Size) (r *Carte
 // Layout is responsible for redrawing the chart widget; here the horizontal and vertical numerical coordinates are converted to fyne positions and objects are placed accordingly
 func (r *Cartesian) Layout(size fyne.Size) {
 	r.transposed = r.chart.CartesianOrientation()
-	_, titleHeight := r.placeTitleAndLegend(size, r.chart.Title())
+
 	vAxisLabelWidth := float32(0.0)
 	hAxisLabelHeight := float32(0.0)
 	vAxisTickLabelWidth := float32(0.0)
@@ -89,7 +89,7 @@ func (r *Cartesian) Layout(size fyne.Size) {
 		area.minPos.Y = size.Height - r.margin - hAxisLabelHeight
 	}
 	area.maxPos.X = size.Width - r.margin
-	area.maxPos.Y = 2*r.margin + titleHeight
+	area.maxPos.Y = r.margin
 
 	// update chart with available space
 	r.chart.ChartSizeChange(area.maxPos.X-area.minPos.X, area.minPos.Y-area.maxPos.Y)
@@ -248,20 +248,10 @@ func (r *Cartesian) Layout(size fyne.Size) {
 
 // MinSize calculates the minimum space required to display the chart
 func (r *Cartesian) MinSize() fyne.Size {
-	titleWidth := float32(0.0)
-	titleHeight := float32(0.0)
 	vAxisLabelWidth := float32(0.0)
 	vAxisLabelHeight := float32(0)
 	hAxisLabelWidth := float32(0)
 	hAxisLabelHeight := float32(0.0)
-
-	ct := r.chart.Title()
-	if ct != nil {
-		if ct.Text != "" {
-			titleWidth = ct.MinSize().Width
-			titleHeight = ct.MinSize().Height
-		}
-	}
 
 	var vLabel, hLabel *canvas.Image
 	var vShow, hShow bool
@@ -282,14 +272,9 @@ func (r *Cartesian) MinSize() fyne.Size {
 		vAxisLabelHeight = vLabel.Size().Height
 	}
 
-	minHeight := 2*r.margin + titleHeight + 20 + vAxisLabelHeight + hAxisLabelHeight
+	minHeight := 2*r.margin + 20 + vAxisLabelHeight + hAxisLabelHeight
 
-	minWidth := 2 * r.margin
-	if titleWidth > 20+vAxisLabelWidth+hAxisLabelWidth {
-		minWidth += titleWidth
-	} else {
-		minWidth += 20 + vAxisLabelWidth + hAxisLabelWidth
-	}
+	minWidth := 2*r.margin + 20 + vAxisLabelWidth + hAxisLabelWidth
 
 	return fyne.NewSize(minWidth, minHeight)
 }

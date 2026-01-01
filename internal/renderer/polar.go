@@ -45,7 +45,6 @@ func EmptyPolarRenderer(chart PolarChart, ws func() fyne.Size) (r *Polar) {
 
 // Layout is responsible for redrawing the chart widget
 func (r *Polar) Layout(size fyne.Size) {
-	_, titleHeight := r.placeTitleAndLegend(size, r.chart.Title())
 	rAxisLabelHeight := float32(0.0)
 	phiAxisLabelWidth := float32(0.0)
 	phiAxisTickLabelWidth := float32(0.0)
@@ -82,8 +81,8 @@ func (r *Polar) Layout(size fyne.Size) {
 	availWidth := size.Width - (2 * r.margin) - (2 * phiAxisTickLabelWidth) - phiAxisLabelWidth
 	area.zeroPos.X = r.margin + phiAxisLabelWidth + phiAxisTickLabelWidth + (availWidth / 2)
 
-	availHeight := size.Height - (3 * r.margin) - titleHeight - (2 * phiAxisTickLabelHeight) - rAxisLabelHeight
-	area.zeroPos.Y = (2 * r.margin) + titleHeight + phiAxisTickLabelHeight + (availHeight / 2)
+	availHeight := size.Height - (2 * r.margin) - (2 * phiAxisTickLabelHeight) - rAxisLabelHeight
+	area.zeroPos.Y = r.margin + phiAxisTickLabelHeight + (availHeight / 2)
 
 	area.radius = availHeight / 2
 	if availWidth < availHeight {
@@ -263,20 +262,10 @@ func (r *Polar) Layout(size fyne.Size) {
 
 // MinSize calculates the minimum space required to display the chart
 func (r *Polar) MinSize() fyne.Size {
-	titleWidth := float32(0.0)
-	titleHeight := float32(0.0)
 	rAxisLabelWidth := float32(0.0)
 	rAxisLabelHeight := float32(0)
 	phiAxisLabelWidth := float32(0)
 	phiAxisLabelHeight := float32(0.0)
-
-	ct := r.chart.Title()
-	if ct != nil {
-		if ct.Text != "" {
-			titleWidth = ct.MinSize().Width
-			titleHeight = ct.MinSize().Height
-		}
-	}
 
 	var phiLabel, rLabel *canvas.Image
 	var phiShow, rShow bool
@@ -292,14 +281,9 @@ func (r *Polar) MinSize() fyne.Size {
 		rAxisLabelHeight = rLabel.Size().Height
 	}
 
-	minHeight := 2*r.margin + titleHeight + 20 + rAxisLabelHeight + phiAxisLabelHeight
+	minHeight := 2*r.margin + 20 + rAxisLabelHeight + phiAxisLabelHeight
 
-	minWidth := 2 * r.margin
-	if titleWidth > 20+rAxisLabelWidth+phiAxisLabelWidth {
-		minWidth += titleWidth
-	} else {
-		minWidth += 20 + rAxisLabelWidth + phiAxisLabelWidth
-	}
+	minWidth := 2*r.margin + 20 + rAxisLabelWidth + phiAxisLabelWidth
 	return fyne.NewSize(minWidth, minHeight)
 }
 

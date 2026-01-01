@@ -73,6 +73,7 @@ func EmptyBaseChart(pType PlaneType, fType FromType) (base *BaseChart) {
 	}
 	base.overlay = interact.NewOverlay(base)
 	base.SetTitleStyle(theme.SizeNameHeadingText, theme.ColorNameForeground)
+	base.title.Alignment = fyne.TextAlignCenter
 	if pType == CartesianPlane {
 		base.fromAx = axis.EmptyAxis("", axis.CartesianHorAxis)
 		base.toAx = axis.EmptyAxis("", axis.CartesianVertAxis)
@@ -84,7 +85,7 @@ func EmptyBaseChart(pType PlaneType, fType FromType) (base *BaseChart) {
 	}
 	base.updateRangeAndOrigin()
 	base.ExtendBaseWidget(base)
-	base.cont = container.NewBorder(nil, nil, nil, container.NewCenter(base.legend), base)
+	base.cont = container.NewBorder(base.title, nil, nil, container.NewCenter(base.legend), base)
 	return
 }
 
@@ -152,11 +153,6 @@ func (base *BaseChart) RemoveSeries(name string) {
 	base.DataChange()
 }
 
-func (base *BaseChart) Title() (ct *canvas.Text) {
-	ct = base.title
-	return
-}
-
 func (base *BaseChart) CartesianObjects() (canObj []fyne.CanvasObject) {
 	// objects will be drawn in the same order as added here
 
@@ -182,11 +178,6 @@ func (base *BaseChart) CartesianObjects() (canObj []fyne.CanvasObject) {
 	// add axis elements
 	canObj = append(canObj, base.fromAx.Objects()...)
 	canObj = append(canObj, base.toAx.Objects()...)
-
-	// add chart title and axis titles
-	if base.title.Text != "" {
-		canObj = append(canObj, base.title)
-	}
 
 	if base.tooltipVisible {
 		// add tooltip
@@ -262,11 +253,6 @@ func (base *BaseChart) PolarObjects() (canObj []fyne.CanvasObject) {
 	canObj = append(canObj, base.fromAx.Objects()...)
 	canObj = append(canObj, base.toAx.Objects()...)
 
-	// add chart title and axis titles
-	if base.title.Text != "" {
-		canObj = append(canObj, base.title)
-	}
-
 	if base.tooltipVisible {
 		// add tooltip
 		tt := base.Tooltip()
@@ -337,7 +323,12 @@ func (base *BaseChart) Tooltip() (tt renderer.Tooltip) {
 
 func (base *BaseChart) SetTitle(l string) {
 	base.title.Text = l
-	base.Refresh()
+	if l == "" {
+		base.title.Hide()
+	} else {
+		base.title.Show()
+	}
+	base.title.Refresh()
 }
 
 func (base *BaseChart) SetTitleStyle(sizeName fyne.ThemeSizeName, colorName fyne.ThemeColorName) {
@@ -345,7 +336,7 @@ func (base *BaseChart) SetTitleStyle(sizeName fyne.ThemeSizeName, colorName fyne
 	base.title.TextSize = theme.Size(sizeName)
 	base.titleColorName = colorName
 	base.title.Color = theme.Color(colorName)
-	base.Refresh()
+	base.title.Refresh()
 }
 
 func (base *BaseChart) MouseIn(pX, pY, w, h, absX, absY float32) {

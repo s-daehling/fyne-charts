@@ -54,6 +54,7 @@ func EmptyBaseChart(pType PlaneType) (base *BaseChart) {
 		toMax:         100,
 	}
 	base.SetTitleStyle(theme.SizeNameHeadingText, theme.ColorNameForeground)
+	base.title.Alignment = fyne.TextAlignCenter
 	if pType == CartesianPlane {
 		base.rast = nil
 		base.fromMax = 100
@@ -62,7 +63,7 @@ func EmptyBaseChart(pType PlaneType) (base *BaseChart) {
 		base.fromMax = 2 * math.Pi
 	}
 	base.ExtendBaseWidget(base)
-	base.cont = container.NewBorder(nil, nil, nil, container.NewCenter(base.legend), base)
+	base.cont = container.NewBorder(base.title, nil, nil, container.NewCenter(base.legend), base)
 	return
 }
 
@@ -122,11 +123,6 @@ func (base *BaseChart) RemoveSeries(name string) {
 	base.DataChange()
 }
 
-func (base *BaseChart) Title() (ct *canvas.Text) {
-	ct = base.title
-	return
-}
-
 func (base *BaseChart) CartesianObjects() (canObj []fyne.CanvasObject) {
 	// objects will be drawn in the same order as added here
 
@@ -140,10 +136,6 @@ func (base *BaseChart) CartesianObjects() (canObj []fyne.CanvasObject) {
 		canObj = append(canObj, texts[i].Text)
 	}
 
-	// add chart title and axis titles
-	if base.title.Text != "" {
-		canObj = append(canObj, base.title)
-	}
 	return
 }
 
@@ -179,10 +171,6 @@ func (base *BaseChart) PolarObjects() (canObj []fyne.CanvasObject) {
 		canObj = append(canObj, texts[i].Text)
 	}
 
-	// add chart title and axis titles
-	if base.title.Text != "" {
-		canObj = append(canObj, base.title)
-	}
 	return
 }
 
@@ -227,7 +215,12 @@ func (base *BaseChart) Tooltip() (tt renderer.Tooltip) {
 
 func (base *BaseChart) SetTitle(l string) {
 	base.title.Text = l
-	base.Refresh()
+	if l == "" {
+		base.title.Hide()
+	} else {
+		base.title.Show()
+	}
+	base.title.Refresh()
 }
 
 func (base *BaseChart) SetTitleStyle(sizeName fyne.ThemeSizeName, colorName fyne.ThemeColorName) {
@@ -235,7 +228,7 @@ func (base *BaseChart) SetTitleStyle(sizeName fyne.ThemeSizeName, colorName fyne
 	base.title.TextSize = theme.Size(sizeName)
 	base.titleColorName = colorName
 	base.title.Color = theme.Color(colorName)
-	base.Refresh()
+	base.title.Refresh()
 }
 
 func (base *BaseChart) FromAxisElements() (min float64, max float64, origin float64,

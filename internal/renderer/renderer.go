@@ -7,7 +7,6 @@ import (
 )
 
 type baseChart interface {
-	Title() (ct *canvas.Text)
 	Tooltip() (tt Tooltip)
 	FromAxisElements() (min float64, max float64, origin float64, label *canvas.Image, ticks []Tick, arrow Arrow, show bool)
 	ToAxisElements() (min float64, max float64, origin float64, label *canvas.Image, ticks []Tick, arrow Arrow, show bool)
@@ -34,15 +33,3 @@ func emptyBaseRenderer(ws func() fyne.Size) (r baseRenderer) {
 
 // Destroy has nothing to do
 func (r *baseRenderer) Destroy() {}
-
-func (r *baseRenderer) placeTitleAndLegend(size fyne.Size, ct *canvas.Text) (titleWidth float32, titleHeight float32) {
-	// place title
-	if ct != nil {
-		if ct.Text != "" {
-			titleWidth = ct.MinSize().Width
-			titleHeight = ct.MinSize().Height
-			ct.Move(fyne.NewPos(size.Width/2-titleWidth/2, r.margin))
-		}
-	}
-	return
-}
