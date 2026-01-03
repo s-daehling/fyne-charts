@@ -38,7 +38,7 @@ type BaseChart struct {
 	fromMax        float64
 	toMin          float64
 	toMax          float64
-	cont           *fyne.Container
+	mainCont       *fyne.Container
 }
 
 func EmptyBaseChart(pType PlaneType) (base *BaseChart) {
@@ -63,7 +63,7 @@ func EmptyBaseChart(pType PlaneType) (base *BaseChart) {
 		base.fromMax = 2 * math.Pi
 	}
 	base.ExtendBaseWidget(base)
-	base.cont = container.NewBorder(base.title, nil, nil, container.NewCenter(base.legend), base)
+	base.mainCont = container.NewBorder(base.title, nil, nil, container.NewCenter(base.legend), base)
 	return
 }
 
@@ -78,7 +78,7 @@ func (base *BaseChart) CreateRenderer() (r fyne.WidgetRenderer) {
 }
 
 func (base *BaseChart) MainContainer() (cont *fyne.Container) {
-	cont = base.cont
+	cont = base.mainCont
 	return
 }
 
@@ -97,30 +97,6 @@ func (base *BaseChart) SetCartesianOrientantion(transposed bool) {
 func (base *BaseChart) CartesianOrientation() (transposed bool) {
 	transposed = base.transposed
 	return
-}
-
-func (base *BaseChart) SeriesExist(n string) (exist bool) {
-	exist = false
-	for i := range base.series {
-		if base.series[i].Name() == n {
-			exist = true
-			break
-		}
-	}
-	return
-}
-
-func (base *BaseChart) RemoveSeries(name string) {
-	newSeries := make([]*Series, 0)
-	for i := range base.series {
-		if base.series[i].Name() != name {
-			newSeries = append(newSeries, base.series[i])
-		} else {
-			base.series[i].Release()
-		}
-	}
-	base.series = newSeries
-	base.DataChange()
 }
 
 func (base *BaseChart) CartesianObjects() (canObj []fyne.CanvasObject) {
@@ -201,12 +177,12 @@ func (base *BaseChart) Overlay() (io *interact.Overlay) {
 
 func (base *BaseChart) ShowLegend() {
 	base.legend.Show()
-	base.cont.Refresh()
+	base.mainCont.Refresh()
 }
 
 func (base *BaseChart) HideLegend() {
 	base.legend.Hide()
-	base.cont.Refresh()
+	base.mainCont.Refresh()
 }
 
 func (base *BaseChart) Tooltip() (tt renderer.Tooltip) {

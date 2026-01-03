@@ -27,6 +27,7 @@ func (base *BaseChart) addSeriesIfNotExist(ser *Series) (err error) {
 	}
 	base.series = append(base.series, ser)
 	base.DataChange()
+	base.legend.Refresh()
 	return
 }
 
@@ -41,6 +42,20 @@ func (base *BaseChart) AddLegendEntry(le *interact.LegendEntry) {
 
 func (base *BaseChart) RemoveLegendEntry(name string, super string) {
 	base.legend.RemoveEntry(name, super)
+}
+
+func (base *BaseChart) RemoveSeries(name string) {
+	newSeries := make([]*Series, 0)
+	for i := range base.series {
+		if base.series[i].Name() != name {
+			newSeries = append(newSeries, base.series[i])
+		} else {
+			base.series[i].Release()
+		}
+	}
+	base.series = newSeries
+	base.DataChange()
+	base.legend.Refresh()
 }
 
 type proportionPoint struct {

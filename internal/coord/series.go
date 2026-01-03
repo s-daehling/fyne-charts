@@ -20,6 +20,8 @@ func (base *BaseChart) addSeriesIfNotExist(ser series.Series) (err error) {
 	}
 	base.series = append(base.series, ser)
 	base.DataChange()
+	base.legend.Refresh()
+	base.updateHLabelSpacer()
 	return
 }
 
@@ -74,4 +76,19 @@ func (base *BaseChart) AddBoxSeries(bs *series.BoxSeries) (err error) {
 func (base *BaseChart) AddStackedBarSeries(sbs *series.StackedSeries) (err error) {
 	err = base.addSeriesIfNotExist(sbs)
 	return
+}
+
+func (base *BaseChart) RemoveSeries(name string) {
+	newSeries := make([]series.Series, 0)
+	for i := range base.series {
+		if base.series[i].Name() != name {
+			newSeries = append(newSeries, base.series[i])
+		} else {
+			base.series[i].Release()
+		}
+	}
+	base.series = newSeries
+	base.DataChange()
+	base.legend.Refresh()
+	base.updateHLabelSpacer()
 }

@@ -14,6 +14,7 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 )
@@ -35,50 +36,56 @@ const (
 
 type BaseChart struct {
 	widget.BaseWidget
-	title          *canvas.Text
-	titleColorName fyne.ThemeColorName
-	titleSizeName  fyne.ThemeSizeName
-	fromAx         *axis.Axis
-	toAx           *axis.Axis
-	series         []series.Series
-	overlay        *interact.Overlay
-	tooltip        *interact.Tooltip
-	changed        bool
-	autoFromRange  bool
-	autoToRange    bool
-	autoOrigin     bool
-	legend         *interact.Legend
-	tooltipVisible bool
-	planeType      PlaneType
-	transposed     bool
-	fromType       FromType
-	rast           *canvas.Raster
-	render         fyne.WidgetRenderer
-	cont           *fyne.Container
-	hLabelCont     *fyne.Container
-	vLabelCont     *fyne.Container
-	rLegendCont    *fyne.Container
+	title             *canvas.Text
+	titleColorName    fyne.ThemeColorName
+	titleSizeName     fyne.ThemeSizeName
+	fromAx            *axis.Axis
+	toAx              *axis.Axis
+	series            []series.Series
+	overlay           *interact.Overlay
+	tooltip           *interact.Tooltip
+	changed           bool
+	autoFromRange     bool
+	autoToRange       bool
+	autoOrigin        bool
+	legend            *interact.Legend
+	tooltipVisible    bool
+	planeType         PlaneType
+	transposed        bool
+	fromType          FromType
+	rast              *canvas.Raster
+	render            fyne.WidgetRenderer
+	mainCont          *fyne.Container
+	hLabelCont        *fyne.Container
+	hLabelLeftSpacer  *canvas.Rectangle
+	hLabelRightSpacer *canvas.Rectangle
+	vLabelCont        *fyne.Container
+	rLegendCont       *fyne.Container
 }
 
 func EmptyBaseChart(pType PlaneType, fType FromType) (base *BaseChart) {
 	base = &BaseChart{
-		title:          canvas.NewText("", theme.Color(theme.ColorNameForeground)),
-		tooltip:        interact.NewTooltip(),
-		changed:        false,
-		autoFromRange:  true,
-		autoToRange:    true,
-		autoOrigin:     true,
-		legend:         interact.NewLegend(),
-		tooltipVisible: false,
-		planeType:      pType,
-		transposed:     false,
-		fromType:       fType,
-		hLabelCont:     container.NewCenter(),
-		vLabelCont:     container.NewCenter(),
-		rLegendCont:    container.NewCenter(),
+		title:             canvas.NewText("", theme.Color(theme.ColorNameForeground)),
+		tooltip:           interact.NewTooltip(),
+		changed:           false,
+		autoFromRange:     true,
+		autoToRange:       true,
+		autoOrigin:        true,
+		legend:            interact.NewLegend(),
+		tooltipVisible:    false,
+		planeType:         pType,
+		transposed:        false,
+		fromType:          fType,
+		hLabelCont:        container.NewCenter(),
+		hLabelLeftSpacer:  canvas.NewRectangle(color.Alpha16{}),
+		hLabelRightSpacer: canvas.NewRectangle(color.Alpha16{}),
+		vLabelCont:        container.NewCenter(),
+		rLegendCont:       container.NewCenter(),
 	}
 	base.overlay = interact.NewOverlay(base)
 	base.SetTitleStyle(theme.SizeNameHeadingText, theme.ColorNameForeground)
+	base.hLabelLeftSpacer.SetMinSize(fyne.NewSize(0, 0))
+	base.hLabelRightSpacer.SetMinSize(fyne.NewSize(0, 0))
 	base.rLegendCont.Add(base.legend)
 	if pType == CartesianPlane {
 		base.fromAx = axis.EmptyAxis("", axis.CartesianHorAxis)
@@ -95,7 +102,7 @@ func EmptyBaseChart(pType PlaneType, fType FromType) (base *BaseChart) {
 	}
 	base.updateRangeAndOrigin()
 	base.ExtendBaseWidget(base)
-	base.cont = container.NewBorder(base.title, base.hLabelCont, base.vLabelCont, base.rLegendCont, base)
+	base.mainCont = container.NewBorder(base.title, container.NewHBox(base.hLabelLeftSpacer, layout.NewSpacer(), base.hLabelCont, layout.NewSpacer(), base.hLabelRightSpacer), base.vLabelCont, base.rLegendCont, base)
 	return
 }
 
@@ -110,7 +117,7 @@ func (base *BaseChart) CreateRenderer() (r fyne.WidgetRenderer) {
 }
 
 func (base *BaseChart) MainContainer() (cont *fyne.Container) {
-	cont = base.cont
+	cont = base.mainCont
 	return
 }
 
@@ -133,7 +140,7 @@ func (base *BaseChart) SetCartesianOrientantion(transposed bool) {
 			base.vLabelCont.Add(base.toAx.Label())
 			base.hLabelCont.Add(base.fromAx.Label())
 		}
-		base.cont.Refresh()
+		base.mainCont.Refresh()
 	}
 }
 
@@ -146,30 +153,6 @@ func (base *BaseChart) PolarOrientation() (rot float64, mathPos bool) {
 	rot = 0
 	mathPos = true
 	return
-}
-
-func (base *BaseChart) SeriesExist(n string) (exist bool) {
-	exist = false
-	for i := range base.series {
-		if base.series[i].Name() == n {
-			exist = true
-			break
-		}
-	}
-	return
-}
-
-func (base *BaseChart) RemoveSeries(name string) {
-	newSeries := make([]series.Series, 0)
-	for i := range base.series {
-		if base.series[i].Name() != name {
-			newSeries = append(newSeries, base.series[i])
-		} else {
-			base.series[i].Release()
-		}
-	}
-	base.series = newSeries
-	base.DataChange()
 }
 
 func (base *BaseChart) CartesianObjects() (canObj []fyne.CanvasObject) {
@@ -327,12 +310,12 @@ func (base *BaseChart) Overlay() (io *interact.Overlay) {
 
 func (base *BaseChart) ShowLegend() {
 	base.legend.Show()
-	base.cont.Refresh()
+	base.mainCont.Refresh()
 }
 
 func (base *BaseChart) HideLegend() {
 	base.legend.Hide()
-	base.cont.Refresh()
+	base.mainCont.Refresh()
 }
 
 func (base *BaseChart) Tooltip() (tt renderer.Tooltip) {

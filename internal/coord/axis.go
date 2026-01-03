@@ -42,17 +42,17 @@ func (base *BaseChart) ShowFromAxis() {
 
 func (base *BaseChart) SetFromAxisLabel(l string) {
 	base.fromAx.SetLabel(l)
-	base.Refresh()
+	base.updateHLabelSpacer()
 }
 
 func (base *BaseChart) SetFromAxisLabelStyle(sizeName fyne.ThemeSizeName, colorName fyne.ThemeColorName) {
 	base.fromAx.SetAxisLabelStyle(sizeName, colorName)
-	base.Refresh()
+	base.updateHLabelSpacer()
 }
 
 func (base *BaseChart) SetFromAxisStyle(colorName fyne.ThemeColorName) {
 	base.fromAx.SetAxisStyle(colorName)
-	base.Refresh()
+	base.updateHLabelSpacer()
 }
 
 func (base *BaseChart) HideToAxis() {
@@ -67,17 +67,17 @@ func (base *BaseChart) ShowToAxis() {
 
 func (base *BaseChart) SetToAxisLabel(l string) {
 	base.toAx.SetLabel(l)
-	base.Refresh()
+	base.updateHLabelSpacer()
 }
 
 func (base *BaseChart) SetToAxisLabelStyle(sizeName fyne.ThemeSizeName, colorName fyne.ThemeColorName) {
 	base.toAx.SetAxisLabelStyle(sizeName, colorName)
-	base.Refresh()
+	base.updateHLabelSpacer()
 }
 
 func (base *BaseChart) SetToAxisStyle(colorName fyne.ThemeColorName) {
 	base.toAx.SetAxisStyle(colorName)
-	base.Refresh()
+	base.updateHLabelSpacer()
 }
 
 // -------------------- origin --------------------

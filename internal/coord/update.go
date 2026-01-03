@@ -1,6 +1,7 @@
 package coord
 
 import (
+	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/theme"
 	"github.com/s-daehling/fyne-charts/internal/coord/series"
 )
@@ -141,6 +142,20 @@ func (base *BaseChart) updateSeriesVariables() {
 		for i := range base.series {
 			base.series[i].ConvertCtoN(base.fromAx.CtoN)
 		}
+	}
+}
+
+func (base *BaseChart) updateHLabelSpacer() {
+	base.hLabelRightSpacer.SetMinSize(fyne.NewSize(base.legend.MinSize().Width, 0))
+	switch base.planeType {
+	case CartesianPlane:
+		if base.transposed {
+			base.hLabelLeftSpacer.SetMinSize(fyne.NewSize(base.fromAx.Label().Size().Width, 0))
+		} else {
+			base.hLabelLeftSpacer.SetMinSize(fyne.NewSize(base.toAx.Label().Size().Width, 0))
+		}
+	case PolarPlane:
+		base.hLabelLeftSpacer.SetMinSize(fyne.NewSize(base.fromAx.Label().Size().Width, 0))
 	}
 }
 
