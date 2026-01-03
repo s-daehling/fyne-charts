@@ -4,7 +4,6 @@ import (
 	"math"
 
 	"fyne.io/fyne/v2"
-	"fyne.io/fyne/v2/canvas"
 )
 
 type PolarChart interface {
@@ -45,18 +44,15 @@ func EmptyPolarRenderer(chart PolarChart, ws func() fyne.Size) (r *Polar) {
 
 // Layout is responsible for redrawing the chart widget
 func (r *Polar) Layout(size fyne.Size) {
-	rAxisLabelHeight := float32(0.0)
-	phiAxisLabelWidth := float32(0.0)
 	phiAxisTickLabelWidth := float32(0.0)
 	phiAxisTickLabelHeight := float32(0.0)
 
 	var phiOrigin, rMax, rOrigin float64
-	var phiLabel, rLabel *canvas.Image
 	var phiTicks, rTicks []Tick
 	var phiArrow, rArrow Arrow
 	var phiShow, rShow bool
-	_, _, phiOrigin, phiLabel, phiTicks, phiArrow, phiShow = r.chart.FromAxisElements()
-	_, rMax, rOrigin, rLabel, _, rArrow, rShow = r.chart.ToAxisElements()
+	_, _, phiOrigin, phiTicks, phiArrow, phiShow = r.chart.FromAxisElements()
+	_, rMax, rOrigin, _, rArrow, rShow = r.chart.ToAxisElements()
 
 	phiOriginAbs := absAngle(phiOrigin, r.mathPos, r.rot)
 	phiAxisTickLabelWidth, phiAxisTickLabelHeight = maxTickSize(phiTicks)
@@ -66,22 +62,15 @@ func (r *Polar) Layout(size fyne.Size) {
 		r.prevPhiAxisTickLabelWidth = phiAxisTickLabelWidth
 	}
 
-	if phiShow {
-		phiAxisLabelWidth = phiLabel.Size().Width
-	}
-	if rShow {
-		rAxisLabelHeight = rLabel.Size().Height
-	}
-
 	// determine the chart area
 	area := polDrawingArea{
 		rot:     r.rot,
 		mathPos: r.mathPos,
 	}
-	availWidth := size.Width - (2 * r.margin) - (2 * phiAxisTickLabelWidth) - phiAxisLabelWidth
-	area.zeroPos.X = r.margin + phiAxisLabelWidth + phiAxisTickLabelWidth + (availWidth / 2)
+	availWidth := size.Width - (2 * r.margin) - (2 * phiAxisTickLabelWidth)
+	area.zeroPos.X = r.margin + phiAxisTickLabelWidth + (availWidth / 2)
 
-	availHeight := size.Height - (2 * r.margin) - (2 * phiAxisTickLabelHeight) - rAxisLabelHeight
+	availHeight := size.Height - (2 * r.margin) - (2 * phiAxisTickLabelHeight)
 	area.zeroPos.Y = r.margin + phiAxisTickLabelHeight + (availHeight / 2)
 
 	area.radius = availHeight / 2
@@ -95,12 +84,11 @@ func (r *Polar) Layout(size fyne.Size) {
 
 	r.chart.ChartSizeChange(2*area.radius*math.Pi, area.radius)
 
-	_, _, _, _, phiTicks, _, _ = r.chart.FromAxisElements()
-	_, _, _, _, rTicks, _, _ = r.chart.ToAxisElements()
+	_, _, _, phiTicks, _, _ = r.chart.FromAxisElements()
+	_, _, _, rTicks, _, _ = r.chart.ToAxisElements()
 
 	// place phi axis
 	if phiShow {
-		phiLabel.Move(fyne.NewPos(r.margin, area.zeroPos.Y-phiLabel.Size().Width/2))
 		phiRadius := area.coordToPos * float32(rOrigin)
 		phiArrow.Circle.Resize(fyne.NewSize(2*phiRadius, 2*phiRadius))
 		phiArrow.Circle.Move(area.zeroPos.SubtractXY(phiRadius, phiRadius))
@@ -142,8 +130,6 @@ func (r *Polar) Layout(size fyne.Size) {
 
 	// place r axis
 	if rShow {
-		rLabel.Move(fyne.NewPos(area.zeroPos.X+(area.radius/2)-rLabel.Size().Width/2,
-			size.Height-rLabel.Size().Height-r.margin))
 		rArrow.Line.Position1 = area.zeroPos
 		rArrow.Line.Position2 = polarCoordinatesToPosition(phiOrigin, rMax, area)
 		ri, ai := arrowCoordinates(rMax, -10, 5, area)
@@ -262,28 +248,8 @@ func (r *Polar) Layout(size fyne.Size) {
 
 // MinSize calculates the minimum space required to display the chart
 func (r *Polar) MinSize() fyne.Size {
-	rAxisLabelWidth := float32(0.0)
-	rAxisLabelHeight := float32(0)
-	phiAxisLabelWidth := float32(0)
-	phiAxisLabelHeight := float32(0.0)
-
-	var phiLabel, rLabel *canvas.Image
-	var phiShow, rShow bool
-	_, _, _, phiLabel, _, _, phiShow = r.chart.FromAxisElements()
-	_, _, _, rLabel, _, _, rShow = r.chart.ToAxisElements()
-
-	if phiShow {
-		phiAxisLabelWidth = phiLabel.Size().Width
-		phiAxisLabelHeight = phiLabel.Size().Height
-	}
-	if rShow {
-		rAxisLabelWidth = rLabel.Size().Width
-		rAxisLabelHeight = rLabel.Size().Height
-	}
-
-	minHeight := 2*r.margin + 20 + rAxisLabelHeight + phiAxisLabelHeight
-
-	minWidth := 2*r.margin + 20 + rAxisLabelWidth + phiAxisLabelWidth
+	minHeight := 2*r.margin + 20
+	minWidth := 2*r.margin + 20
 	return fyne.NewSize(minWidth, minHeight)
 }
 

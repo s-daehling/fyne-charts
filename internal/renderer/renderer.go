@@ -8,8 +8,8 @@ import (
 
 type baseChart interface {
 	Tooltip() (tt Tooltip)
-	FromAxisElements() (min float64, max float64, origin float64, label *canvas.Image, ticks []Tick, arrow Arrow, show bool)
-	ToAxisElements() (min float64, max float64, origin float64, label *canvas.Image, ticks []Tick, arrow Arrow, show bool)
+	FromAxisElements() (min float64, max float64, origin float64, ticks []Tick, arrow Arrow, show bool)
+	ToAxisElements() (min float64, max float64, origin float64, ticks []Tick, arrow Arrow, show bool)
 	Raster() (r *canvas.Raster)
 	Overlay() (io *interact.Overlay)
 	ChartSizeChange(fromSpace float32, toSpace float32)

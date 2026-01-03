@@ -119,10 +119,6 @@ func (ax *Axis) Objects() (canObj []fyne.CanvasObject) {
 			canObj = append(canObj, ts[i].SupCircle)
 		}
 	}
-
-	if ax.name != "" {
-		canObj = append(canObj, ax.label)
-	}
 	return
 }
 
@@ -176,16 +172,6 @@ func (ax *Axis) maxTickWidth() (maxWidth float32) {
 	}
 	return
 }
-
-// func (ax *Axis) MaxTickHeight() (maxHeight float32) {
-// 	maxHeight = 0
-// 	for i := range ax.ticks {
-// 		if ax.ticks[i].labelText.MinSize().Height > maxHeight {
-// 			maxHeight = ax.ticks[i].labelText.MinSize().Height
-// 		}
-// 	}
-// 	return
-// }
 
 func (ax *Axis) SetSpace(space float32) {
 	ax.space = space
@@ -281,7 +267,6 @@ func (ax *Axis) SetLabel(l string) {
 
 func (ax *Axis) Label() (l *canvas.Image) {
 	l = ax.label
-	// l.Text = ax.labelText
 	return
 }
 

@@ -55,6 +55,9 @@ type BaseChart struct {
 	rast           *canvas.Raster
 	render         fyne.WidgetRenderer
 	cont           *fyne.Container
+	hLabelCont     *fyne.Container
+	vLabelCont     *fyne.Container
+	rLegendCont    *fyne.Container
 }
 
 func EmptyBaseChart(pType PlaneType, fType FromType) (base *BaseChart) {
@@ -70,22 +73,29 @@ func EmptyBaseChart(pType PlaneType, fType FromType) (base *BaseChart) {
 		planeType:      pType,
 		transposed:     false,
 		fromType:       fType,
+		hLabelCont:     container.NewCenter(),
+		vLabelCont:     container.NewCenter(),
+		rLegendCont:    container.NewCenter(),
 	}
 	base.overlay = interact.NewOverlay(base)
 	base.SetTitleStyle(theme.SizeNameHeadingText, theme.ColorNameForeground)
-	base.title.Alignment = fyne.TextAlignCenter
+	base.rLegendCont.Add(base.legend)
 	if pType == CartesianPlane {
 		base.fromAx = axis.EmptyAxis("", axis.CartesianHorAxis)
 		base.toAx = axis.EmptyAxis("", axis.CartesianVertAxis)
 		base.rast = canvas.NewRasterWithPixels(base.PixelGenCartesian)
+		base.vLabelCont.Add(base.toAx.Label())
+		base.hLabelCont.Add(base.fromAx.Label())
 	} else {
 		base.fromAx = axis.EmptyAxis("", axis.PolarPhiAxis)
 		base.toAx = axis.EmptyAxis("", axis.PolarRAxis)
 		base.rast = canvas.NewRasterWithPixels(base.PixelGenPolar)
+		base.vLabelCont.Add(base.fromAx.Label())
+		base.hLabelCont.Add(base.toAx.Label())
 	}
 	base.updateRangeAndOrigin()
 	base.ExtendBaseWidget(base)
-	base.cont = container.NewBorder(base.title, nil, nil, container.NewCenter(base.legend), base)
+	base.cont = container.NewBorder(base.title, base.hLabelCont, base.vLabelCont, base.rLegendCont, base)
 	return
 }
 
@@ -114,7 +124,16 @@ func (base *BaseChart) SetCartesianOrientantion(transposed bool) {
 		base.transposed = transposed
 		base.fromAx.CartesianTranspose()
 		base.toAx.CartesianTranspose()
-		base.DataChange()
+		base.hLabelCont.RemoveAll()
+		base.vLabelCont.RemoveAll()
+		if transposed {
+			base.vLabelCont.Add(base.fromAx.Label())
+			base.hLabelCont.Add(base.toAx.Label())
+		} else {
+			base.vLabelCont.Add(base.toAx.Label())
+			base.hLabelCont.Add(base.fromAx.Label())
+		}
+		base.cont.Refresh()
 	}
 }
 
@@ -332,6 +351,7 @@ func (base *BaseChart) SetTitle(l string) {
 }
 
 func (base *BaseChart) SetTitleStyle(sizeName fyne.ThemeSizeName, colorName fyne.ThemeColorName) {
+	base.title.Alignment = fyne.TextAlignCenter
 	base.titleSizeName = sizeName
 	base.title.TextSize = theme.Size(sizeName)
 	base.titleColorName = colorName
