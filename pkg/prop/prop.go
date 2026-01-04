@@ -6,6 +6,7 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/widget"
 	"github.com/s-daehling/fyne-charts/internal/prop"
+	"github.com/s-daehling/fyne-charts/pkg/style"
 )
 
 type propChart struct {
@@ -91,4 +92,12 @@ func (chart *propChart) ShowLegend() {
 		return
 	}
 	chart.base.ShowLegend()
+}
+
+// SetLegendStyle changes the style of the chart legend
+func (chart *propChart) SetLegendStyle(loc style.LegendLocation) {
+	if chart.base == nil {
+		return
+	}
+	chart.base.SetLegendStyle(loc)
 }

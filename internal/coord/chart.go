@@ -10,6 +10,7 @@ import (
 	"github.com/s-daehling/fyne-charts/internal/coord/series"
 	"github.com/s-daehling/fyne-charts/internal/interact"
 	"github.com/s-daehling/fyne-charts/internal/renderer"
+	"github.com/s-daehling/fyne-charts/pkg/style"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
@@ -61,6 +62,7 @@ type BaseChart struct {
 	hLabelRightSpacer *canvas.Rectangle
 	vLabelCont        *fyne.Container
 	rLegendCont       *fyne.Container
+	lLegendCont       *fyne.Container
 	bLegendCont       *fyne.Container
 	tLegendCont       *fyne.Container
 }
@@ -83,14 +85,27 @@ func EmptyBaseChart(pType PlaneType, fType FromType) (base *BaseChart) {
 		hLabelRightSpacer: canvas.NewRectangle(color.Alpha16{}),
 		vLabelCont:        container.NewCenter(),
 		rLegendCont:       container.NewCenter(),
+		lLegendCont:       container.NewCenter(),
 		bLegendCont:       container.NewStack(),
 		tLegendCont:       container.NewStack(),
 	}
+	base.mainCont = container.NewBorder(
+		container.NewVBox(
+			base.title,
+			base.tLegendCont),
+		container.NewVBox(
+			container.NewHBox(base.hLabelLeftSpacer, layout.NewSpacer(), base.hLabelCont, layout.NewSpacer(), base.hLabelRightSpacer),
+			base.bLegendCont),
+		container.NewHBox(
+			base.lLegendCont,
+			base.vLabelCont),
+		base.rLegendCont,
+		base)
 	base.overlay = interact.NewOverlay(base)
 	base.SetTitleStyle(theme.SizeNameHeadingText, theme.ColorNameForeground)
 	base.hLabelLeftSpacer.SetMinSize(fyne.NewSize(0, 0))
 	base.hLabelRightSpacer.SetMinSize(fyne.NewSize(0, 0))
-	base.rLegendCont.Add(base.legend)
+	base.SetLegendStyle(style.LegendLocationRight)
 	if pType == CartesianPlane {
 		base.fromAx = axis.EmptyAxis("", axis.CartesianHorAxis)
 		base.toAx = axis.EmptyAxis("", axis.CartesianVertAxis)
@@ -106,16 +121,6 @@ func EmptyBaseChart(pType PlaneType, fType FromType) (base *BaseChart) {
 	}
 	base.updateRangeAndOrigin()
 	base.ExtendBaseWidget(base)
-	base.mainCont = container.NewBorder(
-		container.NewVBox(
-			base.title,
-			base.tLegendCont),
-		container.NewVBox(
-			container.NewHBox(base.hLabelLeftSpacer, layout.NewSpacer(), base.hLabelCont, layout.NewSpacer(), base.hLabelRightSpacer),
-			base.bLegendCont),
-		base.vLabelCont,
-		base.rLegendCont,
-		base)
 	return
 }
 
@@ -319,6 +324,25 @@ func (base *BaseChart) Raster() (rs *canvas.Raster) {
 func (base *BaseChart) Overlay() (io *interact.Overlay) {
 	io = base.overlay
 	return
+}
+
+func (base *BaseChart) SetLegendStyle(loc style.LegendLocation) {
+	base.legend.SetLocation(loc)
+	base.lLegendCont.RemoveAll()
+	base.rLegendCont.RemoveAll()
+	base.tLegendCont.RemoveAll()
+	base.bLegendCont.RemoveAll()
+	switch loc {
+	case style.LegendLocationBottom:
+		base.bLegendCont.Add(base.legend)
+	case style.LegendLocationLeft:
+		base.lLegendCont.Add(base.legend)
+	case style.LegendLocationRight:
+		base.rLegendCont.Add(base.legend)
+	case style.LegendLocationTop:
+		base.tLegendCont.Add(base.legend)
+	}
+	base.mainCont.Refresh()
 }
 
 func (base *BaseChart) ShowLegend() {

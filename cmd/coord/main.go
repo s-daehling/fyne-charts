@@ -8,6 +8,7 @@ import (
 
 	"github.com/s-daehling/fyne-charts/pkg/coord"
 	"github.com/s-daehling/fyne-charts/pkg/data"
+	"github.com/s-daehling/fyne-charts/pkg/style"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -183,6 +184,12 @@ func cartTempChart() (tempChart *coord.CartesianTemporalChart, err error) {
 	tempChart.SetYAxisLabel("Y axis")
 	tempChart.SetTitle("Cartesian Temporal Chart")
 	tempChart.SetTAxisStyle(theme.SizeNameText, theme.ColorNameForeground, theme.ColorNameForeground)
+	go func() {
+		time.Sleep(time.Second * 2)
+		fyne.Do(func() {
+			tempChart.SetLegendStyle(style.LegendLocationBottom)
+		})
+	}()
 	return
 }
 

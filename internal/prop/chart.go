@@ -6,6 +6,7 @@ import (
 
 	"github.com/s-daehling/fyne-charts/internal/interact"
 	"github.com/s-daehling/fyne-charts/internal/renderer"
+	"github.com/s-daehling/fyne-charts/pkg/style"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
@@ -39,6 +40,10 @@ type BaseChart struct {
 	toMin          float64
 	toMax          float64
 	mainCont       *fyne.Container
+	rLegendCont    *fyne.Container
+	lLegendCont    *fyne.Container
+	bLegendCont    *fyne.Container
+	tLegendCont    *fyne.Container
 }
 
 func EmptyBaseChart(pType PlaneType) (base *BaseChart) {
@@ -52,9 +57,21 @@ func EmptyBaseChart(pType PlaneType) (base *BaseChart) {
 		fromMin:       0,
 		toMin:         0,
 		toMax:         100,
+		rLegendCont:   container.NewCenter(),
+		lLegendCont:   container.NewCenter(),
+		bLegendCont:   container.NewStack(),
+		tLegendCont:   container.NewStack(),
 	}
+	base.mainCont = container.NewBorder(
+		container.NewVBox(
+			base.title,
+			base.tLegendCont),
+		base.bLegendCont,
+		base.lLegendCont,
+		base.rLegendCont,
+		base)
 	base.SetTitleStyle(theme.SizeNameHeadingText, theme.ColorNameForeground)
-	base.title.Alignment = fyne.TextAlignCenter
+	base.SetLegendStyle(style.LegendLocationRight)
 	if pType == CartesianPlane {
 		base.rast = nil
 		base.fromMax = 100
@@ -63,7 +80,6 @@ func EmptyBaseChart(pType PlaneType) (base *BaseChart) {
 		base.fromMax = 2 * math.Pi
 	}
 	base.ExtendBaseWidget(base)
-	base.mainCont = container.NewBorder(base.title, nil, nil, container.NewCenter(base.legend), base)
 	return
 }
 
@@ -175,6 +191,25 @@ func (base *BaseChart) Overlay() (io *interact.Overlay) {
 	return
 }
 
+func (base *BaseChart) SetLegendStyle(loc style.LegendLocation) {
+	base.legend.SetLocation(loc)
+	base.lLegendCont.RemoveAll()
+	base.rLegendCont.RemoveAll()
+	base.tLegendCont.RemoveAll()
+	base.bLegendCont.RemoveAll()
+	switch loc {
+	case style.LegendLocationBottom:
+		base.bLegendCont.Add(base.legend)
+	case style.LegendLocationLeft:
+		base.lLegendCont.Add(base.legend)
+	case style.LegendLocationRight:
+		base.rLegendCont.Add(base.legend)
+	case style.LegendLocationTop:
+		base.tLegendCont.Add(base.legend)
+	}
+	base.mainCont.Refresh()
+}
+
 func (base *BaseChart) ShowLegend() {
 	base.legend.Show()
 	base.mainCont.Refresh()
@@ -200,6 +235,7 @@ func (base *BaseChart) SetTitle(l string) {
 }
 
 func (base *BaseChart) SetTitleStyle(sizeName fyne.ThemeSizeName, colorName fyne.ThemeColorName) {
+	base.title.Alignment = fyne.TextAlignCenter
 	base.titleSizeName = sizeName
 	base.title.TextSize = theme.Size(sizeName)
 	base.titleColorName = colorName

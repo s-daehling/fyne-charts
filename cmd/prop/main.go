@@ -3,9 +3,11 @@ package main
 import (
 	"image/color"
 	"math/rand/v2"
+	"time"
 
 	"github.com/s-daehling/fyne-charts/pkg/data"
 	"github.com/s-daehling/fyne-charts/pkg/prop"
+	"github.com/s-daehling/fyne-charts/pkg/style"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -143,5 +145,12 @@ func pieChart() (propChart *prop.PieChart, err error) {
 	ps.SetValTextColor(color.Black)
 
 	propChart.SetTitle("Proportional Pie/Doughnut Chart")
+
+	go func() {
+		time.Sleep(time.Second * 2)
+		fyne.Do(func() {
+			propChart.SetLegendStyle(style.LegendLocationTop)
+		})
+	}()
 	return
 }
