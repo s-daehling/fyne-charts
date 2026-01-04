@@ -10,16 +10,19 @@ import (
 	"fyne.io/fyne/v2/driver/desktop"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
+	"github.com/s-daehling/fyne-charts/pkg/style"
 )
 
 type Legend struct {
 	widget.BaseWidget
-	les []*LegendEntry
+	les      []*LegendEntry
+	location style.LegendLocation
 }
 
 func NewLegend() (l *Legend) {
 	l = &Legend{
-		les: make([]*LegendEntry, 0),
+		les:      make([]*LegendEntry, 0),
+		location: style.LegendLocationRight,
 	}
 	l.ExtendBaseWidget(l)
 	return
@@ -31,6 +34,11 @@ func (l *Legend) CreateRenderer() (r fyne.WidgetRenderer) {
 }
 
 func (l *Legend) AddEntry(le *LegendEntry) {
+	if l.location == style.LegendLocationBottom || l.location == style.LegendLocationTop {
+		le.setSubDepiction(false)
+	} else {
+		le.setSubDepiction(true)
+	}
 	if le.super == "" {
 		l.les = append(l.les, le)
 		return
@@ -62,52 +70,68 @@ func (l *Legend) RemoveEntry(name string, super string) {
 	}
 }
 
+func (l *Legend) SetLocation(loc style.LegendLocation) {
+	l.location = loc
+	for i := range l.les {
+		if loc == style.LegendLocationBottom || loc == style.LegendLocationTop {
+			l.les[i].setSubDepiction(false)
+		} else {
+			l.les[i].setSubDepiction(true)
+		}
+	}
+}
+
 type legendRenderer struct {
-	l *Legend
+	l   *Legend
+	col int
+	row int
 }
 
 func newLegendRenderer(l *Legend) (lr *legendRenderer) {
 	lr = &legendRenderer{
-		l: l,
+		l:   l,
+		col: 1,
+		row: 1,
 	}
 	return
 }
 
 func (lr *legendRenderer) Layout(size fyne.Size) {
+	sEntry := lr.entrySize()
+	lr.col, lr.row = lr.NumColRow(size)
+	totWidth := float32(lr.col) * sEntry.Width
+	xOff := (size.Width - totWidth) / 2.0
 	y := float32(0.0)
+	x := xOff
+	colCount := 0
 	for i := range lr.l.les {
-		x := float32(0.0)
-		if lr.l.les[i].super != "" {
-			x += lr.l.les[i].box.Size().Width
+		if (lr.l.location == style.LegendLocationBottom || lr.l.location == style.LegendLocationTop) && !lr.l.les[i].showBox {
+			continue
 		}
-		if lr.l.les[i].showBox {
-			lr.l.les[i].box.Move(fyne.NewPos(x, y+(lr.l.les[i].label.Size().Height-lr.l.les[i].box.Size().Height)/2))
-			x += lr.l.les[i].box.Size().Width + 5
+		lr.l.les[i].Resize(lr.l.les[i].MinSize())
+		lr.l.les[i].Move(fyne.NewPos(x, y))
+		colCount++
+		if colCount < lr.col {
+			x += sEntry.Width
+		} else {
+			x = xOff
+			y += sEntry.Height
+			colCount = 0
 		}
-		lr.l.les[i].label.Move(fyne.NewPos(x, y))
-		y += lr.l.les[i].label.Size().Height
 	}
 }
 
 func (lr *legendRenderer) MinSize() (size fyne.Size) {
-	size.Width = 0
-	size.Height = 0
-	if len(lr.l.les) == 0 {
-		return
-	}
-	for i := range lr.l.les {
-		w := 5 + lr.l.les[i].label.MinSize().Width
-		if lr.l.les[i].super != "" {
-			w += lr.l.les[i].box.Size().Width
-		}
-		if lr.l.les[i].showBox {
-			w += lr.l.les[i].box.Size().Width + 5
-		}
-		if w > size.Width {
-			size.Width = w
-		}
-		size.Height += lr.l.les[i].label.MinSize().Height
-	}
+	size.Width = lr.entrySize().Width
+	size.Height = lr.entrySize().Height * float32(lr.row)
+	// size.Height = 0
+	// nc := 1
+	// for i := range lr.l.les {
+	// 	if lr.l.les[i].MinSize().Width > size.Width {
+	// 		size.Width = lr.l.les[i].MinSize().Width
+	// 	}
+	// 	size.Height += lr.l.les[i].MinSize().Height
+	// }
 	return
 }
 
@@ -121,22 +145,69 @@ func (lr *legendRenderer) Refresh() {
 
 func (lr *legendRenderer) Objects() (canObj []fyne.CanvasObject) {
 	for i := range lr.l.les {
-		if lr.l.les[i].showBox {
-			canObj = append(canObj, lr.l.les[i].box)
+		if (lr.l.location == style.LegendLocationBottom || lr.l.location == style.LegendLocationTop) && !lr.l.les[i].showBox {
+			continue
 		}
-		canObj = append(canObj, lr.l.les[i].label)
+		canObj = append(canObj, lr.l.les[i])
 	}
 	return
 }
 
 func (lr *legendRenderer) Destroy() {}
 
+func (lr *legendRenderer) NumColRow(size fyne.Size) (nc int, nr int) {
+	nc = 1
+	nr = 0
+	nles := len(lr.l.les)
+	if nles == 0 {
+		return
+	}
+	if lr.l.location == style.LegendLocationBottom || lr.l.location == style.LegendLocationTop {
+		nles = 0
+		for i := range lr.l.les {
+			if !lr.l.les[i].showBox {
+				continue
+			}
+			nles++
+		}
+		wEntry := lr.entrySize().Width
+		nc = int(size.Width / wEntry)
+		if nc == 0 {
+			nc = 1
+		}
+	}
+	nr = nles / nc
+	if nles%nc > 0 {
+		nr++
+	}
+	if nr == 1 {
+		nc = nles
+	}
+	return
+}
+
+func (lr *legendRenderer) entrySize() (size fyne.Size) {
+	size.Width = 0
+	size.Height = 0
+	for i := range lr.l.les {
+		if lr.l.les[i].MinSize().Width > size.Width {
+			size.Width = lr.l.les[i].MinSize().Width
+		}
+		if lr.l.les[i].MinSize().Height > size.Height {
+			size.Height = lr.l.les[i].MinSize().Height
+		}
+	}
+	return
+}
+
 type LegendEntry struct {
-	name    string
-	super   string
-	showBox bool
-	box     *legendBox
-	label   *canvas.Text
+	widget.BaseWidget
+	name      string
+	super     string
+	showBox   bool
+	subIndent bool
+	box       *legendBox
+	label     *canvas.Text
 }
 
 func NewLegendEntry(name string, super string, showBox bool, col color.Color, tapFct func()) (le *LegendEntry) {
@@ -149,6 +220,12 @@ func NewLegendEntry(name string, super string, showBox bool, col color.Color, ta
 	}
 	le.label.Resize(le.label.MinSize())
 	le.box.Resize(fyne.NewSize(le.label.MinSize().Height*0.8, le.label.MinSize().Height*0.8))
+	le.ExtendBaseWidget(le)
+	return
+}
+
+func (le *LegendEntry) CreateRenderer() (r fyne.WidgetRenderer) {
+	r = newLegendEntryRenderer(le)
 	return
 }
 
@@ -164,6 +241,17 @@ func (le *LegendEntry) HideBox() {
 	le.showBox = false
 }
 
+func (le *LegendEntry) setSubDepiction(indent bool) {
+	le.subIndent = indent
+	if le.super != "" {
+		if indent {
+			le.label.Text = le.name
+		} else {
+			le.label.Text = le.name + " (" + le.super + ")"
+		}
+	}
+}
+
 func (le *LegendEntry) SetColor(col color.Color) {
 	le.box.SetColor(col)
 }
@@ -175,6 +263,57 @@ func (le *LegendEntry) Show() {
 func (le *LegendEntry) Hide() {
 	le.box.ToCircle()
 }
+
+type legendEntryRenderer struct {
+	le *LegendEntry
+}
+
+func newLegendEntryRenderer(le *LegendEntry) (ler *legendEntryRenderer) {
+	ler = &legendEntryRenderer{
+		le: le,
+	}
+	return
+}
+
+func (ler *legendEntryRenderer) Layout(size fyne.Size) {
+	x := float32(0.0)
+	if ler.le.super != "" && ler.le.subIndent {
+		x += ler.le.box.Size().Width
+	}
+	if ler.le.showBox {
+		ler.le.box.Move(fyne.NewPos(x, (ler.le.label.Size().Height-ler.le.box.Size().Height)/2))
+		x += ler.le.box.Size().Width + 5
+	}
+	ler.le.label.Move(fyne.NewPos(x, 0))
+}
+
+func (ler *legendEntryRenderer) MinSize() (size fyne.Size) {
+	size.Width = 5 + ler.le.label.MinSize().Width
+	if ler.le.super != "" && ler.le.subIndent {
+		size.Width += ler.le.box.Size().Width
+	}
+	if ler.le.showBox {
+		size.Width += ler.le.box.Size().Width + 5
+	}
+	size.Height = ler.le.label.MinSize().Height
+	return
+}
+
+func (ler *legendEntryRenderer) Refresh() {
+	ler.le.RefreshTheme()
+	ler.le.box.Refresh()
+	ler.le.label.Refresh()
+}
+
+func (ler *legendEntryRenderer) Objects() (canObj []fyne.CanvasObject) {
+	if ler.le.showBox {
+		canObj = append(canObj, ler.le.box)
+	}
+	canObj = append(canObj, ler.le.label)
+	return
+}
+
+func (ler *legendEntryRenderer) Destroy() {}
 
 type legendBox struct {
 	widget.BaseWidget

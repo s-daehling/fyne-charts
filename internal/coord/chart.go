@@ -61,6 +61,8 @@ type BaseChart struct {
 	hLabelRightSpacer *canvas.Rectangle
 	vLabelCont        *fyne.Container
 	rLegendCont       *fyne.Container
+	bLegendCont       *fyne.Container
+	tLegendCont       *fyne.Container
 }
 
 func EmptyBaseChart(pType PlaneType, fType FromType) (base *BaseChart) {
@@ -81,6 +83,8 @@ func EmptyBaseChart(pType PlaneType, fType FromType) (base *BaseChart) {
 		hLabelRightSpacer: canvas.NewRectangle(color.Alpha16{}),
 		vLabelCont:        container.NewCenter(),
 		rLegendCont:       container.NewCenter(),
+		bLegendCont:       container.NewStack(),
+		tLegendCont:       container.NewStack(),
 	}
 	base.overlay = interact.NewOverlay(base)
 	base.SetTitleStyle(theme.SizeNameHeadingText, theme.ColorNameForeground)
@@ -102,7 +106,16 @@ func EmptyBaseChart(pType PlaneType, fType FromType) (base *BaseChart) {
 	}
 	base.updateRangeAndOrigin()
 	base.ExtendBaseWidget(base)
-	base.mainCont = container.NewBorder(base.title, container.NewHBox(base.hLabelLeftSpacer, layout.NewSpacer(), base.hLabelCont, layout.NewSpacer(), base.hLabelRightSpacer), base.vLabelCont, base.rLegendCont, base)
+	base.mainCont = container.NewBorder(
+		container.NewVBox(
+			base.title,
+			base.tLegendCont),
+		container.NewVBox(
+			container.NewHBox(base.hLabelLeftSpacer, layout.NewSpacer(), base.hLabelCont, layout.NewSpacer(), base.hLabelRightSpacer),
+			base.bLegendCont),
+		base.vLabelCont,
+		base.rLegendCont,
+		base)
 	return
 }
 
