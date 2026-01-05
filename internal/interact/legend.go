@@ -34,31 +34,27 @@ func (l *Legend) CreateRenderer() (r fyne.WidgetRenderer) {
 }
 
 func (l *Legend) AddEntry(le *LegendEntry) {
-	if l.location == style.LegendLocationBottom || l.location == style.LegendLocationTop {
-		le.setSubDepiction(false)
-	} else {
-		le.setSubDepiction(true)
-	}
 	if le.super == "" {
 		l.les = append(l.les, le)
-		return
-	}
-	superFound := false
-	insertIndex := -1
-	for i := range l.les {
-		if l.les[i].name == le.super {
-			superFound = true
-			continue
+	} else {
+		superFound := false
+		insertIndex := -1
+		for i := range l.les {
+			if l.les[i].name == le.super {
+				superFound = true
+				continue
+			}
+			if superFound && l.les[i].super != le.super {
+				insertIndex = i
+				break
+			}
 		}
-		if superFound && l.les[i].super != le.super {
-			insertIndex = i
-			break
+		if insertIndex == -1 {
+			insertIndex = len(l.les)
 		}
+		l.les = slices.Insert(l.les, insertIndex, le)
 	}
-	if insertIndex == -1 {
-		insertIndex = len(l.les)
-	}
-	l.les = slices.Insert(l.les, insertIndex, le)
+	l.updateSubDepiction()
 }
 
 func (l *Legend) RemoveEntry(name string, super string) {
@@ -68,15 +64,36 @@ func (l *Legend) RemoveEntry(name string, super string) {
 			break
 		}
 	}
+	l.updateSubDepiction()
 }
 
 func (l *Legend) SetLocation(loc style.LegendLocation) {
 	l.location = loc
+	l.updateSubDepiction()
+}
+
+func (l *Legend) updateSubDepiction() {
+	onlyOneSuper := true
+	super := ""
 	for i := range l.les {
-		if loc == style.LegendLocationBottom || loc == style.LegendLocationTop {
-			l.les[i].setSubDepiction(false)
+		if l.les[i].super == "" {
+			if super != "" {
+				onlyOneSuper = false
+				break
+			}
+			super = l.les[i].name
 		} else {
-			l.les[i].setSubDepiction(true)
+			if l.les[i].super != super {
+				onlyOneSuper = false
+				break
+			}
+		}
+	}
+	for i := range l.les {
+		if l.location == style.LegendLocationBottom || l.location == style.LegendLocationTop {
+			l.les[i].setSubDepiction(false, !onlyOneSuper)
+		} else {
+			l.les[i].setSubDepiction(true, false)
 		}
 	}
 }
@@ -202,12 +219,13 @@ func (lr *legendRenderer) entrySize() (size fyne.Size) {
 
 type LegendEntry struct {
 	widget.BaseWidget
-	name      string
-	super     string
-	showBox   bool
-	subIndent bool
-	box       *legendBox
-	label     *canvas.Text
+	name         string
+	super        string
+	showBox      bool
+	subIndent    bool
+	subShowSuper bool
+	box          *legendBox
+	label        *canvas.Text
 }
 
 func NewLegendEntry(name string, super string, showBox bool, col color.Color, tapFct func()) (le *LegendEntry) {
@@ -241,13 +259,13 @@ func (le *LegendEntry) HideBox() {
 	le.showBox = false
 }
 
-func (le *LegendEntry) setSubDepiction(indent bool) {
+func (le *LegendEntry) setSubDepiction(indent bool, showSuper bool) {
 	le.subIndent = indent
+	le.subShowSuper = showSuper
 	if le.super != "" {
-		if indent {
-			le.label.Text = le.name
-		} else {
-			le.label.Text = le.name + " (" + le.super + ")"
+		le.label.Text = le.name
+		if showSuper {
+			le.label.Text += " (" + le.super + ")"
 		}
 	}
 }
