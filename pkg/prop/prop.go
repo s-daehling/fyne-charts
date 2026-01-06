@@ -71,11 +71,11 @@ func (chart *propChart) SetTitle(l string) {
 // SetTitleStyle changes the style of the chart title
 // default value title size: theme.SizeNameSubHeadingText
 // default value title color: theme.ColorNameForeground
-func (chart *propChart) SetTitleStyle(titleSize fyne.ThemeSizeName, titleColor fyne.ThemeColorName) {
+func (chart *propChart) SetTitleStyle(titleStyle style.LabelStyle) {
 	if chart.base == nil {
 		return
 	}
-	chart.base.SetTitleStyle(titleSize, titleColor)
+	chart.base.SetTitleStyle(titleStyle)
 }
 
 // HideLegend hides the legend and uses the full space for the chart
@@ -95,7 +95,7 @@ func (chart *propChart) ShowLegend() {
 }
 
 // SetLegendStyle changes the style of the chart legend
-func (chart *propChart) SetLegendStyle(loc style.LegendLocation) {
+func (chart *propChart) SetLegendStyle(loc style.LegendLocation, labelStyle style.LabelStyle, interactive bool) {
 	if chart.base == nil {
 		return
 	}

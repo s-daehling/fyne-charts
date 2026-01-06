@@ -5,8 +5,7 @@ import (
 
 	"github.com/s-daehling/fyne-charts/internal/coord"
 	"github.com/s-daehling/fyne-charts/pkg/data"
-
-	"fyne.io/fyne/v2"
+	"github.com/s-daehling/fyne-charts/pkg/style"
 )
 
 // CartesianCategoricalChart implements a cartesian plane with a categorical c-axis and a numerical y-axis
@@ -152,13 +151,13 @@ func (catChart *CartesianCategoricalChart) SetAutoYTicks(autoSupportLine bool) {
 // default value label size: theme.SizeNameSubHeadingText
 // default value label color: theme.ColorNameForeground
 // default value axis color: theme.ColorNameForeground
-func (catChart *CartesianCategoricalChart) SetYAxisStyle(labelSize fyne.ThemeSizeName,
-	labelColor fyne.ThemeColorName, axisColor fyne.ThemeColorName) {
+func (catChart *CartesianCategoricalChart) SetYAxisStyle(labelStyle style.LabelStyle,
+	axisStyle style.AxisStyle) {
 	if catChart.base == nil {
 		return
 	}
-	catChart.base.SetToAxisLabelStyle(labelSize, labelColor)
-	catChart.base.SetToAxisStyle(axisColor)
+	catChart.base.SetToAxisLabelStyle(labelStyle)
+	catChart.base.SetToAxisStyle(axisStyle)
 }
 
 // SetOrigin sets a user defined origin (crossing of c and y axis).
@@ -210,11 +209,11 @@ func (catChart *CartesianCategoricalChart) SetAutoCRange() {
 // default value label size: theme.SizeNameSubHeadingText
 // default value label color: theme.ColorNameForeground
 // default value axis color: theme.ColorNameForeground
-func (catChart *CartesianCategoricalChart) SetCAxisStyle(labelSize fyne.ThemeSizeName,
-	labelColor fyne.ThemeColorName, axisColor fyne.ThemeColorName) {
+func (catChart *CartesianCategoricalChart) SetCAxisStyle(labelStyle style.LabelStyle,
+	axisStyle style.AxisStyle) {
 	if catChart.base == nil {
 		return
 	}
-	catChart.base.SetFromAxisLabelStyle(labelSize, labelColor)
-	catChart.base.SetFromAxisStyle(axisColor)
+	catChart.base.SetFromAxisLabelStyle(labelStyle)
+	catChart.base.SetFromAxisStyle(axisStyle)
 }

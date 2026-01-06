@@ -7,8 +7,7 @@ import (
 	"github.com/s-daehling/fyne-charts/internal/coord"
 
 	"github.com/s-daehling/fyne-charts/pkg/data"
-
-	"fyne.io/fyne/v2"
+	"github.com/s-daehling/fyne-charts/pkg/style"
 )
 
 // CartesianTemporalChart implements a cartesian plane with a temporal t-axis and a numerical y-axis
@@ -184,13 +183,13 @@ func (tempChart *CartesianTemporalChart) SetAutoYTicks(autoSupportLine bool) {
 // default value label size: theme.SizeNameSubHeadingText
 // default value label color: theme.ColorNameForeground
 // default value axis color: theme.ColorNameForeground
-func (tempChart *CartesianTemporalChart) SetYAxisStyle(labelSize fyne.ThemeSizeName,
-	labelColor fyne.ThemeColorName, axisColor fyne.ThemeColorName) {
+func (tempChart *CartesianTemporalChart) SetYAxisStyle(labelStyle style.LabelStyle,
+	axisStyle style.AxisStyle) {
 	if tempChart.base == nil {
 		return
 	}
-	tempChart.base.SetToAxisLabelStyle(labelSize, labelColor)
-	tempChart.base.SetToAxisStyle(axisColor)
+	tempChart.base.SetToAxisLabelStyle(labelStyle)
+	tempChart.base.SetToAxisStyle(axisStyle)
 }
 
 // SetOrigin sets a user defined origin (crossing of t and y axis).
@@ -257,11 +256,11 @@ func (tempChart *CartesianTemporalChart) SetAutoTTicks(autoSupportLine bool) {
 // default value label size: theme.SizeNameSubHeadingText
 // default value label color: theme.ColorNameForeground
 // default value axis color: theme.ColorNameForeground
-func (tempChart *CartesianTemporalChart) SetTAxisStyle(labelSize fyne.ThemeSizeName,
-	labelColor fyne.ThemeColorName, axisColor fyne.ThemeColorName) {
+func (tempChart *CartesianTemporalChart) SetTAxisStyle(labelStyle style.LabelStyle,
+	axisStyle style.AxisStyle) {
 	if tempChart.base == nil {
 		return
 	}
-	tempChart.base.SetFromAxisLabelStyle(labelSize, labelColor)
-	tempChart.base.SetFromAxisStyle(axisColor)
+	tempChart.base.SetFromAxisLabelStyle(labelStyle)
+	tempChart.base.SetFromAxisStyle(axisStyle)
 }

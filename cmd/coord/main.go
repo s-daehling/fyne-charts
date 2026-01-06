@@ -183,11 +183,13 @@ func cartTempChart() (tempChart *coord.CartesianTemporalChart, err error) {
 	tempChart.SetTAxisLabel("T axis")
 	tempChart.SetYAxisLabel("Y axis")
 	tempChart.SetTitle("Cartesian Temporal Chart")
-	tempChart.SetTAxisStyle(theme.SizeNameText, theme.ColorNameForeground, theme.ColorNameForeground)
+	as := style.DefaultAxisLabelStyle()
+	as.SizeName = theme.SizeNameText
+	tempChart.SetTAxisStyle(as, style.DefaultAxisStyle())
 	go func() {
 		time.Sleep(time.Second * 2)
 		fyne.Do(func() {
-			tempChart.SetLegendStyle(style.LegendLocationBottom)
+			tempChart.SetLegendStyle(style.LegendLocationBottom, style.DefaultLegendLabelStyle(), true)
 		})
 	}()
 	return
@@ -296,7 +298,9 @@ func cartCatChart() (catChart *coord.CartesianCategoricalChart, err error) {
 	// Examples of methods for altering the chart appearance
 	catChart.SetCAxisLabel("C axis")
 	catChart.SetYAxisLabel("Y axis")
-	catChart.SetTitleStyle(theme.SizeNameText, theme.ColorNameForeground)
+	ts := style.DefaultTitleStyle()
+	ts.SizeName = theme.SizeNameText
+	catChart.SetTitleStyle(ts)
 
 	go func() {
 		time.Sleep(time.Second * 5)
@@ -344,7 +348,11 @@ func polNumChart() (numChart *coord.PolarNumericalChart, err error) {
 	numChart.SetOrigin(0, 64)
 	numChart.SetPhiAxisLabel("Phi axis")
 	numChart.SetRAxisLabel("R axis")
-	numChart.SetPhiAxisStyle(theme.SizeNameText, theme.ColorNameForeground, theme.ColorNameSuccess)
+	s := style.DefaultAxisStyle()
+	s.LineColorName = theme.ColorNameSuccess
+	s.TickColorName = theme.ColorNameError
+	s.TickTextStyle.Italic = true
+	numChart.SetPhiAxisStyle(style.DefaultAxisLabelStyle(), s)
 	return
 }
 
@@ -384,7 +392,10 @@ func polTempChart() (tempChart *coord.PolarTemporalChart, err error) {
 	tempChart.SetOrigin(time.Now().Add(time.Hour*10), 120)
 	tempChart.SetTAxisLabel("T axis")
 	tempChart.SetRAxisLabel("R axis")
-	tempChart.SetTitleStyle(theme.SizeNameHeadingText, theme.ColorNameError)
+	ts := style.DefaultTitleStyle()
+	ts.SizeName = theme.SizeNameHeadingText
+	ts.ColorName = theme.ColorNameError
+	tempChart.SetTitleStyle(ts)
 	return
 }
 

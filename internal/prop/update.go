@@ -40,8 +40,8 @@ func (base *BaseChart) updateSeriesVariables() {
 }
 
 func (base *BaseChart) RefreshTheme() {
-	base.title.Color = theme.Color(base.titleColorName)
-	base.title.TextSize = theme.Size(base.titleSizeName)
+	base.title.TextSize = theme.Size(base.titleStyle.SizeName)
+	base.title.Color = theme.Color(base.titleStyle.ColorName)
 	for i := range base.series {
 		base.series[i].RefreshTheme()
 	}

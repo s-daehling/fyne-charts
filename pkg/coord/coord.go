@@ -54,11 +54,11 @@ func (chart *coordChart) SetTitle(l string) {
 // SetTitleStyle changes the style of the chart title
 // default value title size: theme.SizeNameSubHeadingText
 // default value title color: theme.ColorNameForeground
-func (chart *coordChart) SetTitleStyle(titleSize fyne.ThemeSizeName, titleColor fyne.ThemeColorName) {
+func (chart *coordChart) SetTitleStyle(ts style.LabelStyle) {
 	if chart.base == nil {
 		return
 	}
-	chart.base.SetTitleStyle(titleSize, titleColor)
+	chart.base.SetTitleStyle(ts)
 }
 
 // HideLegend hides the legend and uses the full space for the chart
@@ -78,7 +78,7 @@ func (chart *coordChart) ShowLegend() {
 }
 
 // SetLegendStyle changes the style of the chart legend
-func (chart *coordChart) SetLegendStyle(loc style.LegendLocation) {
+func (chart *coordChart) SetLegendStyle(loc style.LegendLocation, labelStyle style.LabelStyle, interactive bool) {
 	if chart.base == nil {
 		return
 	}

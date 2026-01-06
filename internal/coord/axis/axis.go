@@ -11,6 +11,7 @@ import (
 	"fyne.io/fyne/v2/theme"
 	"github.com/disintegration/imaging"
 	"github.com/s-daehling/fyne-charts/internal/renderer"
+	"github.com/s-daehling/fyne-charts/pkg/style"
 )
 
 type AxisType string
@@ -56,12 +57,9 @@ type Axis struct {
 	name            string        // name/title of the axis
 	label           *canvas.Image // name/title of the axis; rotated if the axis is vertical
 	labelText       *canvas.Text
-	labelColorName  fyne.ThemeColorName
-	labelSizeName   fyne.ThemeSizeName
+	labelStyle      style.LabelStyle
 	space           float32
-	col             color.Color
-	colorName       fyne.ThemeColorName
-	supCol          color.Color
+	style           style.AxisStyle
 }
 
 func EmptyAxis(name string, typ AxisType) (ax *Axis) {
@@ -82,10 +80,9 @@ func EmptyAxis(name string, typ AxisType) (ax *Axis) {
 		name:            name,
 		label:           canvas.NewImageFromImage(software.NewTransparentCanvas().Capture()),
 		labelText:       canvas.NewText(name, col),
-		supCol:          theme.Color(theme.ColorNameShadow),
 	}
-	ax.SetAxisLabelStyle(theme.SizeNameSubHeadingText, theme.ColorNameForeground)
-	ax.SetAxisStyle(theme.ColorNameForeground)
+	ax.SetAxisLabelStyle(style.DefaultAxisLabelStyle())
+	ax.SetAxisStyle(style.DefaultAxisStyle())
 	if typ == PolarPhiAxis {
 		ax.nMax = 2 * math.Pi
 	}
@@ -213,35 +210,46 @@ func (ax *Axis) Visible() (b bool) {
 }
 
 func (ax *Axis) RefreshTheme() {
-	ax.supCol = theme.Color(theme.ColorNameShadow)
-	ax.updateAxisColor(theme.Color(ax.colorName))
-	ax.labelText.Color = theme.Color(ax.labelColorName)
-	ax.labelText.TextSize = theme.Size(ax.labelSizeName)
-}
-
-func (ax *Axis) SetAxisLabelStyle(sizeName fyne.ThemeSizeName, colorName fyne.ThemeColorName) {
-	ax.labelSizeName = sizeName
-	ax.labelText.TextSize = theme.Size(sizeName)
-	ax.labelColorName = colorName
-	ax.labelText.Color = theme.Color(colorName)
-}
-
-func (ax *Axis) SetAxisStyle(colorName fyne.ThemeColorName) {
-	ax.colorName = colorName
-	ax.updateAxisColor(theme.Color(colorName))
-}
-
-func (ax *Axis) updateAxisColor(col color.Color) {
-	ax.col = col
-	ax.arrowOne.StrokeColor = ax.col
-	ax.arrowTwo.StrokeColor = ax.col
-	ax.line.StrokeColor = ax.col
-	ax.circle.StrokeColor = ax.col
+	ax.arrowOne.StrokeColor = theme.Color(ax.style.LineColorName)
+	ax.arrowTwo.StrokeColor = theme.Color(ax.style.LineColorName)
+	ax.line.StrokeColor = theme.Color(ax.style.LineColorName)
+	ax.circle.StrokeColor = theme.Color(ax.style.LineColorName)
 	for i := range ax.ticks {
-		ax.ticks[i].labelText.Color = ax.col
-		ax.ticks[i].line.StrokeColor = ax.col
-		ax.ticks[i].supportCircle.StrokeColor = ax.supCol
-		ax.ticks[i].supportLine.StrokeColor = ax.supCol
+		ax.ticks[i].labelText.Color = theme.Color(ax.style.TickColorName)
+		ax.ticks[i].labelText.TextSize = theme.Size(ax.style.TickSizeName)
+		ax.ticks[i].line.StrokeColor = theme.Color(ax.style.LineColorName)
+		ax.ticks[i].supportCircle.StrokeColor = theme.Color(ax.style.SupportLineColorName)
+		ax.ticks[i].supportLine.StrokeColor = theme.Color(ax.style.SupportLineColorName)
+	}
+}
+
+func (ax *Axis) SetAxisStyle(s style.AxisStyle) {
+	ax.style = s
+	ax.arrowOne.StrokeColor = theme.Color(s.LineColorName)
+	ax.arrowOne.StrokeWidth = s.LineWidth
+	ax.arrowTwo.StrokeColor = theme.Color(s.LineColorName)
+	ax.arrowTwo.StrokeWidth = s.LineWidth
+	if s.LineShowArrow {
+		ax.arrowOne.Show()
+		ax.arrowTwo.Show()
+	} else {
+		ax.arrowOne.Hide()
+		ax.arrowTwo.Hide()
+	}
+	ax.line.StrokeColor = theme.Color(s.LineColorName)
+	ax.line.StrokeWidth = s.LineWidth
+	ax.circle.StrokeColor = theme.Color(s.LineColorName)
+	ax.circle.StrokeWidth = s.LineWidth
+	for i := range ax.ticks {
+		ax.ticks[i].labelText.Color = theme.Color(s.TickColorName)
+		ax.ticks[i].labelText.TextSize = theme.Size(s.TickSizeName)
+		ax.ticks[i].labelText.TextStyle = s.TickTextStyle
+		ax.ticks[i].line.StrokeColor = theme.Color(s.LineColorName)
+		ax.ticks[i].line.StrokeWidth = s.LineWidth
+		ax.ticks[i].supportCircle.StrokeColor = theme.Color(s.SupportLineColorName)
+		ax.ticks[i].supportCircle.StrokeWidth = s.SupportLineWidth
+		ax.ticks[i].supportLine.StrokeColor = theme.Color(s.SupportLineColorName)
+		ax.ticks[i].supportLine.StrokeWidth = s.SupportLineWidth
 	}
 }
 
@@ -263,6 +271,15 @@ func (ax *Axis) SetLabel(l string) {
 		ax.label.Resize(fyne.NewSize(minSize.Height, minSize.Width))
 		ax.label.SetMinSize(fyne.NewSize(minSize.Height, minSize.Width))
 	}
+}
+
+func (ax *Axis) SetAxisLabelStyle(ls style.LabelStyle) {
+	ax.labelStyle = ls
+	ax.labelText.TextSize = theme.Size(ls.SizeName)
+	ax.labelText.Color = theme.Color(ls.ColorName)
+	ax.labelText.Alignment = ls.Alignment
+	ax.labelText.TextStyle = ls.TextStyle
+	ax.SetLabel(ax.name)
 }
 
 func (ax *Axis) Label() (l *canvas.Image) {
@@ -303,16 +320,19 @@ func (ax *Axis) adjustNumberOfTicks(n int) {
 		n = n - len(ax.ticks)
 		for range n {
 			tick := axisTick{
-				labelText:      canvas.NewText("", ax.col),
+				labelText:      canvas.NewText("", theme.Color(ax.style.TickColorName)),
 				label:          canvas.NewImageFromImage(software.NewTransparentCanvas().Capture()),
-				line:           canvas.NewLine(ax.col),
+				line:           canvas.NewLine(theme.Color(ax.style.LineColorName)),
 				hasSupportLine: false,
-				supportLine:    canvas.NewLine(ax.supCol),
+				supportLine:    canvas.NewLine(theme.Color(ax.style.SupportLineColorName)),
 				supportCircle:  canvas.NewCircle(color.RGBA{0x00, 0x00, 0x00, 0x00}),
 			}
 			// tick.supportLine.StrokeWidth = 0.5
-			tick.supportCircle.StrokeWidth = 1
-			tick.supportCircle.StrokeColor = ax.supCol
+			tick.labelText.TextSize = theme.Size(ax.style.TickSizeName)
+			tick.labelText.TextStyle = ax.style.TickTextStyle
+			tick.line.StrokeWidth = ax.style.LineWidth
+			tick.supportCircle.StrokeColor = theme.Color(ax.style.SupportLineColorName)
+			tick.supportCircle.StrokeWidth = ax.style.SupportLineWidth
 			if !ax.visible {
 				tick.labelText.Hide()
 				tick.line.Hide()

@@ -149,7 +149,7 @@ func pieChart() (propChart *prop.PieChart, err error) {
 	go func() {
 		time.Sleep(time.Second * 2)
 		fyne.Do(func() {
-			propChart.SetLegendStyle(style.LegendLocationTop)
+			propChart.SetLegendStyle(style.LegendLocationTop, style.DefaultLegendLabelStyle(), true)
 		})
 	}()
 	return

@@ -6,8 +6,7 @@ import (
 	"github.com/s-daehling/fyne-charts/internal/coord"
 
 	"github.com/s-daehling/fyne-charts/pkg/data"
-
-	"fyne.io/fyne/v2"
+	"github.com/s-daehling/fyne-charts/pkg/style"
 )
 
 // CartesianNumericalChart implements a cartesian plane with two numerical axes x and y
@@ -183,13 +182,13 @@ func (numChart *CartesianNumericalChart) SetAutoYTicks(autoSupportLine bool) {
 // default value label size: theme.SizeNameSubHeadingText
 // default value label color: theme.ColorNameForeground
 // default value axis color: theme.ColorNameForeground
-func (numChart *CartesianNumericalChart) SetYAxisStyle(labelSize fyne.ThemeSizeName,
-	labelColor fyne.ThemeColorName, axisColor fyne.ThemeColorName) {
+func (numChart *CartesianNumericalChart) SetYAxisStyle(labelStyle style.LabelStyle,
+	axisStyle style.AxisStyle) {
 	if numChart.base == nil {
 		return
 	}
-	numChart.base.SetToAxisLabelStyle(labelSize, labelColor)
-	numChart.base.SetToAxisStyle(axisColor)
+	numChart.base.SetToAxisLabelStyle(labelStyle)
+	numChart.base.SetToAxisStyle(axisStyle)
 }
 
 // SetOrigin sets a user defined origin (crossing of x and y axis).
@@ -256,11 +255,11 @@ func (numChart *CartesianNumericalChart) SetAutoXTicks(autoSupportLine bool) {
 // default value label size: theme.SizeNameSubHeadingText
 // default value label color: theme.ColorNameForeground
 // default value axis color: theme.ColorNameForeground
-func (numChart *CartesianNumericalChart) SetXAxisStyle(labelSize fyne.ThemeSizeName,
-	labelColor fyne.ThemeColorName, axisColor fyne.ThemeColorName) {
+func (numChart *CartesianNumericalChart) SetXAxisStyle(labelStyle style.LabelStyle,
+	axisStyle style.AxisStyle) {
 	if numChart.base == nil {
 		return
 	}
-	numChart.base.SetFromAxisLabelStyle(labelSize, labelColor)
-	numChart.base.SetFromAxisStyle(axisColor)
+	numChart.base.SetFromAxisLabelStyle(labelStyle)
+	numChart.base.SetFromAxisStyle(axisStyle)
 }

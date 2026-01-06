@@ -24,26 +24,25 @@ const (
 
 type BaseChart struct {
 	widget.BaseWidget
-	title          *canvas.Text
-	titleColorName fyne.ThemeColorName
-	titleSizeName  fyne.ThemeSizeName
-	series         []*Series
-	changed        bool
-	legend         *interact.Legend
-	legendVisible  bool
-	planeType      PlaneType
-	transposed     bool
-	rast           *canvas.Raster
-	render         fyne.WidgetRenderer
-	fromMin        float64
-	fromMax        float64
-	toMin          float64
-	toMax          float64
-	mainCont       *fyne.Container
-	rLegendCont    *fyne.Container
-	lLegendCont    *fyne.Container
-	bLegendCont    *fyne.Container
-	tLegendCont    *fyne.Container
+	title         *canvas.Text
+	titleStyle    style.LabelStyle
+	series        []*Series
+	changed       bool
+	legend        *interact.Legend
+	legendVisible bool
+	planeType     PlaneType
+	transposed    bool
+	rast          *canvas.Raster
+	render        fyne.WidgetRenderer
+	fromMin       float64
+	fromMax       float64
+	toMin         float64
+	toMax         float64
+	mainCont      *fyne.Container
+	rLegendCont   *fyne.Container
+	lLegendCont   *fyne.Container
+	bLegendCont   *fyne.Container
+	tLegendCont   *fyne.Container
 }
 
 func EmptyBaseChart(pType PlaneType) (base *BaseChart) {
@@ -70,7 +69,7 @@ func EmptyBaseChart(pType PlaneType) (base *BaseChart) {
 		base.lLegendCont,
 		base.rLegendCont,
 		base)
-	base.SetTitleStyle(theme.SizeNameHeadingText, theme.ColorNameForeground)
+	base.SetTitleStyle(style.DefaultTitleStyle())
 	base.SetLegendStyle(style.LegendLocationRight)
 	if pType == CartesianPlane {
 		base.rast = nil
@@ -234,12 +233,12 @@ func (base *BaseChart) SetTitle(l string) {
 	base.title.Refresh()
 }
 
-func (base *BaseChart) SetTitleStyle(sizeName fyne.ThemeSizeName, colorName fyne.ThemeColorName) {
-	base.title.Alignment = fyne.TextAlignCenter
-	base.titleSizeName = sizeName
-	base.title.TextSize = theme.Size(sizeName)
-	base.titleColorName = colorName
-	base.title.Color = theme.Color(colorName)
+func (base *BaseChart) SetTitleStyle(ts style.LabelStyle) {
+	base.titleStyle = ts
+	base.title.Alignment = ts.Alignment
+	base.title.TextSize = theme.Size(ts.SizeName)
+	base.title.Color = theme.Color(ts.ColorName)
+	base.title.TextStyle = ts.TextStyle
 	base.title.Refresh()
 }
 

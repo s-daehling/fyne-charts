@@ -162,8 +162,8 @@ func (base *BaseChart) updateHLabelSpacer() {
 func (base *BaseChart) RefreshTheme() {
 	base.fromAx.RefreshTheme()
 	base.toAx.RefreshTheme()
-	base.title.Color = theme.Color(base.titleColorName)
-	base.title.TextSize = theme.Size(base.titleSizeName)
+	base.title.TextSize = theme.Size(base.titleStyle.SizeName)
+	base.title.Color = theme.Color(base.titleStyle.ColorName)
 	base.tooltip.RefreshTheme()
 	for i := range base.series {
 		base.series[i].RefreshTheme()

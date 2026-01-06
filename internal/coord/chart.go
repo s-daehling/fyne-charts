@@ -38,8 +38,7 @@ const (
 type BaseChart struct {
 	widget.BaseWidget
 	title             *canvas.Text
-	titleColorName    fyne.ThemeColorName
-	titleSizeName     fyne.ThemeSizeName
+	titleStyle        style.LabelStyle
 	fromAx            *axis.Axis
 	toAx              *axis.Axis
 	series            []series.Series
@@ -102,7 +101,7 @@ func EmptyBaseChart(pType PlaneType, fType FromType) (base *BaseChart) {
 		base.rLegendCont,
 		base)
 	base.overlay = interact.NewOverlay(base)
-	base.SetTitleStyle(theme.SizeNameHeadingText, theme.ColorNameForeground)
+	base.SetTitleStyle(style.DefaultTitleStyle())
 	base.hLabelLeftSpacer.SetMinSize(fyne.NewSize(0, 0))
 	base.hLabelRightSpacer.SetMinSize(fyne.NewSize(0, 0))
 	base.SetLegendStyle(style.LegendLocationRight)
@@ -370,12 +369,12 @@ func (base *BaseChart) SetTitle(l string) {
 	base.title.Refresh()
 }
 
-func (base *BaseChart) SetTitleStyle(sizeName fyne.ThemeSizeName, colorName fyne.ThemeColorName) {
-	base.title.Alignment = fyne.TextAlignCenter
-	base.titleSizeName = sizeName
-	base.title.TextSize = theme.Size(sizeName)
-	base.titleColorName = colorName
-	base.title.Color = theme.Color(colorName)
+func (base *BaseChart) SetTitleStyle(ts style.LabelStyle) {
+	base.titleStyle = ts
+	base.title.Alignment = ts.Alignment
+	base.title.TextSize = theme.Size(ts.SizeName)
+	base.title.Color = theme.Color(ts.ColorName)
+	base.title.TextStyle = ts.TextStyle
 	base.title.Refresh()
 }
 

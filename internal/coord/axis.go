@@ -5,9 +5,9 @@ import (
 	"math"
 	"time"
 
-	"fyne.io/fyne/v2"
 	"github.com/s-daehling/fyne-charts/internal/renderer"
 	"github.com/s-daehling/fyne-charts/pkg/data"
+	"github.com/s-daehling/fyne-charts/pkg/style"
 )
 
 func (base *BaseChart) FromAxisElements() (min float64, max float64, origin float64,
@@ -45,14 +45,14 @@ func (base *BaseChart) SetFromAxisLabel(l string) {
 	base.updateHLabelSpacer()
 }
 
-func (base *BaseChart) SetFromAxisLabelStyle(sizeName fyne.ThemeSizeName, colorName fyne.ThemeColorName) {
-	base.fromAx.SetAxisLabelStyle(sizeName, colorName)
+func (base *BaseChart) SetFromAxisLabelStyle(ls style.LabelStyle) {
+	base.fromAx.SetAxisLabelStyle(ls)
 	base.updateHLabelSpacer()
 }
 
-func (base *BaseChart) SetFromAxisStyle(colorName fyne.ThemeColorName) {
-	base.fromAx.SetAxisStyle(colorName)
-	base.updateHLabelSpacer()
+func (base *BaseChart) SetFromAxisStyle(as style.AxisStyle) {
+	base.fromAx.SetAxisStyle(as)
+	base.Refresh()
 }
 
 func (base *BaseChart) HideToAxis() {
@@ -70,14 +70,14 @@ func (base *BaseChart) SetToAxisLabel(l string) {
 	base.updateHLabelSpacer()
 }
 
-func (base *BaseChart) SetToAxisLabelStyle(sizeName fyne.ThemeSizeName, colorName fyne.ThemeColorName) {
-	base.toAx.SetAxisLabelStyle(sizeName, colorName)
+func (base *BaseChart) SetToAxisLabelStyle(ls style.LabelStyle) {
+	base.toAx.SetAxisLabelStyle(ls)
 	base.updateHLabelSpacer()
 }
 
-func (base *BaseChart) SetToAxisStyle(colorName fyne.ThemeColorName) {
-	base.toAx.SetAxisStyle(colorName)
-	base.updateHLabelSpacer()
+func (base *BaseChart) SetToAxisStyle(as style.AxisStyle) {
+	base.toAx.SetAxisStyle(as)
+	base.Refresh()
 }
 
 // -------------------- origin --------------------

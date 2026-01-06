@@ -5,8 +5,7 @@ import (
 
 	"github.com/s-daehling/fyne-charts/internal/coord"
 	"github.com/s-daehling/fyne-charts/pkg/data"
-
-	"fyne.io/fyne/v2"
+	"github.com/s-daehling/fyne-charts/pkg/style"
 )
 
 // PolarNumericalChart implements a polar plane with one numerical phi-axis and one numerical r-axis
@@ -162,13 +161,13 @@ func (numChart *PolarNumericalChart) SetAutoRTicks(autoSupportLine bool) {
 // default value label size: theme.SizeNameSubHeadingText
 // default value label color: theme.ColorNameForeground
 // default value axis color: theme.ColorNameForeground
-func (numChart *PolarNumericalChart) SetRAxisStyle(labelSize fyne.ThemeSizeName,
-	labelColor fyne.ThemeColorName, axisColor fyne.ThemeColorName) {
+func (numChart *PolarNumericalChart) SetRAxisStyle(labelStyle style.LabelStyle,
+	axisStyle style.AxisStyle) {
 	if numChart.base == nil {
 		return
 	}
-	numChart.base.SetToAxisLabelStyle(labelSize, labelColor)
-	numChart.base.SetToAxisStyle(axisColor)
+	numChart.base.SetToAxisLabelStyle(labelStyle)
+	numChart.base.SetToAxisStyle(axisStyle)
 }
 
 // SetOrigin sets a user defined origin (crossing of phi and r axis).
@@ -217,11 +216,11 @@ func (numChart *PolarNumericalChart) SetAutoPhiTicks(autoSupportLine bool) {
 // default value label size: theme.SizeNameSubHeadingText
 // default value label color: theme.ColorNameForeground
 // default value axis color: theme.ColorNameForeground
-func (numChart *PolarNumericalChart) SetPhiAxisStyle(labelSize fyne.ThemeSizeName,
-	labelColor fyne.ThemeColorName, axisColor fyne.ThemeColorName) {
+func (numChart *PolarNumericalChart) SetPhiAxisStyle(labelStyle style.LabelStyle,
+	axisStyle style.AxisStyle) {
 	if numChart.base == nil {
 		return
 	}
-	numChart.base.SetFromAxisLabelStyle(labelSize, labelColor)
-	numChart.base.SetFromAxisStyle(axisColor)
+	numChart.base.SetFromAxisLabelStyle(labelStyle)
+	numChart.base.SetFromAxisStyle(axisStyle)
 }

@@ -5,8 +5,7 @@ import (
 
 	"github.com/s-daehling/fyne-charts/internal/coord"
 	"github.com/s-daehling/fyne-charts/pkg/data"
-
-	"fyne.io/fyne/v2"
+	"github.com/s-daehling/fyne-charts/pkg/style"
 )
 
 // PolarCategoricalChart implements a polar plane with one categorical c-axis and one numerical r-axis
@@ -134,13 +133,13 @@ func (catChart *PolarCategoricalChart) SetAutoRTicks(autoSupportLine bool) {
 // default value label size: theme.SizeNameSubHeadingText
 // default value label color: theme.ColorNameForeground
 // default value axis color: theme.ColorNameForeground
-func (catChart *PolarCategoricalChart) SetRAxisStyle(labelSize fyne.ThemeSizeName,
-	labelColor fyne.ThemeColorName, axisColor fyne.ThemeColorName) {
+func (catChart *PolarCategoricalChart) SetRAxisStyle(labelStyle style.LabelStyle,
+	axisStyle style.AxisStyle) {
 	if catChart.base == nil {
 		return
 	}
-	catChart.base.SetToAxisLabelStyle(labelSize, labelColor)
-	catChart.base.SetToAxisStyle(axisColor)
+	catChart.base.SetToAxisLabelStyle(labelStyle)
+	catChart.base.SetToAxisStyle(axisStyle)
 }
 
 // SetCAxisLabel sets the label of the c-axis, which will be displayed at the left side
@@ -174,11 +173,11 @@ func (catChart *PolarCategoricalChart) SetAutoCRange() {
 // default value label size: theme.SizeNameSubHeadingText
 // default value label color: theme.ColorNameForeground
 // default value axis color: theme.ColorNameForeground
-func (catChart *PolarCategoricalChart) SetCAxisStyle(labelSize fyne.ThemeSizeName,
-	labelColor fyne.ThemeColorName, axisColor fyne.ThemeColorName) {
+func (catChart *PolarCategoricalChart) SetCAxisStyle(labelStyle style.LabelStyle,
+	axisStyle style.AxisStyle) {
 	if catChart.base == nil {
 		return
 	}
-	catChart.base.SetFromAxisLabelStyle(labelSize, labelColor)
-	catChart.base.SetFromAxisStyle(axisColor)
+	catChart.base.SetFromAxisLabelStyle(labelStyle)
+	catChart.base.SetFromAxisStyle(axisStyle)
 }
