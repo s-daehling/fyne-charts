@@ -185,6 +185,7 @@ func cartTempChart() (tempChart *coord.CartesianTemporalChart, err error) {
 	tempChart.SetTitle("Cartesian Temporal Chart")
 	as := style.DefaultAxisLabelStyle()
 	as.SizeName = theme.SizeNameText
+	as.Alignment = fyne.TextAlignLeading
 	tempChart.SetTAxisStyle(as, style.DefaultAxisStyle())
 	go func() {
 		time.Sleep(time.Second * 2)

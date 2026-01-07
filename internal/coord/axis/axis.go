@@ -8,6 +8,7 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/driver/software"
+	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
 	"github.com/disintegration/imaging"
 	"github.com/s-daehling/fyne-charts/internal/renderer"
@@ -285,6 +286,16 @@ func (ax *Axis) SetAxisLabelStyle(ls style.LabelStyle) {
 func (ax *Axis) Label() (l *canvas.Image) {
 	l = ax.label
 	return
+}
+
+func (ax *Axis) AddLabelToContainer(cont *fyne.Container) {
+	if ax.labelStyle.Alignment != fyne.TextAlignLeading {
+		cont.Add(layout.NewSpacer())
+	}
+	cont.Add(ax.label)
+	if ax.labelStyle.Alignment != fyne.TextAlignTrailing {
+		cont.Add(layout.NewSpacer())
+	}
 }
 
 func (ax *Axis) CartesianTranspose() {

@@ -67,6 +67,11 @@ func (l *Legend) RemoveEntry(name string, super string) {
 	l.updateSubDepiction()
 }
 
+func (l *Legend) Location() (loc style.LegendLocation) {
+	loc = l.location
+	return
+}
+
 func (l *Legend) SetLocation(loc style.LegendLocation) {
 	l.location = loc
 	l.updateSubDepiction()

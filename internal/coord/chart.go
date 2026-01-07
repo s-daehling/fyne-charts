@@ -15,7 +15,6 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
-	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 )
@@ -79,10 +78,10 @@ func EmptyBaseChart(pType PlaneType, fType FromType) (base *BaseChart) {
 		planeType:         pType,
 		transposed:        false,
 		fromType:          fType,
-		hLabelCont:        container.NewCenter(),
+		hLabelCont:        container.NewHBox(),
 		hLabelLeftSpacer:  canvas.NewRectangle(color.Alpha16{}),
 		hLabelRightSpacer: canvas.NewRectangle(color.Alpha16{}),
-		vLabelCont:        container.NewCenter(),
+		vLabelCont:        container.NewVBox(),
 		rLegendCont:       container.NewCenter(),
 		lLegendCont:       container.NewCenter(),
 		bLegendCont:       container.NewStack(),
@@ -93,7 +92,7 @@ func EmptyBaseChart(pType PlaneType, fType FromType) (base *BaseChart) {
 			base.title,
 			base.tLegendCont),
 		container.NewVBox(
-			container.NewHBox(base.hLabelLeftSpacer, layout.NewSpacer(), base.hLabelCont, layout.NewSpacer(), base.hLabelRightSpacer),
+			base.hLabelCont,
 			base.bLegendCont),
 		container.NewHBox(
 			base.lLegendCont,
@@ -101,10 +100,8 @@ func EmptyBaseChart(pType PlaneType, fType FromType) (base *BaseChart) {
 		base.rLegendCont,
 		base)
 	base.overlay = interact.NewOverlay(base)
-	base.SetTitleStyle(style.DefaultTitleStyle())
 	base.hLabelLeftSpacer.SetMinSize(fyne.NewSize(0, 0))
 	base.hLabelRightSpacer.SetMinSize(fyne.NewSize(0, 0))
-	base.SetLegendStyle(style.LegendLocationRight)
 	if pType == CartesianPlane {
 		base.fromAx = axis.EmptyAxis("", axis.CartesianHorAxis)
 		base.toAx = axis.EmptyAxis("", axis.CartesianVertAxis)
@@ -118,6 +115,12 @@ func EmptyBaseChart(pType PlaneType, fType FromType) (base *BaseChart) {
 		base.vLabelCont.Add(base.fromAx.Label())
 		base.hLabelCont.Add(base.toAx.Label())
 	}
+	base.SetTitleStyle(style.DefaultTitleStyle())
+	base.SetFromAxisStyle(style.DefaultAxisStyle())
+	base.SetFromAxisLabelStyle(style.DefaultAxisLabelStyle())
+	base.SetToAxisStyle(style.DefaultAxisStyle())
+	base.SetToAxisLabelStyle(style.DefaultAxisLabelStyle())
+	base.SetLegendStyle(style.LegendLocationRight)
 	base.updateRangeAndOrigin()
 	base.ExtendBaseWidget(base)
 	return
@@ -150,13 +153,16 @@ func (base *BaseChart) SetCartesianOrientantion(transposed bool) {
 		base.toAx.CartesianTranspose()
 		base.hLabelCont.RemoveAll()
 		base.vLabelCont.RemoveAll()
+		base.hLabelCont.Add(base.hLabelLeftSpacer)
 		if transposed {
-			base.vLabelCont.Add(base.fromAx.Label())
-			base.hLabelCont.Add(base.toAx.Label())
+			base.fromAx.AddLabelToContainer(base.vLabelCont)
+			base.toAx.AddLabelToContainer(base.hLabelCont)
 		} else {
-			base.vLabelCont.Add(base.toAx.Label())
-			base.hLabelCont.Add(base.fromAx.Label())
+			base.fromAx.AddLabelToContainer(base.hLabelCont)
+			base.toAx.AddLabelToContainer(base.vLabelCont)
 		}
+		base.hLabelCont.Add(base.hLabelRightSpacer)
+		base.updateHLabelSpacer()
 		base.mainCont.Refresh()
 	}
 }
@@ -341,6 +347,7 @@ func (base *BaseChart) SetLegendStyle(loc style.LegendLocation) {
 	case style.LegendLocationTop:
 		base.tLegendCont.Add(base.legend)
 	}
+	base.updateHLabelSpacer()
 	base.mainCont.Refresh()
 }
 

@@ -47,6 +47,15 @@ func (base *BaseChart) SetFromAxisLabel(l string) {
 
 func (base *BaseChart) SetFromAxisLabelStyle(ls style.LabelStyle) {
 	base.fromAx.SetAxisLabelStyle(ls)
+	if (base.planeType == CartesianPlane && base.transposed) || base.planeType == PolarPlane {
+		base.vLabelCont.RemoveAll()
+		base.fromAx.AddLabelToContainer(base.vLabelCont)
+	} else {
+		base.hLabelCont.RemoveAll()
+		base.hLabelCont.Add(base.hLabelLeftSpacer)
+		base.fromAx.AddLabelToContainer(base.hLabelCont)
+		base.hLabelCont.Add(base.hLabelRightSpacer)
+	}
 	base.updateHLabelSpacer()
 }
 
@@ -72,6 +81,15 @@ func (base *BaseChart) SetToAxisLabel(l string) {
 
 func (base *BaseChart) SetToAxisLabelStyle(ls style.LabelStyle) {
 	base.toAx.SetAxisLabelStyle(ls)
+	if (base.planeType == CartesianPlane && base.transposed) || base.planeType == PolarPlane {
+		base.hLabelCont.RemoveAll()
+		base.hLabelCont.Add(base.hLabelLeftSpacer)
+		base.toAx.AddLabelToContainer(base.hLabelCont)
+		base.hLabelCont.Add(base.hLabelRightSpacer)
+	} else {
+		base.vLabelCont.RemoveAll()
+		base.toAx.AddLabelToContainer(base.vLabelCont)
+	}
 	base.updateHLabelSpacer()
 }
 

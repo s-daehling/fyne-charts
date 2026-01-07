@@ -4,6 +4,7 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/theme"
 	"github.com/s-daehling/fyne-charts/internal/coord/series"
+	"github.com/s-daehling/fyne-charts/pkg/style"
 )
 
 func (base *BaseChart) Refresh() {
@@ -146,17 +147,27 @@ func (base *BaseChart) updateSeriesVariables() {
 }
 
 func (base *BaseChart) updateHLabelSpacer() {
-	base.hLabelRightSpacer.SetMinSize(fyne.NewSize(base.legend.MinSize().Width, 0))
+	lSpace := float32(0)
+	rSpace := float32(0)
+	if !base.legend.Hidden {
+		if base.legend.Location() == style.LegendLocationLeft {
+			lSpace += base.legend.MinSize().Width
+		} else if base.legend.Location() == style.LegendLocationRight {
+			rSpace += base.legend.MinSize().Width
+		}
+	}
 	switch base.planeType {
 	case CartesianPlane:
 		if base.transposed {
-			base.hLabelLeftSpacer.SetMinSize(fyne.NewSize(base.fromAx.Label().Size().Width, 0))
+			lSpace += base.fromAx.Label().Size().Width
 		} else {
-			base.hLabelLeftSpacer.SetMinSize(fyne.NewSize(base.toAx.Label().Size().Width, 0))
+			lSpace += base.toAx.Label().Size().Width
 		}
 	case PolarPlane:
-		base.hLabelLeftSpacer.SetMinSize(fyne.NewSize(base.fromAx.Label().Size().Width, 0))
+		lSpace += base.fromAx.Label().Size().Width
 	}
+	base.hLabelLeftSpacer.SetMinSize(fyne.NewSize(lSpace, 0))
+	base.hLabelRightSpacer.SetMinSize(fyne.NewSize(rSpace, 0))
 }
 
 func (base *BaseChart) RefreshTheme() {
