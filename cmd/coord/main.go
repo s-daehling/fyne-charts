@@ -190,7 +190,9 @@ func cartTempChart() (tempChart *coord.CartesianTemporalChart, err error) {
 	go func() {
 		time.Sleep(time.Second * 2)
 		fyne.Do(func() {
-			tempChart.SetLegendStyle(style.LegendLocationBottom, style.DefaultLegendLabelStyle(), true)
+			ls := style.DefaultLegendLabelStyle()
+			ls.TextStyle = fyne.TextStyle{Bold: true}
+			tempChart.SetLegendStyle(style.LegendLocationBottom, ls, false)
 		})
 	}()
 	return
@@ -302,6 +304,9 @@ func cartCatChart() (catChart *coord.CartesianCategoricalChart, err error) {
 	ts := style.DefaultTitleStyle()
 	ts.SizeName = theme.SizeNameText
 	catChart.SetTitleStyle(ts)
+	ls := style.DefaultLegendLabelStyle()
+	ls.Alignment = fyne.TextAlignTrailing
+	catChart.SetLegendStyle(style.LegendLocationRight, ls, true)
 
 	go func() {
 		time.Sleep(time.Second * 5)

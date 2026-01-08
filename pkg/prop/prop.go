@@ -99,5 +99,5 @@ func (chart *propChart) SetLegendStyle(loc style.LegendLocation, labelStyle styl
 	if chart.base == nil {
 		return
 	}
-	chart.base.SetLegendStyle(loc)
+	chart.base.SetLegendStyle(loc, labelStyle, interactive)
 }

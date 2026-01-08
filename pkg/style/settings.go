@@ -38,7 +38,7 @@ func DefaultAxisLabelStyle() (titleStyle LabelStyle) {
 }
 
 func DefaultLegendLabelStyle() (titleStyle LabelStyle) {
-	titleStyle.Alignment = fyne.TextAlignCenter
+	titleStyle.Alignment = fyne.TextAlignLeading
 	titleStyle.ColorName = theme.ColorNameForeground
 	titleStyle.SizeName = theme.SizeNameText
 	titleStyle.TextStyle = fyne.TextStyle{}

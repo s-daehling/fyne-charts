@@ -70,7 +70,7 @@ func EmptyBaseChart(pType PlaneType) (base *BaseChart) {
 		base.rLegendCont,
 		base)
 	base.SetTitleStyle(style.DefaultTitleStyle())
-	base.SetLegendStyle(style.LegendLocationRight)
+	base.SetLegendStyle(style.LegendLocationRight, style.DefaultLegendLabelStyle(), true)
 	if pType == CartesianPlane {
 		base.rast = nil
 		base.fromMax = 100
@@ -190,8 +190,8 @@ func (base *BaseChart) Overlay() (io *interact.Overlay) {
 	return
 }
 
-func (base *BaseChart) SetLegendStyle(loc style.LegendLocation) {
-	base.legend.SetLocation(loc)
+func (base *BaseChart) SetLegendStyle(loc style.LegendLocation, ls style.LabelStyle, interactive bool) {
+	base.legend.SetStyle(loc, ls, interactive)
 	base.lLegendCont.RemoveAll()
 	base.rLegendCont.RemoveAll()
 	base.tLegendCont.RemoveAll()

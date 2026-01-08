@@ -120,7 +120,7 @@ func EmptyBaseChart(pType PlaneType, fType FromType) (base *BaseChart) {
 	base.SetFromAxisLabelStyle(style.DefaultAxisLabelStyle())
 	base.SetToAxisStyle(style.DefaultAxisStyle())
 	base.SetToAxisLabelStyle(style.DefaultAxisLabelStyle())
-	base.SetLegendStyle(style.LegendLocationRight)
+	base.SetLegendStyle(style.LegendLocationRight, style.DefaultLegendLabelStyle(), true)
 	base.updateRangeAndOrigin()
 	base.ExtendBaseWidget(base)
 	return
@@ -331,8 +331,8 @@ func (base *BaseChart) Overlay() (io *interact.Overlay) {
 	return
 }
 
-func (base *BaseChart) SetLegendStyle(loc style.LegendLocation) {
-	base.legend.SetLocation(loc)
+func (base *BaseChart) SetLegendStyle(loc style.LegendLocation, ls style.LabelStyle, interactive bool) {
+	base.legend.SetStyle(loc, ls, interactive)
 	base.lLegendCont.RemoveAll()
 	base.rLegendCont.RemoveAll()
 	base.tLegendCont.RemoveAll()

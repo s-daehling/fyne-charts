@@ -82,5 +82,5 @@ func (chart *coordChart) SetLegendStyle(loc style.LegendLocation, labelStyle sty
 	if chart.base == nil {
 		return
 	}
-	chart.base.SetLegendStyle(loc)
+	chart.base.SetLegendStyle(loc, labelStyle, interactive)
 }
