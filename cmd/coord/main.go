@@ -34,7 +34,7 @@ func main() {
 	vS := container.NewVSplit(cartCharts, polCharts)
 
 	myWindow.SetContent(vS)
-	myWindow.Resize(fyne.NewSize(200, 200))
+	myWindow.Resize(fyne.NewSize(600, 600))
 	myWindow.ShowAndRun()
 }
 

@@ -60,6 +60,13 @@ func emptyDataPoint(color color.Color, showDot bool, showFromBase bool, showFrom
 	return
 }
 
+func (point *dataPoint) refresh() {
+	point.dot.Refresh()
+	point.fromValBase.Refresh()
+	point.fromPrev.Refresh()
+	point.bar.Refresh()
+}
+
 func (point *dataPoint) hide() {
 	point.dot.Hide()
 	point.fromValBase.Hide()
@@ -79,15 +86,18 @@ func (point *dataPoint) setColor(col color.Color) {
 	point.fromValBase.StrokeColor = col
 	point.fromPrev.StrokeColor = col
 	point.bar.FillColor = col
+	point.refresh()
 }
 
 func (point *dataPoint) setLineWidth(lw float32) {
 	point.fromValBase.StrokeWidth = lw
 	point.fromPrev.StrokeWidth = lw
+	point.refresh()
 }
 
 func (point *dataPoint) setDotSize(ds float32) {
 	point.dot.Resize(fyne.NewSize(ds, ds))
+	point.refresh()
 }
 
 func (point *dataPoint) setValBase(vb float64) {
@@ -681,9 +691,6 @@ func (ser *PointSeries) SetColor(col color.Color) {
 	for i := range ser.data {
 		ser.data[i].setColor(col)
 	}
-	if ser.cont != nil {
-		ser.cont.DataChange()
-	}
 }
 
 func (ser *PointSeries) SetLineWidth(lw float32) {
@@ -693,9 +700,6 @@ func (ser *PointSeries) SetLineWidth(lw float32) {
 	for i := range ser.data {
 		ser.data[i].setLineWidth(lw)
 	}
-	if ser.cont != nil {
-		ser.cont.DataChange()
-	}
 }
 
 func (ser *PointSeries) SetDotSize(ds float32) {
@@ -704,9 +708,6 @@ func (ser *PointSeries) SetDotSize(ds float32) {
 	}
 	for i := range ser.data {
 		ser.data[i].setDotSize(ds)
-	}
-	if ser.cont != nil {
-		ser.cont.DataChange()
 	}
 }
 

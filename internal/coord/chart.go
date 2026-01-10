@@ -149,21 +149,10 @@ func (base *BaseChart) IsPolar() (b bool) {
 func (base *BaseChart) SetCartesianOrientantion(transposed bool) {
 	if base.transposed != transposed {
 		base.transposed = transposed
+		base.DataChange()
 		base.fromAx.CartesianTranspose()
 		base.toAx.CartesianTranspose()
-		base.hLabelCont.RemoveAll()
-		base.vLabelCont.RemoveAll()
-		base.hLabelCont.Add(base.hLabelLeftSpacer)
-		if transposed {
-			base.fromAx.AddLabelToContainer(base.vLabelCont)
-			base.toAx.AddLabelToContainer(base.hLabelCont)
-		} else {
-			base.fromAx.AddLabelToContainer(base.hLabelCont)
-			base.toAx.AddLabelToContainer(base.vLabelCont)
-		}
-		base.hLabelCont.Add(base.hLabelRightSpacer)
-		base.updateHLabelSpacer()
-		base.mainCont.Refresh()
+		base.refreshAxisLabels()
 	}
 }
 
@@ -347,18 +336,15 @@ func (base *BaseChart) SetLegendStyle(loc style.LegendLocation, ls style.LabelSt
 	case style.LegendLocationTop:
 		base.tLegendCont.Add(base.legend)
 	}
-	base.updateHLabelSpacer()
-	base.mainCont.Refresh()
+	base.refreshAxisLabels()
 }
 
 func (base *BaseChart) ShowLegend() {
 	base.legend.Show()
-	base.mainCont.Refresh()
 }
 
 func (base *BaseChart) HideLegend() {
 	base.legend.Hide()
-	base.mainCont.Refresh()
 }
 
 func (base *BaseChart) Tooltip() (tt renderer.Tooltip) {
@@ -368,9 +354,9 @@ func (base *BaseChart) Tooltip() (tt renderer.Tooltip) {
 
 func (base *BaseChart) SetTitle(l string) {
 	base.title.Text = l
-	if l == "" {
+	if l == "" && !base.title.Hidden {
 		base.title.Hide()
-	} else {
+	} else if l != "" && base.title.Hidden {
 		base.title.Show()
 	}
 	base.title.Refresh()

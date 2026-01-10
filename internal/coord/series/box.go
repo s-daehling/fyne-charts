@@ -51,6 +51,18 @@ func emptyBoxPoint(nOutliers int, col color.Color) (point *boxPoint) {
 	return
 }
 
+func (point *boxPoint) refresh() {
+	point.maxLine.Refresh()
+	point.upperWhisker.Refresh()
+	point.medianLine.Refresh()
+	point.lowerWhisker.Refresh()
+	point.minLine.Refresh()
+	point.box.Refresh()
+	for i := range point.outlierDots {
+		point.outlierDots[i].Refresh()
+	}
+}
+
 func (point *boxPoint) hide() {
 	point.maxLine.Hide()
 	point.upperWhisker.Hide()
@@ -84,7 +96,8 @@ func (point *boxPoint) setColor(col color.Color) {
 	for i := range point.outlierDots {
 		point.outlierDots[i].FillColor = col
 	}
-	point.box.FillColor = col
+	point.box.StrokeColor = col
+	point.refresh()
 }
 
 func (point *boxPoint) setLineWidth(lw float32) {
@@ -94,6 +107,7 @@ func (point *boxPoint) setLineWidth(lw float32) {
 	point.lowerWhisker.StrokeWidth = lw
 	point.minLine.StrokeWidth = lw
 	point.box.StrokeWidth = lw
+	point.refresh()
 }
 
 func (point *boxPoint) setOutlierSize(os float32) {
@@ -356,9 +370,6 @@ func (ser *BoxSeries) SetColor(col color.Color) {
 	for i := range ser.data {
 		ser.data[i].setColor(col)
 	}
-	if ser.cont != nil {
-		ser.cont.DataChange()
-	}
 }
 
 // SetLineWidth changes the width of the Line
@@ -371,9 +382,6 @@ func (ser *BoxSeries) SetLineWidth(lw float32) {
 	for i := range ser.data {
 		ser.data[i].setLineWidth(lw)
 	}
-	if ser.cont != nil {
-		ser.cont.DataChange()
-	}
 }
 
 // SetOutlierSize changes the size of the outlier dots
@@ -385,9 +393,6 @@ func (ser *BoxSeries) SetOutlierSize(os float32) {
 	}
 	for i := range ser.data {
 		ser.data[i].setOutlierSize(os)
-	}
-	if ser.cont != nil {
-		ser.cont.DataChange()
 	}
 }
 

@@ -146,9 +146,22 @@ func (base *BaseChart) updateSeriesVariables() {
 	}
 }
 
-func (base *BaseChart) updateHLabelSpacer() {
+func (base *BaseChart) refreshAxisLabels() {
 	lSpace := float32(0)
 	rSpace := float32(0)
+	base.hLabelCont.RemoveAll()
+	base.vLabelCont.RemoveAll()
+	base.hLabelCont.Add(base.hLabelLeftSpacer)
+	if (base.planeType == CartesianPlane && base.transposed) || base.planeType == PolarPlane {
+		base.fromAx.AddLabelToContainer(base.vLabelCont)
+		base.toAx.AddLabelToContainer(base.hLabelCont)
+		lSpace += base.fromAx.Label().Size().Width
+	} else {
+		base.fromAx.AddLabelToContainer(base.hLabelCont)
+		base.toAx.AddLabelToContainer(base.vLabelCont)
+		lSpace += base.toAx.Label().Size().Width
+	}
+	base.hLabelCont.Add(base.hLabelRightSpacer)
 	if !base.legend.Hidden {
 		if base.legend.Location() == style.LegendLocationLeft {
 			lSpace += base.legend.MinSize().Width
@@ -156,18 +169,10 @@ func (base *BaseChart) updateHLabelSpacer() {
 			rSpace += base.legend.MinSize().Width
 		}
 	}
-	switch base.planeType {
-	case CartesianPlane:
-		if base.transposed {
-			lSpace += base.fromAx.Label().Size().Width
-		} else {
-			lSpace += base.toAx.Label().Size().Width
-		}
-	case PolarPlane:
-		lSpace += base.fromAx.Label().Size().Width
-	}
 	base.hLabelLeftSpacer.SetMinSize(fyne.NewSize(lSpace, 0))
 	base.hLabelRightSpacer.SetMinSize(fyne.NewSize(rSpace, 0))
+	base.vLabelCont.Refresh()
+	base.hLabelCont.Refresh()
 }
 
 func (base *BaseChart) RefreshTheme() {

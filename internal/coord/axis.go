@@ -32,17 +32,15 @@ func (base *BaseChart) ToAxisElements() (min float64, max float64, origin float6
 
 func (base *BaseChart) HideFromAxis() {
 	base.fromAx.Hide()
-	base.Refresh()
 }
 
 func (base *BaseChart) ShowFromAxis() {
 	base.fromAx.Show()
-	base.Refresh()
 }
 
 func (base *BaseChart) SetFromAxisLabel(l string) {
 	base.fromAx.SetLabel(l)
-	base.updateHLabelSpacer()
+	base.refreshAxisLabels()
 }
 
 func (base *BaseChart) SetFromAxisLabelStyle(ls style.LabelStyle) {
@@ -56,7 +54,7 @@ func (base *BaseChart) SetFromAxisLabelStyle(ls style.LabelStyle) {
 		base.fromAx.AddLabelToContainer(base.hLabelCont)
 		base.hLabelCont.Add(base.hLabelRightSpacer)
 	}
-	base.updateHLabelSpacer()
+	base.refreshAxisLabels()
 }
 
 func (base *BaseChart) SetFromAxisStyle(as style.AxisStyle) {
@@ -66,17 +64,15 @@ func (base *BaseChart) SetFromAxisStyle(as style.AxisStyle) {
 
 func (base *BaseChart) HideToAxis() {
 	base.toAx.Hide()
-	base.Refresh()
 }
 
 func (base *BaseChart) ShowToAxis() {
 	base.toAx.Show()
-	base.Refresh()
 }
 
 func (base *BaseChart) SetToAxisLabel(l string) {
 	base.toAx.SetLabel(l)
-	base.updateHLabelSpacer()
+	base.refreshAxisLabels()
 }
 
 func (base *BaseChart) SetToAxisLabelStyle(ls style.LabelStyle) {
@@ -90,7 +86,7 @@ func (base *BaseChart) SetToAxisLabelStyle(ls style.LabelStyle) {
 		base.vLabelCont.RemoveAll()
 		base.toAx.AddLabelToContainer(base.vLabelCont)
 	}
-	base.updateHLabelSpacer()
+	base.refreshAxisLabels()
 }
 
 func (base *BaseChart) SetToAxisStyle(as style.AxisStyle) {

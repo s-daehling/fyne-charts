@@ -27,7 +27,6 @@ func (base *BaseChart) addSeriesIfNotExist(ser *Series) (err error) {
 	}
 	base.series = append(base.series, ser)
 	base.DataChange()
-	base.legend.Refresh()
 	return
 }
 
@@ -55,7 +54,6 @@ func (base *BaseChart) RemoveSeries(name string) {
 	}
 	base.series = newSeries
 	base.DataChange()
-	base.legend.Refresh()
 }
 
 type proportionPoint struct {
@@ -317,9 +315,7 @@ func (ser *Series) SetValTextColor(col color.Color) {
 	ser.autoValTextColor = false
 	for i := range ser.data {
 		ser.data[i].text.Color = col
-	}
-	if ser.chart != nil {
-		ser.chart.DataChange()
+		ser.data[i].text.Refresh()
 	}
 }
 
@@ -327,9 +323,7 @@ func (ser *Series) SetAutoValTextColor() {
 	ser.autoValTextColor = true
 	for i := range ser.data {
 		ser.data[i].text.Color = theme.Color(theme.ColorNameForeground)
-	}
-	if ser.chart != nil {
-		ser.chart.DataChange()
+		ser.data[i].text.Refresh()
 	}
 }
 

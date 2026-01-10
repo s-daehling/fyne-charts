@@ -59,6 +59,7 @@ func (l *Legend) AddEntry(le *LegendEntry) {
 		l.les = slices.Insert(l.les, insertIndex, le)
 	}
 	l.updateSubDepiction()
+	l.Refresh()
 }
 
 func (l *Legend) RemoveEntry(name string, super string) {
@@ -69,6 +70,7 @@ func (l *Legend) RemoveEntry(name string, super string) {
 		}
 	}
 	l.updateSubDepiction()
+	l.Refresh()
 }
 
 func (l *Legend) Location() (loc style.LegendLocation) {
@@ -169,9 +171,7 @@ func (lr *legendRenderer) MinSize() (size fyne.Size) {
 
 func (lr *legendRenderer) Refresh() {
 	for i := range lr.l.les {
-		lr.l.les[i].RefreshTheme()
-		lr.l.les[i].box.Refresh()
-		lr.l.les[i].label.Refresh()
+		lr.l.les[i].Refresh()
 	}
 }
 
@@ -189,7 +189,7 @@ func (lr *legendRenderer) Destroy() {}
 
 func (lr *legendRenderer) NumColRow(size fyne.Size) (nc int, nr int) {
 	nc = 1
-	nr = 0
+	nr = 1
 	nles := len(lr.l.les)
 	if nles == 0 {
 		return
@@ -443,7 +443,9 @@ func (box *legendBox) MouseOut() {
 func (box *legendBox) SetColor(col color.Color) {
 	box.rectColor = col
 	box.rect.FillColor = col
+	box.rect.Refresh()
 	box.circle.FillColor = col
+	box.circle.Refresh()
 }
 
 func (box *legendBox) ToCircle() {

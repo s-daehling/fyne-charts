@@ -206,17 +206,14 @@ func (base *BaseChart) SetLegendStyle(loc style.LegendLocation, ls style.LabelSt
 	case style.LegendLocationTop:
 		base.tLegendCont.Add(base.legend)
 	}
-	base.mainCont.Refresh()
 }
 
 func (base *BaseChart) ShowLegend() {
 	base.legend.Show()
-	base.mainCont.Refresh()
 }
 
 func (base *BaseChart) HideLegend() {
 	base.legend.Hide()
-	base.mainCont.Refresh()
 }
 
 func (base *BaseChart) Tooltip() (tt renderer.Tooltip) {
@@ -225,9 +222,9 @@ func (base *BaseChart) Tooltip() (tt renderer.Tooltip) {
 
 func (base *BaseChart) SetTitle(l string) {
 	base.title.Text = l
-	if l == "" {
+	if l == "" && !base.title.Hidden {
 		base.title.Hide()
-	} else {
+	} else if l != "" && base.title.Hidden {
 		base.title.Show()
 	}
 	base.title.Refresh()

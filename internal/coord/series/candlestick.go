@@ -37,6 +37,12 @@ func emptyCandleStickPoint() (point *candleStickPoint) {
 	return
 }
 
+func (point *candleStickPoint) refresh() {
+	point.upperLine.Refresh()
+	point.lowerLine.Refresh()
+	point.candle.Refresh()
+}
+
 func (point *candleStickPoint) hide() {
 	point.upperLine.Hide()
 	point.lowerLine.Hide()
@@ -52,6 +58,7 @@ func (point *candleStickPoint) show() {
 func (point *candleStickPoint) setLineWidth(lw float32) {
 	point.upperLine.StrokeWidth = lw
 	point.lowerLine.StrokeWidth = lw
+	point.refresh()
 }
 
 func (point *candleStickPoint) cartesianEdges(xMin float64, xMax float64, yMin float64,
@@ -247,9 +254,6 @@ func (ser *CandleStickSeries) SetLineWidth(lw float32) {
 	}
 	for i := range ser.data {
 		ser.data[i].setLineWidth(lw)
-	}
-	if ser.cont != nil {
-		ser.cont.DataChange()
 	}
 }
 

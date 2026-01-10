@@ -262,15 +262,20 @@ func (ax *Axis) SetLabel(l string) {
 	c.SetContent(ax.labelText)
 	ax.label.Image = c.Capture()
 	minSize := ax.labelText.MinSize()
-	if l == "" {
-		minSize.Height = 0
-	}
+	// if l == "" {
+	// 	minSize.Height = 0
+	// }
 	ax.label.Resize(minSize)
 	ax.label.SetMinSize(minSize)
 	if ax.typ == CartesianVertAxis || ax.typ == PolarPhiAxis {
 		ax.label.Image = imaging.Rotate90(ax.label.Image)
 		ax.label.Resize(fyne.NewSize(minSize.Height, minSize.Width))
 		ax.label.SetMinSize(fyne.NewSize(minSize.Height, minSize.Width))
+	}
+	if l == "" && !ax.label.Hidden {
+		ax.label.Hide()
+	} else if l != "" && ax.label.Hidden {
+		ax.label.Show()
 	}
 }
 

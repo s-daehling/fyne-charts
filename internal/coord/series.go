@@ -20,17 +20,17 @@ func (base *BaseChart) addSeriesIfNotExist(ser series.Series) (err error) {
 	}
 	base.series = append(base.series, ser)
 	base.DataChange()
-	base.legend.Refresh()
-	base.updateHLabelSpacer()
 	return
 }
 
 func (base *BaseChart) AddLegendEntry(le *interact.LegendEntry) {
 	base.legend.AddEntry(le)
+	base.refreshAxisLabels()
 }
 
 func (base *BaseChart) RemoveLegendEntry(name string, super string) {
 	base.legend.RemoveEntry(name, super)
+	base.refreshAxisLabels()
 }
 
 func (base *BaseChart) AddBarSeries(ls *series.PointSeries) (err error) {
@@ -89,6 +89,4 @@ func (base *BaseChart) RemoveSeries(name string) {
 	}
 	base.series = newSeries
 	base.DataChange()
-	base.legend.Refresh()
-	base.updateHLabelSpacer()
 }
