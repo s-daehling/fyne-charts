@@ -266,6 +266,8 @@ func (le *LegendEntry) CreateRenderer() (r fyne.WidgetRenderer) {
 func (le *LegendEntry) RefreshTheme() {
 	le.label.Color = theme.Color(le.style.ColorName)
 	le.label.TextSize = theme.Size(le.style.SizeName)
+	le.label.Resize(le.label.MinSize())
+	le.box.Resize(fyne.NewSize(le.label.MinSize().Height*0.8, le.label.MinSize().Height*0.8))
 }
 
 func (le *LegendEntry) SetSuper(super string) {
@@ -304,6 +306,8 @@ func (le *LegendEntry) setStyle(ls style.TextStyle) {
 	le.label.Color = theme.Color(ls.ColorName)
 	le.label.TextSize = theme.Size(ls.SizeName)
 	le.label.TextStyle = ls.TextStyle
+	le.label.Resize(le.label.MinSize())
+	le.box.Resize(fyne.NewSize(le.label.MinSize().Height*0.8, le.label.MinSize().Height*0.8))
 }
 
 func (le *LegendEntry) setInteractiveness(interactive bool) {
