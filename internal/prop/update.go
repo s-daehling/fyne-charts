@@ -30,7 +30,11 @@ func (base *BaseChart) updateSeriesVariables() {
 	propHeight := base.toMax / float64(nPropSeries)
 	propOffset := 0.0
 	for i := range base.series {
-		base.series[i].SetHeightAndOffset(propHeight*0.9, propOffset)
+		if i == 0 {
+			base.series[i].SetHeightAndOffset(propHeight, propOffset)
+		} else {
+			base.series[i].SetHeightAndOffset(propHeight*0.9, propOffset+0.1*propHeight)
+		}
 		propOffset += propHeight
 	}
 
