@@ -16,7 +16,7 @@ type chartDummy struct {
 
 func (cd chartDummy) IsPolar() bool                               { return cd.polar }
 func (cd chartDummy) DataChange()                                 {}
-func (cd chartDummy) RasterVisibilityChange()                     {}
+func (cd chartDummy) RasterRefresh()                     {}
 func (cd chartDummy) AddLegendEntry(le *interact.LegendEntry)     {}
 func (cd chartDummy) RemoveLegendEntry(name string, super string) {}
 

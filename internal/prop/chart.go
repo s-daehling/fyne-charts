@@ -84,9 +84,9 @@ func EmptyBaseChart(pType PlaneType) (base *BaseChart) {
 
 func (base *BaseChart) CreateRenderer() (r fyne.WidgetRenderer) {
 	if base.planeType == CartesianPlane {
-		base.render = renderer.EmptyCartesianRenderer(base, base.Size)
+		base.render = renderer.EmptyCartesianRenderer(base)
 	} else {
-		base.render = renderer.EmptyPolarRenderer(base, base.Size)
+		base.render = renderer.EmptyPolarRenderer(base)
 	}
 	r = base.render
 	return
@@ -260,15 +260,14 @@ func (base *BaseChart) ToAxisElements() (min float64, max float64, origin float6
 }
 
 func (base *BaseChart) PixelGenPolar(pX, pY, w, h int) (col color.Color) {
-	phi, r, x, y := base.PositionToPolarCoordinates(pX, pY, w, h)
+	phi, r, _, _ := base.PositionToPolarCoordinates(pX, pY, w, h)
 	col = color.RGBA{0x00, 0x00, 0x00, 0x00}
 	if r > base.toMax {
 		return
 	}
 	for i := range base.series {
-		serCol := base.series[i].RasterColorPolar(phi, r, x, y)
-		r, g, b, _ := serCol.RGBA()
-		if r > 0 || g > 0 || b > 0 {
+		serCol, useColor := base.series[i].RasterColorPolar(phi, r)
+		if useColor {
 			col = serCol
 			break
 		}

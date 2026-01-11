@@ -53,6 +53,7 @@ type BaseChart struct {
 	transposed        bool
 	fromType          FromType
 	rast              *canvas.Raster
+	rasterSeries      []series.Series
 	render            fyne.WidgetRenderer
 	mainCont          *fyne.Container
 	hLabelCont        *fyne.Container
@@ -128,9 +129,9 @@ func EmptyBaseChart(pType PlaneType, fType FromType) (base *BaseChart) {
 
 func (base *BaseChart) CreateRenderer() (r fyne.WidgetRenderer) {
 	if base.planeType == CartesianPlane {
-		base.render = renderer.EmptyCartesianRenderer(base, base.Size)
+		base.render = renderer.EmptyCartesianRenderer(base)
 	} else {
-		base.render = renderer.EmptyPolarRenderer(base, base.Size)
+		base.render = renderer.EmptyPolarRenderer(base)
 	}
 	r = base.render
 	return
@@ -373,7 +374,7 @@ func (base *BaseChart) SetTitleStyle(ts style.LabelStyle) {
 
 func (base *BaseChart) MouseIn(pX, pY, w, h, absX, absY float32) {
 	if base.planeType == CartesianPlane {
-		x, y := base.PositionToCartesianCoordinates(pX, pY, w, h)
+		x, y, _ := base.PositionToCartesianCoordinates(pX, pY, w, h)
 		base.tooltip.MouseIn(pX, pY)
 		text := ""
 		switch base.fromType {
@@ -386,7 +387,7 @@ func (base *BaseChart) MouseIn(pX, pY, w, h, absX, absY float32) {
 		}
 		base.tooltip.SetEntries([]string{text})
 	} else {
-		phi, r, _, _ := base.PositionToPolarCoordinates(pX, pY, w, h)
+		phi, r, _, _, _ := base.PositionToPolarCoordinates(pX, pY, w, h)
 		base.tooltip.MouseIn(pX, pY)
 		text := ""
 		switch base.fromType {
@@ -404,7 +405,7 @@ func (base *BaseChart) MouseIn(pX, pY, w, h, absX, absY float32) {
 
 func (base *BaseChart) MouseMove(pX, pY, w, h, absX, absY float32) {
 	if base.planeType == CartesianPlane {
-		x, y := base.PositionToCartesianCoordinates(pX, pY, w, h)
+		x, y, _ := base.PositionToCartesianCoordinates(pX, pY, w, h)
 		c := base.tooltip.MouseMove(pX, pY)
 		if c > 3 {
 			text := ""
@@ -420,7 +421,7 @@ func (base *BaseChart) MouseMove(pX, pY, w, h, absX, absY float32) {
 			base.Refresh()
 		}
 	} else {
-		phi, r, _, _ := base.PositionToPolarCoordinates(pX, pY, w, h)
+		phi, r, _, _, _ := base.PositionToPolarCoordinates(pX, pY, w, h)
 		c := base.tooltip.MouseMove(pX, pY)
 		if c > 3 {
 			text := ""
@@ -444,9 +445,15 @@ func (base *BaseChart) MouseOut() {
 }
 
 func (base *BaseChart) PixelGenCartesian(pX, pY, w, h int) (col color.Color) {
-	x, y := base.PositionToCartesianCoordinates(float32(pX), float32(pY), float32(w), float32(h))
 	col = color.RGBA{0x00, 0x00, 0x00, 0x00}
-	for i := range base.series {
+	if len(base.rasterSeries) == 0 {
+		return
+	}
+	x, y, inRange := base.PositionToCartesianCoordinates(float32(pX), float32(pY), float32(w), float32(h))
+	if !inRange {
+		return
+	}
+	for i := range base.rasterSeries {
 		serCol := base.series[i].RasterColorCartesian(x, y)
 		r, g, b, _ := serCol.RGBA()
 		if r > 0 || g > 0 || b > 0 {
@@ -458,13 +465,15 @@ func (base *BaseChart) PixelGenCartesian(pX, pY, w, h int) (col color.Color) {
 }
 
 func (base *BaseChart) PixelGenPolar(pX, pY, w, h int) (col color.Color) {
-	phi, r, x, y := base.PositionToPolarCoordinates(float32(pX), float32(pY), float32(w), float32(h))
 	col = color.RGBA{0x00, 0x00, 0x00, 0x00}
-	_, rMax := base.toAx.NRange()
-	if r > rMax {
+	if len(base.rasterSeries) == 0 {
 		return
 	}
-	for i := range base.series {
+	phi, r, x, y, inRange := base.PositionToPolarCoordinates(float32(pX), float32(pY), float32(w), float32(h))
+	if !inRange {
+		return
+	}
+	for i := range base.rasterSeries {
 		serCol := base.series[i].RasterColorPolar(phi, r, x, y)
 		r, g, b, _ := serCol.RGBA()
 		if r > 0 || g > 0 || b > 0 {
@@ -475,7 +484,8 @@ func (base *BaseChart) PixelGenPolar(pX, pY, w, h int) (col color.Color) {
 	return
 }
 
-func (base *BaseChart) PositionToCartesianCoordinates(pX float32, pY float32, w float32, h float32) (x float64, y float64) {
+func (base *BaseChart) PositionToCartesianCoordinates(pX float32, pY float32, w float32, h float32) (x float64, y float64, inRange bool) {
+	inRange = true
 	xMin, xMax := base.fromAx.NRange()
 	yMin, yMax := base.toAx.NRange()
 	if base.transposed {
@@ -485,11 +495,15 @@ func (base *BaseChart) PositionToCartesianCoordinates(pX float32, pY float32, w 
 		x = xMin + ((float64(pX) / float64(w)) * (xMax - xMin))
 		y = yMin + ((float64(h-pY) / float64(h)) * (yMax - yMin))
 	}
+	if x < xMin || x > xMax || y < yMin || y > yMax {
+		inRange = false
+	}
 	return
 }
 
 func (base *BaseChart) PositionToPolarCoordinates(pX float32, pY float32, w float32, h float32) (phi float64,
-	r float64, x float64, y float64) {
+	r float64, x float64, y float64, inRange bool) {
+	inRange = true
 	_, rMax := base.toAx.NRange()
 	rot := 0.0
 	mathPos := true
@@ -510,6 +524,9 @@ func (base *BaseChart) PositionToPolarCoordinates(pX float32, pY float32, w floa
 		phi += 2 * math.Pi
 	} else if phi > 2*math.Pi {
 		phi -= 2 * math.Pi
+	}
+	if r > rMax {
+		inRange = false
 	}
 	return
 }

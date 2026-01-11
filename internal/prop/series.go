@@ -164,8 +164,9 @@ func (point *proportionPoint) cartesianTexts(xMin float64, xMax float64, yMin fl
 	return
 }
 
-func (point *proportionPoint) RasterColorPolar(phi float64, r float64, x float64, y float64) (col color.Color) {
+func (point *proportionPoint) RasterColorPolar(phi float64, r float64) (col color.Color, useColor bool) {
 	col = color.RGBA{0x00, 0x00, 0x00, 0x00}
+	useColor = false
 	if !point.visible {
 		return
 	}
@@ -174,6 +175,7 @@ func (point *proportionPoint) RasterColorPolar(phi float64, r float64, x float64
 		r < point.hOffset || r > point.hOffset+point.height {
 		return
 	}
+	useColor = true
 	col = point.rect.FillColor
 	return
 }
@@ -208,6 +210,8 @@ type Series struct {
 	autoValTextColor bool
 	legendEntry      *interact.LegendEntry
 	chart            *BaseChart
+	height           float64
+	hOffset          float64
 }
 
 func EmptyProportionalSeries(name string) (ser *Series) {
@@ -279,15 +283,16 @@ func (ser *Series) CartesianTexts(xMin float64, xMax float64, yMin float64,
 	return
 }
 
-func (ser *Series) RasterColorPolar(phi float64, r float64, x float64, y float64) (col color.Color) {
+func (ser *Series) RasterColorPolar(phi float64, r float64) (col color.Color, useColor bool) {
 	col = color.RGBA{0x00, 0x00, 0x00, 0x00}
-	if !ser.visible {
+	useColor = false
+	if !ser.visible || r < ser.hOffset || r > ser.hOffset+ser.height {
 		return
 	}
+	pCol := col
 	for i := range ser.data {
-		pCol := ser.data[i].RasterColorPolar(phi, r, x, y)
-		r, g, b, _ := pCol.RGBA()
-		if r > 0 || g > 0 || b > 0 {
+		pCol, useColor = ser.data[i].RasterColorPolar(phi, r)
+		if useColor {
 			col = pCol
 			break
 		}
@@ -366,6 +371,8 @@ func (ser *Series) pointVisibilityUpdate(totChange float64) {
 }
 
 func (ser *Series) SetHeightAndOffset(h float64, hOffset float64) {
+	ser.height = h
+	ser.hOffset = hOffset
 	for i := range ser.data {
 		ser.data[i].height = h
 		ser.data[i].hOffset = hOffset

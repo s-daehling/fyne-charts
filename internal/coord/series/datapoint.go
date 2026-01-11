@@ -20,15 +20,19 @@ type catOffset struct {
 }
 
 type dataPoint struct {
-	c                   string
-	t                   time.Time
-	n                   float64
-	val                 float64
-	valBase             float64
-	nBarWidth           float64
-	tBarWidth           time.Duration
-	nBarShift           float64
-	tBarShift           time.Duration
+	c         string
+	t         time.Time
+	n         float64
+	val       float64
+	valBase   float64
+	nBarWidth float64
+	tBarWidth time.Duration
+	nBarShift float64
+	tBarShift time.Duration
+	// nBarStart           float64
+	// nBarEnd             float64
+	// valBarStart         float64
+	// valBarEnd           float64
 	dot                 *canvas.Circle
 	fromValBase         *canvas.Line
 	fromPrev            *canvas.Line
@@ -116,6 +120,13 @@ func (point *dataPoint) setTBarWidthAndShift(bw time.Duration, bs time.Duration)
 	point.tBarWidth = bw
 	point.tBarShift = bs
 }
+
+// func (point *dataPoint) calculateBarRange() {
+// 	point.nBarStart = point.n + point.nBarShift - (point.nBarWidth / 2)
+// 	point.valBarStart = math.Min(point.valBase, point.valBase+point.val)
+// 	point.nBarEnd = point.n + point.nBarShift + (point.nBarWidth / 2)
+// 	point.valBarEnd = math.Max(point.valBase, point.valBase+point.val)
+// }
 
 func (point *dataPoint) cartesianNodes(xMin float64, xMax float64, yMin float64,
 	yMax float64) (ns []renderer.CartesianNode) {
@@ -238,35 +249,36 @@ func (point *dataPoint) cartesianRects(xMin float64, xMax float64, yMin float64,
 	if !point.showBar || point.n < xMin || point.n > xMax {
 		return
 	}
-	if stacked {
-		rs = append(rs, renderer.CartesianRect{
-			X1:   point.n + point.nBarShift - (point.nBarWidth / 2),
-			Y1:   math.Max(math.Min(point.valBase, point.valBase+point.val), yMin),
-			X2:   point.n + point.nBarShift + (point.nBarWidth / 2),
-			Y2:   math.Min(math.Max(point.valBase, point.valBase+point.val), yMax),
-			Rect: point.bar,
-		})
-	} else {
-		rs = append(rs, renderer.CartesianRect{
-			X1:   point.n + point.nBarShift - (point.nBarWidth / 2),
-			Y1:   math.Max(yMin, math.Min(point.valBase, point.val)),
-			X2:   point.n + point.nBarShift + (point.nBarWidth / 2),
-			Y2:   math.Min(yMax, math.Max(point.valBase, point.val)),
-			Rect: point.bar,
-		})
-	}
+	// if stacked {
+	rs = append(rs, renderer.CartesianRect{
+		X1:   point.n + point.nBarShift - (point.nBarWidth / 2),
+		Y1:   math.Max(math.Min(point.valBase, point.valBase+point.val), yMin),
+		X2:   point.n + point.nBarShift + (point.nBarWidth / 2),
+		Y2:   math.Min(math.Max(point.valBase, point.valBase+point.val), yMax),
+		Rect: point.bar,
+	})
+	// } else {
+	// 	rs = append(rs, renderer.CartesianRect{
+	// 		X1:   point.n + point.nBarShift - (point.nBarWidth / 2),
+	// 		Y1:   math.Max(yMin, math.Min(point.valBase, point.val)),
+	// 		X2:   point.n + point.nBarShift + (point.nBarWidth / 2),
+	// 		Y2:   math.Min(yMax, math.Max(point.valBase, point.val)),
+	// 		Rect: point.bar,
+	// 	})
+	// }
 	return
 }
 
-func (point *dataPoint) RasterColorPolar(phi float64, r float64, x float64,
-	y float64) (col color.Color) {
+func (point *dataPoint) RasterColorPolar(phi float64, r float64) (col color.Color, useColor bool) {
 	col = color.RGBA{0x00, 0x00, 0x00, 0x00}
+	useColor = false
 	if !point.showBar || phi < point.n+point.nBarShift-(point.nBarWidth/2) ||
 		phi > point.n+point.nBarShift+(point.nBarWidth/2) ||
 		r < point.valBase || r > point.val+point.valBase {
 		return
 	}
 	col = point.bar.FillColor
+	useColor = true
 	return
 }
 
@@ -285,6 +297,8 @@ type PointSeries struct {
 	showArea            bool
 	sortPoints          bool
 	isStacked           bool
+	valMin              float64
+	valMax              float64
 }
 
 func EmptyPointSeries(name string, color color.Color) (ser *PointSeries) {
@@ -301,25 +315,6 @@ func EmptyPointSeries(name string, color color.Color) (ser *PointSeries) {
 		showArea:            false,
 		isStacked:           false,
 		sortPoints:          true,
-	}
-	ser.baseSeries = emptyBaseSeries(name, color, ser.toggleView)
-	return
-}
-
-func EmptyBarSeries(name string, color color.Color, stacked bool) (ser *PointSeries) {
-	ser = &PointSeries{
-		valBase:             0,
-		nBarWidth:           0,
-		tBarWidth:           0,
-		nBarShift:           0,
-		tBarShift:           0,
-		showDot:             false,
-		showFromValBaseLine: false,
-		showFromPrevLine:    false,
-		showBar:             true,
-		showArea:            false,
-		sortPoints:          false,
-		isStacked:           stacked,
 	}
 	ser.baseSeries = emptyBaseSeries(name, color, ser.toggleView)
 	return
@@ -470,6 +465,8 @@ func (ser *PointSeries) ValRange() (isEmpty bool, min float64, max float64) {
 			max = pMax
 		}
 	}
+	ser.valMin = min
+	ser.valMax = max
 	return
 }
 
@@ -520,7 +517,7 @@ func (ser *PointSeries) CartesianRects(xMin float64, xMax float64, yMin float64,
 
 func (ser *PointSeries) RasterColorCartesian(x float64, y float64) (col color.Color) {
 	col = ser.baseSeries.RasterColorCartesian(x, y)
-	if !ser.visible || !ser.showArea {
+	if !ser.visible || !ser.showArea || y < ser.valMin || y > ser.valMax {
 		return
 	}
 	// find first data point with x higher
@@ -573,14 +570,13 @@ func (ser *PointSeries) PolarEdges(phiMin float64, phiMax float64, rMin float64,
 func (ser *PointSeries) RasterColorPolar(phi float64, r float64, x float64,
 	y float64) (col color.Color) {
 	col = ser.baseSeries.RasterColorPolar(phi, r, x, y)
-	if !ser.visible || (!ser.showBar && !ser.showArea) {
+	if !ser.visible || (!ser.showBar && !ser.showArea) || r > ser.valMax {
 		return
 	}
 	if ser.showBar {
 		for i := range ser.data {
-			pCol := ser.data[i].RasterColorPolar(phi, r, x, y)
-			r, g, b, _ := pCol.RGBA()
-			if r > 0 || g > 0 || b > 0 {
+			pCol, useColor := ser.data[i].RasterColorPolar(phi, r)
+			if useColor {
 				col = pCol
 				break
 			}
@@ -606,6 +602,19 @@ func (ser *PointSeries) RasterColorPolar(phi float64, r float64, x float64,
 			}
 		}
 	}
+	return
+}
+
+func (ser *PointSeries) IsPartOfChartRaster() (b bool) {
+	b = false
+	if ser.cont == nil || !ser.visible {
+		return
+	}
+	if (ser.cont.IsPolar() && !ser.showBar && !ser.showArea) ||
+		(!ser.cont.IsPolar() && !ser.showArea) {
+		return
+	}
+	b = true
 	return
 }
 
@@ -681,7 +690,7 @@ func (ser *PointSeries) toggleView() {
 		ser.Show()
 	}
 	if ser.showArea && ser.cont != nil {
-		ser.cont.RasterVisibilityChange()
+		ser.cont.RasterRefresh()
 	}
 }
 

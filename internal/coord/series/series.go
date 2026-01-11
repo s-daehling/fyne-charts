@@ -129,6 +129,11 @@ func (ser *baseSeries) RasterColorPolar(phi float64, r float64, x float64, y flo
 	return
 }
 
+func (ser *baseSeries) IsPartOfChartRaster() (b bool) {
+	b = false
+	return
+}
+
 func (ser *baseSeries) RefreshTheme() {}
 
 type Series interface {
@@ -154,13 +159,14 @@ type Series interface {
 	PolarTexts(phiMin float64, phiMax float64, rMin float64, rMax float64) (es []renderer.PolarText)
 	RasterColorCartesian(x float64, y float64) (col color.Color)
 	RasterColorPolar(phi float64, r float64, x float64, y float64) (col color.Color)
+	IsPartOfChartRaster() (b bool)
 	RefreshTheme()
 }
 
 type container interface {
 	IsPolar() (b bool)
 	DataChange()
-	RasterVisibilityChange()
+	RasterRefresh()
 	AddLegendEntry(le *interact.LegendEntry)
 	RemoveLegendEntry(name string, super string)
 }

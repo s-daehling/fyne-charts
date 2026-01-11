@@ -14,19 +14,18 @@ type baseChart interface {
 	Overlay() (io *interact.Overlay)
 	ChartSizeChange(fromSpace float32, toSpace float32)
 	RefreshTheme()
+	Size() (size fyne.Size)
 }
 
 type baseRenderer struct {
 	margin     float32
 	tickLength float32
-	widgetSize func() fyne.Size
 }
 
-func emptyBaseRenderer(ws func() fyne.Size) (r baseRenderer) {
+func emptyBaseRenderer() (r baseRenderer) {
 	r = baseRenderer{
 		margin:     10.0,
 		tickLength: 5.0,
-		widgetSize: ws,
 	}
 	return
 }

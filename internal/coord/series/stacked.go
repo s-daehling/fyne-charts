@@ -11,7 +11,9 @@ import (
 
 type StackedSeries struct {
 	baseSeries
-	stack []*PointSeries
+	stack  []*PointSeries
+	valMin float64
+	valMax float64
 }
 
 func EmptyStackedSeries(name string) (ser *StackedSeries) {
@@ -34,9 +36,9 @@ func (ser *StackedSeries) DataChange() {
 	}
 }
 
-func (ser *StackedSeries) RasterVisibilityChange() {
+func (ser *StackedSeries) RasterRefresh() {
 	if ser.cont != nil {
-		ser.cont.RasterVisibilityChange()
+		ser.cont.RasterRefresh()
 	}
 }
 
@@ -98,6 +100,8 @@ func (ser *StackedSeries) ValRange() (isEmpty bool, min float64, max float64) {
 			}
 		}
 	}
+	ser.valMin = min
+	ser.valMax = max
 	return
 }
 
@@ -117,7 +121,7 @@ func (ser *StackedSeries) CartesianRects(xMin float64, xMax float64, yMin float6
 
 func (ser *StackedSeries) RasterColorPolar(phi float64, r float64, x float64, y float64) (col color.Color) {
 	col = ser.baseSeries.RasterColorPolar(phi, r, x, y)
-	if !ser.visible {
+	if !ser.visible || r > ser.valMax {
 		return
 	}
 	for i := range ser.stack {
@@ -128,6 +132,18 @@ func (ser *StackedSeries) RasterColorPolar(phi float64, r float64, x float64, y 
 			break
 		}
 	}
+	return
+}
+
+func (ser *StackedSeries) IsPartOfChartRaster() (b bool) {
+	b = false
+	if ser.cont == nil || !ser.visible {
+		return
+	}
+	if !ser.cont.IsPolar() {
+		return
+	}
+	b = true
 	return
 }
 

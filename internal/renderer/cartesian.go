@@ -31,9 +31,9 @@ type Cartesian struct {
 	transposed bool
 }
 
-func EmptyCartesianRenderer(chart CartesianChart, ws func() fyne.Size) (r *Cartesian) {
+func EmptyCartesianRenderer(chart CartesianChart) (r *Cartesian) {
 	r = &Cartesian{
-		baseRenderer: emptyBaseRenderer(ws),
+		baseRenderer: emptyBaseRenderer(),
 		transposed:   false,
 		chart:        chart,
 	}
@@ -252,7 +252,7 @@ func (r *Cartesian) Refresh() {
 		obj[i].Refresh()
 	}
 
-	r.Layout(r.widgetSize())
+	r.Layout(r.chart.Size())
 	// 	r.chart.resetHasChanged()
 	// }
 }
