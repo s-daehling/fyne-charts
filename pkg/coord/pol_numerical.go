@@ -158,10 +158,7 @@ func (numChart *PolarNumericalChart) SetAutoRTicks(autoSupportLine bool) {
 }
 
 // SetRAxisStyle changes the style of the R-axis
-// default value label size: theme.SizeNameSubHeadingText
-// default value label color: theme.ColorNameForeground
-// default value axis color: theme.ColorNameForeground
-func (numChart *PolarNumericalChart) SetRAxisStyle(labelStyle style.LabelStyle,
+func (numChart *PolarNumericalChart) SetRAxisStyle(labelStyle style.TextStyle,
 	axisStyle style.AxisStyle) {
 	if numChart.base == nil {
 		return
@@ -213,10 +210,7 @@ func (numChart *PolarNumericalChart) SetAutoPhiTicks(autoSupportLine bool) {
 }
 
 // SetPhiAxisStyle changes the style of the Phi-axis
-// default value label size: theme.SizeNameSubHeadingText
-// default value label color: theme.ColorNameForeground
-// default value axis color: theme.ColorNameForeground
-func (numChart *PolarNumericalChart) SetPhiAxisStyle(labelStyle style.LabelStyle,
+func (numChart *PolarNumericalChart) SetPhiAxisStyle(labelStyle style.TextStyle,
 	axisStyle style.AxisStyle) {
 	if numChart.base == nil {
 		return

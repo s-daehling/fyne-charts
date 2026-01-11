@@ -130,10 +130,7 @@ func (catChart *PolarCategoricalChart) SetAutoRTicks(autoSupportLine bool) {
 }
 
 // SetRAxisStyle changes the style of the R-axis
-// default value label size: theme.SizeNameSubHeadingText
-// default value label color: theme.ColorNameForeground
-// default value axis color: theme.ColorNameForeground
-func (catChart *PolarCategoricalChart) SetRAxisStyle(labelStyle style.LabelStyle,
+func (catChart *PolarCategoricalChart) SetRAxisStyle(labelStyle style.TextStyle,
 	axisStyle style.AxisStyle) {
 	if catChart.base == nil {
 		return
@@ -170,10 +167,7 @@ func (catChart *PolarCategoricalChart) SetAutoCRange() {
 }
 
 // SetCAxisStyle changes the style of the C-axis
-// default value label size: theme.SizeNameSubHeadingText
-// default value label color: theme.ColorNameForeground
-// default value axis color: theme.ColorNameForeground
-func (catChart *PolarCategoricalChart) SetCAxisStyle(labelStyle style.LabelStyle,
+func (catChart *PolarCategoricalChart) SetCAxisStyle(labelStyle style.TextStyle,
 	axisStyle style.AxisStyle) {
 	if catChart.base == nil {
 		return

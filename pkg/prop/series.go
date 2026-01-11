@@ -1,10 +1,9 @@
 package prop
 
 import (
-	"image/color"
-
 	"github.com/s-daehling/fyne-charts/internal/prop"
 	"github.com/s-daehling/fyne-charts/pkg/data"
+	"github.com/s-daehling/fyne-charts/pkg/style"
 )
 
 // Series represents a proportional series over a proportional axis
@@ -37,14 +36,9 @@ func (ps *Series) Name() (n string) {
 	return
 }
 
-// SetValTextColor changes the color of value labels
-func (ps *Series) SetValTextColor(col color.Color) {
-	ps.ser.SetValTextColor(col)
-}
-
-// AutoValTextColor sets the color of value labels to the default (theme.ColorNameForeground)
-func (ps *Series) SetAutoValTextColor() {
-	ps.ser.SetAutoValTextColor()
+// SetValTextColor changes the style of value labels
+func (ps *Series) SetValueTextStyle(textStyle style.TextStyle) {
+	ps.ser.SetValTextStyle(textStyle)
 }
 
 // Show makes the elements of the series visible

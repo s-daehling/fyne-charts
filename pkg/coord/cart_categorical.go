@@ -148,10 +148,7 @@ func (catChart *CartesianCategoricalChart) SetAutoYTicks(autoSupportLine bool) {
 }
 
 // SetYAxisStyle changes the style of the Y-axis
-// default value label size: theme.SizeNameSubHeadingText
-// default value label color: theme.ColorNameForeground
-// default value axis color: theme.ColorNameForeground
-func (catChart *CartesianCategoricalChart) SetYAxisStyle(labelStyle style.LabelStyle,
+func (catChart *CartesianCategoricalChart) SetYAxisStyle(labelStyle style.TextStyle,
 	axisStyle style.AxisStyle) {
 	if catChart.base == nil {
 		return
@@ -206,10 +203,7 @@ func (catChart *CartesianCategoricalChart) SetAutoCRange() {
 }
 
 // SetCAxisStyle changes the style of the C-axis
-// default value label size: theme.SizeNameSubHeadingText
-// default value label color: theme.ColorNameForeground
-// default value axis color: theme.ColorNameForeground
-func (catChart *CartesianCategoricalChart) SetCAxisStyle(labelStyle style.LabelStyle,
+func (catChart *CartesianCategoricalChart) SetCAxisStyle(labelStyle style.TextStyle,
 	axisStyle style.AxisStyle) {
 	if catChart.base == nil {
 		return

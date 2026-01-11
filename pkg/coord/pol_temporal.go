@@ -154,10 +154,7 @@ func (tempChart *PolarTemporalChart) SetAutoRTicks(autoSupportLine bool) {
 }
 
 // SetRAxisStyle changes the style of the R-axis
-// default value label size: theme.SizeNameSubHeadingText
-// default value label color: theme.ColorNameForeground
-// default value axis color: theme.ColorNameForeground
-func (tempChart *PolarTemporalChart) SetRAxisStyle(labelStyle style.LabelStyle,
+func (tempChart *PolarTemporalChart) SetRAxisStyle(labelStyle style.TextStyle,
 	axisStyle style.AxisStyle) {
 	if tempChart.base == nil {
 		return
@@ -227,10 +224,7 @@ func (tempChart *PolarTemporalChart) SetAutoTTicks(autoSupportLine bool) {
 }
 
 // SetTAxisStyle changes the style of the T-axis
-// default value label size: theme.SizeNameSubHeadingText
-// default value label color: theme.ColorNameForeground
-// default value axis color: theme.ColorNameForeground
-func (tempChart *PolarTemporalChart) SetTAxisStyle(labelStyle style.LabelStyle,
+func (tempChart *PolarTemporalChart) SetTAxisStyle(labelStyle style.TextStyle,
 	axisStyle style.AxisStyle) {
 	if tempChart.base == nil {
 		return

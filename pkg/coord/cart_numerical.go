@@ -179,10 +179,7 @@ func (numChart *CartesianNumericalChart) SetAutoYTicks(autoSupportLine bool) {
 }
 
 // SetYAxisStyle changes the style of the Y-axis
-// default value label size: theme.SizeNameSubHeadingText
-// default value label color: theme.ColorNameForeground
-// default value axis color: theme.ColorNameForeground
-func (numChart *CartesianNumericalChart) SetYAxisStyle(labelStyle style.LabelStyle,
+func (numChart *CartesianNumericalChart) SetYAxisStyle(labelStyle style.TextStyle,
 	axisStyle style.AxisStyle) {
 	if numChart.base == nil {
 		return
@@ -252,10 +249,7 @@ func (numChart *CartesianNumericalChart) SetAutoXTicks(autoSupportLine bool) {
 }
 
 // SetXAxisStyle changes the style of the X-axis
-// default value label size: theme.SizeNameSubHeadingText
-// default value label color: theme.ColorNameForeground
-// default value axis color: theme.ColorNameForeground
-func (numChart *CartesianNumericalChart) SetXAxisStyle(labelStyle style.LabelStyle,
+func (numChart *CartesianNumericalChart) SetXAxisStyle(labelStyle style.TextStyle,
 	axisStyle style.AxisStyle) {
 	if numChart.base == nil {
 		return

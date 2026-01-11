@@ -12,6 +12,7 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/theme"
 )
 
 func main() {
@@ -142,14 +143,16 @@ func pieChart() (propChart *prop.PieChart, err error) {
 	if err != nil {
 		return
 	}
-	ps.SetValTextColor(color.Black)
+	ts := style.DefaultValueTextStyle()
+	ts.ColorName = theme.ColorNameBackground
+	ps.SetValueTextStyle(ts)
 
 	propChart.SetTitle("Proportional Pie/Doughnut Chart")
 
 	go func() {
 		time.Sleep(time.Second * 2)
 		fyne.Do(func() {
-			propChart.SetLegendStyle(style.LegendLocationTop, style.DefaultLegendLabelStyle(), true)
+			propChart.SetLegendStyle(style.LegendLocationTop, style.DefaultLegendTextStyle(), true)
 		})
 	}()
 	return

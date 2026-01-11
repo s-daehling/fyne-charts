@@ -37,7 +37,7 @@ const (
 type BaseChart struct {
 	widget.BaseWidget
 	title             *canvas.Text
-	titleStyle        style.LabelStyle
+	titleStyle        style.TextStyle
 	fromAx            *axis.Axis
 	toAx              *axis.Axis
 	series            []series.Series
@@ -121,7 +121,7 @@ func EmptyBaseChart(pType PlaneType, fType FromType) (base *BaseChart) {
 	base.SetFromAxisLabelStyle(style.DefaultAxisLabelStyle())
 	base.SetToAxisStyle(style.DefaultAxisStyle())
 	base.SetToAxisLabelStyle(style.DefaultAxisLabelStyle())
-	base.SetLegendStyle(style.LegendLocationRight, style.DefaultLegendLabelStyle(), true)
+	base.SetLegendStyle(style.LegendLocationRight, style.DefaultLegendTextStyle(), true)
 	base.updateRangeAndOrigin()
 	base.ExtendBaseWidget(base)
 	return
@@ -321,7 +321,7 @@ func (base *BaseChart) Overlay() (io *interact.Overlay) {
 	return
 }
 
-func (base *BaseChart) SetLegendStyle(loc style.LegendLocation, ls style.LabelStyle, interactive bool) {
+func (base *BaseChart) SetLegendStyle(loc style.LegendLocation, ls style.TextStyle, interactive bool) {
 	base.legend.SetStyle(loc, ls, interactive)
 	base.lLegendCont.RemoveAll()
 	base.rLegendCont.RemoveAll()
@@ -363,7 +363,7 @@ func (base *BaseChart) SetTitle(l string) {
 	base.title.Refresh()
 }
 
-func (base *BaseChart) SetTitleStyle(ts style.LabelStyle) {
+func (base *BaseChart) SetTitleStyle(ts style.TextStyle) {
 	base.titleStyle = ts
 	base.title.Alignment = ts.Alignment
 	base.title.TextSize = theme.Size(ts.SizeName)

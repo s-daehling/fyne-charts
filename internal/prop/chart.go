@@ -25,7 +25,7 @@ const (
 type BaseChart struct {
 	widget.BaseWidget
 	title         *canvas.Text
-	titleStyle    style.LabelStyle
+	titleStyle    style.TextStyle
 	series        []*Series
 	changed       bool
 	legend        *interact.Legend
@@ -70,7 +70,7 @@ func EmptyBaseChart(pType PlaneType) (base *BaseChart) {
 		base.rLegendCont,
 		base)
 	base.SetTitleStyle(style.DefaultTitleStyle())
-	base.SetLegendStyle(style.LegendLocationRight, style.DefaultLegendLabelStyle(), true)
+	base.SetLegendStyle(style.LegendLocationRight, style.DefaultLegendTextStyle(), true)
 	if pType == CartesianPlane {
 		base.rast = nil
 		base.fromMax = 100
@@ -190,7 +190,7 @@ func (base *BaseChart) Overlay() (io *interact.Overlay) {
 	return
 }
 
-func (base *BaseChart) SetLegendStyle(loc style.LegendLocation, ls style.LabelStyle, interactive bool) {
+func (base *BaseChart) SetLegendStyle(loc style.LegendLocation, ls style.TextStyle, interactive bool) {
 	base.legend.SetStyle(loc, ls, interactive)
 	base.lLegendCont.RemoveAll()
 	base.rLegendCont.RemoveAll()
@@ -230,7 +230,7 @@ func (base *BaseChart) SetTitle(l string) {
 	base.title.Refresh()
 }
 
-func (base *BaseChart) SetTitleStyle(ts style.LabelStyle) {
+func (base *BaseChart) SetTitleStyle(ts style.TextStyle) {
 	base.titleStyle = ts
 	base.title.Alignment = ts.Alignment
 	base.title.TextSize = theme.Size(ts.SizeName)

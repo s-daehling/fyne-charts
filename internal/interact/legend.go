@@ -17,7 +17,7 @@ type Legend struct {
 	widget.BaseWidget
 	les         []*LegendEntry
 	location    style.LegendLocation
-	style       style.LabelStyle
+	style       style.TextStyle
 	interactive bool
 }
 
@@ -25,7 +25,7 @@ func NewLegend() (l *Legend) {
 	l = &Legend{
 		les: make([]*LegendEntry, 0),
 	}
-	l.SetStyle(style.LegendLocationRight, style.DefaultLegendLabelStyle(), true)
+	l.SetStyle(style.LegendLocationRight, style.DefaultLegendTextStyle(), true)
 	l.ExtendBaseWidget(l)
 	return
 }
@@ -78,7 +78,7 @@ func (l *Legend) Location() (loc style.LegendLocation) {
 	return
 }
 
-func (l *Legend) SetStyle(loc style.LegendLocation, s style.LabelStyle, interactive bool) {
+func (l *Legend) SetStyle(loc style.LegendLocation, s style.TextStyle, interactive bool) {
 	l.location = loc
 	l.style = s
 	l.interactive = interactive
@@ -241,7 +241,7 @@ type LegendEntry struct {
 	subShowSuper bool
 	box          *legendBox
 	label        *canvas.Text
-	style        style.LabelStyle
+	style        style.TextStyle
 }
 
 func NewLegendEntry(name string, super string, showBox bool, col color.Color, tapFct func()) (le *LegendEntry) {
@@ -299,7 +299,7 @@ func (le *LegendEntry) Hide() {
 	le.box.ToCircle()
 }
 
-func (le *LegendEntry) setStyle(ls style.LabelStyle) {
+func (le *LegendEntry) setStyle(ls style.TextStyle) {
 	le.style = ls
 	le.label.Color = theme.Color(ls.ColorName)
 	le.label.TextSize = theme.Size(ls.SizeName)

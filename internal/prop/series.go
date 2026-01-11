@@ -12,6 +12,7 @@ import (
 	"github.com/s-daehling/fyne-charts/internal/renderer"
 
 	"github.com/s-daehling/fyne-charts/pkg/data"
+	"github.com/s-daehling/fyne-charts/pkg/style"
 )
 
 func (base *BaseChart) addSeriesIfNotExist(ser *Series) (err error) {
@@ -65,6 +66,7 @@ type proportionPoint struct {
 	valOffset   float64
 	rect        *canvas.Rectangle
 	text        *canvas.Text
+	textStyle   style.TextStyle
 	visible     bool
 	legendEntry *interact.LegendEntry
 	ser         *Series
@@ -121,6 +123,19 @@ func (point *proportionPoint) show() {
 	if point.ser != nil {
 		point.ser.pointVisibilityUpdate(point.val)
 	}
+}
+
+func (point *proportionPoint) setTextStyle(ts style.TextStyle) {
+	point.textStyle = ts
+	point.text.TextSize = theme.Size(ts.SizeName)
+	point.text.Color = theme.Color(ts.ColorName)
+	point.text.TextStyle = ts.TextStyle
+	point.text.Refresh()
+}
+
+func (point *proportionPoint) refreshTheme() {
+	point.text.Color = theme.Color(point.textStyle.ColorName)
+	point.text.TextSize = theme.Size(point.textStyle.SizeName)
 }
 
 func (point *proportionPoint) cartesianRects(xMin float64, xMax float64, yMin float64,
@@ -202,25 +217,25 @@ func (point *proportionPoint) polarTexts(phiMin float64, phiMax float64, rMin fl
 }
 
 type Series struct {
-	showText         bool
-	data             []*proportionPoint
-	tot              float64
-	name             string
-	visible          bool
-	autoValTextColor bool
-	legendEntry      *interact.LegendEntry
-	chart            *BaseChart
-	height           float64
-	hOffset          float64
+	showText    bool
+	data        []*proportionPoint
+	tot         float64
+	name        string
+	visible     bool
+	legendEntry *interact.LegendEntry
+	textStyle   style.TextStyle
+	chart       *BaseChart
+	height      float64
+	hOffset     float64
 }
 
 func EmptyProportionalSeries(name string) (ser *Series) {
 	ser = &Series{
-		name:             name,
-		visible:          true,
-		showText:         true,
-		autoValTextColor: true,
+		name:     name,
+		visible:  true,
+		showText: true,
 	}
+	ser.SetValTextStyle(style.DefaultValueTextStyle())
 	ser.legendEntry = interact.NewLegendEntry(name, "", false, theme.Color(theme.ColorNameForeground), ser.toggleView)
 	return
 }
@@ -310,25 +325,14 @@ func (ser *Series) PolarTexts(phiMin float64, phiMax float64, rMin float64,
 
 func (ser *Series) RefreshTheme() {
 	for i := range ser.data {
-		if ser.autoValTextColor {
-			ser.data[i].text.Color = theme.Color(theme.ColorNameForeground)
-		}
+		ser.data[i].refreshTheme()
 	}
 }
 
-func (ser *Series) SetValTextColor(col color.Color) {
-	ser.autoValTextColor = false
+func (ser *Series) SetValTextStyle(ts style.TextStyle) {
+	ser.textStyle = ts
 	for i := range ser.data {
-		ser.data[i].text.Color = col
-		ser.data[i].text.Refresh()
-	}
-}
-
-func (ser *Series) SetAutoValTextColor() {
-	ser.autoValTextColor = true
-	for i := range ser.data {
-		ser.data[i].text.Color = theme.Color(theme.ColorNameForeground)
-		ser.data[i].text.Refresh()
+		ser.data[i].setTextStyle(ts)
 	}
 }
 
@@ -451,6 +455,7 @@ func (ser *Series) AddData(input []data.ProportionalPoint) (err error) {
 			continue
 		}
 		pPoint := emptyProportionPoint(input[i].C, input[i].Col, ser)
+		pPoint.setTextStyle(ser.textStyle)
 		pPoint.val = input[i].Val
 		ser.data = append(ser.data, pPoint)
 		ser.tot += pPoint.val

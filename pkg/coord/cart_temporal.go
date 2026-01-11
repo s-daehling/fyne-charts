@@ -180,10 +180,7 @@ func (tempChart *CartesianTemporalChart) SetAutoYTicks(autoSupportLine bool) {
 }
 
 // SetYAxisStyle changes the style of the Y-axis
-// default value label size: theme.SizeNameSubHeadingText
-// default value label color: theme.ColorNameForeground
-// default value axis color: theme.ColorNameForeground
-func (tempChart *CartesianTemporalChart) SetYAxisStyle(labelStyle style.LabelStyle,
+func (tempChart *CartesianTemporalChart) SetYAxisStyle(labelStyle style.TextStyle,
 	axisStyle style.AxisStyle) {
 	if tempChart.base == nil {
 		return
@@ -253,10 +250,7 @@ func (tempChart *CartesianTemporalChart) SetAutoTTicks(autoSupportLine bool) {
 }
 
 // SetTAxisStyle changes the style of the T-axis
-// default value label size: theme.SizeNameSubHeadingText
-// default value label color: theme.ColorNameForeground
-// default value axis color: theme.ColorNameForeground
-func (tempChart *CartesianTemporalChart) SetTAxisStyle(labelStyle style.LabelStyle,
+func (tempChart *CartesianTemporalChart) SetTAxisStyle(labelStyle style.TextStyle,
 	axisStyle style.AxisStyle) {
 	if tempChart.base == nil {
 		return
