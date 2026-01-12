@@ -14,14 +14,14 @@ const (
 	LegendLocationRight  LegendLocation = "right"
 )
 
-type TextStyle struct {
+type ChartTextStyle struct {
 	Alignment fyne.TextAlign
 	ColorName fyne.ThemeColorName
 	SizeName  fyne.ThemeSizeName
 	TextStyle fyne.TextStyle
 }
 
-func DefaultTitleStyle() (titleStyle TextStyle) {
+func DefaultTitleStyle() (titleStyle ChartTextStyle) {
 	titleStyle.Alignment = fyne.TextAlignCenter
 	titleStyle.ColorName = theme.ColorNameForeground
 	titleStyle.SizeName = theme.SizeNameHeadingText
@@ -29,7 +29,7 @@ func DefaultTitleStyle() (titleStyle TextStyle) {
 	return
 }
 
-func DefaultAxisLabelStyle() (axisLabelStyle TextStyle) {
+func DefaultAxisLabelStyle() (axisLabelStyle ChartTextStyle) {
 	axisLabelStyle.Alignment = fyne.TextAlignCenter
 	axisLabelStyle.ColorName = theme.ColorNameForeground
 	axisLabelStyle.SizeName = theme.SizeNameSubHeadingText
@@ -37,7 +37,7 @@ func DefaultAxisLabelStyle() (axisLabelStyle TextStyle) {
 	return
 }
 
-func DefaultLegendTextStyle() (legendTextStyle TextStyle) {
+func DefaultLegendTextStyle() (legendTextStyle ChartTextStyle) {
 	legendTextStyle.Alignment = fyne.TextAlignLeading
 	legendTextStyle.ColorName = theme.ColorNameForeground
 	legendTextStyle.SizeName = theme.SizeNameText
@@ -45,7 +45,7 @@ func DefaultLegendTextStyle() (legendTextStyle TextStyle) {
 	return
 }
 
-func DefaultValueTextStyle() (valueTextStyle TextStyle) {
+func DefaultValueTextStyle() (valueTextStyle ChartTextStyle) {
 	valueTextStyle.Alignment = fyne.TextAlignCenter
 	valueTextStyle.ColorName = theme.ColorNameForeground
 	valueTextStyle.SizeName = theme.SizeNameText

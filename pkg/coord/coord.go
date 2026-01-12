@@ -52,7 +52,7 @@ func (chart *coordChart) SetTitle(l string) {
 }
 
 // SetTitleStyle changes the style of the chart title
-func (chart *coordChart) SetTitleStyle(ts style.TextStyle) {
+func (chart *coordChart) SetTitleStyle(ts style.ChartTextStyle) {
 	if chart.base == nil {
 		return
 	}
@@ -76,7 +76,7 @@ func (chart *coordChart) ShowLegend() {
 }
 
 // SetLegendStyle changes the style of the chart legend
-func (chart *coordChart) SetLegendStyle(loc style.LegendLocation, labelStyle style.TextStyle, interactive bool) {
+func (chart *coordChart) SetLegendStyle(loc style.LegendLocation, labelStyle style.ChartTextStyle, interactive bool) {
 	if chart.base == nil {
 		return
 	}

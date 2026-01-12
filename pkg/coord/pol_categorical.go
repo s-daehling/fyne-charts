@@ -130,7 +130,7 @@ func (catChart *PolarCategoricalChart) SetAutoRTicks(autoSupportLine bool) {
 }
 
 // SetRAxisStyle changes the style of the R-axis
-func (catChart *PolarCategoricalChart) SetRAxisStyle(labelStyle style.TextStyle,
+func (catChart *PolarCategoricalChart) SetRAxisStyle(labelStyle style.ChartTextStyle,
 	axisStyle style.AxisStyle) {
 	if catChart.base == nil {
 		return
@@ -167,7 +167,7 @@ func (catChart *PolarCategoricalChart) SetAutoCRange() {
 }
 
 // SetCAxisStyle changes the style of the C-axis
-func (catChart *PolarCategoricalChart) SetCAxisStyle(labelStyle style.TextStyle,
+func (catChart *PolarCategoricalChart) SetCAxisStyle(labelStyle style.ChartTextStyle,
 	axisStyle style.AxisStyle) {
 	if catChart.base == nil {
 		return

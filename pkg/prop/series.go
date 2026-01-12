@@ -37,7 +37,7 @@ func (ps *Series) Name() (n string) {
 }
 
 // SetValTextColor changes the style of value labels
-func (ps *Series) SetValueTextStyle(textStyle style.TextStyle) {
+func (ps *Series) SetValueTextStyle(textStyle style.ChartTextStyle) {
 	ps.ser.SetValTextStyle(textStyle)
 }
 

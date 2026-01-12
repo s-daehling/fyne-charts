@@ -69,7 +69,7 @@ func (chart *propChart) SetTitle(l string) {
 }
 
 // SetTitleStyle changes the style of the chart title
-func (chart *propChart) SetTitleStyle(titleStyle style.TextStyle) {
+func (chart *propChart) SetTitleStyle(titleStyle style.ChartTextStyle) {
 	if chart.base == nil {
 		return
 	}
@@ -93,7 +93,7 @@ func (chart *propChart) ShowLegend() {
 }
 
 // SetLegendStyle changes the style of the chart legend
-func (chart *propChart) SetLegendStyle(loc style.LegendLocation, labelStyle style.TextStyle, interactive bool) {
+func (chart *propChart) SetLegendStyle(loc style.LegendLocation, labelStyle style.ChartTextStyle, interactive bool) {
 	if chart.base == nil {
 		return
 	}

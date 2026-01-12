@@ -66,7 +66,7 @@ type proportionPoint struct {
 	valOffset   float64
 	rect        *canvas.Rectangle
 	text        *canvas.Text
-	textStyle   style.TextStyle
+	textStyle   style.ChartTextStyle
 	visible     bool
 	legendEntry *interact.LegendEntry
 	ser         *Series
@@ -125,7 +125,7 @@ func (point *proportionPoint) show() {
 	}
 }
 
-func (point *proportionPoint) setTextStyle(ts style.TextStyle) {
+func (point *proportionPoint) setTextStyle(ts style.ChartTextStyle) {
 	point.textStyle = ts
 	point.text.TextSize = theme.Size(ts.SizeName)
 	point.text.Color = theme.Color(ts.ColorName)
@@ -223,7 +223,7 @@ type Series struct {
 	name        string
 	visible     bool
 	legendEntry *interact.LegendEntry
-	textStyle   style.TextStyle
+	textStyle   style.ChartTextStyle
 	chart       *BaseChart
 	height      float64
 	hOffset     float64
@@ -329,7 +329,7 @@ func (ser *Series) RefreshTheme() {
 	}
 }
 
-func (ser *Series) SetValTextStyle(ts style.TextStyle) {
+func (ser *Series) SetValTextStyle(ts style.ChartTextStyle) {
 	ser.textStyle = ts
 	for i := range ser.data {
 		ser.data[i].setTextStyle(ts)

@@ -58,7 +58,7 @@ type Axis struct {
 	name            string        // name/title of the axis
 	label           *canvas.Image // name/title of the axis; rotated if the axis is vertical
 	labelText       *canvas.Text
-	labelStyle      style.TextStyle
+	labelStyle      style.ChartTextStyle
 	space           float32
 	style           style.AxisStyle
 }
@@ -279,7 +279,7 @@ func (ax *Axis) SetLabel(l string) {
 	}
 }
 
-func (ax *Axis) SetAxisLabelStyle(ls style.TextStyle) {
+func (ax *Axis) SetAxisLabelStyle(ls style.ChartTextStyle) {
 	ax.labelStyle = ls
 	ax.labelText.TextSize = theme.Size(ls.SizeName)
 	ax.labelText.Color = theme.Color(ls.ColorName)

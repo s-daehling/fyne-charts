@@ -158,7 +158,7 @@ func (numChart *PolarNumericalChart) SetAutoRTicks(autoSupportLine bool) {
 }
 
 // SetRAxisStyle changes the style of the R-axis
-func (numChart *PolarNumericalChart) SetRAxisStyle(labelStyle style.TextStyle,
+func (numChart *PolarNumericalChart) SetRAxisStyle(labelStyle style.ChartTextStyle,
 	axisStyle style.AxisStyle) {
 	if numChart.base == nil {
 		return
@@ -210,7 +210,7 @@ func (numChart *PolarNumericalChart) SetAutoPhiTicks(autoSupportLine bool) {
 }
 
 // SetPhiAxisStyle changes the style of the Phi-axis
-func (numChart *PolarNumericalChart) SetPhiAxisStyle(labelStyle style.TextStyle,
+func (numChart *PolarNumericalChart) SetPhiAxisStyle(labelStyle style.ChartTextStyle,
 	axisStyle style.AxisStyle) {
 	if numChart.base == nil {
 		return

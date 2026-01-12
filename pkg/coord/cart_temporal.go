@@ -180,7 +180,7 @@ func (tempChart *CartesianTemporalChart) SetAutoYTicks(autoSupportLine bool) {
 }
 
 // SetYAxisStyle changes the style of the Y-axis
-func (tempChart *CartesianTemporalChart) SetYAxisStyle(labelStyle style.TextStyle,
+func (tempChart *CartesianTemporalChart) SetYAxisStyle(labelStyle style.ChartTextStyle,
 	axisStyle style.AxisStyle) {
 	if tempChart.base == nil {
 		return
@@ -250,7 +250,7 @@ func (tempChart *CartesianTemporalChart) SetAutoTTicks(autoSupportLine bool) {
 }
 
 // SetTAxisStyle changes the style of the T-axis
-func (tempChart *CartesianTemporalChart) SetTAxisStyle(labelStyle style.TextStyle,
+func (tempChart *CartesianTemporalChart) SetTAxisStyle(labelStyle style.ChartTextStyle,
 	axisStyle style.AxisStyle) {
 	if tempChart.base == nil {
 		return

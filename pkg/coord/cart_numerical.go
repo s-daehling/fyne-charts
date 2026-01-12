@@ -179,7 +179,7 @@ func (numChart *CartesianNumericalChart) SetAutoYTicks(autoSupportLine bool) {
 }
 
 // SetYAxisStyle changes the style of the Y-axis
-func (numChart *CartesianNumericalChart) SetYAxisStyle(labelStyle style.TextStyle,
+func (numChart *CartesianNumericalChart) SetYAxisStyle(labelStyle style.ChartTextStyle,
 	axisStyle style.AxisStyle) {
 	if numChart.base == nil {
 		return
@@ -249,7 +249,7 @@ func (numChart *CartesianNumericalChart) SetAutoXTicks(autoSupportLine bool) {
 }
 
 // SetXAxisStyle changes the style of the X-axis
-func (numChart *CartesianNumericalChart) SetXAxisStyle(labelStyle style.TextStyle,
+func (numChart *CartesianNumericalChart) SetXAxisStyle(labelStyle style.ChartTextStyle,
 	axisStyle style.AxisStyle) {
 	if numChart.base == nil {
 		return

@@ -154,7 +154,7 @@ func (tempChart *PolarTemporalChart) SetAutoRTicks(autoSupportLine bool) {
 }
 
 // SetRAxisStyle changes the style of the R-axis
-func (tempChart *PolarTemporalChart) SetRAxisStyle(labelStyle style.TextStyle,
+func (tempChart *PolarTemporalChart) SetRAxisStyle(labelStyle style.ChartTextStyle,
 	axisStyle style.AxisStyle) {
 	if tempChart.base == nil {
 		return
@@ -224,7 +224,7 @@ func (tempChart *PolarTemporalChart) SetAutoTTicks(autoSupportLine bool) {
 }
 
 // SetTAxisStyle changes the style of the T-axis
-func (tempChart *PolarTemporalChart) SetTAxisStyle(labelStyle style.TextStyle,
+func (tempChart *PolarTemporalChart) SetTAxisStyle(labelStyle style.ChartTextStyle,
 	axisStyle style.AxisStyle) {
 	if tempChart.base == nil {
 		return

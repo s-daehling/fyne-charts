@@ -148,7 +148,7 @@ func (catChart *CartesianCategoricalChart) SetAutoYTicks(autoSupportLine bool) {
 }
 
 // SetYAxisStyle changes the style of the Y-axis
-func (catChart *CartesianCategoricalChart) SetYAxisStyle(labelStyle style.TextStyle,
+func (catChart *CartesianCategoricalChart) SetYAxisStyle(labelStyle style.ChartTextStyle,
 	axisStyle style.AxisStyle) {
 	if catChart.base == nil {
 		return
@@ -203,7 +203,7 @@ func (catChart *CartesianCategoricalChart) SetAutoCRange() {
 }
 
 // SetCAxisStyle changes the style of the C-axis
-func (catChart *CartesianCategoricalChart) SetCAxisStyle(labelStyle style.TextStyle,
+func (catChart *CartesianCategoricalChart) SetCAxisStyle(labelStyle style.ChartTextStyle,
 	axisStyle style.AxisStyle) {
 	if catChart.base == nil {
 		return
