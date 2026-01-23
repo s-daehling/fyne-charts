@@ -1,7 +1,6 @@
 package main
 
 import (
-	"image/color"
 	"math/rand/v2"
 	"time"
 
@@ -44,14 +43,14 @@ func barChart() (propChart *prop.BarChart, err error) {
 	// Series 1
 	data1 := []data.ProportionalPoint{
 		{
-			Val: rand.Float64() * 222,
-			C:   "One",
-			Col: color.RGBA{R: 0xff, G: 0x00, B: 0x00, A: 0xff},
+			Val:     rand.Float64() * 222,
+			C:       "One",
+			ColName: theme.ColorNameError,
 		},
 		{
-			Val: rand.Float64() * 222,
-			C:   "Two",
-			Col: color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff},
+			Val:     rand.Float64() * 222,
+			C:       "Two",
+			ColName: theme.ColorNameSuccess,
 		},
 	}
 	ps, err := prop.NewSeries("proportion", data1)
@@ -66,19 +65,19 @@ func barChart() (propChart *prop.BarChart, err error) {
 	// Series 2
 	data2 := []data.ProportionalPoint{
 		{
-			Val: rand.Float64() * 222,
-			C:   "One",
-			Col: color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff},
+			Val:     rand.Float64() * 222,
+			C:       "One",
+			ColName: theme.ColorNamePrimary,
 		},
 		{
-			Val: rand.Float64() * 222,
-			C:   "Two",
-			Col: color.RGBA{R: 0xff, G: 0x00, B: 0x00, A: 0xff},
+			Val:     rand.Float64() * 222,
+			C:       "Two",
+			ColName: theme.ColorNameError,
 		},
 		{
-			Val: rand.Float64() * 222,
-			C:   "Three",
-			Col: color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff},
+			Val:     rand.Float64() * 222,
+			C:       "Three",
+			ColName: theme.ColorNameSuccess,
 		},
 	}
 	ps2, err := prop.NewSeries("proportion 2", data2)
@@ -98,14 +97,14 @@ func pieChart() (propChart *prop.PieChart, err error) {
 	// Series 1
 	data1 := []data.ProportionalPoint{
 		{
-			Val: rand.Float64() * 222,
-			C:   "One",
-			Col: color.RGBA{R: 0xff, G: 0x00, B: 0x00, A: 0xff},
+			Val:     rand.Float64() * 222,
+			C:       "One",
+			ColName: theme.ColorNameError,
 		},
 		{
-			Val: rand.Float64() * 222,
-			C:   "Two",
-			Col: color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff},
+			Val:     rand.Float64() * 222,
+			C:       "Two",
+			ColName: theme.ColorNameSuccess,
 		},
 	}
 	ps, err := prop.NewSeries("proportion", data1)
@@ -120,19 +119,19 @@ func pieChart() (propChart *prop.PieChart, err error) {
 	// Series 2
 	data2 := []data.ProportionalPoint{
 		{
-			Val: rand.Float64() * 222,
-			C:   "One",
-			Col: color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff},
+			Val:     rand.Float64() * 222,
+			C:       "One",
+			ColName: theme.ColorNamePrimary,
 		},
 		{
-			Val: rand.Float64() * 222,
-			C:   "Two",
-			Col: color.RGBA{R: 0xff, G: 0x00, B: 0x00, A: 0xff},
+			Val:     rand.Float64() * 222,
+			C:       "Two",
+			ColName: theme.ColorNameError,
 		},
 		{
-			Val: rand.Float64() * 222,
-			C:   "Three",
-			Col: color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff},
+			Val:     rand.Float64() * 222,
+			C:       "Three",
+			ColName: theme.ColorNameSuccess,
 		},
 	}
 	ps2, err := prop.NewSeries("proportion2", data2)
@@ -145,6 +144,8 @@ func pieChart() (propChart *prop.PieChart, err error) {
 	}
 	ts := style.DefaultValueTextStyle()
 	ts.ColorName = theme.ColorNameBackground
+	ts.TextStyle.Italic = true
+	ts.TextStyle.Bold = true
 	ps.SetValueTextStyle(ts)
 
 	propChart.SetTitle("Proportional Pie/Doughnut Chart")
@@ -152,7 +153,9 @@ func pieChart() (propChart *prop.PieChart, err error) {
 	go func() {
 		time.Sleep(time.Second * 2)
 		fyne.Do(func() {
-			propChart.SetLegendStyle(style.LegendLocationTop, style.DefaultLegendTextStyle(), true)
+			ts := style.DefaultLegendTextStyle()
+			ts.SizeName = theme.SizeNameCaptionText
+			propChart.SetLegendStyle(style.LegendLocationTop, ts, true)
 		})
 	}()
 	return

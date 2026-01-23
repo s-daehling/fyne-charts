@@ -6,6 +6,7 @@ import (
 	"math"
 	"strconv"
 
+	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/theme"
 	"github.com/s-daehling/fyne-charts/internal/interact"
@@ -72,14 +73,14 @@ type proportionPoint struct {
 	ser         *Series
 }
 
-func emptyProportionPoint(c string, col color.Color, ser *Series) (point *proportionPoint) {
+func emptyProportionPoint(c string, colName fyne.ThemeColorName, ser *Series) (point *proportionPoint) {
 	point = &proportionPoint{
 		c:       c,
-		rect:    canvas.NewRectangle(col),
+		rect:    canvas.NewRectangle(theme.Color(colName)),
 		visible: true,
 		ser:     ser,
 	}
-	point.legendEntry = interact.NewLegendEntry(c, ser.name, true, col, point.toggleView)
+	point.legendEntry = interact.NewLegendEntry(c, ser.name, true, colName, point.toggleView)
 	if ser.showText {
 		point.text = canvas.NewText("", theme.Color(theme.ColorNameForeground))
 	}
@@ -236,7 +237,7 @@ func EmptyProportionalSeries(name string) (ser *Series) {
 		showText: true,
 	}
 	ser.SetValTextStyle(style.DefaultValueTextStyle())
-	ser.legendEntry = interact.NewLegendEntry(name, "", false, theme.Color(theme.ColorNameForeground), ser.toggleView)
+	ser.legendEntry = interact.NewLegendEntry(name, "", false, theme.ColorNameForeground, ser.toggleView)
 	return
 }
 
@@ -454,7 +455,7 @@ func (ser *Series) AddData(input []data.ProportionalPoint) (err error) {
 		if catExist {
 			continue
 		}
-		pPoint := emptyProportionPoint(input[i].C, input[i].Col, ser)
+		pPoint := emptyProportionPoint(input[i].C, input[i].ColName, ser)
 		pPoint.setTextStyle(ser.textStyle)
 		pPoint.val = input[i].Val
 		ser.data = append(ser.data, pPoint)

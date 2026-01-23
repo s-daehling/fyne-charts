@@ -1,9 +1,9 @@
 package coord
 
 import (
-	"image/color"
 	"time"
 
+	"fyne.io/fyne/v2"
 	"github.com/s-daehling/fyne-charts/internal/coord/series"
 
 	"github.com/s-daehling/fyne-charts/pkg/data"
@@ -39,11 +39,11 @@ func (bs *boxSeries) Hide() {
 }
 
 // SetColor changes the color of series elements
-func (bs *boxSeries) SetColor(col color.Color) {
+func (bs *boxSeries) SetColor(colName fyne.ThemeColorName) {
 	if bs.ser == nil {
 		return
 	}
-	bs.ser.SetColor(col)
+	bs.ser.SetColor(colName)
 }
 
 // SetLineWidth sets the width of the line
@@ -77,10 +77,10 @@ type NumericalBoxSeries struct {
 
 // NewNumericalBoxSeries creates a new NumericalBoxSeries and populates it with input data
 // An error is returned if the input data is invalid
-func NewNumericalBoxSeries(name string, col color.Color, input []data.NumericalBox) (nbs *NumericalBoxSeries, err error) {
+func NewNumericalBoxSeries(name string, colName fyne.ThemeColorName, input []data.NumericalBox) (nbs *NumericalBoxSeries, err error) {
 	nbs = &NumericalBoxSeries{
 		boxSeries: boxSeries{
-			ser: series.EmptyBoxSeries(name, col),
+			ser: series.EmptyBoxSeries(name, colName),
 		},
 	}
 	err = nbs.AddData(input)
@@ -117,10 +117,10 @@ type TemporalBoxSeries struct {
 
 // NewTemporalBoxSeries creates a new TemporalBoxSeries and populates it with input data
 // An error is returned if the input data is invalid
-func NewTemporalBoxSeries(name string, col color.Color, input []data.TemporalBox) (tbs *TemporalBoxSeries, err error) {
+func NewTemporalBoxSeries(name string, colName fyne.ThemeColorName, input []data.TemporalBox) (tbs *TemporalBoxSeries, err error) {
 	tbs = &TemporalBoxSeries{
 		boxSeries: boxSeries{
-			ser: series.EmptyBoxSeries(name, col),
+			ser: series.EmptyBoxSeries(name, colName),
 		},
 	}
 	err = tbs.AddData(input)
@@ -159,10 +159,10 @@ type CategoricalBoxSeries struct {
 // The method checks for duplicates (i.e. entries with same C).
 // If multiple entries with the same C exist only the first is added to the series
 // An error is returned if the input data is invalid
-func NewCategoricalBoxSeries(name string, col color.Color, input []data.CategoricalBox) (cbs *CategoricalBoxSeries, err error) {
+func NewCategoricalBoxSeries(name string, colName fyne.ThemeColorName, input []data.CategoricalBox) (cbs *CategoricalBoxSeries, err error) {
 	cbs = &CategoricalBoxSeries{
 		boxSeries: boxSeries{
-			ser: series.EmptyBoxSeries(name, col),
+			ser: series.EmptyBoxSeries(name, colName),
 		},
 	}
 	err = cbs.AddData(input)

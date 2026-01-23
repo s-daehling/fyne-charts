@@ -1,9 +1,9 @@
 package coord
 
 import (
-	"image/color"
 	"time"
 
+	"fyne.io/fyne/v2"
 	"github.com/s-daehling/fyne-charts/internal/coord/series"
 
 	"github.com/s-daehling/fyne-charts/pkg/data"
@@ -39,11 +39,11 @@ func (ps *pointSeries) Hide() {
 }
 
 // SetColor changes the color of series elements
-func (ps *pointSeries) SetColor(col color.Color) {
+func (ps *pointSeries) SetColor(colName fyne.ThemeColorName) {
 	if ps.ser == nil {
 		return
 	}
-	ps.ser.SetColor(col)
+	ps.ser.SetColor(colName)
 }
 
 // SetLineWidth sets the width of the line
@@ -79,10 +79,10 @@ type NumericalPointSeries struct {
 // A series can only be added to a polar chart is Val >= 0 for all points
 // In a polar chart only points with 0 <= N <= 2pi are displayed
 // An error is returned if the input data is invalid
-func NewNumericalPointSeries(name string, col color.Color, input []data.NumericalPoint) (nps *NumericalPointSeries, err error) {
+func NewNumericalPointSeries(name string, colName fyne.ThemeColorName, input []data.NumericalPoint) (nps *NumericalPointSeries, err error) {
 	nps = &NumericalPointSeries{
 		pointSeries: pointSeries{
-			ser: series.EmptyPointSeries(name, col),
+			ser: series.EmptyPointSeries(name, colName),
 		},
 	}
 	err = nps.AddData(input)
@@ -136,10 +136,10 @@ type TemporalPointSeries struct {
 // NewTemporalPointSeries creates a new TemporalPointSeries and populates it with input data
 // A series can only be added to a polar chart is Val >= 0 for all points
 // An error is returned if the input data is invalid
-func NewTemporalPointSeries(name string, col color.Color, input []data.TemporalPoint) (tps *TemporalPointSeries, err error) {
+func NewTemporalPointSeries(name string, colName fyne.ThemeColorName, input []data.TemporalPoint) (tps *TemporalPointSeries, err error) {
 	tps = &TemporalPointSeries{
 		pointSeries: pointSeries{
-			ser: series.EmptyPointSeries(name, col),
+			ser: series.EmptyPointSeries(name, colName),
 		},
 	}
 	err = tps.AddData(input)
@@ -193,10 +193,10 @@ type CategoricalPointSeries struct {
 // If multiple entries with the same C exist only the first is added to the series
 // A series can only be added to a polar chart is Val >= 0 for all points
 // An error is returned if the input data is invalid
-func NewCategoricalPointSeries(name string, col color.Color, input []data.CategoricalPoint) (cps *CategoricalPointSeries, err error) {
+func NewCategoricalPointSeries(name string, colName fyne.ThemeColorName, input []data.CategoricalPoint) (cps *CategoricalPointSeries, err error) {
 	cps = &CategoricalPointSeries{
 		pointSeries: pointSeries{
-			ser: series.EmptyPointSeries(name, col),
+			ser: series.EmptyPointSeries(name, colName),
 		},
 	}
 	err = cps.AddData(input)

@@ -12,6 +12,7 @@ import (
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
+	"fyne.io/fyne/v2/theme"
 )
 
 type catOffset struct {
@@ -43,13 +44,14 @@ type dataPoint struct {
 	showBar             bool
 }
 
-func emptyDataPoint(color color.Color, showDot bool, showFromBase bool, showFromPrev bool,
+func emptyDataPoint(colName fyne.ThemeColorName, showDot bool, showFromBase bool, showFromPrev bool,
 	showBar bool) (point *dataPoint) {
+	col := theme.Color(colName)
 	point = &dataPoint{
-		dot:                 canvas.NewCircle(color),
-		fromValBase:         canvas.NewLine(color),
-		fromPrev:            canvas.NewLine(color),
-		bar:                 canvas.NewRectangle(color),
+		dot:                 canvas.NewCircle(col),
+		fromValBase:         canvas.NewLine(col),
+		fromPrev:            canvas.NewLine(col),
+		bar:                 canvas.NewRectangle(col),
 		showDot:             showDot,
 		showFromValBaseLine: showFromBase,
 		showFromPrevLine:    showFromPrev,
@@ -301,7 +303,7 @@ type PointSeries struct {
 	valMax              float64
 }
 
-func EmptyPointSeries(name string, color color.Color) (ser *PointSeries) {
+func EmptyPointSeries(name string, colName fyne.ThemeColorName) (ser *PointSeries) {
 	ser = &PointSeries{
 		valBase:             0,
 		nBarWidth:           0,
@@ -316,7 +318,7 @@ func EmptyPointSeries(name string, color color.Color) (ser *PointSeries) {
 		isStacked:           false,
 		sortPoints:          true,
 	}
-	ser.baseSeries = emptyBaseSeries(name, color, ser.toggleView)
+	ser.baseSeries = emptyBaseSeries(name, colName, ser.toggleView)
 	return
 }
 
@@ -533,11 +535,11 @@ func (ser *PointSeries) RasterColorCartesian(x float64, y float64) (col color.Co
 			// interpolate
 			yS := y1 + (((x - x1) / (x2 - x1)) * (y2 - y1))
 			if yS > ser.valBase && y > ser.valBase && y < yS {
-				r, g, b, _ := ser.color.RGBA()
+				r, g, b, _ := theme.Color(ser.colName).RGBA()
 				col = color.RGBA64{R: uint16(r), G: uint16(g), B: uint16(b), A: 0x8888}
 
 			} else if yS < ser.valBase && y < ser.valBase && y > yS {
-				r, g, b, _ := ser.color.RGBA()
+				r, g, b, _ := theme.Color(ser.colName).RGBA()
 				col = color.RGBA64{R: uint16(r), G: uint16(g), B: uint16(b), A: 0x8888}
 			}
 			break
@@ -582,7 +584,7 @@ func (ser *PointSeries) RasterColorPolar(phi float64, r float64, x float64,
 			}
 		}
 	} else if ser.showArea {
-		red, green, blue, _ := ser.color.RGBA()
+		red, green, blue, _ := theme.Color(ser.colName).RGBA()
 		colArea := color.RGBA64{R: uint16(red), G: uint16(green), B: uint16(blue), A: 0x8888}
 		// find first data point with x higher
 		for i := range ser.data {
@@ -694,9 +696,10 @@ func (ser *PointSeries) toggleView() {
 	}
 }
 
-func (ser *PointSeries) SetColor(col color.Color) {
-	ser.color = col
-	ser.legendEntry.SetColor(col)
+func (ser *PointSeries) SetColor(colName fyne.ThemeColorName) {
+	ser.colName = colName
+	ser.legendEntry.SetColor(colName)
+	col := theme.Color(colName)
 	for i := range ser.data {
 		ser.data[i].setColor(col)
 	}
@@ -883,7 +886,7 @@ func (ser *PointSeries) AddNumericalData(input []data.NumericalPoint) (err error
 		newData = input
 	}
 	for i := range newData {
-		dPoint := emptyDataPoint(ser.color, ser.showDot, ser.showFromValBaseLine,
+		dPoint := emptyDataPoint(ser.colName, ser.showDot, ser.showFromValBaseLine,
 			ser.showFromPrevLine, ser.showBar)
 		dPoint.n = newData[i].N
 		dPoint.val = newData[i].Val
@@ -951,7 +954,7 @@ func (ser *PointSeries) AddTemporalData(input []data.TemporalPoint) (err error) 
 		newData = input
 	}
 	for i := range newData {
-		dPoint := emptyDataPoint(ser.color, ser.showDot, ser.showFromValBaseLine,
+		dPoint := emptyDataPoint(ser.colName, ser.showDot, ser.showFromValBaseLine,
 			ser.showFromPrevLine, ser.showBar)
 		dPoint.t = newData[i].T
 		dPoint.val = newData[i].Val
@@ -1025,7 +1028,7 @@ func (ser *PointSeries) AddCategoricalData(input []data.CategoricalPoint) (err e
 		if catExist {
 			continue
 		}
-		dPoint := emptyDataPoint(ser.color, ser.showDot, ser.showFromValBaseLine,
+		dPoint := emptyDataPoint(ser.colName, ser.showDot, ser.showFromValBaseLine,
 			ser.showFromPrevLine, ser.showBar)
 		dPoint.c = input[i].C
 		dPoint.val = input[i].Val

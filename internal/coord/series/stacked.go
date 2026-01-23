@@ -18,7 +18,7 @@ type StackedSeries struct {
 
 func EmptyStackedSeries(name string) (ser *StackedSeries) {
 	ser = &StackedSeries{}
-	ser.baseSeries = emptyBaseSeries(name, theme.Color(theme.ColorNameForeground), ser.toggleView)
+	ser.baseSeries = emptyBaseSeries(name, theme.ColorNameForeground, ser.toggleView)
 	ser.legendEntry.HideBox()
 	return
 }
@@ -148,7 +148,7 @@ func (ser *StackedSeries) IsPartOfChartRaster() (b bool) {
 }
 
 func (ser *StackedSeries) RefreshTheme() {
-	ser.color = theme.Color(theme.ColorNameForeground)
+	// ser.colName = Color(theme.ColorNameForeground)
 	for i := range ser.stack {
 		ser.stack[i].RefreshTheme()
 	}

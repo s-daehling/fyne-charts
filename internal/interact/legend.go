@@ -244,12 +244,12 @@ type LegendEntry struct {
 	style        style.ChartTextStyle
 }
 
-func NewLegendEntry(name string, super string, showBox bool, col color.Color, tapFct func()) (le *LegendEntry) {
+func NewLegendEntry(name string, super string, showBox bool, colName fyne.ThemeColorName, tapFct func()) (le *LegendEntry) {
 	le = &LegendEntry{
 		name:    name,
 		super:   super,
 		showBox: showBox,
-		box:     NewLegendBox(col, tapFct),
+		box:     NewLegendBox(colName, tapFct),
 		label:   canvas.NewText(name, theme.Color(theme.ColorNameForeground)),
 	}
 	le.label.Resize(le.label.MinSize())
@@ -289,8 +289,8 @@ func (le *LegendEntry) setSubDepiction(indent bool, showSuper bool) {
 	}
 }
 
-func (le *LegendEntry) SetColor(col color.Color) {
-	le.box.SetColor(col)
+func (le *LegendEntry) SetColor(colName fyne.ThemeColorName) {
+	le.box.SetColor(colName)
 }
 
 func (le *LegendEntry) Show() {
@@ -388,18 +388,19 @@ func (ler *legendEntryRenderer) Destroy() {}
 
 type legendBox struct {
 	widget.BaseWidget
-	rectColor   color.Color
+	colName     fyne.ThemeColorName
 	rect        *canvas.Rectangle
 	circle      *canvas.Circle
 	interactive bool
 	tapFct      func()
 }
 
-func NewLegendBox(col color.Color, tapFct func()) *legendBox {
+func NewLegendBox(colName fyne.ThemeColorName, tapFct func()) *legendBox {
+	col := theme.Color(colName)
 	box := &legendBox{
 		rect:        canvas.NewRectangle(col),
 		circle:      canvas.NewCircle(col),
-		rectColor:   col,
+		colName:     colName,
 		interactive: true,
 		tapFct:      tapFct,
 	}
@@ -423,7 +424,7 @@ func (box *legendBox) MouseIn(me *desktop.MouseEvent) {
 	if !box.interactive {
 		return
 	}
-	r, g, b, a := box.rectColor.RGBA()
+	r, g, b, a := theme.Color(box.colName).RGBA()
 	rb, gb, bb, _ := theme.Color(theme.ColorNameBackground).RGBA()
 	// box.rect.FillColor = color.RGBA64{R: uint16(r), G: uint16(g), B: uint16(b), A: 0xaaaa}
 	box.rect.FillColor = color.RGBA64{R: uint16(float32(r+rb) * 0.5), G: uint16(float32(g+gb) * 0.5), B: uint16(float32(b+bb) * 0.5), A: uint16(a)}
@@ -438,14 +439,16 @@ func (box *legendBox) MouseOut() {
 	if !box.interactive {
 		return
 	}
-	box.rect.FillColor = box.rectColor
+	col := theme.Color(box.colName)
+	box.rect.FillColor = col
 	box.rect.Refresh()
-	box.circle.FillColor = box.rectColor
+	box.circle.FillColor = col
 	box.circle.Refresh()
 }
 
-func (box *legendBox) SetColor(col color.Color) {
-	box.rectColor = col
+func (box *legendBox) SetColor(colName fyne.ThemeColorName) {
+	box.colName = colName
+	col := theme.Color(box.colName)
 	box.rect.FillColor = col
 	box.rect.Refresh()
 	box.circle.FillColor = col

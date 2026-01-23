@@ -5,6 +5,7 @@ import (
 	"image/color"
 	"time"
 
+	"fyne.io/fyne/v2"
 	"github.com/s-daehling/fyne-charts/internal/interact"
 	"github.com/s-daehling/fyne-charts/internal/renderer"
 )
@@ -13,18 +14,18 @@ type baseSeries struct {
 	name        string
 	super       string
 	visible     bool
-	color       color.Color
+	colName     fyne.ThemeColorName
 	legendEntry *interact.LegendEntry
 	cont        container
 }
 
-func emptyBaseSeries(name string, col color.Color, togView func()) (ser baseSeries) {
+func emptyBaseSeries(name string, colName fyne.ThemeColorName, togView func()) (ser baseSeries) {
 	ser = baseSeries{
 		name:        name,
 		super:       "",
 		visible:     true,
-		color:       col,
-		legendEntry: interact.NewLegendEntry(name, "", true, col, togView),
+		colName:     colName,
+		legendEntry: interact.NewLegendEntry(name, "", true, colName, togView),
 		cont:        nil,
 	}
 	return

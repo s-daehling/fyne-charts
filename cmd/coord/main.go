@@ -1,7 +1,6 @@
 package main
 
 import (
-	"image/color"
 	"math"
 	"math/rand/v2"
 	"time"
@@ -86,7 +85,7 @@ func cartNumChart() (numChart *coord.CartesianNumericalChart, err error) {
 	for range 50 {
 		data1 = append(data1, randomNumericalDataPoint(0, 100, 0, 100))
 	}
-	as, err := coord.NewNumericalPointSeries("area", color.RGBA{R: 0xff, G: 0x00, B: 0x00, A: 0xff}, data1)
+	as, err := coord.NewNumericalPointSeries("area", theme.ColorNameError, data1)
 	if err != nil {
 		return
 	}
@@ -96,7 +95,7 @@ func cartNumChart() (numChart *coord.CartesianNumericalChart, err error) {
 	}
 
 	// Line Series
-	ls, err := coord.NewNumericalPointSeries("line", color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff}, updateSineNumericalData())
+	ls, err := coord.NewNumericalPointSeries("line", theme.ColorNameSuccess, updateSineNumericalData())
 	if err != nil {
 		return
 	}
@@ -105,7 +104,7 @@ func cartNumChart() (numChart *coord.CartesianNumericalChart, err error) {
 		return
 	}
 	// Change color after series creation
-	ls.SetColor(color.RGBA{R: 0x00, G: 0xff, B: 0xff, A: 0xff})
+	ls.SetColor(theme.ColorNameWarning)
 	// Update Line Series in a goroutine
 	go func() {
 		for {
@@ -122,7 +121,7 @@ func cartNumChart() (numChart *coord.CartesianNumericalChart, err error) {
 	for range 50 {
 		data3 = append(data3, randomNumericalDataPoint(-110, 110, -110, 110))
 	}
-	bs, err := coord.NewNumericalPointSeries("bar", color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff}, data3)
+	bs, err := coord.NewNumericalPointSeries("bar", theme.ColorNamePrimary, data3)
 	if err != nil {
 		return
 	}
@@ -168,7 +167,7 @@ func cartTempChart() (tempChart *coord.CartesianTemporalChart, err error) {
 	for range 10 {
 		data2 = append(data2, randomTemporalDataPoint(time.Now(), time.Now().Add(time.Hour*50), -5, 10))
 	}
-	tps, err := coord.NewTemporalPointSeries("lollipop", color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff}, data2)
+	tps, err := coord.NewTemporalPointSeries("lollipop", theme.ColorNamePrimary, data2)
 	if err != nil {
 		return
 	}
@@ -217,7 +216,7 @@ func cartCatChart() (catChart *coord.CartesianCategoricalChart, err error) {
 			Val: rand.Float64() * 30,
 		},
 	}
-	sbs1, err := coord.NewCategoricalPointSeries("Test1", color.RGBA{R: 0xff, G: 0x00, B: 0x00, A: 0xff}, data1)
+	sbs1, err := coord.NewCategoricalPointSeries("Test1", theme.ColorNameError, data1)
 	if err != nil {
 		return
 	}
@@ -231,7 +230,7 @@ func cartCatChart() (catChart *coord.CartesianCategoricalChart, err error) {
 			Val: rand.Float64() * 30,
 		},
 	}
-	sbs2, err := coord.NewCategoricalPointSeries("Test2", color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff}, data2)
+	sbs2, err := coord.NewCategoricalPointSeries("Test2", theme.ColorNameSuccess, data2)
 	if err != nil {
 		return
 	}
@@ -259,7 +258,7 @@ func cartCatChart() (catChart *coord.CartesianCategoricalChart, err error) {
 			Val: -10 + rand.Float64()*20,
 		},
 	}
-	bs, err := coord.NewCategoricalPointSeries("bar", color.RGBA{R: 0xff, G: 0xff, B: 0x00, A: 0xff}, data3)
+	bs, err := coord.NewCategoricalPointSeries("bar", theme.ColorNameWarning, data3)
 	if err != nil {
 		return
 	}
@@ -289,7 +288,7 @@ func cartCatChart() (catChart *coord.CartesianCategoricalChart, err error) {
 			Outlier:       []float64{21.3, 20.3, 12.45, 7.8},
 		},
 	}
-	cbs, err := coord.NewCategoricalBoxSeries("box", color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff}, data4)
+	cbs, err := coord.NewCategoricalBoxSeries("box", theme.ColorNamePrimary, data4)
 	if err != nil {
 		return
 	}
@@ -326,7 +325,7 @@ func polNumChart() (numChart *coord.PolarNumericalChart, err error) {
 	for range 100 {
 		data1 = append(data1, randomAngularDataPoint(63.777))
 	}
-	as, err := coord.NewNumericalPointSeries("area", color.RGBA{R: 0xff, G: 0x00, B: 0x00, A: 0xff}, data1)
+	as, err := coord.NewNumericalPointSeries("area", theme.ColorNameError, data1)
 	if err != nil {
 		return
 	}
@@ -340,7 +339,7 @@ func polNumChart() (numChart *coord.PolarNumericalChart, err error) {
 	for range 150 {
 		data2 = append(data2, randomSineAngularDataPoint(63.777))
 	}
-	ls, err := coord.NewNumericalPointSeries("line", color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff}, data2)
+	ls, err := coord.NewNumericalPointSeries("line", theme.ColorNameSuccess, data2)
 	if err != nil {
 		return
 	}
@@ -371,7 +370,7 @@ func polTempChart() (tempChart *coord.PolarTemporalChart, err error) {
 	for range 50 {
 		data1 = append(data1, randomTemporalDataPoint(time.Now(), time.Now().Add(time.Hour*50), 0, 111))
 	}
-	tps1, err := coord.NewTemporalPointSeries("lollipop", color.RGBA{R: 0xff, G: 0xff, B: 0x00, A: 0xff}, data1)
+	tps1, err := coord.NewTemporalPointSeries("lollipop", theme.ColorNameWarning, data1)
 	if err != nil {
 		return
 	}
@@ -385,7 +384,7 @@ func polTempChart() (tempChart *coord.PolarTemporalChart, err error) {
 	for range 25 {
 		data2 = append(data2, randomTemporalDataPoint(time.Now(), time.Now().Add(time.Hour*50), 0, 111))
 	}
-	tps2, err := coord.NewTemporalPointSeries("scatter", color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff}, data2)
+	tps2, err := coord.NewTemporalPointSeries("scatter", theme.ColorNamePrimary, data2)
 	if err != nil {
 		return
 	}
@@ -424,7 +423,7 @@ func polCatChart() (catChart *coord.PolarCategoricalChart, err error) {
 			Val: rand.Float64() * 30,
 		},
 	}
-	sbs1, err := coord.NewCategoricalPointSeries("Test1", color.RGBA{R: 0xff, G: 0x00, B: 0x00, A: 0xff}, data1)
+	sbs1, err := coord.NewCategoricalPointSeries("Test1", theme.ColorNameError, data1)
 	if err != nil {
 		return
 	}
@@ -438,7 +437,7 @@ func polCatChart() (catChart *coord.PolarCategoricalChart, err error) {
 			Val: rand.Float64() * 30,
 		},
 	}
-	sbs2, err := coord.NewCategoricalPointSeries("Test2", color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff}, data2)
+	sbs2, err := coord.NewCategoricalPointSeries("Test2", theme.ColorNameSuccess, data2)
 	if err != nil {
 		return
 	}
@@ -466,7 +465,7 @@ func polCatChart() (catChart *coord.PolarCategoricalChart, err error) {
 			Val: rand.Float64() * 30,
 		},
 	}
-	bs, err := coord.NewCategoricalPointSeries("bar", color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff}, data3)
+	bs, err := coord.NewCategoricalPointSeries("bar", theme.ColorNamePrimary, data3)
 	if err != nil {
 		return
 	}

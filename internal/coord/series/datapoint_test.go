@@ -1,12 +1,12 @@
 package series
 
 import (
-	"image/color"
 	"math"
 	"testing"
 	"time"
 
 	"fyne.io/fyne/v2/app"
+	"fyne.io/fyne/v2/theme"
 	"github.com/s-daehling/fyne-charts/pkg/data"
 )
 
@@ -137,7 +137,7 @@ func TestDataPointAddNumericalData(t *testing.T) {
 		{[]data.NumericalPoint{}, false, false, 0, true, 0, 0, 0, 0},
 	}
 	for i, tt := range tests {
-		ser := EmptyPointSeries("test", color.Black)
+		ser := EmptyPointSeries("test", theme.ColorNameBackground)
 		ch := chartDummy{polar: tt.polar}
 		ser.BindToChart(ch)
 		ser.AddNumericalData(tt.input)
@@ -175,7 +175,7 @@ func TestDataPointAddTemporalData(t *testing.T) {
 		{[]data.TemporalPoint{}, false, false, 0, true, time.Now(), time.Now(), 0, 0},
 	}
 	for i, tt := range tests {
-		ser := EmptyPointSeries("test", color.Black)
+		ser := EmptyPointSeries("test", theme.ColorNameBackground)
 		ch := chartDummy{polar: tt.polar}
 		ser.BindToChart(ch)
 		ser.AddTemporalData(tt.input)
@@ -212,7 +212,7 @@ func TestDataPointAddCategoricalData(t *testing.T) {
 		{[]data.CategoricalPoint{}, false, false, 0, true, []string{}, 0, 0},
 	}
 	for i, tt := range tests {
-		ser := EmptyPointSeries("test", color.Black)
+		ser := EmptyPointSeries("test", theme.ColorNameBackground)
 		ch := chartDummy{polar: tt.polar}
 		ser.BindToChart(ch)
 		ser.AddCategoricalData(tt.input)
@@ -251,7 +251,7 @@ func TestDataPointDeleteNumericalData(t *testing.T) {
 		{ndpTestSetFull, 1000.000001, -1000.000001, false, 0, false, -1000, 1000, -1000, 1000},
 	}
 	for i, tt := range tests {
-		ser := EmptyPointSeries("test", color.Black)
+		ser := EmptyPointSeries("test", theme.ColorNameBackground)
 		ser.AddNumericalData(tt.input)
 		c := ser.DeleteNumericalDataInRange(tt.delMin, tt.delMax)
 		if c != tt.expNumDeleted {
@@ -289,7 +289,7 @@ func TestDataPointDeleteTemporalData(t *testing.T) {
 		{tdpTestSetFull, tdpTestSetFull[4].T.Add(-time.Second), tdpTestSetFull[3].T.Add(time.Second), false, 0, false, tdpTestSetFull[3].T, tdpTestSetFull[4].T, -1000, 1000},
 	}
 	for i, tt := range tests {
-		ser := EmptyPointSeries("test", color.Black)
+		ser := EmptyPointSeries("test", theme.ColorNameBackground)
 		ser.AddTemporalData(tt.input)
 		c := ser.DeleteTemporalDataInRange(tt.delMin, tt.delMax)
 		if c != tt.expNumDeleted {
@@ -324,7 +324,7 @@ func TestDataPointDeleteCategoricalData(t *testing.T) {
 		{cdpTestSetFull, []string{"one", "two", "three", "four", "five"}, true, 5, true, []string{}, 0, 0},
 	}
 	for i, tt := range tests {
-		ser := EmptyPointSeries("test", color.Black)
+		ser := EmptyPointSeries("test", theme.ColorNameBackground)
 		ser.AddCategoricalData(tt.input)
 		c := ser.DeleteCategoricalDataInRange(tt.del)
 		if c != tt.expNumDeleted {
@@ -360,7 +360,7 @@ func TestDataPointNodes(t *testing.T) {
 	}
 	for i, tt := range tests {
 		app.New()
-		ser := EmptyPointSeries("test", color.Black)
+		ser := EmptyPointSeries("test", theme.ColorNameBackground)
 		ser.showDot = true
 		ser.AddNumericalData(tt.input)
 		cns := ser.CartesianNodes(tt.xMin, tt.xMax, tt.yMin, tt.yMax)
@@ -395,7 +395,7 @@ func TestDataPointEdges(t *testing.T) {
 	}
 	for i, tt := range tests {
 		app.New()
-		ser := EmptyPointSeries("test", color.Black)
+		ser := EmptyPointSeries("test", theme.ColorNameBackground)
 		ser.showFromPrevLine = tt.showFromPrevLine
 		ser.showFromValBaseLine = tt.showFromValBaseLine
 		if ser.showFromPrevLine {
@@ -431,7 +431,7 @@ func TestDataPointRects(t *testing.T) {
 	}
 	for i, tt := range tests {
 		app.New()
-		ser := EmptyPointSeries("test", color.Black)
+		ser := EmptyPointSeries("test", theme.ColorNameBackground)
 		ser.showBar = true
 		ser.AddNumericalData(tt.input)
 		crs := ser.CartesianRects(tt.xMin, tt.xMax, tt.yMin, tt.yMax)

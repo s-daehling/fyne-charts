@@ -3,7 +3,6 @@ package series
 import (
 	"errors"
 	"image/color"
-	"math/rand/v2"
 	"time"
 
 	"github.com/s-daehling/fyne-charts/internal/renderer"
@@ -100,11 +99,11 @@ func (point *candleStickPoint) cartesianRects(xMin float64, xMax float64, yMin f
 	}
 	cMax := point.open
 	cMin := point.close
-	point.candle.FillColor = color.RGBA{R: 0xff, G: 0x00, B: 0x00, A: 0xff}
+	point.candle.FillColor = theme.Color(theme.ColorNameError)
 	if point.open < point.close {
 		cMax = point.close
 		cMin = point.open
-		point.candle.FillColor = color.RGBA{R: 0x00, G: 0x88, B: 0x00, A: 0xff}
+		point.candle.FillColor = theme.Color(theme.ColorNameSuccess)
 	}
 	a := renderer.CartesianRect{
 		X1:   point.nStart,
@@ -124,7 +123,7 @@ type CandleStickSeries struct {
 
 func EmptyCandleStickSeries(name string) (ser *CandleStickSeries) {
 	ser = &CandleStickSeries{}
-	ser.baseSeries = emptyBaseSeries(name, color.RGBA{R: uint8(rand.IntN(256)), G: uint8(rand.IntN(256)), B: uint8(rand.IntN(256)), A: 0xff}, ser.toggleView)
+	ser.baseSeries = emptyBaseSeries(name, theme.ColorNameForeground, ser.toggleView)
 	// ser.legendButton.UseGradient(color.RGBA{R: 0xff, G: 0x00, B: 0x00, A: 0xff}, color.RGBA{R: 0x00, G: 0x88, B: 0x00, A: 0xff})
 	return
 }

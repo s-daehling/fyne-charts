@@ -10,6 +10,7 @@ import (
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
+	"fyne.io/fyne/v2/theme"
 )
 
 type boxPoint struct {
@@ -32,7 +33,8 @@ type boxPoint struct {
 	width        float64
 }
 
-func emptyBoxPoint(nOutliers int, col color.Color) (point *boxPoint) {
+func emptyBoxPoint(nOutliers int, colName fyne.ThemeColorName) (point *boxPoint) {
+	col := theme.Color(colName)
 	point = &boxPoint{
 		maxLine:      canvas.NewLine(col),
 		upperWhisker: canvas.NewLine(col),
@@ -208,9 +210,9 @@ type BoxSeries struct {
 	data []*boxPoint
 }
 
-func EmptyBoxSeries(name string, color color.Color) (ser *BoxSeries) {
+func EmptyBoxSeries(name string, colName fyne.ThemeColorName) (ser *BoxSeries) {
 	ser = &BoxSeries{}
-	ser.baseSeries = emptyBaseSeries(name, color, ser.toggleView)
+	ser.baseSeries = emptyBaseSeries(name, colName, ser.toggleView)
 	return
 }
 
@@ -364,9 +366,10 @@ func (ser *BoxSeries) toggleView() {
 }
 
 // SetColor changes the color of the bar series
-func (ser *BoxSeries) SetColor(col color.Color) {
-	ser.color = col
-	ser.legendEntry.SetColor(col)
+func (ser *BoxSeries) SetColor(colName fyne.ThemeColorName) {
+	ser.colName = colName
+	col := theme.Color(colName)
+	ser.legendEntry.SetColor(colName)
 	for i := range ser.data {
 		ser.data[i].setColor(col)
 	}
@@ -443,7 +446,7 @@ func (ser *BoxSeries) AddNumericalData(input []data.NumericalBox) (err error) {
 		}
 	}
 	for i := range input {
-		bPoint := emptyBoxPoint(len(input[i].Outlier), ser.color)
+		bPoint := emptyBoxPoint(len(input[i].Outlier), ser.colName)
 		bPoint.n = input[i].N
 		bPoint.max = input[i].Maximum
 		bPoint.thirdQuart = input[i].ThirdQuartile
@@ -499,7 +502,7 @@ func (ser *BoxSeries) AddTemporalData(input []data.TemporalBox) (err error) {
 		}
 	}
 	for i := range input {
-		bPoint := emptyBoxPoint(len(input[i].Outlier), ser.color)
+		bPoint := emptyBoxPoint(len(input[i].Outlier), ser.colName)
 		bPoint.t = input[i].T
 		bPoint.max = input[i].Maximum
 		bPoint.thirdQuart = input[i].ThirdQuartile
@@ -573,7 +576,7 @@ func (ser *BoxSeries) AddCategoricalData(input []data.CategoricalBox) (err error
 		if catExist {
 			continue
 		}
-		bPoint := emptyBoxPoint(len(input[i].Outlier), ser.color)
+		bPoint := emptyBoxPoint(len(input[i].Outlier), ser.colName)
 		bPoint.c = input[i].C
 		bPoint.max = input[i].Maximum
 		bPoint.thirdQuart = input[i].ThirdQuartile
