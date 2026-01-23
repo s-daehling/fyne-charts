@@ -268,6 +268,7 @@ func (le *LegendEntry) RefreshTheme() {
 	le.label.TextSize = theme.Size(le.style.SizeName)
 	le.label.Resize(le.label.MinSize())
 	le.box.Resize(fyne.NewSize(le.label.MinSize().Height*0.8, le.label.MinSize().Height*0.8))
+	le.box.refreshTheme()
 }
 
 func (le *LegendEntry) SetSuper(super string) {
@@ -412,6 +413,11 @@ func (box *legendBox) CreateRenderer() fyne.WidgetRenderer {
 	// c := container.NewStack(box.rect, box.grad)
 	c := container.NewStack(box.rect, box.circle)
 	return widget.NewSimpleRenderer(c)
+}
+
+func (box *legendBox) refreshTheme() {
+	box.rect.FillColor = theme.Color(box.colName)
+	box.circle.FillColor = theme.Color(box.colName)
 }
 
 func (box *legendBox) Tapped(_ *fyne.PointEvent) {

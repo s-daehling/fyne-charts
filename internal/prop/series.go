@@ -69,6 +69,8 @@ type proportionPoint struct {
 	text        *canvas.Text
 	textStyle   style.ChartTextStyle
 	visible     bool
+	colName     fyne.ThemeColorName
+	col         color.Color
 	legendEntry *interact.LegendEntry
 	ser         *Series
 }
@@ -79,6 +81,8 @@ func emptyProportionPoint(c string, colName fyne.ThemeColorName, ser *Series) (p
 		rect:    canvas.NewRectangle(theme.Color(colName)),
 		visible: true,
 		ser:     ser,
+		colName: colName,
+		col:     theme.Color(colName),
 	}
 	point.legendEntry = interact.NewLegendEntry(c, ser.name, true, colName, point.toggleView)
 	if ser.showText {
@@ -135,8 +139,10 @@ func (point *proportionPoint) setTextStyle(ts style.ChartTextStyle) {
 }
 
 func (point *proportionPoint) refreshTheme() {
+	point.col = theme.Color(point.colName)
 	point.text.Color = theme.Color(point.textStyle.ColorName)
 	point.text.TextSize = theme.Size(point.textStyle.SizeName)
+	point.rect.FillColor = point.col
 }
 
 func (point *proportionPoint) cartesianRects(xMin float64, xMax float64, yMin float64,
@@ -192,7 +198,7 @@ func (point *proportionPoint) RasterColorPolar(phi float64, r float64) (col colo
 		return
 	}
 	useColor = true
-	col = point.rect.FillColor
+	col = point.col
 	return
 }
 

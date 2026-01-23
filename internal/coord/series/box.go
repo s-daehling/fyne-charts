@@ -33,8 +33,7 @@ type boxPoint struct {
 	width        float64
 }
 
-func emptyBoxPoint(nOutliers int, colName fyne.ThemeColorName) (point *boxPoint) {
-	col := theme.Color(colName)
+func emptyBoxPoint(nOutliers int, col color.Color) (point *boxPoint) {
 	point = &boxPoint{
 		maxLine:      canvas.NewLine(col),
 		upperWhisker: canvas.NewLine(col),
@@ -99,7 +98,6 @@ func (point *boxPoint) setColor(col color.Color) {
 		point.outlierDots[i].FillColor = col
 	}
 	point.box.StrokeColor = col
-	point.refresh()
 }
 
 func (point *boxPoint) setLineWidth(lw float32) {
@@ -109,7 +107,6 @@ func (point *boxPoint) setLineWidth(lw float32) {
 	point.lowerWhisker.StrokeWidth = lw
 	point.minLine.StrokeWidth = lw
 	point.box.StrokeWidth = lw
-	point.refresh()
 }
 
 func (point *boxPoint) setOutlierSize(os float32) {
@@ -327,6 +324,13 @@ func (ser *BoxSeries) CartesianRects(xMin float64, xMax float64, yMin float64,
 	return
 }
 
+func (ser *BoxSeries) RefreshTheme() {
+	ser.col = theme.Color(ser.colName)
+	for i := range ser.data {
+		ser.data[i].setColor(ser.col)
+	}
+}
+
 // setWidth sets width of boxes for this series
 func (ser *BoxSeries) SetWidth(width float64) {
 	for i := range ser.data {
@@ -368,10 +372,11 @@ func (ser *BoxSeries) toggleView() {
 // SetColor changes the color of the bar series
 func (ser *BoxSeries) SetColor(colName fyne.ThemeColorName) {
 	ser.colName = colName
-	col := theme.Color(colName)
+	ser.col = theme.Color(ser.colName)
 	ser.legendEntry.SetColor(colName)
 	for i := range ser.data {
-		ser.data[i].setColor(col)
+		ser.data[i].setColor(ser.col)
+		ser.data[i].refresh()
 	}
 }
 
@@ -384,6 +389,7 @@ func (ser *BoxSeries) SetLineWidth(lw float32) {
 	}
 	for i := range ser.data {
 		ser.data[i].setLineWidth(lw)
+		ser.data[i].refresh()
 	}
 }
 
@@ -446,7 +452,7 @@ func (ser *BoxSeries) AddNumericalData(input []data.NumericalBox) (err error) {
 		}
 	}
 	for i := range input {
-		bPoint := emptyBoxPoint(len(input[i].Outlier), ser.colName)
+		bPoint := emptyBoxPoint(len(input[i].Outlier), ser.col)
 		bPoint.n = input[i].N
 		bPoint.max = input[i].Maximum
 		bPoint.thirdQuart = input[i].ThirdQuartile
@@ -502,7 +508,7 @@ func (ser *BoxSeries) AddTemporalData(input []data.TemporalBox) (err error) {
 		}
 	}
 	for i := range input {
-		bPoint := emptyBoxPoint(len(input[i].Outlier), ser.colName)
+		bPoint := emptyBoxPoint(len(input[i].Outlier), ser.col)
 		bPoint.t = input[i].T
 		bPoint.max = input[i].Maximum
 		bPoint.thirdQuart = input[i].ThirdQuartile
@@ -576,7 +582,7 @@ func (ser *BoxSeries) AddCategoricalData(input []data.CategoricalBox) (err error
 		if catExist {
 			continue
 		}
-		bPoint := emptyBoxPoint(len(input[i].Outlier), ser.colName)
+		bPoint := emptyBoxPoint(len(input[i].Outlier), ser.col)
 		bPoint.c = input[i].C
 		bPoint.max = input[i].Maximum
 		bPoint.thirdQuart = input[i].ThirdQuartile

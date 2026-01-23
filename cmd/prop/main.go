@@ -121,7 +121,7 @@ func pieChart() (propChart *prop.PieChart, err error) {
 		{
 			Val:     rand.Float64() * 222,
 			C:       "One",
-			ColName: theme.ColorNamePrimary,
+			ColName: theme.ColorNameForeground,
 		},
 		{
 			Val:     rand.Float64() * 222,

@@ -148,7 +148,7 @@ func (ser *StackedSeries) IsPartOfChartRaster() (b bool) {
 }
 
 func (ser *StackedSeries) RefreshTheme() {
-	// ser.colName = Color(theme.ColorNameForeground)
+	ser.col = theme.Color(ser.colName)
 	for i := range ser.stack {
 		ser.stack[i].RefreshTheme()
 	}

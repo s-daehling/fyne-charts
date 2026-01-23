@@ -258,7 +258,7 @@ func cartCatChart() (catChart *coord.CartesianCategoricalChart, err error) {
 			Val: -10 + rand.Float64()*20,
 		},
 	}
-	bs, err := coord.NewCategoricalPointSeries("bar", theme.ColorNameWarning, data3)
+	bs, err := coord.NewCategoricalPointSeries("bar", theme.ColorNameForeground, data3)
 	if err != nil {
 		return
 	}
@@ -465,7 +465,7 @@ func polCatChart() (catChart *coord.PolarCategoricalChart, err error) {
 			Val: rand.Float64() * 30,
 		},
 	}
-	bs, err := coord.NewCategoricalPointSeries("bar", theme.ColorNamePrimary, data3)
+	bs, err := coord.NewCategoricalPointSeries("bar", theme.ColorNameForeground, data3)
 	if err != nil {
 		return
 	}

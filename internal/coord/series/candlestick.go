@@ -57,7 +57,6 @@ func (point *candleStickPoint) show() {
 func (point *candleStickPoint) setLineWidth(lw float32) {
 	point.upperLine.StrokeWidth = lw
 	point.lowerLine.StrokeWidth = lw
-	point.refresh()
 }
 
 func (point *candleStickPoint) cartesianEdges(xMin float64, xMax float64, yMin float64,
@@ -212,6 +211,7 @@ func (ser *CandleStickSeries) CartesianRects(xMin float64, xMax float64, yMin fl
 }
 
 func (ser *CandleStickSeries) RefreshTheme() {
+	ser.col = theme.Color(ser.colName)
 	for i := range ser.data {
 		ser.data[i].upperLine.StrokeColor = theme.Color(theme.ColorNameForeground)
 		ser.data[i].lowerLine.StrokeColor = theme.Color(theme.ColorNameForeground)
@@ -253,6 +253,7 @@ func (ser *CandleStickSeries) SetLineWidth(lw float32) {
 	}
 	for i := range ser.data {
 		ser.data[i].setLineWidth(lw)
+		ser.data[i].refresh()
 	}
 }
 

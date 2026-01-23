@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/theme"
 	"github.com/s-daehling/fyne-charts/internal/interact"
 	"github.com/s-daehling/fyne-charts/internal/renderer"
 )
@@ -14,6 +15,7 @@ type baseSeries struct {
 	name        string
 	super       string
 	visible     bool
+	col         color.Color
 	colName     fyne.ThemeColorName
 	legendEntry *interact.LegendEntry
 	cont        container
@@ -25,6 +27,7 @@ func emptyBaseSeries(name string, colName fyne.ThemeColorName, togView func()) (
 		super:       "",
 		visible:     true,
 		colName:     colName,
+		col:         theme.Color(colName),
 		legendEntry: interact.NewLegendEntry(name, "", true, colName, togView),
 		cont:        nil,
 	}
@@ -135,7 +138,9 @@ func (ser *baseSeries) IsPartOfChartRaster() (b bool) {
 	return
 }
 
-func (ser *baseSeries) RefreshTheme() {}
+func (ser *baseSeries) RefreshTheme() {
+	ser.col = theme.Color(ser.colName)
+}
 
 type Series interface {
 	// LegendEntries() (les []*interact.LegendEntry)
