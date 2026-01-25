@@ -15,7 +15,7 @@ type paletteTheme struct {
 
 var _ fyne.Theme = (*paletteTheme)(nil)
 
-func NewPaletteTheme(defTheme fyne.Theme) (th fyne.Theme) {
+func NewColorPaletteTheme(defTheme fyne.Theme) (th fyne.Theme) {
 	th = &paletteTheme{
 		defTheme: defTheme,
 	}
@@ -39,6 +39,16 @@ func (th paletteTheme) Color(colName fyne.ThemeColorName, vari fyne.ThemeVariant
 				return
 			}
 			col = style.LightDark(fyne.ThemeColorName(params[1]), int(step))
+			return
+		case "LightMediumDark":
+			if len(params) != 3 {
+				return
+			}
+			step, err := strconv.ParseInt(params[2], 10, 0)
+			if err != nil {
+				return
+			}
+			col = style.LightMediumDark(fyne.ThemeColorName(params[1]), int(step))
 			return
 		}
 	}
