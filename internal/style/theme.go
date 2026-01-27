@@ -2,209 +2,232 @@ package style
 
 import (
 	"image/color"
-	"math"
+	"strconv"
+	"strings"
 
 	"fyne.io/fyne/v2"
-	ftheme "fyne.io/fyne/v2/theme"
 )
 
-func LightDark(base fyne.ThemeColorName, step int) (col HSLA) {
-	baseCol := ToHSLA(ftheme.Color(base))
-	bg := ToHSLA(ftheme.Color(ftheme.ColorNameBackground))
-	fg := ToHSLA(ftheme.Color(ftheme.ColorNameForeground))
-	fromBtoF := true
-	if fg.l < bg.l {
-		fromBtoF = false
+type PaletteTheme struct {
+	DefTheme fyne.Theme
+}
+
+var _ fyne.Theme = (*PaletteTheme)(nil)
+
+func NewColorPaletteTheme(defTheme fyne.Theme) (th fyne.Theme) {
+	th = &PaletteTheme{
+		DefTheme: defTheme,
 	}
-	col = baseCol
-	if step == 0 {
-		if fromBtoF {
-			// col.l = float32(math.Max(0.85, float64(fg.l)))
-			col.l = 0.8
-			col = col.DecreaseLightnessUntilContrast(1, fg)
-			if baseCol.l > col.l {
-				col = baseCol
+	return
+}
+
+func (th PaletteTheme) Color(colName fyne.ThemeColorName, vari fyne.ThemeVariant) (col color.Color) {
+	col = color.Alpha16{}
+	if strings.HasPrefix(string(colName), "_ptStart_") && strings.HasSuffix(string(colName), "_ptEnd_") {
+		params := parseColName(string(colName)[len("_ptStart_") : len(colName)-len("_ptEnd_")])
+		if len(params) == 0 {
+			return
+		}
+		switch params[0] {
+		case "LightDark":
+			if len(params) != 3 {
+				return
 			}
+			step, err := strconv.ParseInt(params[2], 10, 0)
+			if err != nil {
+				return
+			}
+			col = LightDark(fyne.ThemeColorName(params[1]), int(step))
+			return
+		case "LightMediumDark":
+			if len(params) != 3 {
+				return
+			}
+			step, err := strconv.ParseInt(params[2], 10, 0)
+			if err != nil {
+				return
+			}
+			col = LightMediumDark(fyne.ThemeColorName(params[1]), int(step))
+			return
+		case "EquidistantHue":
+			if len(params) != 4 {
+				return
+			}
+			step, err := strconv.ParseInt(params[2], 10, 0)
+			if err != nil {
+				return
+			}
+			totStep, err := strconv.ParseInt(params[3], 10, 0)
+			if err != nil {
+				return
+			}
+			col = EquidistantHue(fyne.ThemeColorName(params[1]), int(step), int(totStep))
+			return
+		case "Complementary":
+			if len(params) != 3 {
+				return
+			}
+			step, err := strconv.ParseInt(params[2], 10, 0)
+			if err != nil {
+				return
+			}
+			col = Complementary(fyne.ThemeColorName(params[1]), int(step))
+			return
+		case "Triadic":
+			if len(params) != 3 {
+				return
+			}
+			step, err := strconv.ParseInt(params[2], 10, 0)
+			if err != nil {
+				return
+			}
+			col = Triadic(fyne.ThemeColorName(params[1]), int(step))
+			return
+		case "Tetradic":
+			if len(params) != 3 {
+				return
+			}
+			step, err := strconv.ParseInt(params[2], 10, 0)
+			if err != nil {
+				return
+			}
+			col = Tetradic(fyne.ThemeColorName(params[1]), int(step))
+			return
+		}
+	}
+	col = th.DefTheme.Color(colName, vari)
+	return
+}
+
+func parseColName(colName string) (params []string) {
+	for {
+		if colName == "" {
+			return
+		}
+		if strings.HasPrefix(colName, "_ptStart_") {
+			i := strings.Index(colName, "_ptEnd_") + len("_ptEnd_")
+			if i == -1 {
+				params = nil
+				return
+			}
+			params = append(params, colName[:i])
+			colName = colName[i+1:]
 		} else {
-			// col.l = float32(math.Min(0.15, float64(fg.l)))
-			col.l = 0.2
-			col = col.IncreaseLightnessUntilContrast(1, fg)
-			if baseCol.l < col.l {
-				col = baseCol
+			i := strings.Index(colName, "-")
+			if i == -1 {
+				params = append(params, colName)
+				colName = ""
+			} else {
+				params = append(params, colName[:i])
+				colName = colName[i+1:]
 			}
 		}
-	} else {
-		if fromBtoF {
-			// col.l = float32(math.Min(0.15, float64(bg.l)))
-			col.l = 0.2
-			col = col.IncreaseLightnessUntilContrast(2, bg)
-			if baseCol.l < col.l {
-				col = baseCol
-			}
+	}
+}
+
+func (th PaletteTheme) Font(ts fyne.TextStyle) (r fyne.Resource) {
+	r = th.DefTheme.Font(ts)
+	return
+}
+
+func (th PaletteTheme) Icon(iconName fyne.ThemeIconName) (r fyne.Resource) {
+	r = th.DefTheme.Icon(iconName)
+	return
+}
+
+func (th PaletteTheme) Size(sizeName fyne.ThemeSizeName) (s float32) {
+	s = th.DefTheme.Size(sizeName)
+	return
+}
+
+func NewPaletteLightDark(base fyne.ThemeColorName) (colNames []fyne.ThemeColorName) {
+	colNames = []fyne.ThemeColorName{
+		fyne.ThemeColorName("_ptStart_LightDark-" + string(base) + "-0_ptEnd_"),
+		fyne.ThemeColorName("_ptStart_LightDark-" + string(base) + "-1_ptEnd_"),
+	}
+	return
+}
+
+func NewPaletteLightDarkSet(base []fyne.ThemeColorName) (colNames []fyne.ThemeColorName) {
+	for i := range base {
+		colNames = append(colNames,
+			fyne.ThemeColorName("_ptStart_LightDark-"+string(base[i])+"-0_ptEnd_"))
+		colNames = append(colNames,
+			fyne.ThemeColorName("_ptStart_LightDark-"+string(base[i])+"-1_ptEnd_"))
+	}
+	return
+}
+
+func NewPaletteLightMediumDark(base fyne.ThemeColorName) (colNames []fyne.ThemeColorName) {
+	colNames = []fyne.ThemeColorName{
+		fyne.ThemeColorName("_ptStart_LightMediumDark-" + string(base) + "-0_ptEnd_"),
+		fyne.ThemeColorName("_ptStart_LightMediumDark-" + string(base) + "-1_ptEnd_"),
+		fyne.ThemeColorName("_ptStart_LightMediumDark-" + string(base) + "-2_ptEnd_"),
+	}
+	return
+}
+
+func NewPaletteLightMediumDarkSet(base []fyne.ThemeColorName) (colNames []fyne.ThemeColorName) {
+	for i := range base {
+		colNames = append(colNames,
+			fyne.ThemeColorName("_ptStart_LightMediumDark-"+string(base[i])+"-0_ptEnd_"))
+		colNames = append(colNames,
+			fyne.ThemeColorName("_ptStart_LightMediumDark-"+string(base[i])+"-1_ptEnd_"))
+		colNames = append(colNames,
+			fyne.ThemeColorName("_ptStart_LightMediumDark-"+string(base[i])+"-2_ptEnd_"))
+	}
+	return
+}
+
+func NewPaletteDivLightMediumDarkSet(base []fyne.ThemeColorName) (colNames []fyne.ThemeColorName) {
+	for i := range base {
+		if i%2 == 0 {
+			colNames = append(colNames,
+				fyne.ThemeColorName("_ptStart_LightMediumDark-"+string(base[i])+"-0_ptEnd_"))
+			colNames = append(colNames,
+				fyne.ThemeColorName("_ptStart_LightMediumDark-"+string(base[i])+"-1_ptEnd_"))
+			colNames = append(colNames,
+				fyne.ThemeColorName("_ptStart_LightMediumDark-"+string(base[i])+"-2_ptEnd_"))
 		} else {
-			// col.l = float32(math.Max(0.85, float64(bg.l)))
-			col.l = 0.8
-			col = col.DecreaseLightnessUntilContrast(2, bg)
-			if baseCol.l > col.l {
-				col = baseCol
-			}
+			colNames = append(colNames,
+				fyne.ThemeColorName("_ptStart_LightMediumDark-"+string(base[i])+"-2_ptEnd_"))
+			colNames = append(colNames,
+				fyne.ThemeColorName("_ptStart_LightMediumDark-"+string(base[i])+"-1_ptEnd_"))
+			colNames = append(colNames,
+				fyne.ThemeColorName("_ptStart_LightMediumDark-"+string(base[i])+"-0_ptEnd_"))
 		}
 	}
 	return
 }
 
-func LightMediumDark(base fyne.ThemeColorName, step int) (col color.Color) {
-	if step == 0 {
-		col = LightDark(base, 0)
-	} else if step == 1 {
-		l := LightDark(base, 0)
-		// fmt.Println(l)
-		d := LightDark(base, 1)
-		// fmt.Println(d)
-		l.l = float32(math.Abs(float64(l.l+d.l)) / 2)
-		// fmt.Println(l)
-		col = l
-	} else {
-		col = LightDark(base, 1)
-	}
-
-	return
-}
-
-func DivergentLightDarkWithNeutral(base1 fyne.ThemeColorName, base2 fyne.ThemeColorName, step int) (col color.Color) {
-	if step == 0 || step == 1 {
-		col = LightDark(base1, step)
-	} else if step == 3 {
-		col = LightDark(base2, 1)
-	} else if step == 4 {
-		col = LightDark(base2, 0)
-	} else {
-		bg := ToHSLA(ftheme.Color(ftheme.ColorNameBackground))
-		fg := ToHSLA(ftheme.Color(ftheme.ColorNameForeground))
-		if fg.l < bg.l {
-			bg.l -= 0.075
-		} else {
-			bg.l += 0.075
-		}
-		col = bg
-
-		// col1 := LightDark(base1, 1)
-		// col2 := LightDark(base2, 0)
-		// col1.h = (col1.h + col2.h) / 2
-		// col1.s = 0
-		// col = col1
+func NewPaletteEquidistantHue(base fyne.ThemeColorName, numCols int) (colNames []fyne.ThemeColorName) {
+	for i := range numCols {
+		colNames = append(colNames,
+			fyne.ThemeColorName("_ptStart_EquidistantHue-"+string(base)+"-"+strconv.Itoa(i)+"-"+strconv.Itoa(numCols)+"_ptEnd_"))
 	}
 	return
 }
 
-func DivergentLightMediumDarkWithNeutral(base1 fyne.ThemeColorName, base2 fyne.ThemeColorName, step int) (col color.Color) {
-	if step < 3 {
-		col = LightMediumDark(base1, step)
-	} else if step == 4 {
-		col = LightMediumDark(base2, 2)
-	} else if step == 5 {
-		col = LightMediumDark(base2, 1)
-	} else if step == 6 {
-		col = LightMediumDark(base2, 0)
-	} else {
-		bg := ToHSLA(ftheme.Color(ftheme.ColorNameBackground))
-		fg := ToHSLA(ftheme.Color(ftheme.ColorNameForeground))
-		if fg.l < bg.l {
-			bg.l -= 0.075
-		} else {
-			bg.l += 0.075
-		}
-		col = bg
-
-		// col1 := LightDark(base1, 1)
-		// col2 := LightDark(base2, 0)
-		// col1.h = (col1.h + col2.h) / 2
-		// col1.s = 0
-		// col = col1
+func NewPaletteComplementary(base fyne.ThemeColorName) (colNames []fyne.ThemeColorName) {
+	for i := range 2 {
+		colNames = append(colNames,
+			fyne.ThemeColorName("_ptStart_Complementary-"+string(base)+"-"+strconv.Itoa(i)+"_ptEnd_"))
 	}
 	return
 }
 
-func Monochromatic(base fyne.ThemeColorName, step int, totStep int) (col color.Color) {
-	inc := 0.7 / float32(totStep-1)
-	baseCol := ToHSLA(ftheme.Color(base))
-	bg := ToHSLA(ftheme.Color(ftheme.ColorNameBackground))
-	fg := ToHSLA(ftheme.Color(ftheme.ColorNameForeground))
-	if fg.l < bg.l {
-		baseCol.l = 0.85 - (float32(step) * inc)
-	} else {
-		baseCol.l = 0.15 + (float32(step) * inc)
+func NewPaletteTriadic(base fyne.ThemeColorName) (colNames []fyne.ThemeColorName) {
+	for i := range 3 {
+		colNames = append(colNames,
+			fyne.ThemeColorName("_ptStart_Triadic-"+string(base)+"-"+strconv.Itoa(i)+"_ptEnd_"))
 	}
-	col = baseCol
 	return
 }
 
-func Blend(base1 fyne.ThemeColorName, base2 fyne.ThemeColorName, step int, totStep int) (col color.Color) {
-	col1 := ftheme.Color(base1)
-	col2 := ftheme.Color(base2)
-
-	scale := float32(step) / float32(totStep)
-
-	r1, g1, b1, a1 := col1.RGBA()
-	sa1 := float32(a1) / float32(0xffff)
-	sr1 := (float32(r1) / float32(0xffff)) / sa1
-	sg1 := (float32(g1) / float32(0xffff)) / sa1
-	sb1 := (float32(b1) / float32(0xffff)) / sa1
-
-	r2, g2, b2, a2 := col2.RGBA()
-	sa2 := float32(a2) / float32(0xffff)
-	sr2 := (float32(r2) / float32(0xffff)) / sa2
-	sg2 := (float32(g2) / float32(0xffff)) / sa2
-	sb2 := (float32(b2) / float32(0xffff)) / sa2
-
-	a := (sa1 * (1 - scale)) + (sa2 * scale)
-	r := ((sr1 * (1 - scale)) + (sr2 * scale)) * a
-	g := ((sg1 * (1 - scale)) + (sg2 * scale)) * a
-	b := ((sb1 * (1 - scale)) + (sb2 * scale)) * a
-
-	col = color.RGBA{R: uint8(r * 0xff), G: uint8(g * 0xff), B: uint8(b * 0xff), A: uint8(a * 0xff)}
-
-	return
-}
-
-func Complementary(base fyne.ThemeColorName, step int) (col color.Color) {
-	baseCol := ToHSLA(ftheme.Color(base))
-	if step == 1 {
-		baseCol.h += 180
+func NewPaletteTetradic(base fyne.ThemeColorName) (colNames []fyne.ThemeColorName) {
+	for i := range 4 {
+		colNames = append(colNames,
+			fyne.ThemeColorName("_ptStart_Tetradic-"+string(base)+"-"+strconv.Itoa(i)+"_ptEnd_"))
 	}
-	if baseCol.h > 360 {
-		baseCol.h -= 360
-	}
-	col = baseCol
-	return
-}
-
-func Triadic(base fyne.ThemeColorName, step int) (col color.Color) {
-	baseCol := ToHSLA(ftheme.Color(base))
-	if step == 1 {
-		baseCol.h += 120
-	} else if step == 2 {
-		baseCol.h += 240
-	}
-	if baseCol.h > 360 {
-		baseCol.h -= 360
-	}
-	col = baseCol
-	return
-}
-
-func Tetradic(base fyne.ThemeColorName, step int) (col color.Color) {
-	baseCol := ToHSLA(ftheme.Color(base))
-	if step == 1 {
-		baseCol.h += 180
-	} else if step == 2 {
-		baseCol.h += 90
-	} else if step == 3 {
-		baseCol.h += 270
-	}
-	if baseCol.h > 360 {
-		baseCol.h -= 360
-	}
-	col = baseCol
 	return
 }

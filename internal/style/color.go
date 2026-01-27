@@ -3,6 +3,10 @@ package style
 import (
 	"image/color"
 	"math"
+
+	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/theme"
+	ftheme "fyne.io/fyne/v2/theme"
 )
 
 // Contrast caluclates the contrast between a foreground and background color
@@ -215,6 +219,377 @@ func (hsla HSLA) DecreaseLightnessUntilContrast(con float64, refCol color.Color)
 			ret.l = 0
 			break
 		}
+	}
+	return
+}
+
+func LightDark(base fyne.ThemeColorName, step int) (col HSLA) {
+	baseCol := ToHSLA(ftheme.Color(base))
+	bg := ToHSLA(ftheme.Color(ftheme.ColorNameBackground))
+	fg := ToHSLA(ftheme.Color(ftheme.ColorNameForeground))
+	fromBtoF := true
+	if fg.l < bg.l {
+		fromBtoF = false
+	}
+	col = baseCol
+	if step == 0 {
+		if fromBtoF {
+			// col.l = float32(math.Max(0.85, float64(fg.l)))
+			col.l = 0.8
+			col = col.DecreaseLightnessUntilContrast(1.2, fg)
+			if baseCol.l > col.l {
+				col = baseCol
+			}
+		} else {
+			// col.l = float32(math.Min(0.15, float64(fg.l)))
+			col.l = 0.2
+			col = col.IncreaseLightnessUntilContrast(1.2, fg)
+			if baseCol.l < col.l {
+				col = baseCol
+			}
+		}
+	} else {
+		if fromBtoF {
+			// col.l = float32(math.Min(0.15, float64(bg.l)))
+			col.l = 0.2
+			col = col.IncreaseLightnessUntilContrast(2.2, bg)
+			if baseCol.l < col.l {
+				col = baseCol
+			}
+		} else {
+			// col.l = float32(math.Max(0.85, float64(bg.l)))
+			col.l = 0.8
+			col = col.DecreaseLightnessUntilContrast(2.2, bg)
+			if baseCol.l > col.l {
+				col = baseCol
+			}
+		}
+	}
+	return
+}
+
+func LightMediumDark(base fyne.ThemeColorName, step int) (col color.Color) {
+	if step == 0 {
+		col = LightDark(base, 0)
+	} else if step == 1 {
+		l := LightDark(base, 0)
+		// fmt.Println(l)
+		d := LightDark(base, 1)
+		// fmt.Println(d)
+		l.l = float32(math.Abs(float64(l.l+d.l)) / 2)
+		// fmt.Println(l)
+		col = l
+	} else {
+		col = LightDark(base, 1)
+	}
+
+	return
+}
+
+func DivergentLightDarkWithNeutral(base1 fyne.ThemeColorName, base2 fyne.ThemeColorName, step int) (col color.Color) {
+	if step == 0 || step == 1 {
+		col = LightDark(base1, step)
+	} else if step == 3 {
+		col = LightDark(base2, 1)
+	} else if step == 4 {
+		col = LightDark(base2, 0)
+	} else {
+		bg := ToHSLA(ftheme.Color(ftheme.ColorNameBackground))
+		fg := ToHSLA(ftheme.Color(ftheme.ColorNameForeground))
+		if fg.l < bg.l {
+			bg.l -= 0.075
+		} else {
+			bg.l += 0.075
+		}
+		col = bg
+
+		// col1 := LightDark(base1, 1)
+		// col2 := LightDark(base2, 0)
+		// col1.h = (col1.h + col2.h) / 2
+		// col1.s = 0
+		// col = col1
+	}
+	return
+}
+
+func DivergentLightMediumDarkWithNeutral(base1 fyne.ThemeColorName, base2 fyne.ThemeColorName, step int) (col color.Color) {
+	if step < 3 {
+		col = LightMediumDark(base1, step)
+	} else if step == 4 {
+		col = LightMediumDark(base2, 2)
+	} else if step == 5 {
+		col = LightMediumDark(base2, 1)
+	} else if step == 6 {
+		col = LightMediumDark(base2, 0)
+	} else {
+		bg := ToHSLA(ftheme.Color(ftheme.ColorNameBackground))
+		fg := ToHSLA(ftheme.Color(ftheme.ColorNameForeground))
+		if fg.l < bg.l {
+			bg.l -= 0.075
+		} else {
+			bg.l += 0.075
+		}
+		col = bg
+
+		// col1 := LightDark(base1, 1)
+		// col2 := LightDark(base2, 0)
+		// col1.h = (col1.h + col2.h) / 2
+		// col1.s = 0
+		// col = col1
+	}
+	return
+}
+
+func Monochromatic(base fyne.ThemeColorName, step int, totStep int) (col color.Color) {
+	inc := 0.7 / float32(totStep-1)
+	baseCol := ToHSLA(ftheme.Color(base))
+	bg := ToHSLA(ftheme.Color(ftheme.ColorNameBackground))
+	fg := ToHSLA(ftheme.Color(ftheme.ColorNameForeground))
+	if fg.l < bg.l {
+		baseCol.l = 0.85 - (float32(step) * inc)
+	} else {
+		baseCol.l = 0.15 + (float32(step) * inc)
+	}
+	col = baseCol
+	return
+}
+
+func Blend(base1 fyne.ThemeColorName, base2 fyne.ThemeColorName, step int, totStep int) (col color.Color) {
+	col1 := ftheme.Color(base1)
+	col2 := ftheme.Color(base2)
+
+	scale := float32(step) / float32(totStep)
+
+	r1, g1, b1, a1 := col1.RGBA()
+	sa1 := float32(a1) / float32(0xffff)
+	sr1 := (float32(r1) / float32(0xffff)) / sa1
+	sg1 := (float32(g1) / float32(0xffff)) / sa1
+	sb1 := (float32(b1) / float32(0xffff)) / sa1
+
+	r2, g2, b2, a2 := col2.RGBA()
+	sa2 := float32(a2) / float32(0xffff)
+	sr2 := (float32(r2) / float32(0xffff)) / sa2
+	sg2 := (float32(g2) / float32(0xffff)) / sa2
+	sb2 := (float32(b2) / float32(0xffff)) / sa2
+
+	a := (sa1 * (1 - scale)) + (sa2 * scale)
+	r := ((sr1 * (1 - scale)) + (sr2 * scale)) * a
+	g := ((sg1 * (1 - scale)) + (sg2 * scale)) * a
+	b := ((sb1 * (1 - scale)) + (sb2 * scale)) * a
+
+	col = color.RGBA{R: uint8(r * 0xff), G: uint8(g * 0xff), B: uint8(b * 0xff), A: uint8(a * 0xff)}
+
+	return
+}
+
+func Complementary(base fyne.ThemeColorName, step int) (col color.Color) {
+	baseCol := ToHSLA(ftheme.Color(base))
+	allCols := make([]HSLA, 0)
+	allCols = append(allCols, baseCol)
+	if baseCol.s < 0.5 {
+		baseCol.s = 0.5
+	}
+	baseCol.h += 180
+	if baseCol.h > 360 {
+		baseCol.h -= 360
+	}
+	allCols = append(allCols, baseCol)
+	allCols = optimizeContrastAlt(allCols)
+	col = allCols[step]
+	return
+}
+
+func Triadic(base fyne.ThemeColorName, step int) (col color.Color) {
+	baseCol := ToHSLA(ftheme.Color(base))
+	allCols := make([]HSLA, 0)
+	allCols = append(allCols, baseCol)
+	if baseCol.s < 0.5 {
+		baseCol.s = 0.5
+	}
+	for range 2 {
+		baseCol.h += 120
+		if baseCol.h > 360 {
+			baseCol.h -= 360
+		}
+		allCols = append(allCols, baseCol)
+	}
+	allCols = optimizeContrastAlt(allCols)
+	col = allCols[step]
+	return
+}
+
+func Tetradic(base fyne.ThemeColorName, step int) (col color.Color) {
+	baseCol := ToHSLA(ftheme.Color(base))
+	allCols := make([]HSLA, 0)
+	allCols = append(allCols, baseCol)
+	if baseCol.s < 0.5 {
+		baseCol.s = 0.5
+	}
+	for range 3 {
+		baseCol.h += 90
+		if baseCol.h > 360 {
+			baseCol.h -= 360
+		}
+		allCols = append(allCols, baseCol)
+	}
+	allCols = optimizeContrastAlt(allCols)
+	col = allCols[step]
+	return
+}
+
+func EquidistantHue(base fyne.ThemeColorName, step int, totStep int) (col color.Color) {
+	baseCol := ToHSLA(ftheme.Color(base))
+	hueStep := 360 / float32(totStep)
+	nextCol := baseCol
+	if nextCol.s < 0.5 {
+		nextCol.s = 0.5
+	}
+	allCols := make([]HSLA, 0)
+	allCols = append(allCols, baseCol)
+	for range totStep - 1 {
+		nextCol.h += hueStep
+		if nextCol.h > 360 {
+			nextCol.h -= 360
+		}
+		allCols = append(allCols, nextCol)
+	}
+	allCols = optimizeContrastAlt(allCols)
+	col = allCols[step]
+	return
+}
+
+type colVar struct {
+	col       HSLA
+	bgCon     float64
+	fgCon     float64
+	minSetCon float64
+}
+
+func optimizeContrast(in []HSLA) (out []HSLA) {
+	if len(in) == 0 {
+		return
+	}
+	out = append(out, in[0])
+
+	for i := range len(in) - 1 {
+		nextCol := in[i+1]
+		nextCol.l = 0.3
+		colVars := make([]colVar, 0)
+		colVarsWithContrast := make([]colVar, 0)
+		for j := range 3 {
+			cv := colVar{col: nextCol}
+			cv.col.l += float32(j) * 0.2
+			cv.bgCon = Contrast(cv.col, theme.Color(theme.ColorNameBackground))
+			cv.fgCon = Contrast(cv.col, theme.Color(theme.ColorNameForeground))
+			minSetCon := 100.0
+			for k := range out {
+				con := Contrast(cv.col, out[k])
+				if con < minSetCon {
+					minSetCon = con
+				}
+			}
+			cv.minSetCon = minSetCon
+			colVars = append(colVars, cv)
+			if cv.bgCon > 2.2 && cv.fgCon > 1.2 {
+				colVarsWithContrast = append(colVarsWithContrast, cv)
+			}
+		}
+		if len(colVarsWithContrast) > 0 {
+			// find variant with highest min contrast to set
+			cvInd := 0
+			for j := range colVarsWithContrast {
+				if colVarsWithContrast[j].minSetCon > colVarsWithContrast[cvInd].minSetCon {
+					cvInd = j
+				}
+			}
+			nextCol = colVarsWithContrast[cvInd].col
+		} else {
+			// find variant with highest contrast to background
+			cvInd := 0
+			for j := range colVars {
+				if colVars[j].bgCon > colVars[cvInd].bgCon {
+					cvInd = j
+				}
+			}
+			nextCol = colVars[cvInd].col
+		}
+		out = append(out, nextCol)
+	}
+	return
+}
+
+type setVariant struct {
+	cols      []HSLA
+	minBgCon  float64
+	minFgCon  float64
+	minSetCon float64
+}
+
+func optimizeContrastAlt(in []HSLA) (out []HSLA) {
+	if len(in) == 0 {
+		return
+	}
+	set := make([]HSLA, 0)
+	setVars := make([]setVariant, 0)
+	setVarsWithContrast := make([]setVariant, 0)
+	for i := range len(in) {
+		if i == 0 {
+			continue
+		}
+		set = append(set, in[i])
+	}
+	numVars := int(math.Pow(3, float64(len(set))))
+	for i := range numVars {
+		setVar := setVariant{
+			cols:      []HSLA{in[0]},
+			minBgCon:  100.0,
+			minFgCon:  100.0,
+			minSetCon: 100.0,
+		}
+		for j := range set {
+			col := set[j]
+			col.l = 0.3 + 0.2*float32((i/int(math.Pow(3, float64(j))))%3)
+			setVar.cols = append(setVar.cols, col)
+		}
+		for j := range setVar.cols {
+			setVar.minBgCon = math.Min(setVar.minBgCon, Contrast(setVar.cols[j], theme.Color(theme.ColorNameBackground)))
+			setVar.minFgCon = math.Min(setVar.minFgCon, Contrast(setVar.cols[j], theme.Color(theme.ColorNameForeground)))
+			minCon := 100.0
+			for k := range setVar.cols {
+				if k == j {
+					continue
+				}
+				con := Contrast(setVar.cols[j], setVar.cols[k])
+				minCon = math.Min(minCon, con)
+			}
+			setVar.minSetCon = math.Min(setVar.minSetCon, minCon)
+		}
+		setVars = append(setVars, setVar)
+		if setVar.minBgCon > 2.2 && setVar.minFgCon > 1.2 {
+			setVarsWithContrast = append(setVarsWithContrast, setVar)
+		}
+	}
+	// for i := range setVars {
+	// 	fmt.Println(setVars[i])
+	// }
+	if len(setVarsWithContrast) > 0 {
+		varInd := 0
+		for i := range setVarsWithContrast {
+			if setVarsWithContrast[i].minSetCon > setVarsWithContrast[varInd].minSetCon {
+				varInd = i
+			}
+		}
+		out = setVarsWithContrast[varInd].cols
+		// fmt.Println("with", setVarsWithContrast[varInd])
+	} else {
+		varInd := 0
+		for i := range setVars {
+			if setVars[i].minBgCon > setVars[varInd].minBgCon {
+				varInd = i
+			}
+		}
+		out = setVars[varInd].cols
+		// fmt.Println("without", setVars[varInd])
 	}
 	return
 }

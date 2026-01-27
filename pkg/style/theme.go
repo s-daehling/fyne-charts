@@ -1,98 +1,122 @@
 package style
 
 import (
-	"image/color"
-	"strconv"
-	"strings"
+	"slices"
 
 	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/theme"
 	"github.com/s-daehling/fyne-charts/internal/style"
 )
 
-type paletteTheme struct {
-	defTheme fyne.Theme
-}
-
-var _ fyne.Theme = (*paletteTheme)(nil)
-
 func NewColorPaletteTheme(defTheme fyne.Theme) (th fyne.Theme) {
-	th = &paletteTheme{
-		defTheme: defTheme,
+	th = &style.PaletteTheme{
+		DefTheme: defTheme,
 	}
 	return
 }
 
-func (th paletteTheme) Color(colName fyne.ThemeColorName, vari fyne.ThemeVariant) (col color.Color) {
-	col = color.Alpha16{}
-	if strings.HasPrefix(string(colName), "_ptStart_") && strings.HasSuffix(string(colName), "_ptEnd_") {
-		params := parseColName(string(colName)[len("_ptStart_") : len(colName)-len("_ptEnd_")])
-		if len(params) == 0 {
-			return
-		}
-		switch params[0] {
-		case "LightDark":
-			if len(params) != 3 {
-				return
-			}
-			step, err := strconv.ParseInt(params[2], 10, 0)
-			if err != nil {
-				return
-			}
-			col = style.LightDark(fyne.ThemeColorName(params[1]), int(step))
-			return
-		case "LightMediumDark":
-			if len(params) != 3 {
-				return
-			}
-			step, err := strconv.ParseInt(params[2], 10, 0)
-			if err != nil {
-				return
-			}
-			col = style.LightMediumDark(fyne.ThemeColorName(params[1]), int(step))
-			return
-		}
+type ColorPalette struct {
+	i        int
+	colNames []fyne.ThemeColorName
+}
+
+func (p *ColorPalette) Next() (colName fyne.ThemeColorName) {
+	if len(p.colNames) == 0 {
+		colName = theme.ColorNameForeground
+		return
 	}
-	col = th.defTheme.Color(colName, vari)
-	return
-}
-
-func parseColName(colName string) (params []string) {
-	for {
-		if colName == "" {
-			return
-		}
-		if strings.HasPrefix(colName, "_ptStart_") {
-			i := strings.Index(colName, "_ptEnd_") + len("_ptEnd_")
-			if i == -1 {
-				params = nil
-				return
-			}
-			params = append(params, colName[:i])
-			colName = colName[i:]
-		} else {
-			i := strings.Index(colName, "-")
-			if i == -1 {
-				params = append(params, colName)
-				colName = ""
-			} else {
-				params = append(params, colName[:i])
-				colName = colName[i+1:]
-			}
-		}
+	colName = p.colNames[p.i]
+	p.i++
+	if p.i == len(p.colNames) {
+		p.i = 0
 	}
-}
-
-func (th paletteTheme) Font(ts fyne.TextStyle) (r fyne.Resource) {
-	r = th.defTheme.Font(ts)
 	return
 }
 
-func (th paletteTheme) Icon(iconName fyne.ThemeIconName) (r fyne.Resource) {
-	r = th.defTheme.Icon(iconName)
+func (p *ColorPalette) Add(colName fyne.ThemeColorName) {
+	p.colNames = append(p.colNames, colName)
+}
+
+func (p *ColorPalette) Remove(colName fyne.ThemeColorName) {
+	p.colNames = slices.DeleteFunc(p.colNames, func(e fyne.ThemeColorName) bool {
+		return e == colName
+	})
+}
+
+func (p *ColorPalette) Names() (n []fyne.ThemeColorName) {
+	n = append(n, p.colNames...)
+
 	return
 }
 
-func (th paletteTheme) Size(sizeName fyne.ThemeSizeName) (s float32) {
-	s = th.defTheme.Size(sizeName)
+func NewPaletteLightDark(base fyne.ThemeColorName) (p *ColorPalette) {
+	p = &ColorPalette{
+		i:        0,
+		colNames: style.NewPaletteLightDark(base),
+	}
+	return
+}
+
+func NewPaletteLightDarkSet(base []fyne.ThemeColorName) (p *ColorPalette) {
+	p = &ColorPalette{
+		i:        0,
+		colNames: style.NewPaletteLightDarkSet(base),
+	}
+	return
+}
+
+func NewPaletteLightMediumDark(base fyne.ThemeColorName) (p *ColorPalette) {
+	p = &ColorPalette{
+		i:        0,
+		colNames: style.NewPaletteLightMediumDark(base),
+	}
+	return
+}
+
+func NewPaletteLightMediumDarkSet(base []fyne.ThemeColorName) (p *ColorPalette) {
+	p = &ColorPalette{
+		i:        0,
+		colNames: style.NewPaletteLightMediumDarkSet(base),
+	}
+	return
+}
+
+func NewPaletteDivLightMediumDarkSet(base []fyne.ThemeColorName) (p *ColorPalette) {
+	p = &ColorPalette{
+		i:        0,
+		colNames: style.NewPaletteDivLightMediumDarkSet(base),
+	}
+	return
+}
+
+func NewPaletteEquidistantHue(base fyne.ThemeColorName, numCols int) (p *ColorPalette) {
+	p = &ColorPalette{
+		i:        0,
+		colNames: style.NewPaletteEquidistantHue(base, numCols),
+	}
+	return
+}
+
+func NewPaletteComplementary(base fyne.ThemeColorName) (p *ColorPalette) {
+	p = &ColorPalette{
+		i:        0,
+		colNames: style.NewPaletteComplementary(base),
+	}
+	return
+}
+
+func NewPaletteTriadic(base fyne.ThemeColorName) (p *ColorPalette) {
+	p = &ColorPalette{
+		i:        0,
+		colNames: style.NewPaletteTriadic(base),
+	}
+	return
+}
+
+func NewPaletteTetradic(base fyne.ThemeColorName) (p *ColorPalette) {
+	p = &ColorPalette{
+		i:        0,
+		colNames: style.NewPaletteTetradic(base),
+	}
 	return
 }
