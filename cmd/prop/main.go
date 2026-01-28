@@ -17,6 +17,7 @@ import (
 func main() {
 	myApp := app.New()
 	myWindow := myApp.NewWindow("Proportional Charts")
+	myApp.Settings().SetTheme(style.NewColorPaletteTheme(theme.DefaultTheme()))
 
 	var barCh, pieCh fyne.CanvasObject
 	var err error
@@ -39,18 +40,20 @@ func main() {
 // Stacked Bar Chart
 func barChart() (propChart *prop.BarChart, err error) {
 	propChart = prop.NewBarChart("Proportional Bar Chart")
+	colPal1 := style.NewPaletteLightDark(theme.ColorNamePrimary)
+	colPal2 := style.NewPaletteLightMediumDark(theme.ColorNamePrimary)
 
 	// Series 1
 	data1 := []data.ProportionalPoint{
 		{
 			Val:     rand.Float64() * 222,
 			C:       "One",
-			ColName: theme.ColorNameError,
+			ColName: colPal1.Next(),
 		},
 		{
 			Val:     rand.Float64() * 222,
 			C:       "Two",
-			ColName: theme.ColorNameSuccess,
+			ColName: colPal1.Next(),
 		},
 	}
 	ps, err := prop.NewSeries("proportion", data1)
@@ -67,17 +70,17 @@ func barChart() (propChart *prop.BarChart, err error) {
 		{
 			Val:     rand.Float64() * 222,
 			C:       "One",
-			ColName: theme.ColorNamePrimary,
+			ColName: colPal2.Next(),
 		},
 		{
 			Val:     rand.Float64() * 222,
 			C:       "Two",
-			ColName: theme.ColorNameError,
+			ColName: colPal2.Next(),
 		},
 		{
 			Val:     rand.Float64() * 222,
 			C:       "Three",
-			ColName: theme.ColorNameSuccess,
+			ColName: colPal2.Next(),
 		},
 	}
 	ps2, err := prop.NewSeries("proportion 2", data2)
@@ -93,18 +96,20 @@ func barChart() (propChart *prop.BarChart, err error) {
 
 func pieChart() (propChart *prop.PieChart, err error) {
 	propChart = prop.NewPieChart("")
+	colPal1 := style.NewPaletteComplementary(theme.ColorNamePrimary)
+	colPal2 := style.NewPaletteTriadic(theme.ColorNamePrimary)
 
 	// Series 1
 	data1 := []data.ProportionalPoint{
 		{
 			Val:     rand.Float64() * 222,
 			C:       "One",
-			ColName: theme.ColorNameError,
+			ColName: colPal1.Next(),
 		},
 		{
 			Val:     rand.Float64() * 222,
 			C:       "Two",
-			ColName: theme.ColorNameSuccess,
+			ColName: colPal1.Next(),
 		},
 	}
 	ps, err := prop.NewSeries("proportion", data1)
@@ -121,17 +126,17 @@ func pieChart() (propChart *prop.PieChart, err error) {
 		{
 			Val:     rand.Float64() * 222,
 			C:       "One",
-			ColName: theme.ColorNameForeground,
+			ColName: colPal2.Next(),
 		},
 		{
 			Val:     rand.Float64() * 222,
 			C:       "Two",
-			ColName: theme.ColorNameError,
+			ColName: colPal2.Next(),
 		},
 		{
 			Val:     rand.Float64() * 222,
 			C:       "Three",
-			ColName: theme.ColorNameSuccess,
+			ColName: colPal2.Next(),
 		},
 	}
 	ps2, err := prop.NewSeries("proportion2", data2)

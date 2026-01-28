@@ -47,7 +47,7 @@ func DefaultLegendTextStyle() (legendTextStyle ChartTextStyle) {
 
 func DefaultValueTextStyle() (valueTextStyle ChartTextStyle) {
 	valueTextStyle.Alignment = fyne.TextAlignCenter
-	valueTextStyle.ColorName = theme.ColorNameForeground
+	valueTextStyle.ColorName = theme.ColorNameBackground
 	valueTextStyle.SizeName = theme.SizeNameText
 	valueTextStyle.TextStyle = fyne.TextStyle{}
 	return

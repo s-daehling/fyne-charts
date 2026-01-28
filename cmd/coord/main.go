@@ -18,6 +18,7 @@ import (
 func main() {
 	myApp := app.New()
 	myWindow := myApp.NewWindow("Coordinate System Charts")
+	myApp.Settings().SetTheme(style.NewColorPaletteTheme(theme.DefaultTheme()))
 
 	var cartCharts, polCharts fyne.CanvasObject
 	var err error
@@ -76,6 +77,7 @@ func polarCharts() (obj fyne.CanvasObject, err error) {
 // Cartesian Numerical Chart
 func cartNumChart() (numChart *coord.CartesianNumericalChart, err error) {
 	numChart = coord.NewCartesianNumericalChart("Cartesian Numerical Chart")
+	colPal := style.NewPaletteTriadic(theme.ColorNamePrimary)
 
 	// Area Series
 	data1 := make([]data.NumericalPoint, 0)
@@ -85,7 +87,7 @@ func cartNumChart() (numChart *coord.CartesianNumericalChart, err error) {
 	for range 50 {
 		data1 = append(data1, randomNumericalDataPoint(0, 100, 0, 100))
 	}
-	as, err := coord.NewNumericalPointSeries("area", theme.ColorNameError, data1)
+	as, err := coord.NewNumericalPointSeries("area", colPal.Next(), data1)
 	if err != nil {
 		return
 	}
@@ -95,7 +97,7 @@ func cartNumChart() (numChart *coord.CartesianNumericalChart, err error) {
 	}
 
 	// Line Series
-	ls, err := coord.NewNumericalPointSeries("line", theme.ColorNameSuccess, updateSineNumericalData())
+	ls, err := coord.NewNumericalPointSeries("line", colPal.Next(), updateSineNumericalData())
 	if err != nil {
 		return
 	}
@@ -121,7 +123,7 @@ func cartNumChart() (numChart *coord.CartesianNumericalChart, err error) {
 	for range 50 {
 		data3 = append(data3, randomNumericalDataPoint(-110, 110, -110, 110))
 	}
-	bs, err := coord.NewNumericalPointSeries("bar", theme.ColorNamePrimary, data3)
+	bs, err := coord.NewNumericalPointSeries("bar", colPal.Next(), data3)
 	if err != nil {
 		return
 	}
@@ -200,6 +202,7 @@ func cartTempChart() (tempChart *coord.CartesianTemporalChart, err error) {
 // Cartesian Categorical Chart
 func cartCatChart() (catChart *coord.CartesianCategoricalChart, err error) {
 	catChart = coord.NewCartesianCategoricalChart("Cartesian Categorical Chart")
+	colPal := style.NewPaletteLightDark(theme.ColorNameSuccess)
 
 	// Stacked Bar Series
 	data1 := []data.CategoricalPoint{
@@ -216,7 +219,7 @@ func cartCatChart() (catChart *coord.CartesianCategoricalChart, err error) {
 			Val: rand.Float64() * 30,
 		},
 	}
-	sbs1, err := coord.NewCategoricalPointSeries("Test1", theme.ColorNameError, data1)
+	sbs1, err := coord.NewCategoricalPointSeries("Test1", colPal.Next(), data1)
 	if err != nil {
 		return
 	}
@@ -230,7 +233,7 @@ func cartCatChart() (catChart *coord.CartesianCategoricalChart, err error) {
 			Val: rand.Float64() * 30,
 		},
 	}
-	sbs2, err := coord.NewCategoricalPointSeries("Test2", theme.ColorNameSuccess, data2)
+	sbs2, err := coord.NewCategoricalPointSeries("Test2", colPal.Next(), data2)
 	if err != nil {
 		return
 	}
@@ -258,7 +261,7 @@ func cartCatChart() (catChart *coord.CartesianCategoricalChart, err error) {
 			Val: -10 + rand.Float64()*20,
 		},
 	}
-	bs, err := coord.NewCategoricalPointSeries("bar", theme.ColorNameForeground, data3)
+	bs, err := coord.NewCategoricalPointSeries("bar", theme.ColorNameError, data3)
 	if err != nil {
 		return
 	}
@@ -319,13 +322,16 @@ func cartCatChart() (catChart *coord.CartesianCategoricalChart, err error) {
 // Polar Numerical Chart
 func polNumChart() (numChart *coord.PolarNumericalChart, err error) {
 	numChart = coord.NewPolarNumericalChart("Polar Numerical Chart")
+	colPal := style.ColorPalette{}
+	colPal.Add(theme.ColorNameError)
+	colPal.Add(theme.ColorNameSuccess)
 
 	// Area Series
 	data1 := make([]data.NumericalPoint, 0)
 	for range 100 {
 		data1 = append(data1, randomAngularDataPoint(63.777))
 	}
-	as, err := coord.NewNumericalPointSeries("area", theme.ColorNameError, data1)
+	as, err := coord.NewNumericalPointSeries("area", colPal.Next(), data1)
 	if err != nil {
 		return
 	}
@@ -339,7 +345,7 @@ func polNumChart() (numChart *coord.PolarNumericalChart, err error) {
 	for range 150 {
 		data2 = append(data2, randomSineAngularDataPoint(63.777))
 	}
-	ls, err := coord.NewNumericalPointSeries("line", theme.ColorNameSuccess, data2)
+	ls, err := coord.NewNumericalPointSeries("line", colPal.Next(), data2)
 	if err != nil {
 		return
 	}
@@ -364,13 +370,14 @@ func polNumChart() (numChart *coord.PolarNumericalChart, err error) {
 // Polar Temporal Chart
 func polTempChart() (tempChart *coord.PolarTemporalChart, err error) {
 	tempChart = coord.NewPolarTemporalChart("Polar Temporal Chart")
+	colPal := style.NewPaletteComplementary(theme.ColorNamePrimary)
 
 	// Lollipop Series
 	data1 := make([]data.TemporalPoint, 0)
 	for range 50 {
 		data1 = append(data1, randomTemporalDataPoint(time.Now(), time.Now().Add(time.Hour*50), 0, 111))
 	}
-	tps1, err := coord.NewTemporalPointSeries("lollipop", theme.ColorNameWarning, data1)
+	tps1, err := coord.NewTemporalPointSeries("lollipop", colPal.Next(), data1)
 	if err != nil {
 		return
 	}
@@ -384,7 +391,7 @@ func polTempChart() (tempChart *coord.PolarTemporalChart, err error) {
 	for range 25 {
 		data2 = append(data2, randomTemporalDataPoint(time.Now(), time.Now().Add(time.Hour*50), 0, 111))
 	}
-	tps2, err := coord.NewTemporalPointSeries("scatter", theme.ColorNamePrimary, data2)
+	tps2, err := coord.NewTemporalPointSeries("scatter", colPal.Next(), data2)
 	if err != nil {
 		return
 	}
@@ -407,6 +414,7 @@ func polTempChart() (tempChart *coord.PolarTemporalChart, err error) {
 // Polar Categorical Chart
 func polCatChart() (catChart *coord.PolarCategoricalChart, err error) {
 	catChart = coord.NewPolarCategoricalChart("")
+	colPal := style.NewPaletteLightMediumDark(theme.ColorNameError)
 
 	// Stacked Bar Series
 	data1 := []data.CategoricalPoint{
@@ -423,7 +431,7 @@ func polCatChart() (catChart *coord.PolarCategoricalChart, err error) {
 			Val: rand.Float64() * 30,
 		},
 	}
-	sbs1, err := coord.NewCategoricalPointSeries("Test1", theme.ColorNameError, data1)
+	sbs1, err := coord.NewCategoricalPointSeries("Test1", colPal.Next(), data1)
 	if err != nil {
 		return
 	}
@@ -437,7 +445,7 @@ func polCatChart() (catChart *coord.PolarCategoricalChart, err error) {
 			Val: rand.Float64() * 30,
 		},
 	}
-	sbs2, err := coord.NewCategoricalPointSeries("Test2", theme.ColorNameSuccess, data2)
+	sbs2, err := coord.NewCategoricalPointSeries("Test2", colPal.Next(), data2)
 	if err != nil {
 		return
 	}
@@ -465,7 +473,7 @@ func polCatChart() (catChart *coord.PolarCategoricalChart, err error) {
 			Val: rand.Float64() * 30,
 		},
 	}
-	bs, err := coord.NewCategoricalPointSeries("bar", theme.ColorNameForeground, data3)
+	bs, err := coord.NewCategoricalPointSeries("bar", colPal.Next(), data3)
 	if err != nil {
 		return
 	}
