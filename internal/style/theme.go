@@ -49,6 +49,12 @@ func (th PaletteTheme) Color(colName fyne.ThemeColorName, vari fyne.ThemeVariant
 			}
 			col = LightMediumDark(fyne.ThemeColorName(params[1]), int(step))
 			return
+		case "Neutral":
+			if len(params) != 1 {
+				return
+			}
+			col = Neutral()
+			return
 		case "EquidistantHue":
 			if len(params) != 4 {
 				return
@@ -92,6 +98,26 @@ func (th PaletteTheme) Color(colName fyne.ThemeColorName, vari fyne.ThemeVariant
 				return
 			}
 			col = Tetradic(fyne.ThemeColorName(params[1]), int(step))
+			return
+		case "Hexadic":
+			if len(params) != 3 {
+				return
+			}
+			step, err := strconv.ParseInt(params[2], 10, 0)
+			if err != nil {
+				return
+			}
+			col = Hexadic(fyne.ThemeColorName(params[1]), int(step))
+			return
+		case "AnalogousFive":
+			if len(params) != 3 {
+				return
+			}
+			step, err := strconv.ParseInt(params[2], 10, 0)
+			if err != nil {
+				return
+			}
+			col = AnalgogousFive(fyne.ThemeColorName(params[1]), int(step))
 			return
 		}
 	}
@@ -179,6 +205,19 @@ func NewPaletteLightMediumDarkSet(base []fyne.ThemeColorName) (colNames []fyne.T
 	return
 }
 
+func NewPaletteDivergentLightMediumDark(base1 fyne.ThemeColorName, base2 fyne.ThemeColorName) (colNames []fyne.ThemeColorName) {
+	colNames = []fyne.ThemeColorName{
+		fyne.ThemeColorName("_ptStart_LightMediumDark-" + string(base1) + "-0_ptEnd_"),
+		fyne.ThemeColorName("_ptStart_LightMediumDark-" + string(base1) + "-1_ptEnd_"),
+		fyne.ThemeColorName("_ptStart_LightMediumDark-" + string(base1) + "-2_ptEnd_"),
+		fyne.ThemeColorName("_ptStart_Neutral_ptEnd_"),
+		fyne.ThemeColorName("_ptStart_LightMediumDark-" + string(base2) + "-2_ptEnd_"),
+		fyne.ThemeColorName("_ptStart_LightMediumDark-" + string(base2) + "-1_ptEnd_"),
+		fyne.ThemeColorName("_ptStart_LightMediumDark-" + string(base2) + "-0_ptEnd_"),
+	}
+	return
+}
+
 func NewPaletteDivLightMediumDarkSet(base []fyne.ThemeColorName) (colNames []fyne.ThemeColorName) {
 	for i := range base {
 		if i%2 == 0 {
@@ -228,6 +267,30 @@ func NewPaletteTetradic(base fyne.ThemeColorName) (colNames []fyne.ThemeColorNam
 	for i := range 4 {
 		colNames = append(colNames,
 			fyne.ThemeColorName("_ptStart_Tetradic-"+string(base)+"-"+strconv.Itoa(i)+"_ptEnd_"))
+	}
+	return
+}
+
+func NewPaletteHexadic(base fyne.ThemeColorName) (colNames []fyne.ThemeColorName) {
+	for i := range 6 {
+		colNames = append(colNames,
+			fyne.ThemeColorName("_ptStart_Hexadic-"+string(base)+"-"+strconv.Itoa(i)+"_ptEnd_"))
+	}
+	return
+}
+
+func NewPaletteAnalogousThree(base fyne.ThemeColorName) (colNames []fyne.ThemeColorName) {
+	for i := range 3 {
+		colNames = append(colNames,
+			fyne.ThemeColorName("_ptStart_AnalogousFive-"+string(base)+"-"+strconv.Itoa(i+1)+"_ptEnd_"))
+	}
+	return
+}
+
+func NewPaletteAnalogousFive(base fyne.ThemeColorName) (colNames []fyne.ThemeColorName) {
+	for i := range 5 {
+		colNames = append(colNames,
+			fyne.ThemeColorName("_ptStart_AnalogousFive-"+string(base)+"-"+strconv.Itoa(i)+"_ptEnd_"))
 	}
 	return
 }

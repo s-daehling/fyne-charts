@@ -73,26 +73,18 @@ func NewPaletteLightMediumDark(base fyne.ThemeColorName) (p *ColorPalette) {
 	return
 }
 
-func NewPaletteLightMediumDarkSet(base []fyne.ThemeColorName) (p *ColorPalette) {
-	p = &ColorPalette{
-		i:        0,
-		colNames: style.NewPaletteLightMediumDarkSet(base),
-	}
-	return
-}
+// func NewPaletteLightMediumDarkSet(base []fyne.ThemeColorName) (p *ColorPalette) {
+// 	p = &ColorPalette{
+// 		i:        0,
+// 		colNames: style.NewPaletteLightMediumDarkSet(base),
+// 	}
+// 	return
+// }
 
-func NewPaletteDivLightMediumDarkSet(base []fyne.ThemeColorName) (p *ColorPalette) {
+func NewPaletteDivergentLightMediumDark(base1 fyne.ThemeColorName, base2 fyne.ThemeColorName) (p *ColorPalette) {
 	p = &ColorPalette{
 		i:        0,
-		colNames: style.NewPaletteDivLightMediumDarkSet(base),
-	}
-	return
-}
-
-func NewPaletteEquidistantHue(base fyne.ThemeColorName, numCols int) (p *ColorPalette) {
-	p = &ColorPalette{
-		i:        0,
-		colNames: style.NewPaletteEquidistantHue(base, numCols),
+		colNames: style.NewPaletteDivergentLightMediumDark(base1, base2),
 	}
 	return
 }
@@ -117,6 +109,30 @@ func NewPaletteTetradic(base fyne.ThemeColorName) (p *ColorPalette) {
 	p = &ColorPalette{
 		i:        0,
 		colNames: style.NewPaletteTetradic(base),
+	}
+	return
+}
+
+func NewPaletteHexadic(base fyne.ThemeColorName) (p *ColorPalette) {
+	p = &ColorPalette{
+		i:        0,
+		colNames: style.NewPaletteHexadic(base),
+	}
+	return
+}
+
+func NewPaletteAnalogousThree(base fyne.ThemeColorName) (p *ColorPalette) {
+	p = &ColorPalette{
+		i:        0,
+		colNames: style.NewPaletteAnalogousThree(base),
+	}
+	return
+}
+
+func NewPaletteAnalogousFive(base fyne.ThemeColorName) (p *ColorPalette) {
+	p = &ColorPalette{
+		i:        0,
+		colNames: style.NewPaletteAnalogousFive(base),
 	}
 	return
 }

@@ -236,14 +236,14 @@ func LightDark(base fyne.ThemeColorName, step int) (col HSLA) {
 		if fromBtoF {
 			// col.l = float32(math.Max(0.85, float64(fg.l)))
 			col.l = 0.8
-			col = col.DecreaseLightnessUntilContrast(1.2, fg)
+			col = col.DecreaseLightnessUntilContrast(1.3, fg)
 			if baseCol.l > col.l {
 				col = baseCol
 			}
 		} else {
 			// col.l = float32(math.Min(0.15, float64(fg.l)))
 			col.l = 0.2
-			col = col.IncreaseLightnessUntilContrast(1.2, fg)
+			col = col.IncreaseLightnessUntilContrast(1.3, fg)
 			if baseCol.l < col.l {
 				col = baseCol
 			}
@@ -286,57 +286,15 @@ func LightMediumDark(base fyne.ThemeColorName, step int) (col color.Color) {
 	return
 }
 
-func DivergentLightDarkWithNeutral(base1 fyne.ThemeColorName, base2 fyne.ThemeColorName, step int) (col color.Color) {
-	if step == 0 || step == 1 {
-		col = LightDark(base1, step)
-	} else if step == 3 {
-		col = LightDark(base2, 1)
-	} else if step == 4 {
-		col = LightDark(base2, 0)
+func Neutral() (col color.Color) {
+	bg := ToHSLA(ftheme.Color(ftheme.ColorNameBackground))
+	fg := ToHSLA(ftheme.Color(ftheme.ColorNameForeground))
+	if fg.l < bg.l {
+		bg.l -= 0.075
 	} else {
-		bg := ToHSLA(ftheme.Color(ftheme.ColorNameBackground))
-		fg := ToHSLA(ftheme.Color(ftheme.ColorNameForeground))
-		if fg.l < bg.l {
-			bg.l -= 0.075
-		} else {
-			bg.l += 0.075
-		}
-		col = bg
-
-		// col1 := LightDark(base1, 1)
-		// col2 := LightDark(base2, 0)
-		// col1.h = (col1.h + col2.h) / 2
-		// col1.s = 0
-		// col = col1
+		bg.l += 0.075
 	}
-	return
-}
-
-func DivergentLightMediumDarkWithNeutral(base1 fyne.ThemeColorName, base2 fyne.ThemeColorName, step int) (col color.Color) {
-	if step < 3 {
-		col = LightMediumDark(base1, step)
-	} else if step == 4 {
-		col = LightMediumDark(base2, 2)
-	} else if step == 5 {
-		col = LightMediumDark(base2, 1)
-	} else if step == 6 {
-		col = LightMediumDark(base2, 0)
-	} else {
-		bg := ToHSLA(ftheme.Color(ftheme.ColorNameBackground))
-		fg := ToHSLA(ftheme.Color(ftheme.ColorNameForeground))
-		if fg.l < bg.l {
-			bg.l -= 0.075
-		} else {
-			bg.l += 0.075
-		}
-		col = bg
-
-		// col1 := LightDark(base1, 1)
-		// col2 := LightDark(base2, 0)
-		// col1.h = (col1.h + col2.h) / 2
-		// col1.s = 0
-		// col = col1
-	}
+	col = bg
 	return
 }
 
@@ -437,6 +395,25 @@ func Tetradic(base fyne.ThemeColorName, step int) (col color.Color) {
 	return
 }
 
+func Hexadic(base fyne.ThemeColorName, step int) (col color.Color) {
+	baseCol := ToHSLA(ftheme.Color(base))
+	allCols := make([]HSLA, 0)
+	allCols = append(allCols, baseCol)
+	if baseCol.s < 0.5 {
+		baseCol.s = 0.5
+	}
+	for range 5 {
+		baseCol.h += 60
+		if baseCol.h > 360 {
+			baseCol.h -= 360
+		}
+		allCols = append(allCols, baseCol)
+	}
+	allCols = optimizeContrastAlt(allCols)
+	col = allCols[step]
+	return
+}
+
 func EquidistantHue(base fyne.ThemeColorName, step int, totStep int) (col color.Color) {
 	baseCol := ToHSLA(ftheme.Color(base))
 	hueStep := 360 / float32(totStep)
@@ -454,6 +431,43 @@ func EquidistantHue(base fyne.ThemeColorName, step int, totStep int) (col color.
 		allCols = append(allCols, nextCol)
 	}
 	allCols = optimizeContrastAlt(allCols)
+	col = allCols[step]
+	return
+}
+
+func AnalgogousFive(base fyne.ThemeColorName, step int) (col color.Color) {
+	baseCol := ToHSLA(ftheme.Color(base))
+	allCols := make([]HSLA, 0)
+	allCols = append(allCols, baseCol)
+	nextCol := baseCol
+	if nextCol.s < 0.5 {
+		nextCol.s = 0.5
+	}
+	nextCol.h -= 90
+	if nextCol.h < 0 {
+		nextCol.h += 360
+	}
+	allCols = append(allCols, nextCol)
+	nextCol.h += 45
+	if nextCol.h > 360 {
+		nextCol.h -= 360
+	}
+	allCols = append(allCols, nextCol)
+	nextCol.h += 90
+	if nextCol.h > 360 {
+		nextCol.h -= 360
+	}
+	allCols = append(allCols, nextCol)
+	nextCol.h += 45
+	if nextCol.h > 360 {
+		nextCol.h -= 360
+	}
+	allCols = append(allCols, nextCol)
+	allCols = optimizeContrastAlt(allCols)
+	temp := allCols[0]
+	allCols[0] = allCols[1]
+	allCols[1] = allCols[2]
+	allCols[2] = temp
 	col = allCols[step]
 	return
 }
@@ -565,7 +579,7 @@ func optimizeContrastAlt(in []HSLA) (out []HSLA) {
 			setVar.minSetCon = math.Min(setVar.minSetCon, minCon)
 		}
 		setVars = append(setVars, setVar)
-		if setVar.minBgCon > 2.2 && setVar.minFgCon > 1.2 {
+		if setVar.minBgCon > 2.2 && setVar.minFgCon > 1.3 {
 			setVarsWithContrast = append(setVarsWithContrast, setVar)
 		}
 	}
