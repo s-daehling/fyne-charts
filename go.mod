@@ -7,6 +7,7 @@ toolchain go1.24.5
 require (
 	fyne.io/fyne/v2 v2.7.2
 	github.com/disintegration/imaging v1.6.2
+	github.com/lucasb-eyer/go-colorful v1.3.0
 )
 
 require (
