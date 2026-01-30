@@ -161,13 +161,10 @@ func LightMediumDark(base fyne.ThemeColorName, step int, settings ThemeSettings)
 }
 
 func Neutral(settings ThemeSettings) (col colorful.Color) {
-	bg, _ := colorful.MakeColor(theme.Color(theme.ColorNameBackground))
-	h, c, l := bg.Hcl()
-	cRel := c / MaxChroma(h, l)
 	if settings.Variant == theme.VariantDark {
-		col = colorful.Hcl(h, cRel*MaxChroma(h, l+0.075), l+0.075).Clamped()
+		col = colorful.Hcl(0, 0, 0.1).Clamped()
 	} else {
-		col = colorful.Hcl(h, cRel*MaxChroma(h, l-0.075), l-0.075).Clamped()
+		col = colorful.Hcl(0, 0, 0.9).Clamped()
 	}
 	return
 }
