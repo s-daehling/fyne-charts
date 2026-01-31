@@ -32,52 +32,43 @@ Now you can create a simple chart with the following code example:
 package main
 
 import (
-    "image/color"
-    "math"
-    "math/rand/v2"
+    "fyne.io/fyne/v2"
+    "fyne.io/fyne/v2/app"
+    "fyne.io/fyne/v2/theme"
 
     "github.com/s-daehling/fyne-charts/pkg/coord"
     "github.com/s-daehling/fyne-charts/pkg/data"
-
-    "fyne.io/fyne/v2"
-    "fyne.io/fyne/v2/app"
 )
 
 func main() {
-    myApp := app.New()
-    myWindow := myApp.NewWindow("fyne-charts")
+    a := app.New()
+    w := a.NewWindow("fyne-charts demo")
 
-    nc := coord.NewCartesianNumericalChart("fyne-charts example")
-    nps1, err := coord.NewNumericalPointSeries("line", color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff}, randomSine(50, 100, 40))
+    chart := coord.NewCartesianCategoricalChart("Example Chart")
+    chart.SetCAxisLabel("Categories")
+    chart.SetYAxisLabel("Value")
+
+    cps, err := coord.NewCategoricalPointSeries("Bar Series", theme.ColorNamePrimary, []data.CategoricalPoint{{
+        C:   "One",
+        Val: 15,
+    }, {
+        C:   "Two",
+        Val: 30,
+    }, {
+        C:   "Three",
+        Val: 45,
+    }})
     if err != nil {
         panic(err)
     }
-    err = nc.AddLineSeries(nps1, true)
-    if err != nil {
-        panic(err)
-    }
-    nps2, err := coord.NewNumericalPointSeries("scatter", color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff}, randomSine(50, 60, 60))
-    if err != nil {
-        panic(err)
-    }
-    err = nc.AddScatterSeries(nps2)
+    err = chart.AddBarSeries(cps)
     if err != nil {
         panic(err)
     }
 
-    myWindow.SetContent(nc)
-    myWindow.Resize(fyne.NewSize(200, 200))
-    myWindow.ShowAndRun()
-}
-
-func randomSine(n int, l float64, amp float64) (ndp []data.NumericalPoint) {
-    for range n {
-        var p data.NumericalPoint
-        p.N = (-l / 2) + (rand.Float64() * l)
-        p.Val = amp * math.Sin((p.N/(l))*2*math.Pi)
-        ndp = append(ndp, p)
-    }
-    return
+    w.SetContent(chart)
+    w.Resize(fyne.NewSize(500, 300))
+    w.ShowAndRun()
 }
 ```
 
