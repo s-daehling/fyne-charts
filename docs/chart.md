@@ -204,4 +204,4 @@ This will delete the user defined values and use the automatically calculated va
 
 ## Next steps
 
-Learn about how to create data series and add them to charts in the [Series Tutorial](series.md).
+Learn about how to [create data series and add them to charts](series.md).
