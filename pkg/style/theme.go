@@ -93,13 +93,13 @@ func NewPaletteLightMediumDark(base fyne.ThemeColorName) (p *ColorPalette) {
 	return
 }
 
-// func NewPaletteLightMediumDarkSet(base []fyne.ThemeColorName) (p *ColorPalette) {
-// 	p = &ColorPalette{
-// 		i:        0,
-// 		colNames: style.NewPaletteLightMediumDarkSet(base),
-// 	}
-// 	return
-// }
+func NewPaletteLightMediumDarkSet(base []fyne.ThemeColorName) (p *ColorPalette) {
+	p = &ColorPalette{
+		i:        -1,
+		colNames: style.NewPaletteLightMediumDarkSet(base),
+	}
+	return
+}
 
 // NewPaletteDivergentLightMediumDark returns a ColorPalette containing one light, one medium and one dark variant of base1, a neutral color and the same variants as for base1 in different order for base2
 func NewPaletteDivergentLightMediumDark(base1 fyne.ThemeColorName, base2 fyne.ThemeColorName) (p *ColorPalette) {

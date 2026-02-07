@@ -79,7 +79,7 @@ func LightnessRange(ref color.Color, background color.Color, foreground color.Co
 	if fl > bl {
 		// background darker than foreground (typical dark mode)
 		lMin = bl
-		for range 80 {
+		for range 100 {
 			cMax = MaxChroma(h, lMin)
 			col = colorful.Hcl(h, cRel*cMax, lMin).Clamped()
 			if Contrast(col, bgCol) > conToBack {
@@ -87,9 +87,12 @@ func LightnessRange(ref color.Color, background color.Color, foreground color.Co
 				break
 			}
 			lMin += 0.01
+			if lMin > 0.9 {
+				break
+			}
 		}
-		lMax = 0.8
-		for range 80 {
+		lMax = 0.75
+		for range 75 {
 			cMax = MaxChroma(h, lMax)
 			col = colorful.Hcl(h, cRel*cMax, lMax).Clamped()
 			if Contrast(col, fgCol) > conToFore {
@@ -101,7 +104,7 @@ func LightnessRange(ref color.Color, background color.Color, foreground color.Co
 	} else {
 		// background lighter than foreground (typical light mode)
 		lMin = 0.25
-		for range 80 {
+		for range 75 {
 			cMax = MaxChroma(h, lMin)
 			col = colorful.Hcl(h, cRel*cMax, lMin).Clamped()
 			if Contrast(col, fgCol) > conToFore {
@@ -111,7 +114,7 @@ func LightnessRange(ref color.Color, background color.Color, foreground color.Co
 			lMin += 0.01
 		}
 		lMax = bl
-		for range 80 {
+		for range 100 {
 			cMax = MaxChroma(h, lMax)
 			col = colorful.Hcl(h, cRel*cMax, lMax).Clamped()
 			if Contrast(col, bgCol) > conToBack {
@@ -119,6 +122,9 @@ func LightnessRange(ref color.Color, background color.Color, foreground color.Co
 				break
 			}
 			lMax -= 0.01
+			if lMax < 0.1 {
+				break
+			}
 		}
 	}
 	return
