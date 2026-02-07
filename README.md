@@ -80,10 +80,10 @@ Demos of fyne-charts can be found in ``cmd/``
 
 ![example](docs/coord-example.png "Example of Coordinate System Charts")
 
-fyne-charts provides six widgets for visualization of two-dimensional data in a coordinate system.
+fyne-charts provides six widgets for visualization of two-dimensional data in a coordinate system located in `github.com/s-daehling/fyne-charts/pkg/coord`.
 They differ in the coordinate system that is used and in the kind of data that is mapped.
 
-fyne-charts provides two possible coordinate systems:
+Two possible coordinate systems:
 
 * Cartesian (mapping from a x-axis to an orthogonal y-axis)
 * Polar (mapping from a phi-axis to a radial r-axis)
@@ -94,55 +94,26 @@ In both coordinate systems different data types can be used for the "from-axis" 
 * Temporal: data that is represented by a timestamp (implemented as time.Time) and
 * Categorical: data that is represented by a name (implemented as string).
 
-The "to-axis" (y or r) is always a numerical axis (float64).
-
-The data ranges of the resulting six widgets are summerized in the table below.
-
-||Numerical|Temporal|Categorical|
-|-|-|-|-|
-|Cartesian x-axis|any valid float64|any valid time.Time|any valid string|
-|Cartesian y-axis|any valid float64|any valid float64|any valid float64|
-|Polar phi-axis|0 <= phi <= 2pi|any valid time.Time|any valid string|
-|Polar r-axis|r >= 0|r >= 0|r >= 0|
-
-Every chart can hold multiple sets of data.
-Each data set is called a series.
-Different types of series exist.
-The following table gives an overview of all series types and their availability in the different chart types.
-
-|(Cartesian / Polar)|Numerical|Temporal|Categorical|
-|-|-|-|-|
-|Line|y / y|y / y|n / n|
-|Area|y / y|y / y|n / n|
-|Scatter|y / y|y / y|y / y|
-|Lollipop|y / y|y / y|y / y|
-|Box|y / n|y / n|y / n|
-|Candlestick|y / n|y / n|n / n|
-|Bar|y / y|y / y|y / y|
-|Stacked Bar|n / n|n / n|y / y|
-
-Package `github.com/s-daehling/fyne-charts/pkg/coord` provides the six chart widget discussed above:
-
-* `CartesianNumericalChart`
-* `CartesianTemporalChart`
-* `CartesianCategoricalChart`
-* `PolarNumericalChart`
-* `PolarTemporalChart`
-* `PolarCategoricalChart`
-
 ### Proportional Data Charts
 
 ![example](docs/prop-example.png "Example of Proportional Data Charts")
 
-Analogous to the coordinate system charts, also proportional data charts can be drawn in two ways.
-The two corresponding chart widgets are provided by the package `github.com/s-daehling/fyne-charts/pkg/prop`:
+Analogous to the coordinate system charts, also proportional data charts can be drawn in two ways:
 
-* `BarChart`: Horizontal Bars
-* `PieChart` Pie/Doughnut
+* Horizontal Bars
+* Pie/Doughnut
+
+The two corresponding chart widgets are provided by the package `github.com/s-daehling/fyne-charts/pkg/prop`:
 
 ## Documentation
 
-Documentation is available on [pkg.go.dev](https://pkg.go.dev/github.com/s-daehling/fyne-charts)
+The following tutorials help you to get started:
+
+- [Chart creation and configuration](docs/chart.md)
+- [Series creation and adding to charts](docs/series.md)
+- [Coloring of series elements using the color palette theme](docs/coloring.md)
+
+Code documentation is available on [pkg.go.dev](https://pkg.go.dev/github.com/s-daehling/fyne-charts)
 
 ## License
 
