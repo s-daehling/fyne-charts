@@ -110,7 +110,7 @@ func NewPaletteDivergentLightMediumDark(base1 fyne.ThemeColorName, base2 fyne.Th
 	return
 }
 
-// NewPaletteComplementary returns a ColorPalette containing base and the complementary color in HSL
+// NewPaletteComplementary returns a ColorPalette containing base and the complementary color in HCL
 func NewPaletteComplementary(base fyne.ThemeColorName) (p *ColorPalette) {
 	p = &ColorPalette{
 		i:        -1,
@@ -119,7 +119,7 @@ func NewPaletteComplementary(base fyne.ThemeColorName) (p *ColorPalette) {
 	return
 }
 
-// NewPaletteTriadic returns a ColorPalette containing base and two colors with a distance of 120° in HSL space
+// NewPaletteTriadic returns a ColorPalette containing base and two colors with a distance of 120° in HCL space
 func NewPaletteTriadic(base fyne.ThemeColorName) (p *ColorPalette) {
 	p = &ColorPalette{
 		i:        -1,
@@ -128,7 +128,7 @@ func NewPaletteTriadic(base fyne.ThemeColorName) (p *ColorPalette) {
 	return
 }
 
-// NewPaletteQuadratic returns a ColorPalette containing base and three colors with a distance of 90° in HSL space
+// NewPaletteQuadratic returns a ColorPalette containing base and three colors with a distance of 90° in HCL space
 func NewPaletteQuadratic(base fyne.ThemeColorName) (p *ColorPalette) {
 	p = &ColorPalette{
 		i:        -1,
@@ -137,7 +137,7 @@ func NewPaletteQuadratic(base fyne.ThemeColorName) (p *ColorPalette) {
 	return
 }
 
-// NewPaletteHexadic returns a ColorPalette containing base and five colors with a distance of 60° in HSL space
+// NewPaletteHexadic returns a ColorPalette containing base and five colors with a distance of 60° in HCL space
 func NewPaletteHexadic(base fyne.ThemeColorName) (p *ColorPalette) {
 	p = &ColorPalette{
 		i:        -1,
@@ -146,7 +146,7 @@ func NewPaletteHexadic(base fyne.ThemeColorName) (p *ColorPalette) {
 	return
 }
 
-// // NewPaletteAnalogousThree returns a ColorPalette containing base and two colors with a distance of +/- 45° in HSL space centered around base
+// // NewPaletteAnalogousThree returns a ColorPalette containing base and two colors with a distance of +/- 45° in HCL space centered around base
 // func NewPaletteAnalogousThree(base fyne.ThemeColorName) (p *ColorPalette) {
 // 	p = &ColorPalette{
 // 		i:        -1,
@@ -155,7 +155,7 @@ func NewPaletteHexadic(base fyne.ThemeColorName) (p *ColorPalette) {
 // 	return
 // }
 
-// // NewPaletteAnalogousFive returns a ColorPalette containing base and four colors with a distance of +/- 45° in HSL space centered around base
+// // NewPaletteAnalogousFive returns a ColorPalette containing base and four colors with a distance of +/- 45° in HCL space centered around base
 // func NewPaletteAnalogousFive(base fyne.ThemeColorName) (p *ColorPalette) {
 // 	p = &ColorPalette{
 // 		i:        -1,
