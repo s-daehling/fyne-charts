@@ -177,7 +177,8 @@ func cartTempChart() (tempChart *coord.CartesianTemporalChart, err error) {
 	if err != nil {
 		return
 	}
-	tps.SetDotSize(3)
+	tps.SetDotSize(6)
+	tps.SetLineWidth(2)
 
 	// Examples of methods for altering the chart appearance
 	tempChart.SetOrigin(time.Now().Add(time.Hour*20), 4)
@@ -188,14 +189,6 @@ func cartTempChart() (tempChart *coord.CartesianTemporalChart, err error) {
 	as.SizeName = theme.SizeNameText
 	as.Alignment = fyne.TextAlignLeading
 	tempChart.SetTAxisStyle(as, style.DefaultAxisStyle())
-	go func() {
-		time.Sleep(time.Second * 2)
-		fyne.Do(func() {
-			ls := style.DefaultLegendTextStyle()
-			ls.TextStyle = fyne.TextStyle{Bold: true}
-			tempChart.SetLegendStyle(style.LegendLocationBottom, ls, false)
-		})
-	}()
 	return
 }
 
@@ -306,16 +299,9 @@ func cartCatChart() (catChart *coord.CartesianCategoricalChart, err error) {
 	ts := style.DefaultTitleStyle()
 	ts.SizeName = theme.SizeNameText
 	catChart.SetTitleStyle(ts)
-	ls := style.DefaultLegendTextStyle()
-	ls.Alignment = fyne.TextAlignTrailing
-	catChart.SetLegendStyle(style.LegendLocationRight, ls, true)
+	catChart.SetLegendStyle(style.LegendLocationRight, style.DefaultLegendTextStyle(), true)
+	catChart.SetOrientation(true)
 
-	go func() {
-		time.Sleep(time.Second * 5)
-		fyne.Do(func() {
-			catChart.SetOrientation(true)
-		})
-	}()
 	return
 }
 

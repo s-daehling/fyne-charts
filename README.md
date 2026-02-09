@@ -78,7 +78,7 @@ Demos of fyne-charts can be found in ``cmd/``
 
 ### Two-Dimensional Coordinate System Charts
 
-![example](docs/coord-example.png "Example of Coordinate System Charts")
+![example](docs/img/coord.png "Example of Coordinate System Charts")
 
 fyne-charts provides six widgets for visualization of two-dimensional data in a coordinate system located in `github.com/s-daehling/fyne-charts/pkg/coord`.
 They differ in the coordinate system that is used and in the kind of data that is mapped.
@@ -96,7 +96,7 @@ In both coordinate systems different data types can be used for the "from-axis" 
 
 ### Proportional Data Charts
 
-![example](docs/prop-example.png "Example of Proportional Data Charts")
+![example](docs/img/prop.png "Example of Proportional Data Charts")
 
 Analogous to the coordinate system charts, also proportional data charts can be drawn in two ways:
 
