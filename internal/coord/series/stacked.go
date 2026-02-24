@@ -5,8 +5,8 @@ import (
 	"image/color"
 
 	"fyne.io/fyne/v2/theme"
+	"github.com/s-daehling/fyne-charts/internal/elements"
 	"github.com/s-daehling/fyne-charts/internal/interact"
-	"github.com/s-daehling/fyne-charts/internal/renderer"
 )
 
 type StackedSeries struct {
@@ -36,9 +36,9 @@ func (ser *StackedSeries) DataChange() {
 	}
 }
 
-func (ser *StackedSeries) RasterRefresh() {
+func (ser *StackedSeries) AreaRefresh() {
 	if ser.cont != nil {
-		ser.cont.RasterRefresh()
+		ser.cont.AreaRefresh()
 	}
 }
 
@@ -111,10 +111,10 @@ func (ser *StackedSeries) ConvertCtoN(cToN func(c string) (n float64)) {
 	}
 }
 
-func (ser *StackedSeries) CartesianRects(xMin float64, xMax float64, yMin float64,
-	yMax float64) (fs []renderer.CartesianRect) {
+func (ser *StackedSeries) CartesianBars(xMin float64, xMax float64, yMin float64,
+	yMax float64) (fs []*elements.Bar) {
 	for i := range ser.stack {
-		fs = append(fs, ser.stack[i].CartesianRects(xMin, xMax, yMin, yMax)...)
+		fs = append(fs, ser.stack[i].CartesianBars(xMin, xMax, yMin, yMax)...)
 	}
 	return
 }

@@ -259,7 +259,7 @@ func TestBoxNodes(t *testing.T) {
 		app.New()
 		ser := EmptyBoxSeries("test", theme.ColorNameBackground)
 		ser.AddNumericalData(tt.input)
-		cns := ser.CartesianNodes(tt.xMin, tt.xMax, tt.yMin, tt.yMax)
+		cns := ser.CartesianDots(tt.xMin, tt.xMax, tt.yMin, tt.yMax)
 		if len(cns) != tt.expEdges {
 			t.Errorf("wrong number of nodes, set %d, num %d, exp %d", i, len(cns), tt.expEdges)
 		}
@@ -309,7 +309,7 @@ func TestBoxRects(t *testing.T) {
 		app.New()
 		ser := EmptyBoxSeries("test", theme.ColorNameBackground)
 		ser.AddNumericalData(tt.input)
-		cns := ser.CartesianRects(tt.xMin, tt.xMax, tt.yMin, tt.yMax)
+		cns := ser.CartesianBars(tt.xMin, tt.xMax, tt.yMin, tt.yMax)
 		if len(cns) != tt.expRects {
 			t.Errorf("wrong number of rects, set %d, num %d, exp %d", i, len(cns), tt.expRects)
 		}

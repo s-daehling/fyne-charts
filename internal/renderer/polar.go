@@ -4,13 +4,14 @@ import (
 	"math"
 
 	"fyne.io/fyne/v2"
+	"github.com/s-daehling/fyne-charts/internal/elements"
 )
 
 type PolarChart interface {
 	baseChart
-	PolarNodes() (ns []PolarNode)
-	PolarEdges() (es []PolarEdge)
-	PolarTexts() (ts []PolarText)
+	PolarDots() (ns []*elements.Dot)
+	PolarEdges() (es []elements.Edge)
+	PolarTexts() (ts []elements.Label)
 	PolarObjects() (obj []fyne.CanvasObject)
 }
 
@@ -48,14 +49,14 @@ func (r *Polar) Layout(size fyne.Size) {
 	phiAxisTickLabelHeight := float32(0.0)
 
 	var phiOrigin, rMax, rOrigin float64
-	var phiTicks, rTicks []Tick
-	var phiArrow, rArrow Arrow
+	var phiTicks, rTicks []elements.Tick
+	var phiArrow, rArrow elements.Arrow
 	var phiShow, rShow bool
 	_, _, phiOrigin, phiTicks, phiArrow, phiShow = r.chart.FromAxisElements()
 	_, rMax, rOrigin, _, rArrow, rShow = r.chart.ToAxisElements()
 
 	phiOriginAbs := absAngle(phiOrigin, r.mathPos, r.rot)
-	phiAxisTickLabelWidth, phiAxisTickLabelHeight = maxTickSize(phiTicks)
+	phiAxisTickLabelWidth, phiAxisTickLabelHeight = elements.MaxTickSize(phiTicks)
 	if phiAxisTickLabelWidth < 0.001 {
 		phiAxisTickLabelWidth = r.prevPhiAxisTickLabelWidth
 	} else {
@@ -192,33 +193,33 @@ func (r *Polar) Layout(size fyne.Size) {
 	}
 
 	// place nodes
-	ns := r.chart.PolarNodes()
+	ns := r.chart.PolarDots()
 	for i := range ns {
 		var dotPos fyne.Position
-		dotPos = polarCoordinatesToPosition(ns[i].Phi, ns[i].R, area)
-		dotSize := ns[i].Dot.Size().Width
+		dotPos = polarCoordinatesToPosition(ns[i].N, ns[i].Val, area)
+		dotSize := ns[i].Size().Width
 		dotPos = dotPos.SubtractXY(dotSize/2, dotSize/2)
-		ns[i].Dot.Move(dotPos)
+		ns[i].Move(dotPos)
 	}
 
 	// place edges
 	es := r.chart.PolarEdges()
 	for i := range es {
-		es[i].Line.Position1 = polarCoordinatesToPosition(es[i].Phi1, es[i].R1, area)
-		es[i].Line.Position2 = polarCoordinatesToPosition(es[i].Phi2, es[i].R2, area)
+		es[i].Line.Position1 = polarCoordinatesToPosition(es[i].N1, es[i].Val1, area)
+		es[i].Line.Position2 = polarCoordinatesToPosition(es[i].N2, es[i].Val2, area)
 	}
 
 	// place texts
 	ts := r.chart.PolarTexts()
 	for i := range ts {
-		tPos := polarCoordinatesToPosition(ts[i].Phi, ts[i].R, area)
+		tPos := polarCoordinatesToPosition(ts[i].N, ts[i].Val, area)
 		tPos = tPos.SubtractXY(0, ts[i].Text.MinSize().Height/2)
 		ts[i].Text.Move(tPos)
 		ts[i].Text.Alignment = fyne.TextAlignCenter
 	}
 
-	// place raster
-	rs := r.chart.Raster()
+	// place area
+	rs := r.chart.Area()
 	if rs != nil {
 		rs.Move(fyne.NewPos(area.zeroPos.X-area.radius, area.zeroPos.Y-area.radius))
 		rs.Resize(fyne.NewSize(2*area.radius, 2*area.radius))

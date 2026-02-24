@@ -363,11 +363,11 @@ func TestDataPointNodes(t *testing.T) {
 		ser := EmptyPointSeries("test", theme.ColorNameBackground)
 		ser.showDot = true
 		ser.AddNumericalData(tt.input)
-		cns := ser.CartesianNodes(tt.xMin, tt.xMax, tt.yMin, tt.yMax)
+		cns := ser.CartesianDots(tt.xMin, tt.xMax, tt.yMin, tt.yMax)
 		if len(cns) != tt.expCartNodes {
 			t.Errorf("wrong number of cartesian nodes, set %d, num %d, exp %d", i, len(cns), tt.expCartNodes)
 		}
-		pns := ser.PolarNodes(tt.xMin, tt.xMax, tt.yMin, tt.yMax)
+		pns := ser.PolarDots(tt.xMin, tt.xMax, tt.yMin, tt.yMax)
 		if len(pns) != tt.expPolNodes {
 			t.Errorf("wrong number of polar nodes, set %d, num %d, exp %d", i, len(pns), tt.expPolNodes)
 		}
@@ -434,7 +434,7 @@ func TestDataPointRects(t *testing.T) {
 		ser := EmptyPointSeries("test", theme.ColorNameBackground)
 		ser.showBar = true
 		ser.AddNumericalData(tt.input)
-		crs := ser.CartesianRects(tt.xMin, tt.xMax, tt.yMin, tt.yMax)
+		crs := ser.CartesianBars(tt.xMin, tt.xMax, tt.yMin, tt.yMax)
 		if len(crs) != tt.expCartRects {
 			t.Errorf("wrong number of cartesian rects, set %d, num %d, exp %d", i, len(crs), tt.expCartRects)
 		}

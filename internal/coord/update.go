@@ -8,7 +8,7 @@ import (
 )
 
 func (base *BaseChart) Refresh() {
-	base.updateRasterSeries()
+	base.updateAreaSeries()
 	if base.render != nil {
 		base.render.Refresh()
 	}
@@ -21,19 +21,22 @@ func (base *BaseChart) DataChange() {
 	base.Refresh()
 }
 
-func (base *BaseChart) RasterRefresh() {
-	base.updateRasterSeries()
-	base.rast.Refresh()
+func (base *BaseChart) AreaRefresh() {
+	base.updateAreaSeries()
+	base.area.Refresh()
 }
 
-func (base *BaseChart) updateRasterSeries() {
+func (base *BaseChart) updateAreaSeries() {
 	rastSer := make([]series.Series, 0)
 	for _, ser := range base.series {
 		if ser.IsPartOfChartRaster() {
 			rastSer = append(rastSer, ser)
 		}
 	}
-	base.rasterSeries = rastSer
+	base.areaSeries = rastSer
+	if len(rastSer) > 0 {
+		base.area.Show()
+	}
 }
 
 func (base *BaseChart) ChartSizeChange(fromSpace float32, toSpace float32) {

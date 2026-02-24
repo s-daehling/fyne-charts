@@ -7,7 +7,7 @@ import (
 	"sort"
 	"time"
 
-	"github.com/s-daehling/fyne-charts/internal/renderer"
+	"github.com/s-daehling/fyne-charts/internal/elements"
 	"github.com/s-daehling/fyne-charts/pkg/data"
 
 	"fyne.io/fyne/v2"
@@ -21,23 +21,20 @@ type catOffset struct {
 }
 
 type dataPoint struct {
-	c         string
-	t         time.Time
-	n         float64
-	val       float64
-	valBase   float64
-	nBarWidth float64
-	tBarWidth time.Duration
-	nBarShift float64
-	tBarShift time.Duration
-	// nBarStart           float64
-	// nBarEnd             float64
-	// valBarStart         float64
-	// valBarEnd           float64
-	dot                 *canvas.Circle
+	c                   string
+	t                   time.Time
+	n                   float64
+	val                 float64
+	valBase             float64
+	nBarWidth           float64
+	tBarWidth           time.Duration
+	nBarShift           float64
+	tBarShift           time.Duration
+	dot                 *elements.Dot
 	fromValBase         *canvas.Line
 	fromPrev            *canvas.Line
-	bar                 *canvas.Rectangle
+	bar                 *elements.Bar
+	col                 color.Color
 	showDot             bool
 	showFromValBaseLine bool
 	showFromPrevLine    bool
@@ -47,10 +44,11 @@ type dataPoint struct {
 func emptyDataPoint(col color.Color, showDot bool, showFromBase bool, showFromPrev bool,
 	showBar bool) (point *dataPoint) {
 	point = &dataPoint{
-		dot:                 canvas.NewCircle(col),
+		dot:                 elements.NewDot(col, 5),
 		fromValBase:         canvas.NewLine(col),
 		fromPrev:            canvas.NewLine(col),
-		bar:                 canvas.NewRectangle(col),
+		bar:                 elements.NewBar(col),
+		col:                 col,
 		showDot:             showDot,
 		showFromValBaseLine: showFromBase,
 		showFromPrevLine:    showFromPrev,
@@ -87,10 +85,11 @@ func (point *dataPoint) show() {
 }
 
 func (point *dataPoint) setColor(col color.Color) {
-	point.dot.FillColor = col
+	point.col = col
+	point.dot.SetColor(col)
 	point.fromValBase.StrokeColor = col
 	point.fromPrev.StrokeColor = col
-	point.bar.FillColor = col
+	point.bar.SetColor(col)
 }
 
 func (point *dataPoint) setLineWidth(lw float32) {
@@ -99,6 +98,7 @@ func (point *dataPoint) setLineWidth(lw float32) {
 }
 
 func (point *dataPoint) setDotSize(ds float32) {
+	point.dot.SetMinSize(ds)
 	point.dot.Resize(fyne.NewSize(ds, ds))
 }
 
@@ -126,41 +126,37 @@ func (point *dataPoint) setTBarWidthAndShift(bw time.Duration, bs time.Duration)
 // 	point.valBarEnd = math.Max(point.valBase, point.valBase+point.val)
 // }
 
-func (point *dataPoint) cartesianNodes(xMin float64, xMax float64, yMin float64,
-	yMax float64) (ns []renderer.CartesianNode) {
+func (point *dataPoint) cartesianDots(xMin float64, xMax float64, yMin float64,
+	yMax float64) (ns []*elements.Dot) {
 	if !point.showDot || point.n < xMin || point.n > xMax || point.val < yMin || point.val > yMax {
 		return
 	}
-	ns = append(ns, renderer.CartesianNode{
-		X:   point.n,
-		Y:   point.val,
-		Dot: point.dot,
-	})
+	point.dot.N = point.n
+	point.dot.Val = point.val
+	ns = append(ns, point.dot)
 	return
 }
 
-func (point *dataPoint) polarNodes(phiMin float64, phiMax float64, rMin float64,
-	rMax float64) (ns []renderer.PolarNode) {
+func (point *dataPoint) polarDots(phiMin float64, phiMax float64, rMin float64,
+	rMax float64) (ns []*elements.Dot) {
 	if !point.showDot || point.val > rMax || point.val < rMin || point.n < phiMin ||
 		point.n > phiMax {
 		return
 	}
-	ns = append(ns, renderer.PolarNode{
-		Phi: point.n,
-		R:   point.val,
-		Dot: point.dot,
-	})
+	point.dot.N = point.n
+	point.dot.Val = point.val
+	ns = append(ns, point.dot)
 	return
 }
 
 func (point *dataPoint) cartesianEdges(firstPoint bool, prevX float64, prevY float64, xMin float64,
-	xMax float64, yMin float64, yMax float64) (es []renderer.CartesianEdge) {
+	xMax float64, yMin float64, yMax float64) (es []elements.Edge) {
 	if point.showFromValBaseLine && !(point.n > xMax || point.n < xMin) {
-		es = append(es, renderer.CartesianEdge{
-			X1:   point.n,
-			Y1:   math.Max(yMin, point.valBase),
-			X2:   point.n,
-			Y2:   math.Min(yMax, point.val),
+		es = append(es, elements.Edge{
+			N1:   point.n,
+			Val1: math.Max(yMin, point.valBase),
+			N2:   point.n,
+			Val2: math.Min(yMax, point.val),
 			Line: point.fromValBase,
 		})
 	}
@@ -206,24 +202,24 @@ func (point *dataPoint) cartesianEdges(firstPoint bool, prevX float64, prevY flo
 		x2 = x1 + ((yMax - y1) * ((x2 - x1) / (y2 - y1)))
 		y2 = yMax
 	}
-	es = append(es, renderer.CartesianEdge{
-		X1:   x1,
-		Y1:   y1,
-		X2:   x2,
-		Y2:   y2,
+	es = append(es, elements.Edge{
+		N1:   x1,
+		Val1: y1,
+		N2:   x2,
+		Val2: y2,
 		Line: point.fromPrev,
 	})
 	return
 }
 
 func (point *dataPoint) polarEdges(firstPoint bool, prevPhi float64, prevR float64, phiMin float64,
-	phiMax float64, rMin float64, rMax float64) (es []renderer.PolarEdge) {
+	phiMax float64, rMin float64, rMax float64) (es []elements.Edge) {
 	if point.showFromValBaseLine && !(point.n < phiMin || point.n > phiMax || point.val < rMin) {
-		es = append(es, renderer.PolarEdge{
-			Phi1: point.n,
-			R1:   math.Max(rMin, point.valBase),
-			Phi2: point.n,
-			R2:   math.Min(rMax, point.val),
+		es = append(es, elements.Edge{
+			N1:   point.n,
+			Val1: math.Max(rMin, point.valBase),
+			N2:   point.n,
+			Val2: math.Min(rMax, point.val),
 			Line: point.fromValBase,
 		})
 	}
@@ -232,38 +228,27 @@ func (point *dataPoint) polarEdges(firstPoint bool, prevPhi float64, prevR float
 		point.n > phiMax {
 		return
 	}
-	es = append(es, renderer.PolarEdge{
-		Phi1: prevPhi,
-		R1:   prevR,
-		Phi2: point.n,
-		R2:   point.val,
+	es = append(es, elements.Edge{
+		N1:   prevPhi,
+		Val1: prevR,
+		N2:   point.n,
+		Val2: point.val,
 		Line: point.fromPrev,
 	})
 	return
 }
 
-func (point *dataPoint) cartesianRects(xMin float64, xMax float64, yMin float64,
-	yMax float64, stacked bool) (rs []renderer.CartesianRect) {
+func (point *dataPoint) cartesianBars(xMin float64, xMax float64, yMin float64,
+	yMax float64, stacked bool) (rs []*elements.Bar) {
 	if !point.showBar || point.n < xMin || point.n > xMax {
 		return
 	}
 	// if stacked {
-	rs = append(rs, renderer.CartesianRect{
-		X1:   point.n + point.nBarShift - (point.nBarWidth / 2),
-		Y1:   math.Max(math.Min(point.valBase, point.valBase+point.val), yMin),
-		X2:   point.n + point.nBarShift + (point.nBarWidth / 2),
-		Y2:   math.Min(math.Max(point.valBase, point.valBase+point.val), yMax),
-		Rect: point.bar,
-	})
-	// } else {
-	// 	rs = append(rs, renderer.CartesianRect{
-	// 		X1:   point.n + point.nBarShift - (point.nBarWidth / 2),
-	// 		Y1:   math.Max(yMin, math.Min(point.valBase, point.val)),
-	// 		X2:   point.n + point.nBarShift + (point.nBarWidth / 2),
-	// 		Y2:   math.Min(yMax, math.Max(point.valBase, point.val)),
-	// 		Rect: point.bar,
-	// 	})
-	// }
+	point.bar.N1 = point.n + point.nBarShift - (point.nBarWidth / 2)
+	point.bar.Val1 = math.Max(math.Min(point.valBase, point.valBase+point.val), yMin)
+	point.bar.N2 = point.n + point.nBarShift + (point.nBarWidth / 2)
+	point.bar.Val2 = math.Min(math.Max(point.valBase, point.valBase+point.val), yMax)
+	rs = append(rs, point.bar)
 	return
 }
 
@@ -275,7 +260,7 @@ func (point *dataPoint) RasterColorPolar(phi float64, r float64) (col color.Colo
 		r < point.valBase || r > point.val+point.valBase {
 		return
 	}
-	col = point.bar.FillColor
+	col = point.col
 	useColor = true
 	return
 }
@@ -484,16 +469,16 @@ func (ser *PointSeries) ConvertTtoN(tToN func(t time.Time) (n float64)) {
 	}
 }
 
-func (ser *PointSeries) CartesianNodes(xMin float64, xMax float64, yMin float64,
-	yMax float64) (ns []renderer.CartesianNode) {
+func (ser *PointSeries) CartesianDots(xMin float64, xMax float64, yMin float64,
+	yMax float64) (ns []*elements.Dot) {
 	for i := range ser.data {
-		ns = append(ns, ser.data[i].cartesianNodes(xMin, xMax, yMin, yMax)...)
+		ns = append(ns, ser.data[i].cartesianDots(xMin, xMax, yMin, yMax)...)
 	}
 	return
 }
 
 func (ser *PointSeries) CartesianEdges(xMin float64, xMax float64, yMin float64,
-	yMax float64) (es []renderer.CartesianEdge) {
+	yMax float64) (es []elements.Edge) {
 	for i := range ser.data {
 		if i == 0 {
 			es = append(es, ser.data[i].cartesianEdges(true, 0, 0, xMin, xMax, yMin, yMax)...)
@@ -505,10 +490,10 @@ func (ser *PointSeries) CartesianEdges(xMin float64, xMax float64, yMin float64,
 	return
 }
 
-func (ser *PointSeries) CartesianRects(xMin float64, xMax float64, yMin float64,
-	yMax float64) (fs []renderer.CartesianRect) {
+func (ser *PointSeries) CartesianBars(xMin float64, xMax float64, yMin float64,
+	yMax float64) (fs []*elements.Bar) {
 	for i := range ser.data {
-		fs = append(fs, ser.data[i].cartesianRects(xMin, xMax, yMin, yMax, ser.isStacked)...)
+		fs = append(fs, ser.data[i].cartesianBars(xMin, xMax, yMin, yMax, ser.isStacked)...)
 	}
 	return
 }
@@ -544,16 +529,16 @@ func (ser *PointSeries) RasterColorCartesian(x float64, y float64) (col color.Co
 	return
 }
 
-func (ser *PointSeries) PolarNodes(phiMin float64, phiMax float64, rMin float64,
-	rMax float64) (ns []renderer.PolarNode) {
+func (ser *PointSeries) PolarDots(phiMin float64, phiMax float64, rMin float64,
+	rMax float64) (ns []*elements.Dot) {
 	for i := range ser.data {
-		ns = append(ns, ser.data[i].polarNodes(phiMin, phiMax, rMin, rMax)...)
+		ns = append(ns, ser.data[i].polarDots(phiMin, phiMax, rMin, rMax)...)
 	}
 	return
 }
 
 func (ser *PointSeries) PolarEdges(phiMin float64, phiMax float64, rMin float64,
-	rMax float64) (es []renderer.PolarEdge) {
+	rMax float64) (es []elements.Edge) {
 	for i := range ser.data {
 		if i == 0 {
 			es = append(es, ser.data[i].polarEdges(true, 0, 0, phiMin, phiMax, rMin, rMax)...)
@@ -695,7 +680,7 @@ func (ser *PointSeries) toggleView() {
 		ser.Show()
 	}
 	if ser.showArea && ser.cont != nil {
-		ser.cont.RasterRefresh()
+		ser.cont.AreaRefresh()
 	}
 }
 

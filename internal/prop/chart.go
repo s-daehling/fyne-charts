@@ -4,6 +4,7 @@ import (
 	"image/color"
 	"math"
 
+	"github.com/s-daehling/fyne-charts/internal/elements"
 	"github.com/s-daehling/fyne-charts/internal/interact"
 	"github.com/s-daehling/fyne-charts/internal/renderer"
 	"github.com/s-daehling/fyne-charts/pkg/style"
@@ -32,7 +33,7 @@ type BaseChart struct {
 	legendVisible bool
 	planeType     PlaneType
 	transposed    bool
-	rast          *canvas.Raster
+	area          *elements.Area
 	render        fyne.WidgetRenderer
 	fromMin       float64
 	fromMax       float64
@@ -72,10 +73,10 @@ func EmptyBaseChart(pType PlaneType) (base *BaseChart) {
 	base.SetTitleStyle(style.DefaultTitleStyle())
 	base.SetLegendStyle(style.LegendLocationRight, style.DefaultLegendTextStyle(), true)
 	if pType == CartesianPlane {
-		base.rast = nil
+		base.area = nil
 		base.fromMax = 100
 	} else {
-		base.rast = canvas.NewRasterWithPixels(base.PixelGenPolar)
+		base.area = elements.NewArea(base.PixelGenPolar)
 		base.fromMax = 2 * math.Pi
 	}
 	base.ExtendBaseWidget(base)
@@ -118,9 +119,9 @@ func (base *BaseChart) CartesianObjects() (canObj []fyne.CanvasObject) {
 	// objects will be drawn in the same order as added here
 
 	// first get all objects from the series
-	rects := base.CartesianRects()
-	for i := range rects {
-		canObj = append(canObj, rects[i].Rect)
+	bars := base.CartesianBars()
+	for i := range bars {
+		canObj = append(canObj, bars[i])
 	}
 	texts := base.CartesianTexts()
 	for i := range texts {
@@ -130,22 +131,30 @@ func (base *BaseChart) CartesianObjects() (canObj []fyne.CanvasObject) {
 	return
 }
 
-func (base *BaseChart) CartesianNodes() (ns []renderer.CartesianNode) {
+func (base *BaseChart) CartesianDots() (ns []*elements.Dot) {
 	return
 }
 
-func (base *BaseChart) CartesianEdges() (es []renderer.CartesianEdge) {
+func (base *BaseChart) CartesianEdges() (es []elements.Edge) {
 	return
 }
 
-func (base *BaseChart) CartesianRects() (as []renderer.CartesianRect) {
+func (base *BaseChart) CartesianBars() (as []*elements.Bar) {
 	for i := range base.series {
-		as = append(as, base.series[i].CartesianRects(base.fromMin, base.fromMax, base.toMin, base.toMax)...)
+		as = append(as, base.series[i].CartesianBars(base.fromMin, base.fromMax, base.toMin, base.toMax)...)
 	}
 	return
 }
 
-func (base *BaseChart) CartesianTexts() (ts []renderer.CartesianText) {
+func (base *BaseChart) CartesianBoxes() (ns []*elements.Box) {
+	return
+}
+
+func (base *BaseChart) CartesianCandles() (ns []*elements.Candle) {
+	return
+}
+
+func (base *BaseChart) CartesianTexts() (ts []elements.Label) {
 	for i := range base.series {
 		ts = append(ts, base.series[i].CartesianTexts(base.fromMin, base.fromMax, base.toMin, base.toMax)...)
 	}
@@ -156,7 +165,7 @@ func (base *BaseChart) PolarObjects() (canObj []fyne.CanvasObject) {
 	// objects will be drawn in the same order as added here
 
 	// first get all objects from the series
-	canObj = append(canObj, base.rast)
+	canObj = append(canObj, base.area)
 	texts := base.PolarTexts()
 	for i := range texts {
 		canObj = append(canObj, texts[i].Text)
@@ -165,23 +174,23 @@ func (base *BaseChart) PolarObjects() (canObj []fyne.CanvasObject) {
 	return
 }
 
-func (base *BaseChart) PolarNodes() (ns []renderer.PolarNode) {
+func (base *BaseChart) PolarDots() (ns []*elements.Dot) {
 	return
 }
 
-func (base *BaseChart) PolarEdges() (es []renderer.PolarEdge) {
+func (base *BaseChart) PolarEdges() (es []elements.Edge) {
 	return
 }
 
-func (base *BaseChart) PolarTexts() (ts []renderer.PolarText) {
+func (base *BaseChart) PolarTexts() (ts []elements.Label) {
 	for i := range base.series {
 		ts = append(ts, base.series[i].PolarTexts(base.fromMin, base.fromMax, base.toMin, base.toMax)...)
 	}
 	return
 }
 
-func (base *BaseChart) Raster() (rs *canvas.Raster) {
-	rs = base.rast
+func (base *BaseChart) Area() (rs *elements.Area) {
+	rs = base.area
 	return
 }
 
@@ -240,21 +249,21 @@ func (base *BaseChart) SetTitleStyle(ts style.ChartTextStyle) {
 }
 
 func (base *BaseChart) FromAxisElements() (min float64, max float64, origin float64,
-	ticks []renderer.Tick, arrow renderer.Arrow, show bool) {
+	ticks []elements.Tick, arrow elements.Arrow, show bool) {
 	min, max = base.fromMin, base.fromMax
 	origin = 0
-	ticks = []renderer.Tick{}
-	arrow = renderer.Arrow{}
+	ticks = []elements.Tick{}
+	arrow = elements.Arrow{}
 	show = false
 	return
 }
 
 func (base *BaseChart) ToAxisElements() (min float64, max float64, origin float64,
-	ticks []renderer.Tick, arrow renderer.Arrow, show bool) {
+	ticks []elements.Tick, arrow elements.Arrow, show bool) {
 	min, max = base.toMin, base.toMax
 	origin = 0
-	ticks = []renderer.Tick{}
-	arrow = renderer.Arrow{}
+	ticks = []elements.Tick{}
+	arrow = elements.Arrow{}
 	show = false
 	return
 }

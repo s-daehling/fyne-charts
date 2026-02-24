@@ -5,113 +5,64 @@ import (
 	"image/color"
 	"time"
 
-	"github.com/s-daehling/fyne-charts/internal/renderer"
+	"github.com/s-daehling/fyne-charts/internal/elements"
 	"github.com/s-daehling/fyne-charts/pkg/data"
 
-	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/theme"
 )
 
 type candleStickPoint struct {
-	tStart    time.Time
-	tEnd      time.Time
-	nStart    float64
-	nEnd      float64
-	open      float64
-	close     float64
-	high      float64
-	low       float64
-	upperLine *canvas.Line
-	lowerLine *canvas.Line
-	candle    *canvas.Rectangle
+	tStart time.Time
+	tEnd   time.Time
+	nStart float64
+	nEnd   float64
+	open   float64
+	close  float64
+	high   float64
+	low    float64
+	candle *elements.Candle
 }
 
 func emptyCandleStickPoint() (point *candleStickPoint) {
 	point = &candleStickPoint{
-		upperLine: canvas.NewLine(theme.Color(theme.ColorNameForeground)),
-		lowerLine: canvas.NewLine(theme.Color(theme.ColorNameForeground)),
-		candle:    canvas.NewRectangle(color.Black),
+		candle: elements.NewCandle(color.Black),
 	}
-	point.candle.CornerRadius = 2
 	return
 }
 
 func (point *candleStickPoint) refresh() {
-	point.upperLine.Refresh()
-	point.lowerLine.Refresh()
 	point.candle.Refresh()
 }
 
 func (point *candleStickPoint) hide() {
-	point.upperLine.Hide()
-	point.lowerLine.Hide()
 	point.candle.Hide()
 }
 
 func (point *candleStickPoint) show() {
-	point.upperLine.Show()
-	point.lowerLine.Show()
 	point.candle.Show()
 }
 
 func (point *candleStickPoint) setLineWidth(lw float32) {
-	point.upperLine.StrokeWidth = lw
-	point.lowerLine.StrokeWidth = lw
+	point.candle.SetLineWidth(lw)
 }
 
-func (point *candleStickPoint) cartesianEdges(xMin float64, xMax float64, yMin float64,
-	yMax float64) (es []renderer.CartesianEdge) {
+func (point *candleStickPoint) cartesianCandles(xMin float64, xMax float64, yMin float64,
+	yMax float64) (cs []*elements.Candle) {
 	if point.nEnd > xMax || point.nStart < xMin || point.high > yMax || point.low < yMin {
 		// point out of range
 		return
 	}
-	cMax := point.open
-	cMin := point.close
+	point.candle.SetCandleColor(theme.Color(theme.ColorNameError))
 	if point.open < point.close {
-		cMax = point.close
-		cMin = point.open
+		point.candle.SetCandleColor(theme.Color(theme.ColorNameSuccess))
 	}
-	e1 := renderer.CartesianEdge{
-		X1:   (point.nEnd + point.nStart) / 2,
-		Y1:   cMax,
-		X2:   (point.nEnd + point.nStart) / 2,
-		Y2:   point.high,
-		Line: point.upperLine,
-	}
-	es = append(es, e1)
-	e2 := renderer.CartesianEdge{
-		X1:   (point.nEnd + point.nStart) / 2,
-		Y1:   point.low,
-		X2:   (point.nEnd + point.nStart) / 2,
-		Y2:   cMin,
-		Line: point.lowerLine,
-	}
-	es = append(es, e2)
-	return
-}
-
-func (point *candleStickPoint) cartesianRects(xMin float64, xMax float64, yMin float64,
-	yMax float64) (as []renderer.CartesianRect) {
-	if point.nEnd > xMax || point.nStart < xMin || point.high > yMax || point.low < yMin {
-		// point out of range
-		return
-	}
-	cMax := point.open
-	cMin := point.close
-	point.candle.FillColor = theme.Color(theme.ColorNameError)
-	if point.open < point.close {
-		cMax = point.close
-		cMin = point.open
-		point.candle.FillColor = theme.Color(theme.ColorNameSuccess)
-	}
-	a := renderer.CartesianRect{
-		X1:   point.nStart,
-		Y1:   cMin,
-		X2:   point.nEnd,
-		Y2:   cMax,
-		Rect: point.candle,
-	}
-	as = append(as, a)
+	point.candle.N1 = point.nStart
+	point.candle.N2 = point.nEnd
+	point.candle.High = point.high
+	point.candle.Low = point.low
+	point.candle.Open = point.open
+	point.candle.Close = point.close
+	cs = append(cs, point.candle)
 	return
 }
 
@@ -194,18 +145,10 @@ func (ser *CandleStickSeries) ConvertTtoN(tToN func(t time.Time) (n float64)) {
 	}
 }
 
-func (ser *CandleStickSeries) CartesianEdges(xMin float64, xMax float64, yMin float64,
-	yMax float64) (es []renderer.CartesianEdge) {
+func (ser *CandleStickSeries) CartesianCandles(xMin float64, xMax float64, yMin float64,
+	yMax float64) (cs []*elements.Candle) {
 	for i := range ser.data {
-		es = append(es, ser.data[i].cartesianEdges(xMin, xMax, yMin, yMax)...)
-	}
-	return
-}
-
-func (ser *CandleStickSeries) CartesianRects(xMin float64, xMax float64, yMin float64,
-	yMax float64) (fs []renderer.CartesianRect) {
-	for i := range ser.data {
-		fs = append(fs, ser.data[i].cartesianRects(xMin, xMax, yMin, yMax)...)
+		cs = append(cs, ser.data[i].cartesianCandles(xMin, xMax, yMin, yMax)...)
 	}
 	return
 }
@@ -213,8 +156,7 @@ func (ser *CandleStickSeries) CartesianRects(xMin float64, xMax float64, yMin fl
 func (ser *CandleStickSeries) RefreshTheme() {
 	ser.col = theme.Color(ser.colName)
 	for i := range ser.data {
-		ser.data[i].upperLine.StrokeColor = theme.Color(theme.ColorNameForeground)
-		ser.data[i].lowerLine.StrokeColor = theme.Color(theme.ColorNameForeground)
+		ser.data[i].candle.SetLineColor(theme.Color(theme.ColorNameForeground))
 	}
 }
 

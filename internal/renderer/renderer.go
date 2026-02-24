@@ -2,15 +2,15 @@ package renderer
 
 import (
 	"fyne.io/fyne/v2"
-	"fyne.io/fyne/v2/canvas"
+	"github.com/s-daehling/fyne-charts/internal/elements"
 	"github.com/s-daehling/fyne-charts/internal/interact"
 )
 
 type baseChart interface {
 	Tooltip() (tt Tooltip)
-	FromAxisElements() (min float64, max float64, origin float64, ticks []Tick, arrow Arrow, show bool)
-	ToAxisElements() (min float64, max float64, origin float64, ticks []Tick, arrow Arrow, show bool)
-	Raster() (r *canvas.Raster)
+	FromAxisElements() (min float64, max float64, origin float64, ticks []elements.Tick, arrow elements.Arrow, show bool)
+	ToAxisElements() (min float64, max float64, origin float64, ticks []elements.Tick, arrow elements.Arrow, show bool)
+	Area() (r *elements.Area)
 	Overlay() (io *interact.Overlay)
 	ChartSizeChange(fromSpace float32, toSpace float32)
 	RefreshTheme()

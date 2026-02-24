@@ -9,8 +9,8 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/theme"
+	"github.com/s-daehling/fyne-charts/internal/elements"
 	"github.com/s-daehling/fyne-charts/internal/interact"
-	"github.com/s-daehling/fyne-charts/internal/renderer"
 
 	"github.com/s-daehling/fyne-charts/pkg/data"
 	"github.com/s-daehling/fyne-charts/pkg/style"
@@ -65,7 +65,7 @@ type proportionPoint struct {
 	height      float64
 	hOffset     float64
 	valOffset   float64
-	rect        *canvas.Rectangle
+	bar         *elements.Bar
 	text        *canvas.Text
 	textStyle   style.ChartTextStyle
 	visible     bool
@@ -78,7 +78,7 @@ type proportionPoint struct {
 func emptyProportionPoint(c string, colName fyne.ThemeColorName, ser *Series) (point *proportionPoint) {
 	point = &proportionPoint{
 		c:       c,
-		rect:    canvas.NewRectangle(theme.Color(colName)),
+		bar:     elements.NewBar(theme.Color(colName)),
 		visible: true,
 		ser:     ser,
 		colName: colName,
@@ -92,7 +92,7 @@ func emptyProportionPoint(c string, colName fyne.ThemeColorName, ser *Series) (p
 }
 
 func (point *proportionPoint) toggleView() {
-	if point.rect.Visible() {
+	if point.bar.Visible() {
 		point.hide()
 	} else {
 		point.show()
@@ -103,7 +103,7 @@ func (point *proportionPoint) hide() {
 	if !point.visible {
 		return
 	}
-	point.rect.Hide()
+	point.bar.Hide()
 	if point.text != nil {
 		point.text.Hide()
 	}
@@ -118,7 +118,7 @@ func (point *proportionPoint) show() {
 	if point.visible {
 		return
 	}
-	point.rect.Show()
+	point.bar.Show()
 	if point.text != nil {
 		point.text.Show()
 	}
@@ -142,31 +142,27 @@ func (point *proportionPoint) refreshTheme() {
 	point.col = theme.Color(point.colName)
 	point.text.Color = theme.Color(point.textStyle.ColorName)
 	point.text.TextSize = theme.Size(point.textStyle.SizeName)
-	point.rect.FillColor = point.col
+	point.bar.SetColor(point.col)
 }
 
-func (point *proportionPoint) cartesianRects(xMin float64, xMax float64, yMin float64,
-	yMax float64) (rs []renderer.CartesianRect) {
+func (point *proportionPoint) cartesianBars(xMin float64, xMax float64, yMin float64,
+	yMax float64) (rs []*elements.Bar) {
 	if point.valOffset+point.n < xMin || point.valOffset > xMax {
 		return
 	}
 	if point.hOffset+point.height < yMin || point.hOffset > yMax {
 		return
 	}
-	r := renderer.CartesianRect{
-		X1:   point.valOffset,
-		Y1:   point.hOffset,
-		X2:   point.n + point.valOffset,
-		Y2:   point.hOffset + point.height,
-		Rect: point.rect,
-	}
-
-	rs = append(rs, r)
+	point.bar.N1 = point.valOffset
+	point.bar.Val1 = point.hOffset
+	point.bar.N2 = point.n + point.valOffset
+	point.bar.Val2 = point.hOffset + point.height
+	rs = append(rs, point.bar)
 	return
 }
 
 func (point *proportionPoint) cartesianTexts(xMin float64, xMax float64, yMin float64,
-	yMax float64) (ts []renderer.CartesianText) {
+	yMax float64) (ts []elements.Label) {
 	if point.text == nil {
 		return
 	}
@@ -177,9 +173,9 @@ func (point *proportionPoint) cartesianTexts(xMin float64, xMax float64, yMin fl
 		return
 	}
 	point.text.Text = strconv.FormatFloat(point.n, 'f', 0, 64) + "%"
-	t := renderer.CartesianText{
-		X:    point.valOffset + (point.n / 2),
-		Y:    point.hOffset + (point.height / 2),
+	t := elements.Label{
+		N:    point.valOffset + (point.n / 2),
+		Val:  point.hOffset + (point.height / 2),
 		Text: point.text,
 	}
 	ts = append(ts, t)
@@ -203,7 +199,7 @@ func (point *proportionPoint) RasterColorPolar(phi float64, r float64) (col colo
 }
 
 func (point *proportionPoint) polarTexts(phiMin float64, phiMax float64, rMin float64,
-	rMax float64) (ts []renderer.PolarText) {
+	rMax float64) (ts []elements.Label) {
 	if point.text == nil {
 		return
 	}
@@ -214,9 +210,9 @@ func (point *proportionPoint) polarTexts(phiMin float64, phiMax float64, rMin fl
 		return
 	}
 	point.text.Text = strconv.FormatFloat(100*(point.n/(2*math.Pi)), 'f', 0, 64) + "%"
-	t := renderer.PolarText{
-		Phi:  point.valOffset + (point.n / 2),
-		R:    point.hOffset + (point.height / 2),
+	t := elements.Label{
+		N:    point.valOffset + (point.n / 2),
+		Val:  point.hOffset + (point.height / 2),
 		Text: point.text,
 	}
 	ts = append(ts, t)
@@ -289,16 +285,16 @@ func (ser *Series) ConvertPtoN(pToN func(p float64) (n float64)) {
 	}
 }
 
-func (ser *Series) CartesianRects(xMin float64, xMax float64, yMin float64,
-	yMax float64) (fs []renderer.CartesianRect) {
+func (ser *Series) CartesianBars(xMin float64, xMax float64, yMin float64,
+	yMax float64) (fs []*elements.Bar) {
 	for i := range ser.data {
-		fs = append(fs, ser.data[i].cartesianRects(xMin, xMax, yMin, yMax)...)
+		fs = append(fs, ser.data[i].cartesianBars(xMin, xMax, yMin, yMax)...)
 	}
 	return
 }
 
 func (ser *Series) CartesianTexts(xMin float64, xMax float64, yMin float64,
-	yMax float64) (ts []renderer.CartesianText) {
+	yMax float64) (ts []elements.Label) {
 	for i := range ser.data {
 		ts = append(ts, ser.data[i].cartesianTexts(xMin, xMax, yMin, yMax)...)
 	}
@@ -323,7 +319,7 @@ func (ser *Series) RasterColorPolar(phi float64, r float64) (col color.Color, us
 }
 
 func (ser *Series) PolarTexts(phiMin float64, phiMax float64, rMin float64,
-	rMax float64) (ts []renderer.PolarText) {
+	rMax float64) (ts []elements.Label) {
 	for i := range ser.data {
 		ts = append(ts, ser.data[i].polarTexts(phiMin, phiMax, rMin, rMax)...)
 	}

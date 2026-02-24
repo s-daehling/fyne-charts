@@ -2,14 +2,17 @@ package renderer
 
 import (
 	"fyne.io/fyne/v2"
+	"github.com/s-daehling/fyne-charts/internal/elements"
 )
 
 type CartesianChart interface {
 	baseChart
-	CartesianNodes() (ns []CartesianNode)
-	CartesianEdges() (es []CartesianEdge)
-	CartesianRects() (rs []CartesianRect)
-	CartesianTexts() (ts []CartesianText)
+	CartesianDots() (ns []*elements.Dot)
+	CartesianEdges() (es []elements.Edge)
+	CartesianBars() (rs []*elements.Bar)
+	CartesianBoxes() (bs []*elements.Box)
+	CartesianCandles() (cs []*elements.Candle)
+	CartesianTexts() (ts []elements.Label)
 	CartesianObjects() (obj []fyne.CanvasObject)
 	CartesianOrientation() (trans bool)
 }
@@ -48,8 +51,8 @@ func (r *Cartesian) Layout(size fyne.Size) {
 	hAxisTickLabelHeight := float32(0.0)
 
 	var vMin, vMax, vOrigin, hMin, hMax, hOrigin float64
-	var vTicks, hTicks []Tick
-	var vArrow, hArrow Arrow
+	var vTicks, hTicks []elements.Tick
+	var vArrow, hArrow elements.Arrow
 	var vShow, hShow bool
 	if r.transposed {
 		vMin, vMax, vOrigin, vTicks, vArrow, vShow = r.chart.FromAxisElements()
@@ -58,8 +61,8 @@ func (r *Cartesian) Layout(size fyne.Size) {
 		vMin, vMax, vOrigin, vTicks, vArrow, vShow = r.chart.ToAxisElements()
 		hMin, hMax, hOrigin, hTicks, hArrow, hShow = r.chart.FromAxisElements()
 	}
-	_, hAxisTickLabelHeight = maxTickSize(hTicks)
-	vAxisTickLabelWidth, _ = maxTickSize(vTicks)
+	_, hAxisTickLabelHeight = elements.MaxTickSize(hTicks)
+	vAxisTickLabelWidth, _ = elements.MaxTickSize(vTicks)
 
 	// determine the chart area
 	var area cartDrawingArea
@@ -147,44 +150,78 @@ func (r *Cartesian) Layout(size fyne.Size) {
 		}
 	}
 
-	// place nodes
-	ns := r.chart.CartesianNodes()
+	// place dots
+	ns := r.chart.CartesianDots()
 	for i := range ns {
 		var dotPos fyne.Position
 		if r.transposed {
-			dotPos = cartesianCoordinatesToPosition(ns[i].Y, ns[i].X, area)
+			dotPos = cartesianCoordinatesToPosition(ns[i].Val, ns[i].N, area)
 		} else {
-			dotPos = cartesianCoordinatesToPosition(ns[i].X, ns[i].Y, area)
+			dotPos = cartesianCoordinatesToPosition(ns[i].N, ns[i].Val, area)
 		}
-		dotPos = dotPos.SubtractXY(ns[i].Dot.Size().Width/2.0, ns[i].Dot.Size().Height/2.0)
-		ns[i].Dot.Move(dotPos)
+		dotPos = dotPos.SubtractXY(ns[i].Size().Width/2.0, ns[i].Size().Height/2.0)
+		ns[i].Move(dotPos)
 	}
 
 	// place edges
 	es := r.chart.CartesianEdges()
 	for i := range es {
 		if r.transposed {
-			es[i].Line.Position1 = cartesianCoordinatesToPosition(es[i].Y1, es[i].X1, area)
-			es[i].Line.Position2 = cartesianCoordinatesToPosition(es[i].Y2, es[i].X2, area)
+			es[i].Line.Position1 = cartesianCoordinatesToPosition(es[i].Val1, es[i].N1, area)
+			es[i].Line.Position2 = cartesianCoordinatesToPosition(es[i].Val2, es[i].N2, area)
 		} else {
-			es[i].Line.Position1 = cartesianCoordinatesToPosition(es[i].X1, es[i].Y1, area)
-			es[i].Line.Position2 = cartesianCoordinatesToPosition(es[i].X2, es[i].Y2, area)
+			es[i].Line.Position1 = cartesianCoordinatesToPosition(es[i].N1, es[i].Val1, area)
+			es[i].Line.Position2 = cartesianCoordinatesToPosition(es[i].N2, es[i].Val2, area)
 		}
 	}
 
 	// place rects
-	fs := r.chart.CartesianRects()
+	fs := r.chart.CartesianBars()
 	for i := range fs {
 		if r.transposed {
-			p1 := cartesianCoordinatesToPosition(fs[i].Y1, fs[i].X2, area)
-			p2 := cartesianCoordinatesToPosition(fs[i].Y2, fs[i].X1, area)
-			fs[i].Rect.Move(p1)
-			fs[i].Rect.Resize(fyne.NewSize(p2.X-p1.X, p2.Y-p1.Y))
+			p1 := cartesianCoordinatesToPosition(fs[i].Val1, fs[i].N2, area)
+			p2 := cartesianCoordinatesToPosition(fs[i].Val2, fs[i].N1, area)
+			fs[i].Move(p1)
+			fs[i].Resize(fyne.NewSize(p2.X-p1.X, p2.Y-p1.Y))
 		} else {
-			p1 := cartesianCoordinatesToPosition(fs[i].X1, fs[i].Y2, area)
-			p2 := cartesianCoordinatesToPosition(fs[i].X2, fs[i].Y1, area)
-			fs[i].Rect.Move(p1)
-			fs[i].Rect.Resize(fyne.NewSize(p2.X-p1.X, p2.Y-p1.Y))
+			p1 := cartesianCoordinatesToPosition(fs[i].N1, fs[i].Val2, area)
+			p2 := cartesianCoordinatesToPosition(fs[i].N2, fs[i].Val1, area)
+			fs[i].Move(p1)
+			fs[i].Resize(fyne.NewSize(p2.X-p1.X, p2.Y-p1.Y))
+		}
+	}
+
+	// place boxes
+	bs := r.chart.CartesianBoxes()
+	for i := range bs {
+		bs[i].SetOrientantion(r.transposed)
+		if r.transposed {
+			p1 := cartesianCoordinatesToPosition(bs[i].Min, bs[i].N2, area)
+			p2 := cartesianCoordinatesToPosition(bs[i].Max, bs[i].N1, area)
+			bs[i].Move(p1)
+			bs[i].Resize(fyne.NewSize(p2.X-p1.X, p2.Y-p1.Y))
+		} else {
+			p1 := cartesianCoordinatesToPosition(bs[i].N1, bs[i].Max, area)
+			p2 := cartesianCoordinatesToPosition(bs[i].N2, bs[i].Min, area)
+			bs[i].Move(p1)
+			bs[i].Resize(fyne.NewSize(p2.X-p1.X, p2.Y-p1.Y))
+		}
+	}
+
+	// place candles
+	cs := r.chart.CartesianCandles()
+	for i := range cs {
+		cs[i].SetOrientantion(r.transposed)
+		if r.transposed {
+			p1 := cartesianCoordinatesToPosition(cs[i].Low, cs[i].N2, area)
+			p2 := cartesianCoordinatesToPosition(cs[i].High, cs[i].N1, area)
+			cs[i].Move(p1)
+			cs[i].Resize(fyne.NewSize(p2.X-p1.X, p2.Y-p1.Y))
+		} else {
+			p1 := cartesianCoordinatesToPosition(cs[i].N1, cs[i].High, area)
+			p2 := cartesianCoordinatesToPosition(cs[i].N2, cs[i].Low, area)
+			cs[i].Move(p1)
+			cs[i].Resize(fyne.NewSize(p2.X-p1.X, p2.Y-p1.Y))
 		}
 	}
 
@@ -194,15 +231,15 @@ func (r *Cartesian) Layout(size fyne.Size) {
 		if r.transposed {
 
 		} else {
-			tPos := cartesianCoordinatesToPosition(ts[i].X, ts[i].Y, area)
+			tPos := cartesianCoordinatesToPosition(ts[i].N, ts[i].Val, area)
 			tPos = tPos.SubtractXY(0, ts[i].Text.MinSize().Height/2)
 			ts[i].Text.Move(tPos)
 			ts[i].Text.Alignment = fyne.TextAlignCenter
 		}
 	}
 
-	// place raster
-	rs := r.chart.Raster()
+	// place area
+	rs := r.chart.Area()
 	if rs != nil {
 		rs.Move(fyne.NewPos(area.minPos.X, area.maxPos.Y))
 		rs.Resize(fyne.NewSize(area.maxPos.X-area.minPos.X, area.minPos.Y-area.maxPos.Y))

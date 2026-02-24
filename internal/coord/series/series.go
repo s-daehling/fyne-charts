@@ -7,8 +7,8 @@ import (
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/theme"
+	"github.com/s-daehling/fyne-charts/internal/elements"
 	"github.com/s-daehling/fyne-charts/internal/interact"
-	"github.com/s-daehling/fyne-charts/internal/renderer"
 )
 
 type baseSeries struct {
@@ -88,38 +88,48 @@ func (ser *baseSeries) ConvertCtoN(cToN func(c string) (n float64)) {}
 
 func (ser *baseSeries) ConvertTtoN(tToN func(t time.Time) (n float64)) {}
 
-func (ser *baseSeries) CartesianNodes(xMin float64, xMax float64, yMin float64,
-	yMax float64) (ns []renderer.CartesianNode) {
+func (ser *baseSeries) CartesianDots(xMin float64, xMax float64, yMin float64,
+	yMax float64) (ns []*elements.Dot) {
 	return
 }
 
 func (ser *baseSeries) CartesianEdges(xMin float64, xMax float64, yMin float64,
-	yMax float64) (es []renderer.CartesianEdge) {
+	yMax float64) (es []elements.Edge) {
 	return
 }
 
-func (ser *baseSeries) CartesianRects(xMin float64, xMax float64, yMin float64,
-	yMax float64) (fs []renderer.CartesianRect) {
+func (ser *baseSeries) CartesianBars(xMin float64, xMax float64, yMin float64,
+	yMax float64) (fs []*elements.Bar) {
+	return
+}
+
+func (ser *baseSeries) CartesianBoxes(xMin float64, xMax float64, yMin float64,
+	yMax float64) (bs []*elements.Box) {
+	return
+}
+
+func (ser *baseSeries) CartesianCandles(xMin float64, xMax float64, yMin float64,
+	yMax float64) (cs []*elements.Candle) {
 	return
 }
 
 func (ser *baseSeries) CartesianTexts(xMin float64, xMax float64, yMin float64,
-	yMax float64) (fs []renderer.CartesianText) {
+	yMax float64) (fs []elements.Label) {
 	return
 }
 
-func (ser *baseSeries) PolarNodes(phiMin float64, phiMax float64, rMin float64,
-	rMax float64) (ns []renderer.PolarNode) {
+func (ser *baseSeries) PolarDots(phiMin float64, phiMax float64, rMin float64,
+	rMax float64) (ns []*elements.Dot) {
 	return
 }
 
 func (ser *baseSeries) PolarEdges(phiMin float64, phiMax float64, rMin float64,
-	rMax float64) (es []renderer.PolarEdge) {
+	rMax float64) (es []elements.Edge) {
 	return
 }
 
 func (ser *baseSeries) PolarTexts(phiMin float64, phiMax float64, rMin float64,
-	rMax float64) (es []renderer.PolarText) {
+	rMax float64) (es []elements.Label) {
 	return
 }
 
@@ -142,6 +152,10 @@ func (ser *baseSeries) RefreshTheme() {
 	ser.col = theme.Color(ser.colName)
 }
 
+func (ser *baseSeries) Hover(n float64, val float64) (text string) {
+	return
+}
+
 type Series interface {
 	// LegendEntries() (les []*interact.LegendEntry)
 	Name() (n string)
@@ -156,23 +170,26 @@ type Series interface {
 	ConvertPtoN(pToN func(p float64) (n float64))
 	ConvertCtoN(cToN func(c string) (n float64))
 	ConvertTtoN(tToN func(t time.Time) (n float64))
-	CartesianNodes(xMin float64, xMax float64, yMin float64, yMax float64) (ns []renderer.CartesianNode)
-	CartesianEdges(xMin float64, xMax float64, yMin float64, yMax float64) (es []renderer.CartesianEdge)
-	CartesianRects(xMin float64, xMax float64, yMin float64, yMax float64) (fs []renderer.CartesianRect)
-	CartesianTexts(xMin float64, xMax float64, yMin float64, yMax float64) (ts []renderer.CartesianText)
-	PolarNodes(phiMin float64, phiMax float64, rMin float64, rMax float64) (ns []renderer.PolarNode)
-	PolarEdges(phiMin float64, phiMax float64, rMin float64, rMax float64) (es []renderer.PolarEdge)
-	PolarTexts(phiMin float64, phiMax float64, rMin float64, rMax float64) (es []renderer.PolarText)
+	CartesianDots(xMin float64, xMax float64, yMin float64, yMax float64) (ns []*elements.Dot)
+	CartesianEdges(xMin float64, xMax float64, yMin float64, yMax float64) (es []elements.Edge)
+	CartesianBars(xMin float64, xMax float64, yMin float64, yMax float64) (fs []*elements.Bar)
+	CartesianBoxes(xMin float64, xMax float64, yMin float64, yMax float64) (bs []*elements.Box)
+	CartesianCandles(xMin float64, xMax float64, yMin float64, yMax float64) (cs []*elements.Candle)
+	CartesianTexts(xMin float64, xMax float64, yMin float64, yMax float64) (ts []elements.Label)
+	PolarDots(phiMin float64, phiMax float64, rMin float64, rMax float64) (ns []*elements.Dot)
+	PolarEdges(phiMin float64, phiMax float64, rMin float64, rMax float64) (es []elements.Edge)
+	PolarTexts(phiMin float64, phiMax float64, rMin float64, rMax float64) (es []elements.Label)
 	RasterColorCartesian(x float64, y float64) (col color.Color)
 	RasterColorPolar(phi float64, r float64, x float64, y float64) (col color.Color)
 	IsPartOfChartRaster() (b bool)
 	RefreshTheme()
+	Hover(n float64, val float64) (text string)
 }
 
 type container interface {
 	IsPolar() (b bool)
 	DataChange()
-	RasterRefresh()
+	AreaRefresh()
 	AddLegendEntry(le *interact.LegendEntry)
 	RemoveLegendEntry(name string, super string)
 }

@@ -16,8 +16,8 @@ func (base *BaseChart) DataChange() {
 }
 
 func (base *BaseChart) RasterVisibilityChange() {
-	if base.rast != nil {
-		base.rast.Refresh()
+	if base.area != nil {
+		base.area.Refresh()
 	}
 }
 

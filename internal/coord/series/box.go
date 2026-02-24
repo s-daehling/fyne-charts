@@ -5,47 +5,34 @@ import (
 	"image/color"
 	"time"
 
-	"github.com/s-daehling/fyne-charts/internal/renderer"
+	"github.com/s-daehling/fyne-charts/internal/elements"
 	"github.com/s-daehling/fyne-charts/pkg/data"
 
 	"fyne.io/fyne/v2"
-	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/theme"
 )
 
 type boxPoint struct {
-	c            string
-	t            time.Time
-	n            float64
-	max          float64
-	thirdQuart   float64
-	median       float64
-	firstQuart   float64
-	min          float64
-	outlier      []float64
-	maxLine      *canvas.Line
-	upperWhisker *canvas.Line
-	medianLine   *canvas.Line
-	lowerWhisker *canvas.Line
-	minLine      *canvas.Line
-	outlierDots  []*canvas.Circle
-	box          *canvas.Rectangle
-	width        float64
+	c           string
+	t           time.Time
+	n           float64
+	max         float64
+	thirdQuart  float64
+	median      float64
+	firstQuart  float64
+	min         float64
+	outlier     []float64
+	outlierDots []*elements.Dot
+	box         *elements.Box
+	width       float64
 }
 
 func emptyBoxPoint(nOutliers int, col color.Color) (point *boxPoint) {
 	point = &boxPoint{
-		maxLine:      canvas.NewLine(col),
-		upperWhisker: canvas.NewLine(col),
-		medianLine:   canvas.NewLine(col),
-		lowerWhisker: canvas.NewLine(col),
-		minLine:      canvas.NewLine(col),
+		box: elements.NewBox(col),
 	}
-	point.box = canvas.NewRectangle(color.RGBA{0x00, 0x00, 0x00, 0x00})
-	point.box.StrokeColor = col
-	point.box.StrokeWidth = 1
 	for range nOutliers {
-		p := canvas.NewCircle(col)
+		p := elements.NewDot(col, 5)
 		p.Resize(fyne.NewSize(5, 5))
 		point.outlierDots = append(point.outlierDots, p)
 	}
@@ -53,11 +40,6 @@ func emptyBoxPoint(nOutliers int, col color.Color) (point *boxPoint) {
 }
 
 func (point *boxPoint) refresh() {
-	point.maxLine.Refresh()
-	point.upperWhisker.Refresh()
-	point.medianLine.Refresh()
-	point.lowerWhisker.Refresh()
-	point.minLine.Refresh()
 	point.box.Refresh()
 	for i := range point.outlierDots {
 		point.outlierDots[i].Refresh()
@@ -65,11 +47,6 @@ func (point *boxPoint) refresh() {
 }
 
 func (point *boxPoint) hide() {
-	point.maxLine.Hide()
-	point.upperWhisker.Hide()
-	point.medianLine.Hide()
-	point.lowerWhisker.Hide()
-	point.minLine.Hide()
 	point.box.Hide()
 	for i := range point.outlierDots {
 		point.outlierDots[i].Hide()
@@ -77,11 +54,6 @@ func (point *boxPoint) hide() {
 }
 
 func (point *boxPoint) show() {
-	point.maxLine.Show()
-	point.upperWhisker.Show()
-	point.medianLine.Show()
-	point.lowerWhisker.Show()
-	point.minLine.Show()
 	point.box.Show()
 	for i := range point.outlierDots {
 		point.outlierDots[i].Show()
@@ -89,28 +61,19 @@ func (point *boxPoint) show() {
 }
 
 func (point *boxPoint) setColor(col color.Color) {
-	point.maxLine.StrokeColor = col
-	point.upperWhisker.StrokeColor = col
-	point.medianLine.StrokeColor = col
-	point.lowerWhisker.StrokeColor = col
-	point.minLine.StrokeColor = col
 	for i := range point.outlierDots {
-		point.outlierDots[i].FillColor = col
+		point.outlierDots[i].SetColor(col)
 	}
-	point.box.StrokeColor = col
+	point.box.SetColor(col)
 }
 
 func (point *boxPoint) setLineWidth(lw float32) {
-	point.maxLine.StrokeWidth = lw
-	point.upperWhisker.StrokeWidth = lw
-	point.medianLine.StrokeWidth = lw
-	point.lowerWhisker.StrokeWidth = lw
-	point.minLine.StrokeWidth = lw
-	point.box.StrokeWidth = lw
+	point.box.SetLineWidth(lw)
 }
 
 func (point *boxPoint) setOutlierSize(os float32) {
 	for i := range point.outlierDots {
+		point.outlierDots[i].SetMinSize(os)
 		point.outlierDots[i].Resize(fyne.NewSize(os, os))
 	}
 }
@@ -119,8 +82,8 @@ func (point *boxPoint) setWidth(width float64) {
 	point.width = width
 }
 
-func (point *boxPoint) cartesianNodes(xMin float64, xMax float64, yMin float64,
-	yMax float64) (ns []renderer.CartesianNode) {
+func (point *boxPoint) cartesianDots(xMin float64, xMax float64, yMin float64,
+	yMax float64) (ns []*elements.Dot) {
 	if point.n < xMin || point.n > xMax || point.min < yMin || point.max > yMax {
 		return
 	}
@@ -128,77 +91,26 @@ func (point *boxPoint) cartesianNodes(xMin float64, xMax float64, yMin float64,
 		if point.outlier[i] < yMin || point.outlier[i] > yMax {
 			continue
 		}
-		n := renderer.CartesianNode{
-			X:   point.n,
-			Y:   point.outlier[i],
-			Dot: point.outlierDots[i],
-		}
-		ns = append(ns, n)
+		point.outlierDots[i].N = point.n
+		point.outlierDots[i].Val = point.outlier[i]
+		ns = append(ns, point.outlierDots[i])
 	}
 	return
 }
 
-func (point *boxPoint) cartesianEdges(xMin float64, xMax float64, yMin float64,
-	yMax float64) (es []renderer.CartesianEdge) {
+func (point *boxPoint) cartesianBoxes(xMin float64, xMax float64,
+	yMin float64, yMax float64) (bs []*elements.Box) {
 	if point.n < xMin || point.n > xMax || point.min < yMin || point.max > yMax {
 		return
 	}
-	e1 := renderer.CartesianEdge{
-		X1:   point.n - (point.width / 2),
-		Y1:   point.max,
-		X2:   point.n + (point.width / 2),
-		Y2:   point.max,
-		Line: point.maxLine,
-	}
-	es = append(es, e1)
-	e2 := renderer.CartesianEdge{
-		X1:   point.n,
-		Y1:   point.thirdQuart,
-		X2:   point.n,
-		Y2:   point.max,
-		Line: point.upperWhisker,
-	}
-	es = append(es, e2)
-	e3 := renderer.CartesianEdge{
-		X1:   point.n - (point.width / 2),
-		Y1:   point.median,
-		X2:   point.n + (point.width / 2),
-		Y2:   point.median,
-		Line: point.medianLine,
-	}
-	es = append(es, e3)
-	e4 := renderer.CartesianEdge{
-		X1:   point.n,
-		Y1:   point.min,
-		X2:   point.n,
-		Y2:   point.firstQuart,
-		Line: point.lowerWhisker,
-	}
-	es = append(es, e4)
-	e5 := renderer.CartesianEdge{
-		X1:   point.n - (point.width / 2),
-		Y1:   point.min,
-		X2:   point.n + (point.width / 2),
-		Y2:   point.min,
-		Line: point.minLine,
-	}
-	es = append(es, e5)
-	return
-}
-
-func (point *boxPoint) cartesianRects(xMin float64, xMax float64,
-	yMin float64, yMax float64) (as []renderer.CartesianRect) {
-	if point.n < xMin || point.n > xMax || point.min < yMin || point.max > yMax {
-		return
-	}
-	a := renderer.CartesianRect{
-		X1:   point.n - (point.width / 2),
-		Y1:   point.firstQuart,
-		X2:   point.n + (point.width / 2),
-		Y2:   point.thirdQuart,
-		Rect: point.box,
-	}
-	as = append(as, a)
+	point.box.N1 = point.n - (point.width / 2)
+	point.box.N2 = point.n + (point.width / 2)
+	point.box.Max = point.max
+	point.box.ThirdQuart = point.thirdQuart
+	point.box.Median = point.median
+	point.box.FirstQuart = point.firstQuart
+	point.box.Min = point.min
+	bs = append(bs, point.box)
 	return
 }
 
@@ -300,26 +212,18 @@ func (ser *BoxSeries) ConvertTtoN(tToN func(t time.Time) (n float64)) {
 	}
 }
 
-func (ser *BoxSeries) CartesianNodes(xMin float64, xMax float64, yMin float64,
-	yMax float64) (ns []renderer.CartesianNode) {
+func (ser *BoxSeries) CartesianDots(xMin float64, xMax float64, yMin float64,
+	yMax float64) (ns []*elements.Dot) {
 	for i := range ser.data {
-		ns = append(ns, ser.data[i].cartesianNodes(xMin, xMax, yMin, yMax)...)
+		ns = append(ns, ser.data[i].cartesianDots(xMin, xMax, yMin, yMax)...)
 	}
 	return
 }
 
-func (ser *BoxSeries) CartesianEdges(xMin float64, xMax float64, yMin float64,
-	yMax float64) (es []renderer.CartesianEdge) {
+func (ser *BoxSeries) CartesianBoxes(xMin float64, xMax float64, yMin float64,
+	yMax float64) (bs []*elements.Box) {
 	for i := range ser.data {
-		es = append(es, ser.data[i].cartesianEdges(xMin, xMax, yMin, yMax)...)
-	}
-	return
-}
-
-func (ser *BoxSeries) CartesianRects(xMin float64, xMax float64, yMin float64,
-	yMax float64) (as []renderer.CartesianRect) {
-	for i := range ser.data {
-		as = append(as, ser.data[i].cartesianRects(xMin, xMax, yMin, yMax)...)
+		bs = append(bs, ser.data[i].cartesianBoxes(xMin, xMax, yMin, yMax)...)
 	}
 	return
 }

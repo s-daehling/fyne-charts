@@ -11,7 +11,7 @@ import (
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
 	"github.com/disintegration/imaging"
-	"github.com/s-daehling/fyne-charts/internal/renderer"
+	"github.com/s-daehling/fyne-charts/internal/elements"
 	"github.com/s-daehling/fyne-charts/pkg/style"
 )
 
@@ -120,7 +120,7 @@ func (ax *Axis) Objects() (canObj []fyne.CanvasObject) {
 	return
 }
 
-func (ax *Axis) Arrow() (ar renderer.Arrow) {
+func (ax *Axis) Arrow() (ar elements.Arrow) {
 	ar.Line = ax.line
 	ar.Circle = ax.circle
 	ar.HeadOne = ax.arrowOne
@@ -128,12 +128,12 @@ func (ax *Axis) Arrow() (ar renderer.Arrow) {
 	return
 }
 
-func (ax *Axis) Ticks() (ts []renderer.Tick) {
+func (ax *Axis) Ticks() (ts []elements.Tick) {
 	for i := range ax.ticks {
 		if ax.ticks[i].n < ax.nMin || ax.ticks[i].n > ax.nMax {
 			continue
 		}
-		t := renderer.Tick{
+		t := elements.Tick{
 			NLabel:  ax.ticks[i].nLabel,
 			NLine:   ax.ticks[i].nLine,
 			Label:   nil,

@@ -8,6 +8,7 @@ import (
 
 	"github.com/s-daehling/fyne-charts/internal/coord/axis"
 	"github.com/s-daehling/fyne-charts/internal/coord/series"
+	"github.com/s-daehling/fyne-charts/internal/elements"
 	"github.com/s-daehling/fyne-charts/internal/interact"
 	"github.com/s-daehling/fyne-charts/internal/renderer"
 	"github.com/s-daehling/fyne-charts/pkg/style"
@@ -52,8 +53,8 @@ type BaseChart struct {
 	planeType         PlaneType
 	transposed        bool
 	fromType          FromType
-	rast              *canvas.Raster
-	rasterSeries      []series.Series
+	area              *elements.Area
+	areaSeries        []series.Series
 	render            fyne.WidgetRenderer
 	mainCont          *fyne.Container
 	hLabelCont        *fyne.Container
@@ -75,7 +76,7 @@ func EmptyBaseChart(pType PlaneType, fType FromType) (base *BaseChart) {
 		autoToRange:       true,
 		autoOrigin:        true,
 		legend:            interact.NewLegend(),
-		tooltipVisible:    false,
+		tooltipVisible:    true,
 		planeType:         pType,
 		transposed:        false,
 		fromType:          fType,
@@ -106,16 +107,17 @@ func EmptyBaseChart(pType PlaneType, fType FromType) (base *BaseChart) {
 	if pType == CartesianPlane {
 		base.fromAx = axis.EmptyAxis("", axis.CartesianHorAxis)
 		base.toAx = axis.EmptyAxis("", axis.CartesianVertAxis)
-		base.rast = canvas.NewRasterWithPixels(base.PixelGenCartesian)
+		base.area = elements.NewArea(base.PixelGenCartesian)
 		base.vLabelCont.Add(base.toAx.Label())
 		base.hLabelCont.Add(base.fromAx.Label())
 	} else {
 		base.fromAx = axis.EmptyAxis("", axis.PolarPhiAxis)
 		base.toAx = axis.EmptyAxis("", axis.PolarRAxis)
-		base.rast = canvas.NewRasterWithPixels(base.PixelGenPolar)
+		base.area = elements.NewArea(base.PixelGenPolar)
 		base.vLabelCont.Add(base.fromAx.Label())
 		base.hLabelCont.Add(base.toAx.Label())
 	}
+	base.area.Hide()
 	base.SetTitleStyle(style.DefaultTitleStyle())
 	base.SetFromAxisStyle(style.DefaultAxisStyle())
 	base.SetFromAxisLabelStyle(style.DefaultAxisLabelStyle())
@@ -172,18 +174,26 @@ func (base *BaseChart) CartesianObjects() (canObj []fyne.CanvasObject) {
 	// objects will be drawn in the same order as added here
 
 	// first get all objects from the series
-	canObj = append(canObj, base.rast)
-	rects := base.CartesianRects()
-	for i := range rects {
-		canObj = append(canObj, rects[i].Rect)
+	canObj = append(canObj, base.area)
+	bars := base.CartesianBars()
+	for i := range bars {
+		canObj = append(canObj, bars[i])
+	}
+	boxes := base.CartesianBoxes()
+	for i := range boxes {
+		canObj = append(canObj, boxes[i])
+	}
+	candles := base.CartesianCandles()
+	for i := range candles {
+		canObj = append(canObj, candles[i])
 	}
 	edges := base.CartesianEdges()
 	for i := range edges {
 		canObj = append(canObj, edges[i].Line)
 	}
-	nodes := base.CartesianNodes()
-	for i := range nodes {
-		canObj = append(canObj, nodes[i].Dot)
+	dots := base.CartesianDots()
+	for i := range dots {
+		canObj = append(canObj, dots[i])
 	}
 	texts := base.CartesianTexts()
 	for i := range texts {
@@ -210,16 +220,16 @@ func (base *BaseChart) CartesianObjects() (canObj []fyne.CanvasObject) {
 	return
 }
 
-func (base *BaseChart) CartesianNodes() (ns []renderer.CartesianNode) {
+func (base *BaseChart) CartesianDots() (ns []*elements.Dot) {
 	xMin, xMax := base.fromAx.NRange()
 	yMin, yMax := base.toAx.NRange()
 	for i := range base.series {
-		ns = append(ns, base.series[i].CartesianNodes(xMin, xMax, yMin, yMax)...)
+		ns = append(ns, base.series[i].CartesianDots(xMin, xMax, yMin, yMax)...)
 	}
 	return
 }
 
-func (base *BaseChart) CartesianEdges() (es []renderer.CartesianEdge) {
+func (base *BaseChart) CartesianEdges() (es []elements.Edge) {
 	xMin, xMax := base.fromAx.NRange()
 	yMin, yMax := base.toAx.NRange()
 	for i := range base.series {
@@ -228,16 +238,34 @@ func (base *BaseChart) CartesianEdges() (es []renderer.CartesianEdge) {
 	return
 }
 
-func (base *BaseChart) CartesianRects() (as []renderer.CartesianRect) {
+func (base *BaseChart) CartesianBars() (as []*elements.Bar) {
 	xMin, xMax := base.fromAx.NRange()
 	yMin, yMax := base.toAx.NRange()
 	for i := range base.series {
-		as = append(as, base.series[i].CartesianRects(xMin, xMax, yMin, yMax)...)
+		as = append(as, base.series[i].CartesianBars(xMin, xMax, yMin, yMax)...)
 	}
 	return
 }
 
-func (base *BaseChart) CartesianTexts() (ts []renderer.CartesianText) {
+func (base *BaseChart) CartesianBoxes() (bs []*elements.Box) {
+	xMin, xMax := base.fromAx.NRange()
+	yMin, yMax := base.toAx.NRange()
+	for i := range base.series {
+		bs = append(bs, base.series[i].CartesianBoxes(xMin, xMax, yMin, yMax)...)
+	}
+	return
+}
+
+func (base *BaseChart) CartesianCandles() (cs []*elements.Candle) {
+	xMin, xMax := base.fromAx.NRange()
+	yMin, yMax := base.toAx.NRange()
+	for i := range base.series {
+		cs = append(cs, base.series[i].CartesianCandles(xMin, xMax, yMin, yMax)...)
+	}
+	return
+}
+
+func (base *BaseChart) CartesianTexts() (ts []elements.Label) {
 	xMin, xMax := base.fromAx.NRange()
 	yMin, yMax := base.toAx.NRange()
 	for i := range base.series {
@@ -250,14 +278,14 @@ func (base *BaseChart) PolarObjects() (canObj []fyne.CanvasObject) {
 	// objects will be drawn in the same order as added here
 
 	// first get all objects from the series
-	canObj = append(canObj, base.rast)
+	canObj = append(canObj, base.area)
 	edges := base.PolarEdges()
 	for i := range edges {
 		canObj = append(canObj, edges[i].Line)
 	}
-	nodes := base.PolarNodes()
-	for i := range nodes {
-		canObj = append(canObj, nodes[i].Dot)
+	dots := base.PolarDots()
+	for i := range dots {
+		canObj = append(canObj, dots[i])
 	}
 	texts := base.PolarTexts()
 	for i := range texts {
@@ -284,16 +312,16 @@ func (base *BaseChart) PolarObjects() (canObj []fyne.CanvasObject) {
 	return
 }
 
-func (base *BaseChart) PolarNodes() (ns []renderer.PolarNode) {
+func (base *BaseChart) PolarDots() (ns []*elements.Dot) {
 	phiMin, phiMax := base.fromAx.NRange()
 	rMin, rMax := base.toAx.NRange()
 	for i := range base.series {
-		ns = append(ns, base.series[i].PolarNodes(phiMin, phiMax, rMin, rMax)...)
+		ns = append(ns, base.series[i].PolarDots(phiMin, phiMax, rMin, rMax)...)
 	}
 	return
 }
 
-func (base *BaseChart) PolarEdges() (es []renderer.PolarEdge) {
+func (base *BaseChart) PolarEdges() (es []elements.Edge) {
 	phiMin, phiMax := base.fromAx.NRange()
 	rMin, rMax := base.toAx.NRange()
 	for i := range base.series {
@@ -302,7 +330,7 @@ func (base *BaseChart) PolarEdges() (es []renderer.PolarEdge) {
 	return
 }
 
-func (base *BaseChart) PolarTexts() (ts []renderer.PolarText) {
+func (base *BaseChart) PolarTexts() (ts []elements.Label) {
 	phiMin, phiMax := base.fromAx.NRange()
 	rMin, rMax := base.toAx.NRange()
 	for i := range base.series {
@@ -311,8 +339,8 @@ func (base *BaseChart) PolarTexts() (ts []renderer.PolarText) {
 	return
 }
 
-func (base *BaseChart) Raster() (rs *canvas.Raster) {
-	rs = base.rast
+func (base *BaseChart) Area() (rs *elements.Area) {
+	rs = base.area
 	return
 }
 
@@ -446,14 +474,14 @@ func (base *BaseChart) MouseOut() {
 
 func (base *BaseChart) PixelGenCartesian(pX, pY, w, h int) (col color.Color) {
 	col = color.RGBA{0x00, 0x00, 0x00, 0x00}
-	if len(base.rasterSeries) == 0 {
+	if len(base.areaSeries) == 0 {
 		return
 	}
 	x, y, inRange := base.PositionToCartesianCoordinates(float32(pX), float32(pY), float32(w), float32(h))
 	if !inRange {
 		return
 	}
-	for i := range base.rasterSeries {
+	for i := range base.areaSeries {
 		serCol := base.series[i].RasterColorCartesian(x, y)
 		r, g, b, _ := serCol.RGBA()
 		if r > 0 || g > 0 || b > 0 {
@@ -466,14 +494,14 @@ func (base *BaseChart) PixelGenCartesian(pX, pY, w, h int) (col color.Color) {
 
 func (base *BaseChart) PixelGenPolar(pX, pY, w, h int) (col color.Color) {
 	col = color.RGBA{0x00, 0x00, 0x00, 0x00}
-	if len(base.rasterSeries) == 0 {
+	if len(base.areaSeries) == 0 {
 		return
 	}
 	phi, r, x, y, inRange := base.PositionToPolarCoordinates(float32(pX), float32(pY), float32(w), float32(h))
 	if !inRange {
 		return
 	}
-	for i := range base.rasterSeries {
+	for i := range base.areaSeries {
 		serCol := base.series[i].RasterColorPolar(phi, r, x, y)
 		r, g, b, _ := serCol.RGBA()
 		if r > 0 || g > 0 || b > 0 {

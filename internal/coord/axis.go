@@ -5,13 +5,13 @@ import (
 	"math"
 	"time"
 
-	"github.com/s-daehling/fyne-charts/internal/renderer"
+	"github.com/s-daehling/fyne-charts/internal/elements"
 	"github.com/s-daehling/fyne-charts/pkg/data"
 	"github.com/s-daehling/fyne-charts/pkg/style"
 )
 
 func (base *BaseChart) FromAxisElements() (min float64, max float64, origin float64,
-	ticks []renderer.Tick, arrow renderer.Arrow, show bool) {
+	ticks []elements.Tick, arrow elements.Arrow, show bool) {
 	min, max = base.fromAx.NRange()
 	origin = base.fromAx.NOrigin()
 	ticks = base.fromAx.Ticks()
@@ -21,7 +21,7 @@ func (base *BaseChart) FromAxisElements() (min float64, max float64, origin floa
 }
 
 func (base *BaseChart) ToAxisElements() (min float64, max float64, origin float64,
-	ticks []renderer.Tick, arrow renderer.Arrow, show bool) {
+	ticks []elements.Tick, arrow elements.Arrow, show bool) {
 	min, max = base.toAx.NRange()
 	origin = base.toAx.NOrigin()
 	ticks = base.toAx.Ticks()
