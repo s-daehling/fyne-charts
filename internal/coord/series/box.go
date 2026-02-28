@@ -32,7 +32,7 @@ func emptyBoxPoint(nOutliers int, col color.Color) (point *boxPoint) {
 		box: elements.NewBox(col),
 	}
 	for range nOutliers {
-		p := elements.NewDot(col, 5)
+		p := elements.NewDot(col, 5, nil, nil)
 		p.Resize(fyne.NewSize(5, 5))
 		point.outlierDots = append(point.outlierDots, p)
 	}

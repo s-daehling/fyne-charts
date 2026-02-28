@@ -16,9 +16,11 @@ type chartDummy struct {
 
 func (cd chartDummy) IsPolar() bool                               { return cd.polar }
 func (cd chartDummy) DataChange()                                 {}
-func (cd chartDummy) AreaRefresh()                     {}
+func (cd chartDummy) AreaRefresh()                                {}
 func (cd chartDummy) AddLegendEntry(le *interact.LegendEntry)     {}
 func (cd chartDummy) RemoveLegendEntry(name string, super string) {}
+func (cd chartDummy) Highlight()                                  {}
+func (cd chartDummy) Unhighlight()                                {}
 
 func testNRange(ser Series, expIsEmpty bool, expMin float64, expMax float64) (err error) {
 	isEmpty, min, max := ser.NRange()

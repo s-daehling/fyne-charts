@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/s-daehling/fyne-charts/internal/elements"
+	"github.com/s-daehling/fyne-charts/internal/style"
 	"github.com/s-daehling/fyne-charts/pkg/data"
 
 	"fyne.io/fyne/v2"
@@ -39,12 +40,13 @@ type dataPoint struct {
 	showFromValBaseLine bool
 	showFromPrevLine    bool
 	showBar             bool
+	highlighted         bool
+	ser                 *PointSeries
 }
 
 func emptyDataPoint(col color.Color, showDot bool, showFromBase bool, showFromPrev bool,
-	showBar bool) (point *dataPoint) {
+	showBar bool, ser *PointSeries) (point *dataPoint) {
 	point = &dataPoint{
-		dot:                 elements.NewDot(col, 5),
 		fromValBase:         canvas.NewLine(col),
 		fromPrev:            canvas.NewLine(col),
 		bar:                 elements.NewBar(col),
@@ -58,7 +60,10 @@ func emptyDataPoint(col color.Color, showDot bool, showFromBase bool, showFromPr
 		tBarWidth:           0,
 		nBarShift:           0,
 		tBarShift:           0,
+		highlighted:         false,
+		ser:                 ser,
 	}
+	point.dot = elements.NewDot(col, 5, point.highlight, point.unhighlight)
 	point.dot.Resize(fyne.NewSize(5, 5))
 	return
 }
@@ -119,12 +124,15 @@ func (point *dataPoint) setTBarWidthAndShift(bw time.Duration, bs time.Duration)
 	point.tBarShift = bs
 }
 
-// func (point *dataPoint) calculateBarRange() {
-// 	point.nBarStart = point.n + point.nBarShift - (point.nBarWidth / 2)
-// 	point.valBarStart = math.Min(point.valBase, point.valBase+point.val)
-// 	point.nBarEnd = point.n + point.nBarShift + (point.nBarWidth / 2)
-// 	point.valBarEnd = math.Max(point.valBase, point.valBase+point.val)
-// }
+func (point *dataPoint) highlight() {
+	point.highlighted = true
+	point.ser.highlight()
+}
+
+func (point *dataPoint) unhighlight() {
+	point.highlighted = false
+	point.ser.unhighlight()
+}
 
 func (point *dataPoint) cartesianDots(xMin float64, xMax float64, yMin float64,
 	yMax float64) (ns []*elements.Dot) {
@@ -282,6 +290,7 @@ type PointSeries struct {
 	isStacked           bool
 	valMin              float64
 	valMax              float64
+	highlighted         bool
 }
 
 func EmptyPointSeries(name string, colName fyne.ThemeColorName) (ser *PointSeries) {
@@ -298,6 +307,7 @@ func EmptyPointSeries(name string, colName fyne.ThemeColorName) (ser *PointSerie
 		showArea:            false,
 		isStacked:           false,
 		sortPoints:          true,
+		highlighted:         false,
 	}
 	ser.baseSeries = emptyBaseSeries(name, colName, ser.toggleView)
 	return
@@ -590,8 +600,13 @@ func (ser *PointSeries) RasterColorPolar(phi float64, r float64, x float64,
 
 func (ser *PointSeries) RefreshTheme() {
 	ser.col = theme.Color(ser.colName)
+	ser.colFaded = style.MakeFaded(ser.col, 0.3)
+	col := ser.col
+	if ser.isFaded {
+		col = ser.colFaded
+	}
 	for i := range ser.data {
-		ser.data[i].setColor(ser.col)
+		ser.data[i].setColor(col)
 	}
 }
 
@@ -646,6 +661,37 @@ func (ser *PointSeries) SetValBaseNumerical(vb float64) {
 	ser.valBase = vb
 	for i := range ser.data {
 		ser.data[i].setValBase(vb)
+	}
+}
+
+func (ser *PointSeries) FadeUnhighlighted() {
+	if ser.highlighted {
+		return
+	}
+	ser.isFaded = true
+	for i := range ser.data {
+		ser.data[i].setColor(ser.colFaded)
+	}
+}
+
+func (ser *PointSeries) UnFade() {
+	ser.isFaded = false
+	for i := range ser.data {
+		ser.data[i].setColor(ser.col)
+	}
+}
+
+func (ser *PointSeries) highlight() {
+	ser.highlighted = true
+	if ser.cont != nil {
+		ser.cont.Highlight()
+	}
+}
+
+func (ser *PointSeries) unhighlight() {
+	ser.highlighted = false
+	if ser.cont != nil {
+		ser.cont.Unhighlight()
 	}
 }
 
@@ -878,7 +924,7 @@ func (ser *PointSeries) AddNumericalData(input []data.NumericalPoint) (err error
 	}
 	for i := range newData {
 		dPoint := emptyDataPoint(ser.col, ser.showDot, ser.showFromValBaseLine,
-			ser.showFromPrevLine, ser.showBar)
+			ser.showFromPrevLine, ser.showBar, ser)
 		dPoint.n = newData[i].N
 		dPoint.val = newData[i].Val
 		if ser.showBar {
@@ -946,7 +992,7 @@ func (ser *PointSeries) AddTemporalData(input []data.TemporalPoint) (err error) 
 	}
 	for i := range newData {
 		dPoint := emptyDataPoint(ser.col, ser.showDot, ser.showFromValBaseLine,
-			ser.showFromPrevLine, ser.showBar)
+			ser.showFromPrevLine, ser.showBar, ser)
 		dPoint.t = newData[i].T
 		dPoint.val = newData[i].Val
 		if ser.showBar {
@@ -1020,7 +1066,7 @@ func (ser *PointSeries) AddCategoricalData(input []data.CategoricalPoint) (err e
 			continue
 		}
 		dPoint := emptyDataPoint(ser.col, ser.showDot, ser.showFromValBaseLine,
-			ser.showFromPrevLine, ser.showBar)
+			ser.showFromPrevLine, ser.showBar, ser)
 		dPoint.c = input[i].C
 		dPoint.val = input[i].Val
 		if ser.showFromValBaseLine {

@@ -5,23 +5,26 @@ import (
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
+	"fyne.io/fyne/v2/driver/desktop"
 	"fyne.io/fyne/v2/widget"
 )
 
 type Dot struct {
-	N      float64
-	Val    float64
-	size   float32
-	circle *canvas.Circle
-	col    color.Color
+	N           float64
+	Val         float64
+	size        float32
+	circle      *canvas.Circle
+	highlight   func()
+	unhighlight func()
 	widget.BaseWidget
 }
 
-func NewDot(col color.Color, size float32) (d *Dot) {
+func NewDot(col color.Color, size float32, highlight func(), unhighlight func()) (d *Dot) {
 	d = &Dot{
-		size:   size,
-		col:    col,
-		circle: canvas.NewCircle(col),
+		size:        size,
+		circle:      canvas.NewCircle(col),
+		highlight:   highlight,
+		unhighlight: unhighlight,
 	}
 	d.ExtendBaseWidget(d)
 	return
@@ -33,6 +36,24 @@ func (d *Dot) SetMinSize(size float32) {
 
 func (d *Dot) SetColor(col color.Color) {
 	d.circle.FillColor = col
+}
+
+func (d *Dot) MouseIn(me *desktop.MouseEvent) {
+	if d.highlight == nil {
+		return
+	}
+	d.highlight()
+}
+
+func (d *Dot) MouseMoved(me *desktop.MouseEvent) {
+
+}
+
+func (d *Dot) MouseOut() {
+	if d.unhighlight == nil {
+		return
+	}
+	d.unhighlight()
 }
 
 func (d *Dot) CreateRenderer() (r fyne.WidgetRenderer) {

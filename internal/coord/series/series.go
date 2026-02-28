@@ -9,6 +9,7 @@ import (
 	"fyne.io/fyne/v2/theme"
 	"github.com/s-daehling/fyne-charts/internal/elements"
 	"github.com/s-daehling/fyne-charts/internal/interact"
+	"github.com/s-daehling/fyne-charts/internal/style"
 )
 
 type baseSeries struct {
@@ -16,7 +17,9 @@ type baseSeries struct {
 	super       string
 	visible     bool
 	col         color.Color
+	colFaded    color.Color
 	colName     fyne.ThemeColorName
+	isFaded     bool
 	legendEntry *interact.LegendEntry
 	cont        container
 }
@@ -28,9 +31,11 @@ func emptyBaseSeries(name string, colName fyne.ThemeColorName, togView func()) (
 		visible:     true,
 		colName:     colName,
 		col:         theme.Color(colName),
+		isFaded:     false,
 		legendEntry: interact.NewLegendEntry(name, "", true, colName, togView),
 		cont:        nil,
 	}
+	ser.colFaded = style.MakeFaded(ser.col, 0.3)
 	return
 }
 
@@ -152,6 +157,10 @@ func (ser *baseSeries) RefreshTheme() {
 	ser.col = theme.Color(ser.colName)
 }
 
+func (ser *baseSeries) FadeUnhighlighted() {}
+
+func (ser *baseSeries) UnFade() {}
+
 func (ser *baseSeries) Hover(n float64, val float64) (text string) {
 	return
 }
@@ -183,6 +192,8 @@ type Series interface {
 	RasterColorPolar(phi float64, r float64, x float64, y float64) (col color.Color)
 	IsPartOfChartRaster() (b bool)
 	RefreshTheme()
+	FadeUnhighlighted()
+	UnFade()
 	Hover(n float64, val float64) (text string)
 }
 
@@ -192,4 +203,6 @@ type container interface {
 	AreaRefresh()
 	AddLegendEntry(le *interact.LegendEntry)
 	RemoveLegendEntry(name string, super string)
+	Highlight()
+	Unhighlight()
 }

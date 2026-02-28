@@ -5,6 +5,7 @@ import (
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
+	"fyne.io/fyne/v2/driver/desktop"
 	"fyne.io/fyne/v2/widget"
 )
 
@@ -64,6 +65,16 @@ func (b *Box) SetLineWidth(lw float32) {
 
 func (b *Box) SetOrientantion(transposed bool) {
 	b.transposed = transposed
+}
+
+func (b *Box) MouseIn(me *desktop.MouseEvent) {
+}
+
+func (b *Box) MouseMoved(me *desktop.MouseEvent) {
+
+}
+
+func (b *Box) MouseOut() {
 }
 
 func (b *Box) CreateRenderer() (r fyne.WidgetRenderer) {

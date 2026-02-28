@@ -54,6 +54,18 @@ func (ser *StackedSeries) RemoveLegendEntry(name string, super string) {
 	}
 }
 
+func (ser *StackedSeries) Highlight() {
+	if ser.cont != nil {
+		ser.cont.Highlight()
+	}
+}
+
+func (ser *StackedSeries) Unhighlight() {
+	if ser.cont != nil {
+		ser.cont.Unhighlight()
+	}
+}
+
 func (ser *StackedSeries) CRange() (cs []string) {
 	for i := range ser.stack {
 		cats := ser.stack[i].CRange()

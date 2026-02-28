@@ -192,3 +192,27 @@ func EquidistantHue(base fyne.ThemeColorName, step int, totStep int) (col color.
 	col = colorful.Hcl(h, cRel*MaxChroma(h, l), l).Clamped()
 	return
 }
+
+func MakeFaded(in color.Color, alpha float32) (out color.Color) {
+	r, g, b, a := in.RGBA()
+	if a == 0 {
+		out = color.RGBA{0, 0, 0, 0}
+		return
+	}
+	r *= 0xffff
+	r /= a
+	g *= 0xffff
+	g /= a
+	b *= 0xffff
+	b /= a
+
+	an := (float32(a) / 65535.0) * alpha
+
+	out = color.RGBA{
+		R: uint8((float32(r) / 65535.0) * an * 255),
+		G: uint8((float32(g) / 65535.0) * an * 255),
+		B: uint8((float32(b) / 65535.0) * an * 255),
+		A: uint8(an * 255),
+	}
+	return
+}

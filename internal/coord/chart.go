@@ -76,7 +76,7 @@ func EmptyBaseChart(pType PlaneType, fType FromType) (base *BaseChart) {
 		autoToRange:       true,
 		autoOrigin:        true,
 		legend:            interact.NewLegend(),
-		tooltipVisible:    true,
+		tooltipVisible:    false,
 		planeType:         pType,
 		transposed:        false,
 		fromType:          fType,
