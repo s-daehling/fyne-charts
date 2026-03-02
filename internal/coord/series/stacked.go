@@ -193,6 +193,18 @@ func (ser *StackedSeries) Show() {
 	ser.legendEntry.Show()
 }
 
+func (ser *StackedSeries) FadeUnhighlighted() {
+	for i := range ser.stack {
+		ser.stack[i].FadeUnhighlighted()
+	}
+}
+
+func (ser *StackedSeries) UnFade() {
+	for i := range ser.stack {
+		ser.stack[i].UnFade()
+	}
+}
+
 // Hide hides the bars of the series
 func (ser *StackedSeries) Hide() {
 	ser.visible = false

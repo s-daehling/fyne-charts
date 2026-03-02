@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/s-daehling/fyne-charts/internal/elements"
+	"github.com/s-daehling/fyne-charts/internal/style"
 	"github.com/s-daehling/fyne-charts/pkg/data"
 
 	"fyne.io/fyne/v2"
@@ -25,14 +26,18 @@ type boxPoint struct {
 	outlierDots []*elements.Dot
 	box         *elements.Box
 	width       float64
+	highlighted bool
+	ser         *BoxSeries
 }
 
-func emptyBoxPoint(nOutliers int, col color.Color) (point *boxPoint) {
+func emptyBoxPoint(nOutliers int, col color.Color, ser *BoxSeries) (point *boxPoint) {
 	point = &boxPoint{
-		box: elements.NewBox(col),
+		highlighted: false,
+		ser:         ser,
 	}
+	point.box = elements.NewBox(col, point.highlight, point.unhighlight)
 	for range nOutliers {
-		p := elements.NewDot(col, 5, nil, nil)
+		p := elements.NewDot(col, 5, point.highlight, point.unhighlight)
 		p.Resize(fyne.NewSize(5, 5))
 		point.outlierDots = append(point.outlierDots, p)
 	}
@@ -80,6 +85,16 @@ func (point *boxPoint) setOutlierSize(os float32) {
 
 func (point *boxPoint) setWidth(width float64) {
 	point.width = width
+}
+
+func (point *boxPoint) highlight() {
+	point.highlighted = true
+	point.ser.highlight()
+}
+
+func (point *boxPoint) unhighlight() {
+	point.highlighted = false
+	point.ser.unhighlight()
 }
 
 func (point *boxPoint) cartesianDots(xMin float64, xMax float64, yMin float64,
@@ -230,8 +245,13 @@ func (ser *BoxSeries) CartesianBoxes(xMin float64, xMax float64, yMin float64,
 
 func (ser *BoxSeries) RefreshTheme() {
 	ser.col = theme.Color(ser.colName)
+	ser.colFaded = style.MakeFaded(ser.col, 0.3)
+	col := ser.col
+	if ser.isFaded {
+		col = ser.colFaded
+	}
 	for i := range ser.data {
-		ser.data[i].setColor(ser.col)
+		ser.data[i].setColor(col)
 	}
 }
 
@@ -245,6 +265,37 @@ func (ser *BoxSeries) SetWidth(width float64) {
 func (ser *BoxSeries) NumberOfPoints() (n int) {
 	n = len(ser.data)
 	return
+}
+
+func (ser *BoxSeries) FadeUnhighlighted() {
+	if ser.highlighted {
+		return
+	}
+	ser.isFaded = true
+	for i := range ser.data {
+		ser.data[i].setColor(ser.colFaded)
+	}
+}
+
+func (ser *BoxSeries) UnFade() {
+	ser.isFaded = false
+	for i := range ser.data {
+		ser.data[i].setColor(ser.col)
+	}
+}
+
+func (ser *BoxSeries) highlight() {
+	ser.highlighted = true
+	if ser.cont != nil {
+		ser.cont.Highlight()
+	}
+}
+
+func (ser *BoxSeries) unhighlight() {
+	ser.highlighted = false
+	if ser.cont != nil {
+		ser.cont.Unhighlight()
+	}
 }
 
 // Show makes all elements of the bar series visible
@@ -356,7 +407,7 @@ func (ser *BoxSeries) AddNumericalData(input []data.NumericalBox) (err error) {
 		}
 	}
 	for i := range input {
-		bPoint := emptyBoxPoint(len(input[i].Outlier), ser.col)
+		bPoint := emptyBoxPoint(len(input[i].Outlier), ser.col, ser)
 		bPoint.n = input[i].N
 		bPoint.max = input[i].Maximum
 		bPoint.thirdQuart = input[i].ThirdQuartile
@@ -412,7 +463,7 @@ func (ser *BoxSeries) AddTemporalData(input []data.TemporalBox) (err error) {
 		}
 	}
 	for i := range input {
-		bPoint := emptyBoxPoint(len(input[i].Outlier), ser.col)
+		bPoint := emptyBoxPoint(len(input[i].Outlier), ser.col, ser)
 		bPoint.t = input[i].T
 		bPoint.max = input[i].Maximum
 		bPoint.thirdQuart = input[i].ThirdQuartile
@@ -486,7 +537,7 @@ func (ser *BoxSeries) AddCategoricalData(input []data.CategoricalBox) (err error
 		if catExist {
 			continue
 		}
-		bPoint := emptyBoxPoint(len(input[i].Outlier), ser.col)
+		bPoint := emptyBoxPoint(len(input[i].Outlier), ser.col, ser)
 		bPoint.c = input[i].C
 		bPoint.max = input[i].Maximum
 		bPoint.thirdQuart = input[i].ThirdQuartile

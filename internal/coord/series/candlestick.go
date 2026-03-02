@@ -6,27 +6,37 @@ import (
 	"time"
 
 	"github.com/s-daehling/fyne-charts/internal/elements"
+	"github.com/s-daehling/fyne-charts/internal/style"
 	"github.com/s-daehling/fyne-charts/pkg/data"
 
+	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/theme"
 )
 
 type candleStickPoint struct {
-	tStart time.Time
-	tEnd   time.Time
-	nStart float64
-	nEnd   float64
-	open   float64
-	close  float64
-	high   float64
-	low    float64
-	candle *elements.Candle
+	tStart      time.Time
+	tEnd        time.Time
+	nStart      float64
+	nEnd        float64
+	open        float64
+	close       float64
+	high        float64
+	low         float64
+	candle      *elements.Candle
+	colDown     color.Color
+	colUp       color.Color
+	highlighted bool
+	ser         *CandleStickSeries
 }
 
-func emptyCandleStickPoint() (point *candleStickPoint) {
+func emptyCandleStickPoint(lineCol color.Color, colDown color.Color, colUp color.Color, ser *CandleStickSeries) (point *candleStickPoint) {
 	point = &candleStickPoint{
-		candle: elements.NewCandle(color.Black),
+		colDown:     colDown,
+		colUp:       colUp,
+		highlighted: false,
+		ser:         ser,
 	}
+	point.candle = elements.NewCandle(lineCol, point.highlight, point.unhighlight)
 	return
 }
 
@@ -46,15 +56,31 @@ func (point *candleStickPoint) setLineWidth(lw float32) {
 	point.candle.SetLineWidth(lw)
 }
 
+func (point *candleStickPoint) setColor(line, down, up color.Color) {
+	point.colDown = down
+	point.colUp = up
+	point.candle.SetLineColor(line)
+}
+
+func (point *candleStickPoint) highlight() {
+	point.highlighted = true
+	point.ser.highlight()
+}
+
+func (point *candleStickPoint) unhighlight() {
+	point.highlighted = false
+	point.ser.unhighlight()
+}
+
 func (point *candleStickPoint) cartesianCandles(xMin float64, xMax float64, yMin float64,
 	yMax float64) (cs []*elements.Candle) {
 	if point.nEnd > xMax || point.nStart < xMin || point.high > yMax || point.low < yMin {
 		// point out of range
 		return
 	}
-	point.candle.SetCandleColor(theme.Color(theme.ColorNameError))
+	point.candle.SetCandleColor(point.colDown)
 	if point.open < point.close {
-		point.candle.SetCandleColor(theme.Color(theme.ColorNameSuccess))
+		point.candle.SetCandleColor(point.colUp)
 	}
 	point.candle.N1 = point.nStart
 	point.candle.N2 = point.nEnd
@@ -68,12 +94,25 @@ func (point *candleStickPoint) cartesianCandles(xMin float64, xMax float64, yMin
 
 type CandleStickSeries struct {
 	baseSeries
-	data []*candleStickPoint
+	data         []*candleStickPoint
+	colNameDown  fyne.ThemeColorName
+	colDown      color.Color
+	colDownFaded color.Color
+	colNameUp    fyne.ThemeColorName
+	colUp        color.Color
+	colUpFaded   color.Color
 }
 
 func EmptyCandleStickSeries(name string) (ser *CandleStickSeries) {
-	ser = &CandleStickSeries{}
+	ser = &CandleStickSeries{
+		colNameDown: theme.ColorNameError,
+		colNameUp:   theme.ColorNameSuccess,
+		colDown:     theme.Color(theme.ColorNameError),
+		colUp:       theme.Color(theme.ColorNameSuccess),
+	}
 	ser.baseSeries = emptyBaseSeries(name, theme.ColorNameForeground, ser.toggleView)
+	ser.colDownFaded = style.MakeFaded(ser.colDown, 0.3)
+	ser.colUpFaded = style.MakeFaded(ser.colUp, 0.3)
 	// ser.legendButton.UseGradient(color.RGBA{R: 0xff, G: 0x00, B: 0x00, A: 0xff}, color.RGBA{R: 0x00, G: 0x88, B: 0x00, A: 0xff})
 	return
 }
@@ -155,8 +194,52 @@ func (ser *CandleStickSeries) CartesianCandles(xMin float64, xMax float64, yMin 
 
 func (ser *CandleStickSeries) RefreshTheme() {
 	ser.col = theme.Color(ser.colName)
+	ser.colFaded = style.MakeFaded(ser.col, 0.3)
+	ser.colDown = theme.Color(ser.colNameDown)
+	ser.colDownFaded = style.MakeFaded(ser.colDown, 0.3)
+	ser.colUp = theme.Color(ser.colNameUp)
+	ser.colUpFaded = style.MakeFaded(ser.colUp, 0.3)
+	col := ser.col
+	colDown := ser.colDown
+	colUp := ser.colUp
+	if ser.isFaded {
+		col = ser.colFaded
+		colDown = ser.colDownFaded
+		colUp = ser.colUpFaded
+	}
 	for i := range ser.data {
-		ser.data[i].candle.SetLineColor(theme.Color(theme.ColorNameForeground))
+		ser.data[i].setColor(col, colDown, colUp)
+	}
+}
+
+func (ser *CandleStickSeries) FadeUnhighlighted() {
+	if ser.highlighted {
+		return
+	}
+	ser.isFaded = true
+	for i := range ser.data {
+		ser.data[i].setColor(ser.colFaded, ser.colDownFaded, ser.colUpFaded)
+	}
+}
+
+func (ser *CandleStickSeries) UnFade() {
+	ser.isFaded = false
+	for i := range ser.data {
+		ser.data[i].setColor(ser.col, ser.colDown, ser.colUp)
+	}
+}
+
+func (ser *CandleStickSeries) highlight() {
+	ser.highlighted = true
+	if ser.cont != nil {
+		ser.cont.Highlight()
+	}
+}
+
+func (ser *CandleStickSeries) unhighlight() {
+	ser.highlighted = false
+	if ser.cont != nil {
+		ser.cont.Unhighlight()
 	}
 }
 
@@ -245,7 +328,7 @@ func (ser *CandleStickSeries) AddNumericalData(input []data.NumericalCandleStick
 		}
 	}
 	for i := range input {
-		csPoint := emptyCandleStickPoint()
+		csPoint := emptyCandleStickPoint(ser.col, ser.colDown, ser.colUp, ser)
 		csPoint.nStart = input[i].NStart
 		csPoint.nEnd = input[i].NEnd
 		csPoint.open = input[i].Open
@@ -299,7 +382,7 @@ func (ser *CandleStickSeries) AddTemporalData(input []data.TemporalCandleStick) 
 		}
 	}
 	for i := range input {
-		csPoint := emptyCandleStickPoint()
+		csPoint := emptyCandleStickPoint(ser.col, ser.colDown, ser.colUp, ser)
 		csPoint.tStart = input[i].TStart
 		csPoint.tEnd = input[i].TEnd
 		csPoint.open = input[i].Open

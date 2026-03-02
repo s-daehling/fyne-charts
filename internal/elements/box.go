@@ -25,10 +25,12 @@ type Box struct {
 	rect         *canvas.Rectangle
 	col          color.Color
 	transposed   bool
+	highlight    func()
+	unhighlight  func()
 	widget.BaseWidget
 }
 
-func NewBox(col color.Color) (b *Box) {
+func NewBox(col color.Color, highlight func(), unhighlight func()) (b *Box) {
 	b = &Box{
 		col:          col,
 		maxLine:      canvas.NewLine(col),
@@ -37,6 +39,8 @@ func NewBox(col color.Color) (b *Box) {
 		lowerWhisker: canvas.NewLine(col),
 		minLine:      canvas.NewLine(col),
 		transposed:   false,
+		highlight:    highlight,
+		unhighlight:  unhighlight,
 	}
 	b.rect = canvas.NewRectangle(color.RGBA{0x00, 0x00, 0x00, 0x00})
 	b.rect.StrokeColor = col
@@ -68,6 +72,10 @@ func (b *Box) SetOrientantion(transposed bool) {
 }
 
 func (b *Box) MouseIn(me *desktop.MouseEvent) {
+	if b.highlight == nil {
+		return
+	}
+	b.highlight()
 }
 
 func (b *Box) MouseMoved(me *desktop.MouseEvent) {
@@ -75,6 +83,10 @@ func (b *Box) MouseMoved(me *desktop.MouseEvent) {
 }
 
 func (b *Box) MouseOut() {
+	if b.unhighlight == nil {
+		return
+	}
+	b.unhighlight()
 }
 
 func (b *Box) CreateRenderer() (r fyne.WidgetRenderer) {

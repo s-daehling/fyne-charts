@@ -5,31 +5,35 @@ import (
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
-	"fyne.io/fyne/v2/theme"
+	"fyne.io/fyne/v2/driver/desktop"
 	"fyne.io/fyne/v2/widget"
 )
 
 type Candle struct {
-	N1         float64
-	N2         float64
-	Open       float64
-	Close      float64
-	High       float64
-	Low        float64
-	rect       *canvas.Rectangle
-	upperLine  *canvas.Line
-	lowerLine  *canvas.Line
-	col        color.Color
-	transposed bool
+	N1          float64
+	N2          float64
+	Open        float64
+	Close       float64
+	High        float64
+	Low         float64
+	rect        *canvas.Rectangle
+	upperLine   *canvas.Line
+	lowerLine   *canvas.Line
+	transposed  bool
+	colUp       color.Color
+	colDown     color.Color
+	highlight   func()
+	unhighlight func()
 	widget.BaseWidget
 }
 
-func NewCandle(col color.Color) (c *Candle) {
+func NewCandle(col color.Color, highlight func(), unhighlight func()) (c *Candle) {
 	c = &Candle{
-		col:       col,
-		rect:      canvas.NewRectangle(col),
-		upperLine: canvas.NewLine(theme.Color(theme.ColorNameForeground)),
-		lowerLine: canvas.NewLine(theme.Color(theme.ColorNameForeground)),
+		rect:        canvas.NewRectangle(col),
+		upperLine:   canvas.NewLine(col),
+		lowerLine:   canvas.NewLine(col),
+		highlight:   highlight,
+		unhighlight: unhighlight,
 	}
 	c.rect.CornerRadius = 2
 	c.ExtendBaseWidget(c)
@@ -42,6 +46,7 @@ func (c *Candle) SetCandleColor(col color.Color) {
 
 func (c *Candle) SetLineColor(col color.Color) {
 	c.upperLine.StrokeColor = col
+	c.lowerLine.StrokeColor = col
 }
 
 func (c *Candle) SetLineWidth(lw float32) {
@@ -51,6 +56,24 @@ func (c *Candle) SetLineWidth(lw float32) {
 
 func (c *Candle) SetOrientantion(transposed bool) {
 	c.transposed = transposed
+}
+
+func (c *Candle) MouseIn(me *desktop.MouseEvent) {
+	if c.highlight == nil {
+		return
+	}
+	c.highlight()
+}
+
+func (c *Candle) MouseMoved(me *desktop.MouseEvent) {
+
+}
+
+func (c *Candle) MouseOut() {
+	if c.unhighlight == nil {
+		return
+	}
+	c.unhighlight()
 }
 
 func (c *Candle) CreateRenderer() (r fyne.WidgetRenderer) {

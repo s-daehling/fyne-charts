@@ -5,23 +5,28 @@ import (
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
+	"fyne.io/fyne/v2/driver/desktop"
 	"fyne.io/fyne/v2/widget"
 )
 
 type Bar struct {
-	N1   float64
-	Val1 float64
-	N2   float64
-	Val2 float64
-	rect *canvas.Rectangle
-	col  color.Color
+	N1          float64
+	Val1        float64
+	N2          float64
+	Val2        float64
+	rect        *canvas.Rectangle
+	col         color.Color
+	highlight   func()
+	unhighlight func()
 	widget.BaseWidget
 }
 
-func NewBar(col color.Color) (b *Bar) {
+func NewBar(col color.Color, highlight func(), unhighlight func()) (b *Bar) {
 	b = &Bar{
-		col:  col,
-		rect: canvas.NewRectangle(col),
+		col:         col,
+		rect:        canvas.NewRectangle(col),
+		highlight:   highlight,
+		unhighlight: unhighlight,
 	}
 	b.ExtendBaseWidget(b)
 	return
@@ -33,6 +38,24 @@ func (b *Bar) SetColor(col color.Color) {
 
 func (b *Bar) SetCornerRadius(r float32) {
 	b.rect.CornerRadius = r
+}
+
+func (b *Bar) MouseIn(me *desktop.MouseEvent) {
+	if b.highlight == nil {
+		return
+	}
+	b.highlight()
+}
+
+func (b *Bar) MouseMoved(me *desktop.MouseEvent) {
+
+}
+
+func (b *Bar) MouseOut() {
+	if b.unhighlight == nil {
+		return
+	}
+	b.unhighlight()
 }
 
 func (b *Bar) CreateRenderer() (r fyne.WidgetRenderer) {

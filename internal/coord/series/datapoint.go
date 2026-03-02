@@ -49,7 +49,6 @@ func emptyDataPoint(col color.Color, showDot bool, showFromBase bool, showFromPr
 	point = &dataPoint{
 		fromValBase:         canvas.NewLine(col),
 		fromPrev:            canvas.NewLine(col),
-		bar:                 elements.NewBar(col),
 		col:                 col,
 		showDot:             showDot,
 		showFromValBaseLine: showFromBase,
@@ -65,6 +64,7 @@ func emptyDataPoint(col color.Color, showDot bool, showFromBase bool, showFromPr
 	}
 	point.dot = elements.NewDot(col, 5, point.highlight, point.unhighlight)
 	point.dot.Resize(fyne.NewSize(5, 5))
+	point.bar = elements.NewBar(col, point.highlight, point.unhighlight)
 	return
 }
 
@@ -290,7 +290,6 @@ type PointSeries struct {
 	isStacked           bool
 	valMin              float64
 	valMax              float64
-	highlighted         bool
 }
 
 func EmptyPointSeries(name string, colName fyne.ThemeColorName) (ser *PointSeries) {
@@ -307,7 +306,6 @@ func EmptyPointSeries(name string, colName fyne.ThemeColorName) (ser *PointSerie
 		showArea:            false,
 		isStacked:           false,
 		sortPoints:          true,
-		highlighted:         false,
 	}
 	ser.baseSeries = emptyBaseSeries(name, colName, ser.toggleView)
 	return
