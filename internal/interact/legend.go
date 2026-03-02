@@ -1,7 +1,6 @@
 package interact
 
 import (
-	"image/color"
 	"slices"
 
 	"fyne.io/fyne/v2"
@@ -244,12 +243,13 @@ type LegendEntry struct {
 	style        style.ChartTextStyle
 }
 
-func NewLegendEntry(name string, super string, showBox bool, colName fyne.ThemeColorName, tapFct func()) (le *LegendEntry) {
+func NewLegendEntry(name string, super string, showBox bool, colName fyne.ThemeColorName,
+	tap func(), highlight func(), unhighlight func()) (le *LegendEntry) {
 	le = &LegendEntry{
 		name:    name,
 		super:   super,
 		showBox: showBox,
-		box:     NewLegendBox(colName, tapFct),
+		box:     NewLegendBox(colName, tap, highlight, unhighlight),
 		label:   canvas.NewText(name, theme.Color(theme.ColorNameForeground)),
 	}
 	le.label.Resize(le.label.MinSize())
@@ -393,18 +393,23 @@ type legendBox struct {
 	rect        *canvas.Rectangle
 	circle      *canvas.Circle
 	interactive bool
-	tapFct      func()
+	tap         func()
+	highlight   func()
+	unhighlight func()
 }
 
-func NewLegendBox(colName fyne.ThemeColorName, tapFct func()) *legendBox {
+func NewLegendBox(colName fyne.ThemeColorName, tap func(), highlight func(), unhighlight func()) *legendBox {
 	col := theme.Color(colName)
 	box := &legendBox{
 		rect:        canvas.NewRectangle(col),
 		circle:      canvas.NewCircle(col),
 		colName:     colName,
 		interactive: true,
-		tapFct:      tapFct,
+		tap:         tap,
+		highlight:   highlight,
+		unhighlight: unhighlight,
 	}
+	box.circle.Hide()
 	box.ExtendBaseWidget(box)
 	return box
 }
@@ -417,12 +422,14 @@ func (box *legendBox) CreateRenderer() fyne.WidgetRenderer {
 
 func (box *legendBox) refreshTheme() {
 	box.rect.FillColor = theme.Color(box.colName)
+	box.rect.StrokeColor = theme.Color(theme.ColorNameForeground)
 	box.circle.FillColor = theme.Color(box.colName)
+	box.circle.StrokeColor = theme.Color(theme.ColorNameForeground)
 }
 
 func (box *legendBox) Tapped(_ *fyne.PointEvent) {
-	if box.interactive {
-		box.tapFct()
+	if box.interactive && box.tap != nil {
+		box.tap()
 	}
 }
 
@@ -430,13 +437,18 @@ func (box *legendBox) MouseIn(me *desktop.MouseEvent) {
 	if !box.interactive {
 		return
 	}
-	r, g, b, a := theme.Color(box.colName).RGBA()
-	rb, gb, bb, _ := theme.Color(theme.ColorNameBackground).RGBA()
-	// box.rect.FillColor = color.RGBA64{R: uint16(r), G: uint16(g), B: uint16(b), A: 0xaaaa}
-	box.rect.FillColor = color.RGBA64{R: uint16(float32(r+rb) * 0.5), G: uint16(float32(g+gb) * 0.5), B: uint16(float32(b+bb) * 0.5), A: uint16(a)}
+	box.rect.StrokeWidth = 1
+	box.circle.StrokeWidth = 1
+	// r, g, b, a := theme.Color(box.colName).RGBA()
+	// rb, gb, bb, _ := theme.Color(theme.ColorNameBackground).RGBA()
+	// // box.rect.FillColor = color.RGBA64{R: uint16(r), G: uint16(g), B: uint16(b), A: 0xaaaa}
+	// box.rect.FillColor = color.RGBA64{R: uint16(float32(r+rb) * 0.5), G: uint16(float32(g+gb) * 0.5), B: uint16(float32(b+bb) * 0.5), A: uint16(a)}
 	box.rect.Refresh()
-	box.circle.FillColor = color.RGBA64{R: uint16(float32(r+rb) * 0.5), G: uint16(float32(g+gb) * 0.5), B: uint16(float32(b+bb) * 0.5), A: uint16(a)}
+	// box.circle.FillColor = color.RGBA64{R: uint16(float32(r+rb) * 0.5), G: uint16(float32(g+gb) * 0.5), B: uint16(float32(b+bb) * 0.5), A: uint16(a)}
 	box.circle.Refresh()
+	if box.highlight != nil {
+		box.highlight()
+	}
 }
 
 func (box *legendBox) MouseMoved(me *desktop.MouseEvent) {}
@@ -445,11 +457,16 @@ func (box *legendBox) MouseOut() {
 	if !box.interactive {
 		return
 	}
-	col := theme.Color(box.colName)
-	box.rect.FillColor = col
+	box.rect.StrokeWidth = 0
+	box.circle.StrokeWidth = 0
+	// col := theme.Color(box.colName)
+	// box.rect.FillColor = col
 	box.rect.Refresh()
-	box.circle.FillColor = col
+	// box.circle.FillColor = col
 	box.circle.Refresh()
+	if box.unhighlight != nil {
+		box.unhighlight()
+	}
 }
 
 func (box *legendBox) SetColor(colName fyne.ThemeColorName) {
@@ -463,10 +480,12 @@ func (box *legendBox) SetColor(colName fyne.ThemeColorName) {
 
 func (box *legendBox) ToCircle() {
 	box.rect.Hide()
+	box.circle.Show()
 }
 
 func (box *legendBox) ToRect() {
 	box.rect.Show()
+	box.circle.Hide()
 }
 
 func (box *legendBox) setInteractiveness(interactive bool) {

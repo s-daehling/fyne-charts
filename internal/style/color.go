@@ -193,7 +193,8 @@ func EquidistantHue(base fyne.ThemeColorName, step int, totStep int) (col color.
 	return
 }
 
-func MakeFaded(in color.Color, alpha float32) (out color.Color) {
+func MakeFaded(in color.Color) (out color.Color) {
+	alpha := float32(0.2)
 	r, g, b, a := in.RGBA()
 	if a == 0 {
 		out = color.RGBA{0, 0, 0, 0}

@@ -18,7 +18,7 @@ type StackedSeries struct {
 
 func EmptyStackedSeries(name string) (ser *StackedSeries) {
 	ser = &StackedSeries{}
-	ser.baseSeries = emptyBaseSeries(name, theme.ColorNameForeground, ser.toggleView)
+	ser.baseSeries = emptyBaseSeries(name, theme.ColorNameForeground, ser.toggleView, nil, nil)
 	ser.legendEntry.HideBox()
 	return
 }

@@ -110,9 +110,9 @@ func EmptyCandleStickSeries(name string) (ser *CandleStickSeries) {
 		colDown:     theme.Color(theme.ColorNameError),
 		colUp:       theme.Color(theme.ColorNameSuccess),
 	}
-	ser.baseSeries = emptyBaseSeries(name, theme.ColorNameForeground, ser.toggleView)
-	ser.colDownFaded = style.MakeFaded(ser.colDown, 0.3)
-	ser.colUpFaded = style.MakeFaded(ser.colUp, 0.3)
+	ser.baseSeries = emptyBaseSeries(name, theme.ColorNameForeground, ser.toggleView, ser.highlight, ser.unhighlight)
+	ser.colDownFaded = style.MakeFaded(ser.colDown)
+	ser.colUpFaded = style.MakeFaded(ser.colUp)
 	// ser.legendButton.UseGradient(color.RGBA{R: 0xff, G: 0x00, B: 0x00, A: 0xff}, color.RGBA{R: 0x00, G: 0x88, B: 0x00, A: 0xff})
 	return
 }
@@ -194,11 +194,11 @@ func (ser *CandleStickSeries) CartesianCandles(xMin float64, xMax float64, yMin 
 
 func (ser *CandleStickSeries) RefreshTheme() {
 	ser.col = theme.Color(ser.colName)
-	ser.colFaded = style.MakeFaded(ser.col, 0.3)
+	ser.colFaded = style.MakeFaded(ser.col)
 	ser.colDown = theme.Color(ser.colNameDown)
-	ser.colDownFaded = style.MakeFaded(ser.colDown, 0.3)
+	ser.colDownFaded = style.MakeFaded(ser.colDown)
 	ser.colUp = theme.Color(ser.colNameUp)
-	ser.colUpFaded = style.MakeFaded(ser.colUp, 0.3)
+	ser.colUpFaded = style.MakeFaded(ser.colUp)
 	col := ser.col
 	colDown := ser.colDown
 	colUp := ser.colUp

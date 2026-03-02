@@ -307,7 +307,7 @@ func EmptyPointSeries(name string, colName fyne.ThemeColorName) (ser *PointSerie
 		isStacked:           false,
 		sortPoints:          true,
 	}
-	ser.baseSeries = emptyBaseSeries(name, colName, ser.toggleView)
+	ser.baseSeries = emptyBaseSeries(name, colName, ser.toggleView, ser.highlight, ser.unhighlight)
 	return
 }
 
@@ -598,7 +598,7 @@ func (ser *PointSeries) RasterColorPolar(phi float64, r float64, x float64,
 
 func (ser *PointSeries) RefreshTheme() {
 	ser.col = theme.Color(ser.colName)
-	ser.colFaded = style.MakeFaded(ser.col, 0.3)
+	ser.colFaded = style.MakeFaded(ser.col)
 	col := ser.col
 	if ser.isFaded {
 		col = ser.colFaded

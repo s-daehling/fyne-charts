@@ -136,7 +136,7 @@ type BoxSeries struct {
 
 func EmptyBoxSeries(name string, colName fyne.ThemeColorName) (ser *BoxSeries) {
 	ser = &BoxSeries{}
-	ser.baseSeries = emptyBaseSeries(name, colName, ser.toggleView)
+	ser.baseSeries = emptyBaseSeries(name, colName, ser.toggleView, ser.highlight, ser.unhighlight)
 	return
 }
 
@@ -245,7 +245,7 @@ func (ser *BoxSeries) CartesianBoxes(xMin float64, xMax float64, yMin float64,
 
 func (ser *BoxSeries) RefreshTheme() {
 	ser.col = theme.Color(ser.colName)
-	ser.colFaded = style.MakeFaded(ser.col, 0.3)
+	ser.colFaded = style.MakeFaded(ser.col)
 	col := ser.col
 	if ser.isFaded {
 		col = ser.colFaded

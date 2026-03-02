@@ -25,7 +25,8 @@ type baseSeries struct {
 	highlighted bool
 }
 
-func emptyBaseSeries(name string, colName fyne.ThemeColorName, togView func()) (ser baseSeries) {
+func emptyBaseSeries(name string, colName fyne.ThemeColorName, togView func(), highlight func(),
+	unhighlight func()) (ser baseSeries) {
 	ser = baseSeries{
 		name:        name,
 		super:       "",
@@ -33,11 +34,11 @@ func emptyBaseSeries(name string, colName fyne.ThemeColorName, togView func()) (
 		colName:     colName,
 		col:         theme.Color(colName),
 		isFaded:     false,
-		legendEntry: interact.NewLegendEntry(name, "", true, colName, togView),
+		legendEntry: interact.NewLegendEntry(name, "", true, colName, togView, highlight, unhighlight),
 		cont:        nil,
 		highlighted: false,
 	}
-	ser.colFaded = style.MakeFaded(ser.col, 0.3)
+	ser.colFaded = style.MakeFaded(ser.col)
 	return
 }
 
