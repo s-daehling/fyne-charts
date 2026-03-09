@@ -1,6 +1,7 @@
 package interact
 
 import (
+	"image/color"
 	"slices"
 
 	"fyne.io/fyne/v2"
@@ -243,13 +244,13 @@ type LegendEntry struct {
 	style        style.ChartTextStyle
 }
 
-func NewLegendEntry(name string, super string, showBox bool, colName fyne.ThemeColorName,
+func NewLegendEntry(name string, super string, showBox bool, col color.Color,
 	tap func(), highlight func(), unhighlight func()) (le *LegendEntry) {
 	le = &LegendEntry{
 		name:    name,
 		super:   super,
 		showBox: showBox,
-		box:     NewLegendBox(colName, tap, highlight, unhighlight),
+		box:     NewLegendBox(col, tap, highlight, unhighlight),
 		label:   canvas.NewText(name, theme.Color(theme.ColorNameForeground)),
 	}
 	le.label.Resize(le.label.MinSize())
@@ -290,8 +291,8 @@ func (le *LegendEntry) setSubDepiction(indent bool, showSuper bool) {
 	}
 }
 
-func (le *LegendEntry) SetColor(colName fyne.ThemeColorName) {
-	le.box.SetColor(colName)
+func (le *LegendEntry) SetColor(col color.Color) {
+	le.box.SetColor(col)
 }
 
 func (le *LegendEntry) Show() {
@@ -389,25 +390,24 @@ func (ler *legendEntryRenderer) Destroy() {}
 
 type legendBox struct {
 	widget.BaseWidget
-	colName     fyne.ThemeColorName
-	rect        *canvas.Rectangle
-	circle      *canvas.Circle
-	interactive bool
-	tap         func()
-	highlight   func()
-	unhighlight func()
+	col            color.Color
+	rect           *canvas.Rectangle
+	circle         *canvas.Circle
+	interactive    bool
+	serTap         func()
+	serHighlight   func()
+	serUnhighlight func()
 }
 
-func NewLegendBox(colName fyne.ThemeColorName, tap func(), highlight func(), unhighlight func()) *legendBox {
-	col := theme.Color(colName)
+func NewLegendBox(col color.Color, tap func(), highlight func(), unhighlight func()) *legendBox {
 	box := &legendBox{
-		rect:        canvas.NewRectangle(col),
-		circle:      canvas.NewCircle(col),
-		colName:     colName,
-		interactive: true,
-		tap:         tap,
-		highlight:   highlight,
-		unhighlight: unhighlight,
+		rect:           canvas.NewRectangle(col),
+		circle:         canvas.NewCircle(col),
+		col:            col,
+		interactive:    true,
+		serTap:         tap,
+		serHighlight:   highlight,
+		serUnhighlight: unhighlight,
 	}
 	box.circle.Hide()
 	box.ExtendBaseWidget(box)
@@ -421,15 +421,13 @@ func (box *legendBox) CreateRenderer() fyne.WidgetRenderer {
 }
 
 func (box *legendBox) refreshTheme() {
-	box.rect.FillColor = theme.Color(box.colName)
-	box.rect.StrokeColor = theme.Color(theme.ColorNameForeground)
-	box.circle.FillColor = theme.Color(box.colName)
-	box.circle.StrokeColor = theme.Color(theme.ColorNameForeground)
+	box.rect.StrokeColor = theme.Color(theme.ColorNameBackground)
+	box.circle.StrokeColor = theme.Color(theme.ColorNameBackground)
 }
 
 func (box *legendBox) Tapped(_ *fyne.PointEvent) {
-	if box.interactive && box.tap != nil {
-		box.tap()
+	if box.interactive && box.serTap != nil {
+		box.serTap()
 	}
 }
 
@@ -446,8 +444,8 @@ func (box *legendBox) MouseIn(me *desktop.MouseEvent) {
 	box.rect.Refresh()
 	// box.circle.FillColor = color.RGBA64{R: uint16(float32(r+rb) * 0.5), G: uint16(float32(g+gb) * 0.5), B: uint16(float32(b+bb) * 0.5), A: uint16(a)}
 	box.circle.Refresh()
-	if box.highlight != nil {
-		box.highlight()
+	if box.serHighlight != nil {
+		box.serHighlight()
 	}
 }
 
@@ -464,14 +462,13 @@ func (box *legendBox) MouseOut() {
 	box.rect.Refresh()
 	// box.circle.FillColor = col
 	box.circle.Refresh()
-	if box.unhighlight != nil {
-		box.unhighlight()
+	if box.serUnhighlight != nil {
+		box.serUnhighlight()
 	}
 }
 
-func (box *legendBox) SetColor(colName fyne.ThemeColorName) {
-	box.colName = colName
-	col := theme.Color(box.colName)
+func (box *legendBox) SetColor(col color.Color) {
+	box.col = col
 	box.rect.FillColor = col
 	box.rect.Refresh()
 	box.circle.FillColor = col

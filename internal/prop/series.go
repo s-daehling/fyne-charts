@@ -84,7 +84,7 @@ func emptyProportionPoint(c string, colName fyne.ThemeColorName, ser *Series) (p
 		colName: colName,
 		col:     theme.Color(colName),
 	}
-	point.legendEntry = interact.NewLegendEntry(c, ser.name, true, colName, point.toggleView, nil, nil)
+	point.legendEntry = interact.NewLegendEntry(c, ser.name, true, point.col, point.toggleView, nil, nil)
 	if ser.showText {
 		point.text = canvas.NewText("", theme.Color(theme.ColorNameForeground))
 	}
@@ -239,7 +239,7 @@ func EmptyProportionalSeries(name string) (ser *Series) {
 		showText: true,
 	}
 	ser.SetValTextStyle(style.DefaultValueTextStyle())
-	ser.legendEntry = interact.NewLegendEntry(name, "", false, theme.ColorNameForeground, ser.toggleView, nil, nil)
+	ser.legendEntry = interact.NewLegendEntry(name, "", false, theme.Color(theme.ColorNameForeground), ser.toggleView, nil, nil)
 	return
 }
 

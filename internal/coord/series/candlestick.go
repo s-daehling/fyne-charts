@@ -210,6 +210,7 @@ func (ser *CandleStickSeries) RefreshTheme() {
 	for i := range ser.data {
 		ser.data[i].setColor(col, colDown, colUp)
 	}
+	ser.legendEntry.SetColor(col)
 }
 
 func (ser *CandleStickSeries) FadeUnhighlighted() {

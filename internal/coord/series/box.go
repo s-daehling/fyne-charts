@@ -253,6 +253,7 @@ func (ser *BoxSeries) RefreshTheme() {
 	for i := range ser.data {
 		ser.data[i].setColor(col)
 	}
+	ser.legendEntry.SetColor(col)
 }
 
 // setWidth sets width of boxes for this series
@@ -328,7 +329,7 @@ func (ser *BoxSeries) toggleView() {
 func (ser *BoxSeries) SetColor(colName fyne.ThemeColorName) {
 	ser.colName = colName
 	ser.col = theme.Color(ser.colName)
-	ser.legendEntry.SetColor(colName)
+	ser.legendEntry.SetColor(ser.col)
 	for i := range ser.data {
 		ser.data[i].setColor(ser.col)
 		ser.data[i].refresh()

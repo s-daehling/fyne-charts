@@ -156,30 +156,6 @@ func TestCandleStickDeleteTemporalData(t *testing.T) {
 	}
 }
 
-func TestCandleStickEdges(t *testing.T) {
-	app.New()
-	var tests = []struct {
-		input    []data.NumericalCandleStick
-		xMin     float64
-		xMax     float64
-		yMin     float64
-		yMax     float64
-		expEdges int
-	}{
-		{nCandleStickTestSet, -1001, -999, -1001, -999, 2},
-		{nCandleStickTestSet, -1000, 1000, -1000, 1000, 0},
-	}
-	for i, tt := range tests {
-		app.New()
-		ser := EmptyCandleStickSeries("test")
-		ser.AddNumericalData(tt.input)
-		cns := ser.CartesianEdges(tt.xMin, tt.xMax, tt.yMin, tt.yMax)
-		if len(cns) != tt.expEdges {
-			t.Errorf("wrong number of edges, set %d, num %d, exp %d", i, len(cns), tt.expEdges)
-		}
-	}
-}
-
 func TestCandleStickRects(t *testing.T) {
 	app.New()
 	var tests = []struct {
@@ -197,7 +173,7 @@ func TestCandleStickRects(t *testing.T) {
 		app.New()
 		ser := EmptyCandleStickSeries("test")
 		ser.AddNumericalData(tt.input)
-		cns := ser.CartesianBars(tt.xMin, tt.xMax, tt.yMin, tt.yMax)
+		cns := ser.CartesianCandles(tt.xMin, tt.xMax, tt.yMin, tt.yMax)
 		if len(cns) != tt.expRects {
 			t.Errorf("wrong number of rects, set %d, num %d, exp %d", i, len(cns), tt.expRects)
 		}

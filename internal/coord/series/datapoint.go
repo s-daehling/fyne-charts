@@ -606,6 +606,7 @@ func (ser *PointSeries) RefreshTheme() {
 	for i := range ser.data {
 		ser.data[i].setColor(col)
 	}
+	ser.legendEntry.SetColor(col)
 }
 
 func (ser *PointSeries) IsPartOfChartRaster() (b bool) {
@@ -731,7 +732,7 @@ func (ser *PointSeries) toggleView() {
 func (ser *PointSeries) SetColor(colName fyne.ThemeColorName) {
 	ser.colName = colName
 	ser.col = theme.Color(ser.colName)
-	ser.legendEntry.SetColor(colName)
+	ser.legendEntry.SetColor(ser.col)
 	for i := range ser.data {
 		ser.data[i].setColor(ser.col)
 		ser.data[i].refresh()

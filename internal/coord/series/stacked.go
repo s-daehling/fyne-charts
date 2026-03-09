@@ -164,6 +164,7 @@ func (ser *StackedSeries) RefreshTheme() {
 	for i := range ser.stack {
 		ser.stack[i].RefreshTheme()
 	}
+	ser.legendEntry.SetColor(ser.col)
 }
 
 // setWidthAndOffset sets width of bars and offset from x coordinate for this series

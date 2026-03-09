@@ -34,7 +34,7 @@ func emptyBaseSeries(name string, colName fyne.ThemeColorName, togView func(), h
 		colName:     colName,
 		col:         theme.Color(colName),
 		isFaded:     false,
-		legendEntry: interact.NewLegendEntry(name, "", true, colName, togView, highlight, unhighlight),
+		legendEntry: interact.NewLegendEntry(name, "", true, theme.Color(colName), togView, highlight, unhighlight),
 		cont:        nil,
 		highlighted: false,
 	}

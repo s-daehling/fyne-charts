@@ -266,31 +266,6 @@ func TestBoxNodes(t *testing.T) {
 	}
 }
 
-func TestBoxEdges(t *testing.T) {
-	app.New()
-	var tests = []struct {
-		input    []data.NumericalBox
-		xMin     float64
-		xMax     float64
-		yMin     float64
-		yMax     float64
-		expEdges int
-	}{
-		{nBoxTestSet, -1001, -999, -1001, -999, 5},
-		{nBoxTestSet, -1000, 1000, -1000, 1000, 20},
-		{nBoxTestSet, -1000, 1000, -1000, 1005, 25},
-	}
-	for i, tt := range tests {
-		app.New()
-		ser := EmptyBoxSeries("test", theme.ColorNameBackground)
-		ser.AddNumericalData(tt.input)
-		cns := ser.CartesianEdges(tt.xMin, tt.xMax, tt.yMin, tt.yMax)
-		if len(cns) != tt.expEdges {
-			t.Errorf("wrong number of edges, set %d, num %d, exp %d", i, len(cns), tt.expEdges)
-		}
-	}
-}
-
 func TestBoxRects(t *testing.T) {
 	app.New()
 	var tests = []struct {
@@ -309,7 +284,7 @@ func TestBoxRects(t *testing.T) {
 		app.New()
 		ser := EmptyBoxSeries("test", theme.ColorNameBackground)
 		ser.AddNumericalData(tt.input)
-		cns := ser.CartesianBars(tt.xMin, tt.xMax, tt.yMin, tt.yMax)
+		cns := ser.CartesianBoxes(tt.xMin, tt.xMax, tt.yMin, tt.yMax)
 		if len(cns) != tt.expRects {
 			t.Errorf("wrong number of rects, set %d, num %d, exp %d", i, len(cns), tt.expRects)
 		}
