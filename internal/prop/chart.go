@@ -76,7 +76,7 @@ func EmptyBaseChart(pType PlaneType) (base *BaseChart) {
 		base.area = nil
 		base.fromMax = 100
 	} else {
-		base.area = elements.NewArea(base.PixelGenPolar)
+		base.area = elements.NewArea(base.PixelGenPolar, nil)
 		base.fromMax = 2 * math.Pi
 	}
 	base.ExtendBaseWidget(base)

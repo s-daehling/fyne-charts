@@ -134,6 +134,18 @@ func (point *dataPoint) unhighlight() {
 	point.ser.unhighlight()
 }
 
+func (point *dataPoint) checkIfHoveringPolarBar(phi float64, r float64) {
+	if point.showBar && phi > point.n+point.nBarShift-(point.nBarWidth/2) &&
+		phi < point.n+point.nBarShift+(point.nBarWidth/2) &&
+		r > point.valBase && r < point.val+point.valBase {
+		if !point.highlighted {
+			point.highlight()
+		}
+	} else if point.highlighted {
+		point.unhighlight()
+	}
+}
+
 func (point *dataPoint) cartesianDots(xMin float64, xMax float64, yMin float64,
 	yMax float64) (ns []*elements.Dot) {
 	if !point.showDot || point.n < xMin || point.n > xMax || point.val < yMin || point.val > yMax {
@@ -594,6 +606,18 @@ func (ser *PointSeries) RasterColorPolar(phi float64, r float64, x float64,
 		}
 	}
 	return
+}
+
+func (ser *PointSeries) Hover(n float64, val float64) {
+	if ser.cont == nil {
+		return
+	}
+	if !ser.cont.IsPolar() || !ser.showBar {
+		return
+	}
+	for i := range ser.data {
+		ser.data[i].checkIfHoveringPolarBar(n, val)
+	}
 }
 
 func (ser *PointSeries) RefreshTheme() {

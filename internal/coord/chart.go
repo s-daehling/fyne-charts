@@ -107,13 +107,13 @@ func EmptyBaseChart(pType PlaneType, fType FromType) (base *BaseChart) {
 	if pType == CartesianPlane {
 		base.fromAx = axis.EmptyAxis("", axis.CartesianHorAxis)
 		base.toAx = axis.EmptyAxis("", axis.CartesianVertAxis)
-		base.area = elements.NewArea(base.PixelGenCartesian)
+		base.area = elements.NewArea(base.PixelGenCartesian, base.MouseMove)
 		base.vLabelCont.Add(base.toAx.Label())
 		base.hLabelCont.Add(base.fromAx.Label())
 	} else {
 		base.fromAx = axis.EmptyAxis("", axis.PolarPhiAxis)
 		base.toAx = axis.EmptyAxis("", axis.PolarRAxis)
-		base.area = elements.NewArea(base.PixelGenPolar)
+		base.area = elements.NewArea(base.PixelGenPolar, base.MouseMove)
 		base.vLabelCont.Add(base.fromAx.Label())
 		base.hLabelCont.Add(base.toAx.Label())
 	}
@@ -433,36 +433,11 @@ func (base *BaseChart) MouseIn(pX, pY, w, h, absX, absY float32) {
 
 func (base *BaseChart) MouseMove(pX, pY, w, h, absX, absY float32) {
 	if base.planeType == CartesianPlane {
-		x, y, _ := base.PositionToCartesianCoordinates(pX, pY, w, h)
-		c := base.tooltip.MouseMove(pX, pY)
-		if c > 3 {
-			text := ""
-			switch base.fromType {
-			case Numerical:
-				text = fmt.Sprintf("x: %s, y: %s", strconv.FormatFloat(x, 'f', base.fromAx.NTipPrecision(), 64), strconv.FormatFloat(y, 'f', base.toAx.NTipPrecision(), 64))
-			case Temporal:
-				text = fmt.Sprintf("t: %s, y: %s", base.fromAx.NtoT(x).Format(base.fromAx.TTipFormat()), strconv.FormatFloat(y, 'f', base.toAx.NTipPrecision(), 64))
-			case Categorical:
-				text = fmt.Sprintf("c: %s, y: %s", base.fromAx.NtoC(x), strconv.FormatFloat(y, 'f', base.toAx.NTipPrecision(), 64))
-			}
-			base.tooltip.SetEntries([]string{text})
-			base.Refresh()
-		}
+
 	} else {
 		phi, r, _, _, _ := base.PositionToPolarCoordinates(pX, pY, w, h)
-		c := base.tooltip.MouseMove(pX, pY)
-		if c > 3 {
-			text := ""
-			switch base.fromType {
-			case Numerical:
-				text = fmt.Sprintf("phi: %s, r: %s", strconv.FormatFloat(phi, 'f', base.fromAx.NTipPrecision(), 64), strconv.FormatFloat(r, 'f', base.toAx.NTipPrecision(), 64))
-			case Temporal:
-				text = fmt.Sprintf("t: %s, r: %s", base.fromAx.NtoT(phi).Format(base.fromAx.TTipFormat()), strconv.FormatFloat(r, 'f', base.toAx.NTipPrecision(), 64))
-			case Categorical:
-				text = fmt.Sprintf("c: %s, r: %s", base.fromAx.NtoC(phi), strconv.FormatFloat(r, 'f', base.toAx.NTipPrecision(), 64))
-			}
-			base.tooltip.SetEntries([]string{text})
-			base.Refresh()
+		for i := range base.areaSeries {
+			base.areaSeries[i].Hover(phi, r)
 		}
 	}
 }

@@ -164,9 +164,7 @@ func (ser *baseSeries) FadeUnhighlighted() {}
 
 func (ser *baseSeries) UnFade() {}
 
-func (ser *baseSeries) Hover(n float64, val float64) (text string) {
-	return
-}
+func (ser *baseSeries) Hover(n float64, val float64) {}
 
 type Series interface {
 	// LegendEntries() (les []*interact.LegendEntry)
@@ -197,7 +195,7 @@ type Series interface {
 	RefreshTheme()
 	FadeUnhighlighted()
 	UnFade()
-	Hover(n float64, val float64) (text string)
+	Hover(n float64, val float64)
 }
 
 type container interface {

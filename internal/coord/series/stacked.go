@@ -159,6 +159,17 @@ func (ser *StackedSeries) IsPartOfChartRaster() (b bool) {
 	return
 }
 
+func (ser *StackedSeries) Hover(n float64, val float64) {
+	if ser.cont == nil {
+		return
+	}
+	if ser.cont.IsPolar() {
+		for i := range ser.stack {
+			ser.stack[i].Hover(n, val)
+		}
+	}
+}
+
 func (ser *StackedSeries) RefreshTheme() {
 	ser.col = theme.Color(ser.colName)
 	for i := range ser.stack {
