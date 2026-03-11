@@ -612,7 +612,7 @@ func (ser *PointSeries) Hover(n float64, val float64) {
 	if ser.cont == nil {
 		return
 	}
-	if !ser.cont.IsPolar() || !ser.showBar {
+	if !ser.cont.IsPolar() || !ser.showBar || ser.isFaded {
 		return
 	}
 	for i := range ser.data {

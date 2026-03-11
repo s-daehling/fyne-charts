@@ -244,27 +244,6 @@ func (r *Cartesian) Layout(size fyne.Size) {
 		rs.Move(fyne.NewPos(area.minPos.X, area.maxPos.Y))
 		rs.Resize(fyne.NewSize(area.maxPos.X-area.minPos.X, area.minPos.Y-area.maxPos.Y))
 	}
-
-	// place tooltip
-	tt := r.chart.Tooltip()
-	ttWidth, ttHeigth := tooltipSize(tt.Entries)
-	ttPos := fyne.NewPos(area.minPos.X, area.maxPos.Y).AddXY(tt.X, tt.Y).SubtractXY(ttWidth+5, ttHeigth)
-	if tt.Box != nil {
-		tt.Box.Move(ttPos.SubtractXY(5, 0))
-		tt.Box.Resize(fyne.NewSize(ttWidth+10, ttHeigth))
-	}
-	for i := range tt.Entries {
-		tt.Entries[i].Move(ttPos)
-		tt.Entries[i].Alignment = fyne.TextAlignLeading
-		ttPos = ttPos.AddXY(0, tt.Entries[i].MinSize().Height)
-	}
-
-	// place overlay
-	ov := r.chart.Overlay()
-	if ov != nil {
-		ov.Move(fyne.NewPos(area.minPos.X, area.maxPos.Y))
-		ov.Resize(fyne.NewSize(area.maxPos.X-area.minPos.X, area.minPos.Y-area.maxPos.Y))
-	}
 }
 
 // MinSize calculates the minimum space required to display the chart

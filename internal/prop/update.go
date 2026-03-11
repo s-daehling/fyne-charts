@@ -55,3 +55,17 @@ func (base *BaseChart) ptoN(p float64) (n float64) {
 	n = p * base.fromMax
 	return
 }
+
+func (base *BaseChart) Highlight() {
+	for i := range base.series {
+		base.series[i].fadeUnhighlighted()
+	}
+	base.Refresh()
+}
+
+func (base *BaseChart) Unhighlight() {
+	for i := range base.series {
+		base.series[i].unFade()
+	}
+	base.Refresh()
+}

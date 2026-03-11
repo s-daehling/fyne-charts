@@ -194,11 +194,6 @@ func (base *BaseChart) Area() (rs *elements.Area) {
 	return
 }
 
-func (base *BaseChart) Overlay() (io *interact.Overlay) {
-	io = nil
-	return
-}
-
 func (base *BaseChart) SetLegendStyle(loc style.LegendLocation, ls style.ChartTextStyle, interactive bool) {
 	base.legend.SetStyle(loc, ls, interactive)
 	base.lLegendCont.RemoveAll()
@@ -223,10 +218,6 @@ func (base *BaseChart) ShowLegend() {
 
 func (base *BaseChart) HideLegend() {
 	base.legend.Hide()
-}
-
-func (base *BaseChart) Tooltip() (tt renderer.Tooltip) {
-	return
 }
 
 func (base *BaseChart) SetTitle(l string) {

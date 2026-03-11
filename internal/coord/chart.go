@@ -1,10 +1,8 @@
 package coord
 
 import (
-	"fmt"
 	"image/color"
 	"math"
-	"strconv"
 
 	"github.com/s-daehling/fyne-charts/internal/coord/axis"
 	"github.com/s-daehling/fyne-charts/internal/coord/series"
@@ -42,14 +40,11 @@ type BaseChart struct {
 	fromAx            *axis.Axis
 	toAx              *axis.Axis
 	series            []series.Series
-	overlay           *interact.Overlay
-	tooltip           *interact.Tooltip
 	changed           bool
 	autoFromRange     bool
 	autoToRange       bool
 	autoOrigin        bool
 	legend            *interact.Legend
-	tooltipVisible    bool
 	planeType         PlaneType
 	transposed        bool
 	fromType          FromType
@@ -70,13 +65,11 @@ type BaseChart struct {
 func EmptyBaseChart(pType PlaneType, fType FromType) (base *BaseChart) {
 	base = &BaseChart{
 		title:             canvas.NewText("", theme.Color(theme.ColorNameForeground)),
-		tooltip:           interact.NewTooltip(),
 		changed:           false,
 		autoFromRange:     true,
 		autoToRange:       true,
 		autoOrigin:        true,
 		legend:            interact.NewLegend(),
-		tooltipVisible:    false,
 		planeType:         pType,
 		transposed:        false,
 		fromType:          fType,
@@ -101,7 +94,6 @@ func EmptyBaseChart(pType PlaneType, fType FromType) (base *BaseChart) {
 			base.vLabelCont),
 		base.rLegendCont,
 		base)
-	base.overlay = interact.NewOverlay(base)
 	base.hLabelLeftSpacer.SetMinSize(fyne.NewSize(0, 0))
 	base.hLabelRightSpacer.SetMinSize(fyne.NewSize(0, 0))
 	if pType == CartesianPlane {
@@ -204,19 +196,6 @@ func (base *BaseChart) CartesianObjects() (canObj []fyne.CanvasObject) {
 	canObj = append(canObj, base.fromAx.Objects()...)
 	canObj = append(canObj, base.toAx.Objects()...)
 
-	if base.tooltipVisible {
-		// add tooltip
-		tt := base.Tooltip()
-		if tt.Box != nil {
-			canObj = append(canObj, tt.Box)
-		}
-		for i := range tt.Entries {
-			canObj = append(canObj, tt.Entries[i])
-		}
-
-		// add overlay
-		canObj = append(canObj, base.overlay)
-	}
 	return
 }
 
@@ -296,19 +275,6 @@ func (base *BaseChart) PolarObjects() (canObj []fyne.CanvasObject) {
 	canObj = append(canObj, base.fromAx.Objects()...)
 	canObj = append(canObj, base.toAx.Objects()...)
 
-	if base.tooltipVisible {
-		// add tooltip
-		tt := base.Tooltip()
-		if tt.Box != nil {
-			canObj = append(canObj, tt.Box)
-		}
-		for i := range tt.Entries {
-			canObj = append(canObj, tt.Entries[i])
-		}
-
-		// add overlay
-		canObj = append(canObj, base.overlay)
-	}
 	return
 }
 
@@ -344,11 +310,6 @@ func (base *BaseChart) Area() (rs *elements.Area) {
 	return
 }
 
-func (base *BaseChart) Overlay() (io *interact.Overlay) {
-	io = base.overlay
-	return
-}
-
 func (base *BaseChart) SetLegendStyle(loc style.LegendLocation, ls style.ChartTextStyle, interactive bool) {
 	base.legend.SetStyle(loc, ls, interactive)
 	base.lLegendCont.RemoveAll()
@@ -376,11 +337,6 @@ func (base *BaseChart) HideLegend() {
 	base.legend.Hide()
 }
 
-func (base *BaseChart) Tooltip() (tt renderer.Tooltip) {
-	tt.X, tt.Y, tt.Entries, tt.Box = base.tooltip.GetEntries()
-	return
-}
-
 func (base *BaseChart) SetTitle(l string) {
 	base.title.Text = l
 	if l == "" && !base.title.Hidden {
@@ -400,37 +356,6 @@ func (base *BaseChart) SetTitleStyle(ts style.ChartTextStyle) {
 	base.title.Refresh()
 }
 
-func (base *BaseChart) MouseIn(pX, pY, w, h, absX, absY float32) {
-	if base.planeType == CartesianPlane {
-		x, y, _ := base.PositionToCartesianCoordinates(pX, pY, w, h)
-		base.tooltip.MouseIn(pX, pY)
-		text := ""
-		switch base.fromType {
-		case Numerical:
-			text = fmt.Sprintf("x: %s, y: %s", strconv.FormatFloat(x, 'f', base.fromAx.NTipPrecision(), 64), strconv.FormatFloat(y, 'f', base.toAx.NTipPrecision(), 64))
-		case Temporal:
-			text = fmt.Sprintf("t: %s, y: %s", base.fromAx.NtoT(x).Format(base.fromAx.TTipFormat()), strconv.FormatFloat(y, 'f', base.toAx.NTipPrecision(), 64))
-		case Categorical:
-			text = fmt.Sprintf("c: %s, y: %s", base.fromAx.NtoC(x), strconv.FormatFloat(y, 'f', base.toAx.NTipPrecision(), 64))
-		}
-		base.tooltip.SetEntries([]string{text})
-	} else {
-		phi, r, _, _, _ := base.PositionToPolarCoordinates(pX, pY, w, h)
-		base.tooltip.MouseIn(pX, pY)
-		text := ""
-		switch base.fromType {
-		case Numerical:
-			text = fmt.Sprintf("phi: %s, r: %s", strconv.FormatFloat(phi, 'f', base.fromAx.NTipPrecision(), 64), strconv.FormatFloat(r, 'f', base.toAx.NTipPrecision(), 64))
-		case Temporal:
-			text = fmt.Sprintf("t: %s, r: %s", base.fromAx.NtoT(phi).Format(base.fromAx.TTipFormat()), strconv.FormatFloat(r, 'f', base.toAx.NTipPrecision(), 64))
-		case Categorical:
-			text = fmt.Sprintf("c: %s, r: %s", base.fromAx.NtoC(phi), strconv.FormatFloat(r, 'f', base.toAx.NTipPrecision(), 64))
-		}
-		base.tooltip.SetEntries([]string{text})
-	}
-	base.Refresh()
-}
-
 func (base *BaseChart) MouseMove(pX, pY, w, h, absX, absY float32) {
 	if base.planeType == CartesianPlane {
 
@@ -440,11 +365,6 @@ func (base *BaseChart) MouseMove(pX, pY, w, h, absX, absY float32) {
 			base.areaSeries[i].Hover(phi, r)
 		}
 	}
-}
-
-func (base *BaseChart) MouseOut() {
-	base.tooltip.MouseOut()
-	base.Refresh()
 }
 
 func (base *BaseChart) PixelGenCartesian(pX, pY, w, h int) (col color.Color) {

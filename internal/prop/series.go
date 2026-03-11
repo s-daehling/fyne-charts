@@ -12,6 +12,7 @@ import (
 	"github.com/s-daehling/fyne-charts/internal/elements"
 	"github.com/s-daehling/fyne-charts/internal/interact"
 
+	intstyle "github.com/s-daehling/fyne-charts/internal/style"
 	"github.com/s-daehling/fyne-charts/pkg/data"
 	"github.com/s-daehling/fyne-charts/pkg/style"
 )
@@ -71,20 +72,26 @@ type proportionPoint struct {
 	visible     bool
 	colName     fyne.ThemeColorName
 	col         color.Color
+	colFaded    color.Color
 	legendEntry *interact.LegendEntry
+	highlighted bool
+	isFaded     bool
 	ser         *Series
 }
 
 func emptyProportionPoint(c string, colName fyne.ThemeColorName, ser *Series) (point *proportionPoint) {
 	point = &proportionPoint{
-		c:       c,
-		bar:     elements.NewBar(theme.Color(colName), nil, nil),
-		visible: true,
-		ser:     ser,
-		colName: colName,
-		col:     theme.Color(colName),
+		c:           c,
+		visible:     true,
+		ser:         ser,
+		colName:     colName,
+		col:         theme.Color(colName),
+		highlighted: false,
+		isFaded:     false,
 	}
-	point.legendEntry = interact.NewLegendEntry(c, ser.name, true, point.col, point.toggleView, nil, nil)
+	point.colFaded = intstyle.MakeFaded(point.col)
+	point.bar = elements.NewBar(theme.Color(colName), point.highlight, point.unhighlight)
+	point.legendEntry = interact.NewLegendEntry(c, ser.name, true, point.col, point.toggleView, point.highlight, point.unhighlight)
 	if ser.showText {
 		point.text = canvas.NewText("", theme.Color(theme.ColorNameForeground))
 	}
@@ -140,9 +147,36 @@ func (point *proportionPoint) setTextStyle(ts style.ChartTextStyle) {
 
 func (point *proportionPoint) refreshTheme() {
 	point.col = theme.Color(point.colName)
+	point.colFaded = intstyle.MakeFaded(point.col)
+	col := point.col
+	if point.isFaded {
+		col = point.colFaded
+	}
 	point.text.Color = theme.Color(point.textStyle.ColorName)
 	point.text.TextSize = theme.Size(point.textStyle.SizeName)
-	point.bar.SetColor(point.col)
+	point.bar.SetColor(col)
+	point.legendEntry.SetColor(col)
+}
+
+func (point *proportionPoint) highlight() {
+	point.highlighted = true
+	point.ser.highlight()
+}
+
+func (point *proportionPoint) unhighlight() {
+	point.highlighted = false
+	point.ser.unhighlight()
+}
+
+func (point *proportionPoint) fadeUnhighlighted() {
+	if point.highlighted {
+		return
+	}
+	point.isFaded = true
+}
+
+func (point *proportionPoint) unFade() {
+	point.isFaded = false
 }
 
 func (point *proportionPoint) cartesianBars(xMin float64, xMax float64, yMin float64,
@@ -367,6 +401,30 @@ func (ser *Series) toggleView() {
 		if ser.chart.IsPolar() {
 			ser.chart.RasterVisibilityChange()
 		}
+	}
+}
+
+func (ser *Series) fadeUnhighlighted() {
+	for i := range ser.data {
+		ser.data[i].fadeUnhighlighted()
+	}
+}
+
+func (ser *Series) unFade() {
+	for i := range ser.data {
+		ser.data[i].unFade()
+	}
+}
+
+func (ser *Series) highlight() {
+	if ser.chart != nil {
+		ser.chart.Highlight()
+	}
+}
+
+func (ser *Series) unhighlight() {
+	if ser.chart != nil {
+		ser.chart.Unhighlight()
 	}
 }
 
