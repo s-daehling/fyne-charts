@@ -76,7 +76,7 @@ func EmptyBaseChart(pType PlaneType) (base *BaseChart) {
 		base.area = nil
 		base.fromMax = 100
 	} else {
-		base.area = elements.NewArea(base.PixelGenPolar, nil)
+		base.area = elements.NewArea(base.PixelGenPolar, base.MouseMove)
 		base.fromMax = 2 * math.Pi
 	}
 	base.ExtendBaseWidget(base)
@@ -259,8 +259,19 @@ func (base *BaseChart) ToAxisElements() (min float64, max float64, origin float6
 	return
 }
 
+func (base *BaseChart) MouseMove(pX, pY, w, h, absX, absY float32) {
+	if base.planeType == CartesianPlane {
+
+	} else {
+		phi, r, _, _ := base.PositionToPolarCoordinates(pX, pY, w, h)
+		for i := range base.series {
+			base.series[i].Hover(phi, r)
+		}
+	}
+}
+
 func (base *BaseChart) PixelGenPolar(pX, pY, w, h int) (col color.Color) {
-	phi, r, _, _ := base.PositionToPolarCoordinates(pX, pY, w, h)
+	phi, r, _, _ := base.PositionToPolarCoordinates(float32(pX), float32(pY), float32(w), float32(h))
 	col = color.RGBA{0x00, 0x00, 0x00, 0x00}
 	if r > base.toMax {
 		return
@@ -275,7 +286,7 @@ func (base *BaseChart) PixelGenPolar(pX, pY, w, h int) (col color.Color) {
 	return
 }
 
-func (base *BaseChart) PositionToPolarCoordinates(pX int, pY int, w int, h int) (phi float64,
+func (base *BaseChart) PositionToPolarCoordinates(pX float32, pY float32, w float32, h float32) (phi float64,
 	r float64, x float64, y float64) {
 	rot := 0.0
 	mathPos := true

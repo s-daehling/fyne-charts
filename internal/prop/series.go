@@ -158,6 +158,18 @@ func (point *proportionPoint) refreshTheme() {
 	point.legendEntry.SetColor(col)
 }
 
+func (point *proportionPoint) checkIfHoveringPolarBar(phi float64, r float64) {
+	if phi > point.valOffset &&
+		phi < point.valOffset+point.n &&
+		r > point.hOffset && r < point.hOffset+point.height {
+		if !point.highlighted && !point.isFaded {
+			point.highlight()
+		}
+	} else if point.highlighted {
+		point.unhighlight()
+	}
+}
+
 func (point *proportionPoint) highlight() {
 	point.highlighted = true
 	point.ser.highlight()
@@ -228,7 +240,11 @@ func (point *proportionPoint) RasterColorPolar(phi float64, r float64) (col colo
 		return
 	}
 	useColor = true
-	col = point.col
+	if point.isFaded {
+		col = point.colFaded
+	} else {
+		col = point.col
+	}
 	return
 }
 
@@ -363,6 +379,18 @@ func (ser *Series) PolarTexts(phiMin float64, phiMax float64, rMin float64,
 func (ser *Series) RefreshTheme() {
 	for i := range ser.data {
 		ser.data[i].refreshTheme()
+	}
+}
+
+func (ser *Series) Hover(n float64, val float64) {
+	if ser.chart == nil {
+		return
+	}
+	if !ser.chart.IsPolar() {
+		return
+	}
+	for i := range ser.data {
+		ser.data[i].checkIfHoveringPolarBar(n, val)
 	}
 }
 
