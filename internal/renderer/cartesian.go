@@ -13,6 +13,7 @@ type CartesianChart interface {
 	CartesianBoxes() (bs []*elements.Box)
 	CartesianCandles() (cs []*elements.Candle)
 	CartesianTexts() (ts []elements.Label)
+	CartesianLabels() (ls []*elements.ValueLabel)
 	CartesianObjects() (obj []fyne.CanvasObject)
 	CartesianOrientation() (trans bool)
 }
@@ -235,6 +236,33 @@ func (r *Cartesian) Layout(size fyne.Size) {
 			tPos = tPos.SubtractXY(0, ts[i].Text.MinSize().Height/2)
 			ts[i].Text.Move(tPos)
 			ts[i].Text.Alignment = fyne.TextAlignCenter
+		}
+	}
+
+	// place labels
+	ls := r.chart.CartesianLabels()
+	for i := range ls {
+		ls[i].Resize(ls[i].MinSize())
+		if r.transposed {
+			xShift := float32(0)
+			if ls[i].Val > hOrigin {
+				xShift = 4
+			} else {
+				xShift = -ls[i].Size().Width - 4
+			}
+			lPos := cartesianCoordinatesToPosition(ls[i].Val, ls[i].N, area)
+			lPos = lPos.SubtractXY(-xShift, ls[i].MinSize().Height/2)
+			ls[i].Move(lPos)
+		} else {
+			yShift := float32(0)
+			if ls[i].Val > vOrigin {
+				yShift = -ls[i].Size().Height - 4
+			} else {
+				yShift = 4
+			}
+			lPos := cartesianCoordinatesToPosition(ls[i].N, ls[i].Val, area)
+			lPos = lPos.SubtractXY(ls[i].MinSize().Width/2, -yShift)
+			ls[i].Move(lPos)
 		}
 	}
 

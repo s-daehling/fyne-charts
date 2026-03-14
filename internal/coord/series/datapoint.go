@@ -5,6 +5,7 @@ import (
 	"image/color"
 	"math"
 	"sort"
+	"strconv"
 	"time"
 
 	"github.com/s-daehling/fyne-charts/internal/elements"
@@ -35,6 +36,7 @@ type dataPoint struct {
 	fromValBase         *canvas.Line
 	fromPrev            *canvas.Line
 	bar                 *elements.Bar
+	label               *elements.ValueLabel
 	col                 color.Color
 	showDot             bool
 	showFromValBaseLine bool
@@ -49,6 +51,7 @@ func emptyDataPoint(col color.Color, showDot bool, showFromBase bool, showFromPr
 	point = &dataPoint{
 		fromValBase:         canvas.NewLine(col),
 		fromPrev:            canvas.NewLine(col),
+		label:               elements.NewValueLabel(),
 		col:                 col,
 		showDot:             showDot,
 		showFromValBaseLine: showFromBase,
@@ -269,6 +272,23 @@ func (point *dataPoint) cartesianBars(xMin float64, xMax float64, yMin float64,
 	point.bar.N2 = point.n + point.nBarShift + (point.nBarWidth / 2)
 	point.bar.Val2 = math.Min(math.Max(point.valBase, point.valBase+point.val), yMax)
 	rs = append(rs, point.bar)
+	return
+}
+
+func (point *dataPoint) cartesianLabels(xMin float64, xMax float64, yMin float64,
+	yMax float64) (ls []*elements.ValueLabel) {
+	if point.highlighted {
+		point.label.N = point.n
+		if point.showBar {
+			point.label.N += point.nBarShift
+		}
+		point.label.Val = point.val
+		if point.showBar {
+			point.label.Val += point.valBase
+		}
+		point.label.SetText(strconv.FormatFloat(point.val, 'f', 0, 64))
+		ls = append(ls, point.label)
+	}
 	return
 }
 
@@ -514,6 +534,14 @@ func (ser *PointSeries) CartesianBars(xMin float64, xMax float64, yMin float64,
 	yMax float64) (fs []*elements.Bar) {
 	for i := range ser.data {
 		fs = append(fs, ser.data[i].cartesianBars(xMin, xMax, yMin, yMax, ser.isStacked)...)
+	}
+	return
+}
+
+func (ser *PointSeries) CartesianLabels(xMin float64, xMax float64, yMin float64,
+	yMax float64) (ls []*elements.ValueLabel) {
+	for i := range ser.data {
+		ls = append(ls, ser.data[i].cartesianLabels(xMin, xMax, yMin, yMax)...)
 	}
 	return
 }

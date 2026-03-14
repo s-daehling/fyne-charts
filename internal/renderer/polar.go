@@ -12,6 +12,7 @@ type PolarChart interface {
 	PolarDots() (ns []*elements.Dot)
 	PolarEdges() (es []elements.Edge)
 	PolarTexts() (ts []elements.Label)
+	PolarLabels() (ls []*elements.ValueLabel)
 	PolarObjects() (obj []fyne.CanvasObject)
 }
 

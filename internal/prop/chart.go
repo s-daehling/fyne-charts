@@ -161,6 +161,10 @@ func (base *BaseChart) CartesianTexts() (ts []elements.Label) {
 	return
 }
 
+func (base *BaseChart) CartesianLabels() (ts []*elements.ValueLabel) {
+	return
+}
+
 func (base *BaseChart) PolarObjects() (canObj []fyne.CanvasObject) {
 	// objects will be drawn in the same order as added here
 
@@ -186,6 +190,10 @@ func (base *BaseChart) PolarTexts() (ts []elements.Label) {
 	for i := range base.series {
 		ts = append(ts, base.series[i].PolarTexts(base.fromMin, base.fromMax, base.toMin, base.toMax)...)
 	}
+	return
+}
+
+func (base *BaseChart) PolarLabels() (ts []*elements.ValueLabel) {
 	return
 }
 
