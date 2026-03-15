@@ -219,6 +219,26 @@ func (r *Polar) Layout(size fyne.Size) {
 		ts[i].Text.Alignment = fyne.TextAlignCenter
 	}
 
+	// place labels
+	ls := r.chart.PolarLabels()
+	for i := range ls {
+		ls[i].Resize(ls[i].MinSize())
+		lPos := polarCoordinatesToPosition(ls[i].N, ls[i].Val+5.0/float64(area.coordToPos), area)
+		aLabelAbs := absAngle(ls[i].N, r.mathPos, r.rot)
+		if aLabelAbs > math.Pi/8 && aLabelAbs < 7*math.Pi/8 {
+			lPos = lPos.AddXY(0, -ls[i].Size().Height)
+		} else if aLabelAbs < math.Pi/8 || aLabelAbs > 15*math.Pi/8 || (aLabelAbs > 7*math.Pi/8 && aLabelAbs < 9*math.Pi/8) {
+			lPos = lPos.AddXY(0, -ls[i].Size().Height/2)
+		}
+		if aLabelAbs < 3*math.Pi/8 || aLabelAbs > 13*math.Pi/8 {
+		} else if aLabelAbs > 5*math.Pi/8 && aLabelAbs < 11*math.Pi/8 {
+			lPos = lPos.AddXY(-ls[i].Size().Width, 0)
+		} else {
+			lPos = lPos.AddXY(-ls[i].Size().Width/2, 0)
+		}
+		ls[i].Move(lPos)
+	}
+
 	// place area
 	rs := r.chart.Area()
 	if rs != nil {

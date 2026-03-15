@@ -246,9 +246,9 @@ func (r *Cartesian) Layout(size fyne.Size) {
 		if r.transposed {
 			xShift := float32(0)
 			if ls[i].Val > hOrigin {
-				xShift = 4
+				xShift = 5
 			} else {
-				xShift = -ls[i].Size().Width - 4
+				xShift = -ls[i].Size().Width - 5
 			}
 			lPos := cartesianCoordinatesToPosition(ls[i].Val, ls[i].N, area)
 			lPos = lPos.SubtractXY(-xShift, ls[i].MinSize().Height/2)
@@ -256,9 +256,9 @@ func (r *Cartesian) Layout(size fyne.Size) {
 		} else {
 			yShift := float32(0)
 			if ls[i].Val > vOrigin {
-				yShift = -ls[i].Size().Height - 4
+				yShift = -ls[i].Size().Height - 5
 			} else {
-				yShift = 4
+				yShift = 5
 			}
 			lPos := cartesianCoordinatesToPosition(ls[i].N, ls[i].Val, area)
 			lPos = lPos.SubtractXY(ls[i].MinSize().Width/2, -yShift)

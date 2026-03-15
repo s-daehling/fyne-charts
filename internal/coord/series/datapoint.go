@@ -277,6 +277,12 @@ func (point *dataPoint) cartesianBars(xMin float64, xMax float64, yMin float64,
 
 func (point *dataPoint) cartesianLabels(xMin float64, xMax float64, yMin float64,
 	yMax float64) (ls []*elements.ValueLabel) {
+	if point.n < xMin || point.n > xMax {
+		return
+	}
+	if point.showDot && (point.val < yMin || point.val > yMax) {
+		return
+	}
 	if point.highlighted {
 		point.label.N = point.n
 		if point.showBar {
@@ -285,6 +291,31 @@ func (point *dataPoint) cartesianLabels(xMin float64, xMax float64, yMin float64
 		point.label.Val = point.val
 		if point.showBar {
 			point.label.Val += point.valBase
+			point.label.Val = math.Max(yMin, math.Min(yMax, point.label.Val))
+		}
+		point.label.SetText(strconv.FormatFloat(point.val, 'f', 0, 64))
+		ls = append(ls, point.label)
+	}
+	return
+}
+
+func (point *dataPoint) polarLabels(phiMin float64, phiMax float64, rMin float64,
+	rMax float64) (ls []*elements.ValueLabel) {
+	if point.n < phiMin || point.n > phiMax {
+		return
+	}
+	if point.showDot && (point.val < rMin || point.val > rMax) {
+		return
+	}
+	if point.highlighted {
+		point.label.N = point.n
+		if point.showBar {
+			point.label.N += point.nBarShift
+		}
+		point.label.Val = point.val
+		if point.showBar {
+			point.label.Val += point.valBase
+			point.label.Val = math.Max(rMin, math.Min(rMax, point.label.Val))
 		}
 		point.label.SetText(strconv.FormatFloat(point.val, 'f', 0, 64))
 		ls = append(ls, point.label)
@@ -594,6 +625,14 @@ func (ser *PointSeries) PolarEdges(phiMin float64, phiMax float64, rMin float64,
 			es = append(es, ser.data[i].polarEdges(false, ser.data[i-1].n, ser.data[i-1].val,
 				phiMin, phiMax, rMin, rMax)...)
 		}
+	}
+	return
+}
+
+func (ser *PointSeries) PolarLabels(xMin float64, xMax float64, yMin float64,
+	yMax float64) (ls []*elements.ValueLabel) {
+	for i := range ser.data {
+		ls = append(ls, ser.data[i].polarLabels(xMin, xMax, yMin, yMax)...)
 	}
 	return
 }

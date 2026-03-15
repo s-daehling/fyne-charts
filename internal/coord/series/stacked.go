@@ -139,6 +139,14 @@ func (ser *StackedSeries) CartesianLabels(xMin float64, xMax float64, yMin float
 	return
 }
 
+func (ser *StackedSeries) PolarLabels(xMin float64, xMax float64, yMin float64,
+	yMax float64) (ls []*elements.ValueLabel) {
+	for i := range ser.stack {
+		ls = append(ls, ser.stack[i].PolarLabels(xMin, xMax, yMin, yMax)...)
+	}
+	return
+}
+
 func (ser *StackedSeries) RasterColorPolar(phi float64, r float64, x float64, y float64) (col color.Color) {
 	col = ser.baseSeries.RasterColorPolar(phi, r, x, y)
 	if !ser.visible || r > ser.valMax {
