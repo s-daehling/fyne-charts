@@ -293,7 +293,11 @@ func (point *dataPoint) cartesianLabels(xMin float64, xMax float64, yMin float64
 			point.label.Val += point.valBase
 			point.label.Val = math.Max(yMin, math.Min(yMax, point.label.Val))
 		}
-		point.label.SetText(strconv.FormatFloat(point.val, 'f', 0, 64))
+		prec := 1
+		if point.ser != nil && point.ser.cont != nil {
+			prec += point.ser.cont.ToPrecision()
+		}
+		point.label.SetText(strconv.FormatFloat(point.val, 'f', prec, 64))
 		ls = append(ls, point.label)
 	}
 	return
@@ -317,7 +321,11 @@ func (point *dataPoint) polarLabels(phiMin float64, phiMax float64, rMin float64
 			point.label.Val += point.valBase
 			point.label.Val = math.Max(rMin, math.Min(rMax, point.label.Val))
 		}
-		point.label.SetText(strconv.FormatFloat(point.val, 'f', 0, 64))
+		prec := 1
+		if point.ser != nil && point.ser.cont != nil {
+			prec += point.ser.cont.ToPrecision()
+		}
+		point.label.SetText(strconv.FormatFloat(point.val, 'f', prec, 64))
 		ls = append(ls, point.label)
 	}
 	return

@@ -21,6 +21,7 @@ func (cd chartDummy) AddLegendEntry(le *interact.LegendEntry)     {}
 func (cd chartDummy) RemoveLegendEntry(name string, super string) {}
 func (cd chartDummy) Highlight()                                  {}
 func (cd chartDummy) Unhighlight()                                {}
+func (cd chartDummy) ToPrecision() (orderOfMagn int)       { return }
 
 func testNRange(ser Series, expIsEmpty bool, expMin float64, expMax float64) (err error) {
 	isEmpty, min, max := ser.NRange()

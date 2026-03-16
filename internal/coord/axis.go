@@ -506,6 +506,26 @@ func (base *BaseChart) SetToRange(min float64, max float64) (err error) {
 	return
 }
 
+func (base *BaseChart) ToPrecision() (prec int) {
+	min, max := base.toAx.NRange()
+	r := max - min
+	orderOfMagn := -100
+	// find upper limit for orderOfMagn
+	for {
+		if math.Pow10(orderOfMagn) < r {
+			orderOfMagn++
+		} else {
+			orderOfMagn--
+			break
+		}
+	}
+	prec = -orderOfMagn + 1
+	if prec < 0 {
+		prec = 0
+	}
+	return
+}
+
 // -------------------- to ticks --------------------
 
 func (base *BaseChart) SetAutoToTicks(autoSupport bool) {

@@ -218,4 +218,5 @@ type container interface {
 	RemoveLegendEntry(name string, super string)
 	Highlight()
 	Unhighlight()
+	ToPrecision() (prec int)
 }

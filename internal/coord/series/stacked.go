@@ -66,6 +66,13 @@ func (ser *StackedSeries) Unhighlight() {
 	}
 }
 
+func (ser *StackedSeries) ToPrecision() (prec int) {
+	if ser.cont != nil {
+		prec = ser.cont.ToPrecision()
+	}
+	return
+}
+
 func (ser *StackedSeries) CRange() (cs []string) {
 	for i := range ser.stack {
 		cats := ser.stack[i].CRange()
