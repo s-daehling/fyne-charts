@@ -149,21 +149,9 @@ func (point *dataPoint) checkIfHoveringPolarBar(phi float64, r float64) {
 	}
 }
 
-func (point *dataPoint) cartesianDots(xMin float64, xMax float64, yMin float64,
-	yMax float64) (ns []*elements.Dot) {
-	if !point.showDot || point.n < xMin || point.n > xMax || point.val < yMin || point.val > yMax {
-		return
-	}
-	point.dot.N = point.n
-	point.dot.Val = point.val
-	ns = append(ns, point.dot)
-	return
-}
-
-func (point *dataPoint) polarDots(phiMin float64, phiMax float64, rMin float64,
-	rMax float64) (ns []*elements.Dot) {
-	if !point.showDot || point.val > rMax || point.val < rMin || point.n < phiMin ||
-		point.n > phiMax {
+func (point *dataPoint) dots(nMin float64, nMax float64, valMin float64,
+	valMax float64) (ns []*elements.Dot) {
+	if !point.showDot || point.n < nMin || point.n > nMax || point.val < valMin || point.val > valMax {
 		return
 	}
 	point.dot.N = point.n
@@ -275,40 +263,12 @@ func (point *dataPoint) cartesianBars(xMin float64, xMax float64, yMin float64,
 	return
 }
 
-func (point *dataPoint) cartesianLabels(xMin float64, xMax float64, yMin float64,
-	yMax float64) (ls []*elements.Label) {
-	if point.n < xMin || point.n > xMax {
+func (point *dataPoint) labels(nMin float64, nMax float64, valMin float64,
+	valMax float64) (ls []*elements.Label) {
+	if point.n < nMin || point.n > nMax {
 		return
 	}
-	if point.showDot && (point.val < yMin || point.val > yMax) {
-		return
-	}
-	if point.highlighted {
-		point.label.N = point.n
-		if point.showBar {
-			point.label.N += point.nBarShift
-		}
-		point.label.Val = point.val
-		if point.showBar {
-			point.label.Val += point.valBase
-			point.label.Val = math.Max(yMin, math.Min(yMax, point.label.Val))
-		}
-		prec := 1
-		if point.ser != nil && point.ser.cont != nil {
-			prec += point.ser.cont.ToPrecision()
-		}
-		point.label.SetText(strconv.FormatFloat(point.val, 'f', prec, 64))
-		ls = append(ls, point.label)
-	}
-	return
-}
-
-func (point *dataPoint) polarLabels(phiMin float64, phiMax float64, rMin float64,
-	rMax float64) (ls []*elements.Label) {
-	if point.n < phiMin || point.n > phiMax {
-		return
-	}
-	if point.showDot && (point.val < rMin || point.val > rMax) {
+	if point.showDot && (point.val < valMin || point.val > valMax) {
 		return
 	}
 	if point.highlighted {
@@ -319,7 +279,7 @@ func (point *dataPoint) polarLabels(phiMin float64, phiMax float64, rMin float64
 		point.label.Val = point.val
 		if point.showBar {
 			point.label.Val += point.valBase
-			point.label.Val = math.Max(rMin, math.Min(rMax, point.label.Val))
+			point.label.Val = math.Max(valMin, math.Min(valMax, point.label.Val))
 		}
 		prec := 1
 		if point.ser != nil && point.ser.cont != nil {
@@ -548,39 +508,51 @@ func (ser *PointSeries) ConvertTtoN(tToN func(t time.Time) (n float64)) {
 	}
 }
 
-func (ser *PointSeries) CartesianDots(xMin float64, xMax float64, yMin float64,
-	yMax float64) (ns []*elements.Dot) {
+func (ser *PointSeries) Dots(nMin float64, nMax float64, valMin float64,
+	valMax float64) (ns []*elements.Dot) {
 	for i := range ser.data {
-		ns = append(ns, ser.data[i].cartesianDots(xMin, xMax, yMin, yMax)...)
+		ns = append(ns, ser.data[i].dots(nMin, nMax, valMin, valMax)...)
 	}
 	return
 }
 
-func (ser *PointSeries) CartesianEdges(xMin float64, xMax float64, yMin float64,
-	yMax float64) (es []elements.Edge) {
+func (ser *PointSeries) Edges(nMin float64, nMax float64, valMin float64,
+	valMax float64) (es []elements.Edge) {
 	for i := range ser.data {
-		if i == 0 {
-			es = append(es, ser.data[i].cartesianEdges(true, 0, 0, xMin, xMax, yMin, yMax)...)
+		if ser.cont.IsPolar() {
+			if i == 0 {
+				es = append(es, ser.data[i].polarEdges(true, 0, 0, nMin, nMax, valMin, valMax)...)
+			} else {
+				es = append(es, ser.data[i].polarEdges(false, ser.data[i-1].n, ser.data[i-1].val,
+					nMin, nMax, valMin, valMax)...)
+			}
 		} else {
-			es = append(es, ser.data[i].cartesianEdges(false, ser.data[i-1].n, ser.data[i-1].val,
-				xMin, xMax, yMin, yMax)...)
+			if i == 0 {
+				es = append(es, ser.data[i].cartesianEdges(true, 0, 0, nMin, nMax, valMin, valMax)...)
+			} else {
+				es = append(es, ser.data[i].cartesianEdges(false, ser.data[i-1].n, ser.data[i-1].val,
+					nMin, nMax, valMin, valMax)...)
+			}
 		}
 	}
 	return
 }
 
-func (ser *PointSeries) CartesianBars(xMin float64, xMax float64, yMin float64,
-	yMax float64) (fs []*elements.Bar) {
+func (ser *PointSeries) Bars(nMin float64, nMax float64, valMin float64,
+	valMax float64) (fs []*elements.Bar) {
+	if ser.cont.IsPolar() {
+		return
+	}
 	for i := range ser.data {
-		fs = append(fs, ser.data[i].cartesianBars(xMin, xMax, yMin, yMax, ser.isStacked)...)
+		fs = append(fs, ser.data[i].cartesianBars(nMin, nMax, valMin, valMax, ser.isStacked)...)
 	}
 	return
 }
 
-func (ser *PointSeries) CartesianLabels(xMin float64, xMax float64, yMin float64,
-	yMax float64) (ls []*elements.Label) {
+func (ser *PointSeries) Labels(nMin float64, nMax float64, valMin float64,
+	valMax float64) (ls []*elements.Label) {
 	for i := range ser.data {
-		ls = append(ls, ser.data[i].cartesianLabels(xMin, xMax, yMin, yMax)...)
+		ls = append(ls, ser.data[i].labels(nMin, nMax, valMin, valMax)...)
 	}
 	return
 }
@@ -612,35 +584,6 @@ func (ser *PointSeries) RasterColorCartesian(x float64, y float64) (col color.Co
 			}
 			break
 		}
-	}
-	return
-}
-
-func (ser *PointSeries) PolarDots(phiMin float64, phiMax float64, rMin float64,
-	rMax float64) (ns []*elements.Dot) {
-	for i := range ser.data {
-		ns = append(ns, ser.data[i].polarDots(phiMin, phiMax, rMin, rMax)...)
-	}
-	return
-}
-
-func (ser *PointSeries) PolarEdges(phiMin float64, phiMax float64, rMin float64,
-	rMax float64) (es []elements.Edge) {
-	for i := range ser.data {
-		if i == 0 {
-			es = append(es, ser.data[i].polarEdges(true, 0, 0, phiMin, phiMax, rMin, rMax)...)
-		} else {
-			es = append(es, ser.data[i].polarEdges(false, ser.data[i-1].n, ser.data[i-1].val,
-				phiMin, phiMax, rMin, rMax)...)
-		}
-	}
-	return
-}
-
-func (ser *PointSeries) PolarLabels(xMin float64, xMax float64, yMin float64,
-	yMax float64) (ls []*elements.Label) {
-	for i := range ser.data {
-		ls = append(ls, ser.data[i].polarLabels(xMin, xMax, yMin, yMax)...)
 	}
 	return
 }

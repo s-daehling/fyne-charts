@@ -9,10 +9,6 @@ import (
 
 type PolarChart interface {
 	baseChart
-	PolarDots() (ns []*elements.Dot)
-	PolarEdges() (es []elements.Edge)
-	PolarLabels() (ls []*elements.Label)
-	PolarObjects() (obj []fyne.CanvasObject)
 }
 
 // polDrawingArea represents the area of the widget that can be used for the chart
@@ -193,7 +189,7 @@ func (r *Polar) Layout(size fyne.Size) {
 	}
 
 	// place nodes
-	ns := r.chart.PolarDots()
+	ns := r.chart.Dots()
 	for i := range ns {
 		var dotPos fyne.Position
 		dotPos = polarCoordinatesToPosition(ns[i].N, ns[i].Val, area)
@@ -203,14 +199,14 @@ func (r *Polar) Layout(size fyne.Size) {
 	}
 
 	// place edges
-	es := r.chart.PolarEdges()
+	es := r.chart.Edges()
 	for i := range es {
 		es[i].Line.Position1 = polarCoordinatesToPosition(es[i].N1, es[i].Val1, area)
 		es[i].Line.Position2 = polarCoordinatesToPosition(es[i].N2, es[i].Val2, area)
 	}
 
 	// place labels
-	ls := r.chart.PolarLabels()
+	ls := r.chart.Labels()
 	for i := range ls {
 		ls[i].Resize(ls[i].MinSize())
 		lPos := polarCoordinatesToPosition(ls[i].N, ls[i].Val+5.0/float64(area.coordToPos), area)
@@ -246,7 +242,7 @@ func (r *Polar) MinSize() fyne.Size {
 
 // Objects returns a list of all objects to be drawn
 func (r *Polar) Objects() []fyne.CanvasObject {
-	return r.chart.PolarObjects()
+	return r.chart.Objects()
 }
 
 // Refresh calls Layout if data of the chart has changes

@@ -115,75 +115,50 @@ func (base *BaseChart) CartesianOrientation() (transposed bool) {
 	return
 }
 
-func (base *BaseChart) CartesianObjects() (canObj []fyne.CanvasObject) {
+func (base *BaseChart) Objects() (canObj []fyne.CanvasObject) {
 	// objects will be drawn in the same order as added here
 
 	// first get all objects from the series
-	bars := base.CartesianBars()
+	if base.area != nil {
+		canObj = append(canObj, base.area)
+	}
+	bars := base.Bars()
 	for i := range bars {
 		canObj = append(canObj, bars[i])
 	}
-	labels := base.CartesianLabels()
+	labels := base.Labels()
 	for i := range labels {
 		canObj = append(canObj, labels[i])
 	}
 	return
 }
 
-func (base *BaseChart) CartesianDots() (ns []*elements.Dot) {
+func (base *BaseChart) Dots() (ns []*elements.Dot) {
 	return
 }
 
-func (base *BaseChart) CartesianEdges() (es []elements.Edge) {
+func (base *BaseChart) Edges() (es []elements.Edge) {
 	return
 }
 
-func (base *BaseChart) CartesianBars() (as []*elements.Bar) {
+func (base *BaseChart) Bars() (as []*elements.Bar) {
 	for i := range base.series {
-		as = append(as, base.series[i].CartesianBars(base.fromMin, base.fromMax, base.toMin, base.toMax)...)
+		as = append(as, base.series[i].Bars(base.fromMin, base.fromMax, base.toMin, base.toMax)...)
 	}
 	return
 }
 
-func (base *BaseChart) CartesianBoxes() (ns []*elements.Box) {
+func (base *BaseChart) Boxes() (ns []*elements.Box) {
 	return
 }
 
-func (base *BaseChart) CartesianCandles() (ns []*elements.Candle) {
+func (base *BaseChart) Candles() (ns []*elements.Candle) {
 	return
 }
 
-func (base *BaseChart) CartesianLabels() (ls []*elements.Label) {
+func (base *BaseChart) Labels() (ls []*elements.Label) {
 	for i := range base.series {
-		ls = append(ls, base.series[i].CartesianLabels(base.fromMin, base.fromMax, base.toMin, base.toMax)...)
-	}
-	return
-}
-
-func (base *BaseChart) PolarObjects() (canObj []fyne.CanvasObject) {
-	// objects will be drawn in the same order as added here
-
-	// first get all objects from the series
-	canObj = append(canObj, base.area)
-	labels := base.PolarLabels()
-	for i := range labels {
-		canObj = append(canObj, labels[i])
-	}
-
-	return
-}
-
-func (base *BaseChart) PolarDots() (ns []*elements.Dot) {
-	return
-}
-
-func (base *BaseChart) PolarEdges() (es []elements.Edge) {
-	return
-}
-
-func (base *BaseChart) PolarLabels() (ls []*elements.Label) {
-	for i := range base.series {
-		ls = append(ls, base.series[i].PolarLabels(base.fromMin, base.fromMax, base.toMin, base.toMax)...)
+		ls = append(ls, base.series[i].Labels(base.fromMin, base.fromMax, base.toMin, base.toMax)...)
 	}
 	return
 }

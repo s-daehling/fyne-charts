@@ -130,26 +130,18 @@ func (ser *StackedSeries) ConvertCtoN(cToN func(c string) (n float64)) {
 	}
 }
 
-func (ser *StackedSeries) CartesianBars(xMin float64, xMax float64, yMin float64,
-	yMax float64) (fs []*elements.Bar) {
+func (ser *StackedSeries) Bars(nMin float64, nMax float64, valMin float64,
+	valMax float64) (fs []*elements.Bar) {
 	for i := range ser.stack {
-		fs = append(fs, ser.stack[i].CartesianBars(xMin, xMax, yMin, yMax)...)
+		fs = append(fs, ser.stack[i].Bars(nMin, nMax, valMin, valMax)...)
 	}
 	return
 }
 
-func (ser *StackedSeries) CartesianLabels(xMin float64, xMax float64, yMin float64,
-	yMax float64) (ls []*elements.Label) {
+func (ser *StackedSeries) Labels(nMin float64, nMax float64, valMin float64,
+	valMax float64) (ls []*elements.Label) {
 	for i := range ser.stack {
-		ls = append(ls, ser.stack[i].CartesianLabels(xMin, xMax, yMin, yMax)...)
-	}
-	return
-}
-
-func (ser *StackedSeries) PolarLabels(xMin float64, xMax float64, yMin float64,
-	yMax float64) (ls []*elements.Label) {
-	for i := range ser.stack {
-		ls = append(ls, ser.stack[i].PolarLabels(xMin, xMax, yMin, yMax)...)
+		ls = append(ls, ser.stack[i].Labels(nMin, nMax, valMin, valMax)...)
 	}
 	return
 }

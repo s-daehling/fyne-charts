@@ -96,48 +96,33 @@ func (ser *baseSeries) ConvertCtoN(cToN func(c string) (n float64)) {}
 
 func (ser *baseSeries) ConvertTtoN(tToN func(t time.Time) (n float64)) {}
 
-func (ser *baseSeries) CartesianDots(xMin float64, xMax float64, yMin float64,
-	yMax float64) (ns []*elements.Dot) {
+func (ser *baseSeries) Dots(nMin float64, nMax float64, valMin float64,
+	valMax float64) (ns []*elements.Dot) {
 	return
 }
 
-func (ser *baseSeries) CartesianEdges(xMin float64, xMax float64, yMin float64,
-	yMax float64) (es []elements.Edge) {
+func (ser *baseSeries) Edges(nMin float64, nMax float64, valMin float64,
+	valMax float64) (es []elements.Edge) {
 	return
 }
 
-func (ser *baseSeries) CartesianBars(xMin float64, xMax float64, yMin float64,
-	yMax float64) (fs []*elements.Bar) {
+func (ser *baseSeries) Bars(nMin float64, nMax float64, valMin float64,
+	valMax float64) (fs []*elements.Bar) {
 	return
 }
 
-func (ser *baseSeries) CartesianBoxes(xMin float64, xMax float64, yMin float64,
-	yMax float64) (bs []*elements.Box) {
+func (ser *baseSeries) Boxes(nMin float64, nMax float64, valMin float64,
+	valMax float64) (bs []*elements.Box) {
 	return
 }
 
-func (ser *baseSeries) CartesianCandles(xMin float64, xMax float64, yMin float64,
-	yMax float64) (cs []*elements.Candle) {
+func (ser *baseSeries) Candles(nMin float64, nMax float64, valMin float64,
+	valMax float64) (cs []*elements.Candle) {
 	return
 }
 
-func (ser *baseSeries) CartesianLabels(xMin float64, xMax float64, yMin float64,
-	yMax float64) (ls []*elements.Label) {
-	return
-}
-
-func (ser *baseSeries) PolarDots(phiMin float64, phiMax float64, rMin float64,
-	rMax float64) (ns []*elements.Dot) {
-	return
-}
-
-func (ser *baseSeries) PolarEdges(phiMin float64, phiMax float64, rMin float64,
-	rMax float64) (es []elements.Edge) {
-	return
-}
-
-func (ser *baseSeries) PolarLabels(phiMin float64, phiMax float64, rMin float64,
-	rMax float64) (ls []*elements.Label) {
+func (ser *baseSeries) Labels(nMin float64, nMax float64, valMin float64,
+	valMax float64) (ls []*elements.Label) {
 	return
 }
 
@@ -180,15 +165,12 @@ type Series interface {
 	ConvertPtoN(pToN func(p float64) (n float64))
 	ConvertCtoN(cToN func(c string) (n float64))
 	ConvertTtoN(tToN func(t time.Time) (n float64))
-	CartesianDots(xMin float64, xMax float64, yMin float64, yMax float64) (ns []*elements.Dot)
-	CartesianEdges(xMin float64, xMax float64, yMin float64, yMax float64) (es []elements.Edge)
-	CartesianBars(xMin float64, xMax float64, yMin float64, yMax float64) (fs []*elements.Bar)
-	CartesianBoxes(xMin float64, xMax float64, yMin float64, yMax float64) (bs []*elements.Box)
-	CartesianCandles(xMin float64, xMax float64, yMin float64, yMax float64) (cs []*elements.Candle)
-	CartesianLabels(xMin float64, xMax float64, yMin float64, yMax float64) (ls []*elements.Label)
-	PolarDots(phiMin float64, phiMax float64, rMin float64, rMax float64) (ns []*elements.Dot)
-	PolarEdges(phiMin float64, phiMax float64, rMin float64, rMax float64) (es []elements.Edge)
-	PolarLabels(phiMin float64, phiMax float64, rMin float64, rMax float64) (ls []*elements.Label)
+	Dots(nMin float64, nMax float64, valMin float64, valMax float64) (ns []*elements.Dot)
+	Edges(nMin float64, nMax float64, valMin float64, valMax float64) (es []elements.Edge)
+	Bars(nMin float64, nMax float64, valMin float64, valMax float64) (fs []*elements.Bar)
+	Boxes(nMin float64, nMax float64, valMin float64, valMax float64) (bs []*elements.Box)
+	Candles(nMin float64, nMax float64, valMin float64, valMax float64) (cs []*elements.Candle)
+	Labels(nMin float64, nMax float64, valMin float64, valMax float64) (ls []*elements.Label)
 	RasterColorCartesian(x float64, y float64) (col color.Color)
 	RasterColorPolar(phi float64, r float64, x float64, y float64) (col color.Color)
 	IsPartOfChartRaster() (b bool)

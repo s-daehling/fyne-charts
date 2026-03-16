@@ -162,32 +162,32 @@ func (base *BaseChart) PolarOrientation() (rot float64, mathPos bool) {
 	return
 }
 
-func (base *BaseChart) CartesianObjects() (canObj []fyne.CanvasObject) {
+func (base *BaseChart) Objects() (canObj []fyne.CanvasObject) {
 	// objects will be drawn in the same order as added here
 
 	// first get all objects from the series
 	canObj = append(canObj, base.area)
-	bars := base.CartesianBars()
+	bars := base.Bars()
 	for i := range bars {
 		canObj = append(canObj, bars[i])
 	}
-	boxes := base.CartesianBoxes()
+	boxes := base.Boxes()
 	for i := range boxes {
 		canObj = append(canObj, boxes[i])
 	}
-	candles := base.CartesianCandles()
+	candles := base.Candles()
 	for i := range candles {
 		canObj = append(canObj, candles[i])
 	}
-	edges := base.CartesianEdges()
+	edges := base.Edges()
 	for i := range edges {
 		canObj = append(canObj, edges[i].Line)
 	}
-	dots := base.CartesianDots()
+	dots := base.Dots()
 	for i := range dots {
 		canObj = append(canObj, dots[i])
 	}
-	labels := base.CartesianLabels()
+	labels := base.Labels()
 	for i := range labels {
 		canObj = append(canObj, labels[i])
 	}
@@ -199,108 +199,56 @@ func (base *BaseChart) CartesianObjects() (canObj []fyne.CanvasObject) {
 	return
 }
 
-func (base *BaseChart) CartesianDots() (ns []*elements.Dot) {
-	xMin, xMax := base.fromAx.NRange()
-	yMin, yMax := base.toAx.NRange()
+func (base *BaseChart) Dots() (ns []*elements.Dot) {
+	nMin, nMax := base.fromAx.NRange()
+	valMin, valMax := base.toAx.NRange()
 	for i := range base.series {
-		ns = append(ns, base.series[i].CartesianDots(xMin, xMax, yMin, yMax)...)
+		ns = append(ns, base.series[i].Dots(nMin, nMax, valMin, valMax)...)
 	}
 	return
 }
 
-func (base *BaseChart) CartesianEdges() (es []elements.Edge) {
-	xMin, xMax := base.fromAx.NRange()
-	yMin, yMax := base.toAx.NRange()
+func (base *BaseChart) Edges() (es []elements.Edge) {
+	nMin, nMax := base.fromAx.NRange()
+	valMin, valMax := base.toAx.NRange()
 	for i := range base.series {
-		es = append(es, base.series[i].CartesianEdges(xMin, xMax, yMin, yMax)...)
+		es = append(es, base.series[i].Edges(nMin, nMax, valMin, valMax)...)
 	}
 	return
 }
 
-func (base *BaseChart) CartesianBars() (as []*elements.Bar) {
-	xMin, xMax := base.fromAx.NRange()
-	yMin, yMax := base.toAx.NRange()
+func (base *BaseChart) Bars() (as []*elements.Bar) {
+	nMin, nMax := base.fromAx.NRange()
+	valMin, valMax := base.toAx.NRange()
 	for i := range base.series {
-		as = append(as, base.series[i].CartesianBars(xMin, xMax, yMin, yMax)...)
+		as = append(as, base.series[i].Bars(nMin, nMax, valMin, valMax)...)
 	}
 	return
 }
 
-func (base *BaseChart) CartesianBoxes() (bs []*elements.Box) {
-	xMin, xMax := base.fromAx.NRange()
-	yMin, yMax := base.toAx.NRange()
+func (base *BaseChart) Boxes() (bs []*elements.Box) {
+	nMin, nMax := base.fromAx.NRange()
+	valMin, valMax := base.toAx.NRange()
 	for i := range base.series {
-		bs = append(bs, base.series[i].CartesianBoxes(xMin, xMax, yMin, yMax)...)
+		bs = append(bs, base.series[i].Boxes(nMin, nMax, valMin, valMax)...)
 	}
 	return
 }
 
-func (base *BaseChart) CartesianCandles() (cs []*elements.Candle) {
-	xMin, xMax := base.fromAx.NRange()
-	yMin, yMax := base.toAx.NRange()
+func (base *BaseChart) Candles() (cs []*elements.Candle) {
+	nMin, nMax := base.fromAx.NRange()
+	valMin, valMax := base.toAx.NRange()
 	for i := range base.series {
-		cs = append(cs, base.series[i].CartesianCandles(xMin, xMax, yMin, yMax)...)
+		cs = append(cs, base.series[i].Candles(nMin, nMax, valMin, valMax)...)
 	}
 	return
 }
 
-func (base *BaseChart) CartesianLabels() (ts []*elements.Label) {
-	xMin, xMax := base.fromAx.NRange()
-	yMin, yMax := base.toAx.NRange()
+func (base *BaseChart) Labels() (ts []*elements.Label) {
+	nMin, xMax := base.fromAx.NRange()
+	valMin, valMax := base.toAx.NRange()
 	for i := range base.series {
-		ts = append(ts, base.series[i].CartesianLabels(xMin, xMax, yMin, yMax)...)
-	}
-	return
-}
-
-func (base *BaseChart) PolarObjects() (canObj []fyne.CanvasObject) {
-	// objects will be drawn in the same order as added here
-
-	// first get all objects from the series
-	canObj = append(canObj, base.area)
-	edges := base.PolarEdges()
-	for i := range edges {
-		canObj = append(canObj, edges[i].Line)
-	}
-	dots := base.PolarDots()
-	for i := range dots {
-		canObj = append(canObj, dots[i])
-	}
-	labels := base.PolarLabels()
-	for i := range labels {
-		canObj = append(canObj, labels[i])
-	}
-
-	// add axis elements
-	canObj = append(canObj, base.fromAx.Objects()...)
-	canObj = append(canObj, base.toAx.Objects()...)
-
-	return
-}
-
-func (base *BaseChart) PolarDots() (ns []*elements.Dot) {
-	phiMin, phiMax := base.fromAx.NRange()
-	rMin, rMax := base.toAx.NRange()
-	for i := range base.series {
-		ns = append(ns, base.series[i].PolarDots(phiMin, phiMax, rMin, rMax)...)
-	}
-	return
-}
-
-func (base *BaseChart) PolarEdges() (es []elements.Edge) {
-	phiMin, phiMax := base.fromAx.NRange()
-	rMin, rMax := base.toAx.NRange()
-	for i := range base.series {
-		es = append(es, base.series[i].PolarEdges(phiMin, phiMax, rMin, rMax)...)
-	}
-	return
-}
-
-func (base *BaseChart) PolarLabels() (ts []*elements.Label) {
-	phiMin, phiMax := base.fromAx.NRange()
-	rMin, rMax := base.toAx.NRange()
-	for i := range base.series {
-		ts = append(ts, base.series[i].PolarLabels(phiMin, phiMax, rMin, rMax)...)
+		ts = append(ts, base.series[i].Labels(nMin, xMax, valMin, valMax)...)
 	}
 	return
 }

@@ -184,10 +184,13 @@ func (ser *CandleStickSeries) ConvertTtoN(tToN func(t time.Time) (n float64)) {
 	}
 }
 
-func (ser *CandleStickSeries) CartesianCandles(xMin float64, xMax float64, yMin float64,
-	yMax float64) (cs []*elements.Candle) {
+func (ser *CandleStickSeries) Candles(nMin float64, nMax float64, valMin float64,
+	valMax float64) (cs []*elements.Candle) {
+	if ser.cont.IsPolar() {
+		return
+	}
 	for i := range ser.data {
-		cs = append(cs, ser.data[i].cartesianCandles(xMin, xMax, yMin, yMax)...)
+		cs = append(cs, ser.data[i].cartesianCandles(nMin, nMax, valMin, valMax)...)
 	}
 	return
 }

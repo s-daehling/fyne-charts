@@ -7,13 +7,6 @@ import (
 
 type CartesianChart interface {
 	baseChart
-	CartesianDots() (ns []*elements.Dot)
-	CartesianEdges() (es []elements.Edge)
-	CartesianBars() (rs []*elements.Bar)
-	CartesianBoxes() (bs []*elements.Box)
-	CartesianCandles() (cs []*elements.Candle)
-	CartesianLabels() (ls []*elements.Label)
-	CartesianObjects() (obj []fyne.CanvasObject)
 	CartesianOrientation() (trans bool)
 }
 
@@ -151,7 +144,7 @@ func (r *Cartesian) Layout(size fyne.Size) {
 	}
 
 	// place dots
-	ns := r.chart.CartesianDots()
+	ns := r.chart.Dots()
 	for i := range ns {
 		var dotPos fyne.Position
 		if r.transposed {
@@ -164,7 +157,7 @@ func (r *Cartesian) Layout(size fyne.Size) {
 	}
 
 	// place edges
-	es := r.chart.CartesianEdges()
+	es := r.chart.Edges()
 	for i := range es {
 		if r.transposed {
 			es[i].Line.Position1 = cartesianCoordinatesToPosition(es[i].Val1, es[i].N1, area)
@@ -176,7 +169,7 @@ func (r *Cartesian) Layout(size fyne.Size) {
 	}
 
 	// place rects
-	fs := r.chart.CartesianBars()
+	fs := r.chart.Bars()
 	for i := range fs {
 		if r.transposed {
 			p1 := cartesianCoordinatesToPosition(fs[i].Val1, fs[i].N2, area)
@@ -192,7 +185,7 @@ func (r *Cartesian) Layout(size fyne.Size) {
 	}
 
 	// place boxes
-	bs := r.chart.CartesianBoxes()
+	bs := r.chart.Boxes()
 	for i := range bs {
 		bs[i].SetOrientantion(r.transposed)
 		if r.transposed {
@@ -209,7 +202,7 @@ func (r *Cartesian) Layout(size fyne.Size) {
 	}
 
 	// place candles
-	cs := r.chart.CartesianCandles()
+	cs := r.chart.Candles()
 	for i := range cs {
 		cs[i].SetOrientantion(r.transposed)
 		if r.transposed {
@@ -226,7 +219,7 @@ func (r *Cartesian) Layout(size fyne.Size) {
 	}
 
 	// place labels
-	ls := r.chart.CartesianLabels()
+	ls := r.chart.Labels()
 	for i := range ls {
 		ls[i].Resize(ls[i].MinSize())
 		if r.transposed {
@@ -269,7 +262,7 @@ func (r *Cartesian) MinSize() fyne.Size {
 
 // Objects returns a list of all objects to be drawn
 func (r *Cartesian) Objects() []fyne.CanvasObject {
-	return r.chart.CartesianObjects()
+	return r.chart.Objects()
 }
 
 // Refresh calls Layout if data of the chart has changes

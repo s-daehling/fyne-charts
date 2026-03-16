@@ -331,18 +331,25 @@ func (ser *Series) ConvertPtoN(pToN func(p float64) (n float64)) {
 	}
 }
 
-func (ser *Series) CartesianBars(xMin float64, xMax float64, yMin float64,
+func (ser *Series) Bars(xMin float64, xMax float64, yMin float64,
 	yMax float64) (fs []*elements.Bar) {
+	if ser.chart.IsPolar() {
+		return
+	}
 	for i := range ser.data {
 		fs = append(fs, ser.data[i].cartesianBars(xMin, xMax, yMin, yMax)...)
 	}
 	return
 }
 
-func (ser *Series) CartesianLabels(xMin float64, xMax float64, yMin float64,
-	yMax float64) (ls []*elements.Label) {
+func (ser *Series) Labels(nMin float64, nMax float64, valMin float64,
+	valMax float64) (ls []*elements.Label) {
 	for i := range ser.data {
-		ls = append(ls, ser.data[i].cartesianLabels(xMin, xMax, yMin, yMax)...)
+		if ser.chart.IsPolar() {
+			ls = append(ls, ser.data[i].polarLabels(nMin, nMax, valMin, valMax)...)
+		} else {
+			ls = append(ls, ser.data[i].cartesianLabels(nMin, nMax, valMin, valMax)...)
+		}
 	}
 	return
 }
@@ -360,14 +367,6 @@ func (ser *Series) RasterColorPolar(phi float64, r float64) (col color.Color, us
 			col = pCol
 			break
 		}
-	}
-	return
-}
-
-func (ser *Series) PolarLabels(phiMin float64, phiMax float64, rMin float64,
-	rMax float64) (ls []*elements.Label) {
-	for i := range ser.data {
-		ls = append(ls, ser.data[i].polarLabels(phiMin, phiMax, rMin, rMax)...)
 	}
 	return
 }

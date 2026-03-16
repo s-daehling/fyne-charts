@@ -227,18 +227,24 @@ func (ser *BoxSeries) ConvertTtoN(tToN func(t time.Time) (n float64)) {
 	}
 }
 
-func (ser *BoxSeries) CartesianDots(xMin float64, xMax float64, yMin float64,
-	yMax float64) (ns []*elements.Dot) {
+func (ser *BoxSeries) Dots(nMin float64, nMax float64, valMin float64,
+	valMax float64) (ns []*elements.Dot) {
+	if ser.cont.IsPolar() {
+		return
+	}
 	for i := range ser.data {
-		ns = append(ns, ser.data[i].cartesianDots(xMin, xMax, yMin, yMax)...)
+		ns = append(ns, ser.data[i].cartesianDots(nMin, nMax, valMin, valMax)...)
 	}
 	return
 }
 
-func (ser *BoxSeries) CartesianBoxes(xMin float64, xMax float64, yMin float64,
-	yMax float64) (bs []*elements.Box) {
+func (ser *BoxSeries) Boxes(nMin float64, nMax float64, valMin float64,
+	valMax float64) (bs []*elements.Box) {
+	if ser.cont.IsPolar() {
+		return
+	}
 	for i := range ser.data {
-		bs = append(bs, ser.data[i].cartesianBoxes(xMin, xMax, yMin, yMax)...)
+		bs = append(bs, ser.data[i].cartesianBoxes(nMin, nMax, valMin, valMax)...)
 	}
 	return
 }
