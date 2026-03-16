@@ -9,12 +9,6 @@ import (
 )
 
 type Label struct {
-	N    float64
-	Val  float64
-	Text *canvas.Text
-}
-
-type ValueLabel struct {
 	N         float64
 	Val       float64
 	frame     *canvas.Rectangle
@@ -23,8 +17,8 @@ type ValueLabel struct {
 	widget.BaseWidget
 }
 
-func NewValueLabel() (vl *ValueLabel) {
-	vl = &ValueLabel{
+func NewLabel() (vl *Label) {
+	vl = &Label{
 		frame: canvas.NewRectangle(theme.Color(theme.ColorNameBackground)),
 		text:  canvas.NewText("", theme.Color(theme.ColorNameForeground)),
 	}
@@ -36,48 +30,48 @@ func NewValueLabel() (vl *ValueLabel) {
 	return
 }
 
-func (vl *ValueLabel) CreateRenderer() (r fyne.WidgetRenderer) {
+func (vl *Label) CreateRenderer() (r fyne.WidgetRenderer) {
 	r = newValueLabelRenderer(vl)
 	return
 }
 
-func (vl *ValueLabel) SetText(t string) {
+func (vl *Label) SetText(t string) {
 	vl.text.Text = t
 }
 
-type valueLabelRenderer struct {
-	vl *ValueLabel
+type labelRenderer struct {
+	vl *Label
 }
 
-func newValueLabelRenderer(vl *ValueLabel) (vlr *valueLabelRenderer) {
-	vlr = &valueLabelRenderer{
+func newValueLabelRenderer(vl *Label) (vlr *labelRenderer) {
+	vlr = &labelRenderer{
 		vl: vl,
 	}
 	return
 }
 
-func (vlr *valueLabelRenderer) Layout(size fyne.Size) {
+func (vlr *labelRenderer) Layout(size fyne.Size) {
 	vlr.vl.frame.Resize(size)
 	vlr.vl.frame.Move(fyne.NewPos(0, 0))
 	vlr.vl.text.Resize(vlr.vl.text.MinSize())
 	vlr.vl.text.Move(fyne.NewPos(3, 0))
 }
 
-func (vlr *valueLabelRenderer) MinSize() (size fyne.Size) {
+func (vlr *labelRenderer) MinSize() (size fyne.Size) {
 	size = vlr.vl.text.MinSize()
 	size.Width += 6
 	return
 }
 
-func (vlr *valueLabelRenderer) Refresh() {
+func (vlr *labelRenderer) Refresh() {
 	vlr.vl.frame.Refresh()
 	vlr.vl.text.Refresh()
 }
 
-func (vlr *valueLabelRenderer) Objects() (canObj []fyne.CanvasObject) {
+func (vlr *labelRenderer) Objects() (canObj []fyne.CanvasObject) {
 	canObj = append(canObj, vlr.vl.frame)
 	canObj = append(canObj, vlr.vl.text)
 	return
 }
 
-func (vlr *valueLabelRenderer) Destroy() {}
+func (vlr *labelRenderer) Destroy() {}

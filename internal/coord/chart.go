@@ -187,10 +187,6 @@ func (base *BaseChart) CartesianObjects() (canObj []fyne.CanvasObject) {
 	for i := range dots {
 		canObj = append(canObj, dots[i])
 	}
-	texts := base.CartesianTexts()
-	for i := range texts {
-		canObj = append(canObj, texts[i].Text)
-	}
 	labels := base.CartesianLabels()
 	for i := range labels {
 		canObj = append(canObj, labels[i])
@@ -248,16 +244,7 @@ func (base *BaseChart) CartesianCandles() (cs []*elements.Candle) {
 	return
 }
 
-func (base *BaseChart) CartesianTexts() (ts []elements.Label) {
-	xMin, xMax := base.fromAx.NRange()
-	yMin, yMax := base.toAx.NRange()
-	for i := range base.series {
-		ts = append(ts, base.series[i].CartesianTexts(xMin, xMax, yMin, yMax)...)
-	}
-	return
-}
-
-func (base *BaseChart) CartesianLabels() (ts []*elements.ValueLabel) {
+func (base *BaseChart) CartesianLabels() (ts []*elements.Label) {
 	xMin, xMax := base.fromAx.NRange()
 	yMin, yMax := base.toAx.NRange()
 	for i := range base.series {
@@ -278,10 +265,6 @@ func (base *BaseChart) PolarObjects() (canObj []fyne.CanvasObject) {
 	dots := base.PolarDots()
 	for i := range dots {
 		canObj = append(canObj, dots[i])
-	}
-	texts := base.PolarTexts()
-	for i := range texts {
-		canObj = append(canObj, texts[i].Text)
 	}
 	labels := base.PolarLabels()
 	for i := range labels {
@@ -313,16 +296,7 @@ func (base *BaseChart) PolarEdges() (es []elements.Edge) {
 	return
 }
 
-func (base *BaseChart) PolarTexts() (ts []elements.Label) {
-	phiMin, phiMax := base.fromAx.NRange()
-	rMin, rMax := base.toAx.NRange()
-	for i := range base.series {
-		ts = append(ts, base.series[i].PolarTexts(phiMin, phiMax, rMin, rMax)...)
-	}
-	return
-}
-
-func (base *BaseChart) PolarLabels() (ts []*elements.ValueLabel) {
+func (base *BaseChart) PolarLabels() (ts []*elements.Label) {
 	phiMin, phiMax := base.fromAx.NRange()
 	rMin, rMax := base.toAx.NRange()
 	for i := range base.series {

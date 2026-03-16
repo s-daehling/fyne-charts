@@ -67,7 +67,7 @@ type proportionPoint struct {
 	hOffset     float64
 	valOffset   float64
 	bar         *elements.Bar
-	label       *elements.ValueLabel
+	label       *elements.Label
 	text        *canvas.Text
 	textStyle   style.ChartTextStyle
 	visible     bool
@@ -82,7 +82,7 @@ type proportionPoint struct {
 
 func emptyProportionPoint(c string, colName fyne.ThemeColorName, ser *Series) (point *proportionPoint) {
 	point = &proportionPoint{
-		label:       elements.NewValueLabel(),
+		label:       elements.NewLabel(),
 		c:           c,
 		visible:     true,
 		ser:         ser,
@@ -209,29 +209,8 @@ func (point *proportionPoint) cartesianBars(xMin float64, xMax float64, yMin flo
 	return
 }
 
-func (point *proportionPoint) cartesianTexts(xMin float64, xMax float64, yMin float64,
-	yMax float64) (ts []elements.Label) {
-	if point.text == nil {
-		return
-	}
-	if point.valOffset+point.n < xMin || point.valOffset > xMax {
-		return
-	}
-	if point.hOffset+point.height < yMin || point.hOffset > yMax {
-		return
-	}
-	point.text.Text = strconv.FormatFloat(point.n, 'f', 0, 64) + "%"
-	t := elements.Label{
-		N:    point.valOffset + (point.n / 2),
-		Val:  point.hOffset + (point.height / 2),
-		Text: point.text,
-	}
-	ts = append(ts, t)
-	return
-}
-
 func (point *proportionPoint) cartesianLabels(xMin float64, xMax float64, yMin float64,
-	yMax float64) (ls []*elements.ValueLabel) {
+	yMax float64) (ls []*elements.Label) {
 	if !point.highlighted {
 		return
 	}
@@ -268,29 +247,8 @@ func (point *proportionPoint) RasterColorPolar(phi float64, r float64) (col colo
 	return
 }
 
-func (point *proportionPoint) polarTexts(phiMin float64, phiMax float64, rMin float64,
-	rMax float64) (ts []elements.Label) {
-	if point.text == nil {
-		return
-	}
-	if point.valOffset+point.n < phiMin || point.valOffset > phiMax {
-		return
-	}
-	if point.hOffset+point.height < rMin || point.hOffset > rMax {
-		return
-	}
-	point.text.Text = strconv.FormatFloat(100*(point.n/(2*math.Pi)), 'f', 0, 64) + "%"
-	t := elements.Label{
-		N:    point.valOffset + (point.n / 2),
-		Val:  point.hOffset + (point.height / 2),
-		Text: point.text,
-	}
-	ts = append(ts, t)
-	return
-}
-
 func (point *proportionPoint) polarLabels(phiMin float64, phiMax float64, rMin float64,
-	rMax float64) (ls []*elements.ValueLabel) {
+	rMax float64) (ls []*elements.Label) {
 	if !point.highlighted {
 		return
 	}
@@ -381,16 +339,8 @@ func (ser *Series) CartesianBars(xMin float64, xMax float64, yMin float64,
 	return
 }
 
-func (ser *Series) CartesianTexts(xMin float64, xMax float64, yMin float64,
-	yMax float64) (ts []elements.Label) {
-	for i := range ser.data {
-		ts = append(ts, ser.data[i].cartesianTexts(xMin, xMax, yMin, yMax)...)
-	}
-	return
-}
-
 func (ser *Series) CartesianLabels(xMin float64, xMax float64, yMin float64,
-	yMax float64) (ls []*elements.ValueLabel) {
+	yMax float64) (ls []*elements.Label) {
 	for i := range ser.data {
 		ls = append(ls, ser.data[i].cartesianLabels(xMin, xMax, yMin, yMax)...)
 	}
@@ -414,16 +364,8 @@ func (ser *Series) RasterColorPolar(phi float64, r float64) (col color.Color, us
 	return
 }
 
-func (ser *Series) PolarTexts(phiMin float64, phiMax float64, rMin float64,
-	rMax float64) (ts []elements.Label) {
-	for i := range ser.data {
-		ts = append(ts, ser.data[i].polarTexts(phiMin, phiMax, rMin, rMax)...)
-	}
-	return
-}
-
 func (ser *Series) PolarLabels(phiMin float64, phiMax float64, rMin float64,
-	rMax float64) (ls []*elements.ValueLabel) {
+	rMax float64) (ls []*elements.Label) {
 	for i := range ser.data {
 		ls = append(ls, ser.data[i].polarLabels(phiMin, phiMax, rMin, rMax)...)
 	}

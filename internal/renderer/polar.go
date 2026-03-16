@@ -11,8 +11,7 @@ type PolarChart interface {
 	baseChart
 	PolarDots() (ns []*elements.Dot)
 	PolarEdges() (es []elements.Edge)
-	PolarTexts() (ts []elements.Label)
-	PolarLabels() (ls []*elements.ValueLabel)
+	PolarLabels() (ls []*elements.Label)
 	PolarObjects() (obj []fyne.CanvasObject)
 }
 
@@ -208,15 +207,6 @@ func (r *Polar) Layout(size fyne.Size) {
 	for i := range es {
 		es[i].Line.Position1 = polarCoordinatesToPosition(es[i].N1, es[i].Val1, area)
 		es[i].Line.Position2 = polarCoordinatesToPosition(es[i].N2, es[i].Val2, area)
-	}
-
-	// place texts
-	ts := r.chart.PolarTexts()
-	for i := range ts {
-		tPos := polarCoordinatesToPosition(ts[i].N, ts[i].Val, area)
-		tPos = tPos.SubtractXY(0, ts[i].Text.MinSize().Height/2)
-		ts[i].Text.Move(tPos)
-		ts[i].Text.Alignment = fyne.TextAlignCenter
 	}
 
 	// place labels

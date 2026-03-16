@@ -36,7 +36,7 @@ type dataPoint struct {
 	fromValBase         *canvas.Line
 	fromPrev            *canvas.Line
 	bar                 *elements.Bar
-	label               *elements.ValueLabel
+	label               *elements.Label
 	col                 color.Color
 	showDot             bool
 	showFromValBaseLine bool
@@ -51,7 +51,7 @@ func emptyDataPoint(col color.Color, showDot bool, showFromBase bool, showFromPr
 	point = &dataPoint{
 		fromValBase:         canvas.NewLine(col),
 		fromPrev:            canvas.NewLine(col),
-		label:               elements.NewValueLabel(),
+		label:               elements.NewLabel(),
 		col:                 col,
 		showDot:             showDot,
 		showFromValBaseLine: showFromBase,
@@ -276,7 +276,7 @@ func (point *dataPoint) cartesianBars(xMin float64, xMax float64, yMin float64,
 }
 
 func (point *dataPoint) cartesianLabels(xMin float64, xMax float64, yMin float64,
-	yMax float64) (ls []*elements.ValueLabel) {
+	yMax float64) (ls []*elements.Label) {
 	if point.n < xMin || point.n > xMax {
 		return
 	}
@@ -304,7 +304,7 @@ func (point *dataPoint) cartesianLabels(xMin float64, xMax float64, yMin float64
 }
 
 func (point *dataPoint) polarLabels(phiMin float64, phiMax float64, rMin float64,
-	rMax float64) (ls []*elements.ValueLabel) {
+	rMax float64) (ls []*elements.Label) {
 	if point.n < phiMin || point.n > phiMax {
 		return
 	}
@@ -578,7 +578,7 @@ func (ser *PointSeries) CartesianBars(xMin float64, xMax float64, yMin float64,
 }
 
 func (ser *PointSeries) CartesianLabels(xMin float64, xMax float64, yMin float64,
-	yMax float64) (ls []*elements.ValueLabel) {
+	yMax float64) (ls []*elements.Label) {
 	for i := range ser.data {
 		ls = append(ls, ser.data[i].cartesianLabels(xMin, xMax, yMin, yMax)...)
 	}
@@ -638,7 +638,7 @@ func (ser *PointSeries) PolarEdges(phiMin float64, phiMax float64, rMin float64,
 }
 
 func (ser *PointSeries) PolarLabels(xMin float64, xMax float64, yMin float64,
-	yMax float64) (ls []*elements.ValueLabel) {
+	yMax float64) (ls []*elements.Label) {
 	for i := range ser.data {
 		ls = append(ls, ser.data[i].polarLabels(xMin, xMax, yMin, yMax)...)
 	}

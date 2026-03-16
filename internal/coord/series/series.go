@@ -121,13 +121,8 @@ func (ser *baseSeries) CartesianCandles(xMin float64, xMax float64, yMin float64
 	return
 }
 
-func (ser *baseSeries) CartesianTexts(xMin float64, xMax float64, yMin float64,
-	yMax float64) (fs []elements.Label) {
-	return
-}
-
 func (ser *baseSeries) CartesianLabels(xMin float64, xMax float64, yMin float64,
-	yMax float64) (ls []*elements.ValueLabel) {
+	yMax float64) (ls []*elements.Label) {
 	return
 }
 
@@ -141,13 +136,8 @@ func (ser *baseSeries) PolarEdges(phiMin float64, phiMax float64, rMin float64,
 	return
 }
 
-func (ser *baseSeries) PolarTexts(phiMin float64, phiMax float64, rMin float64,
-	rMax float64) (es []elements.Label) {
-	return
-}
-
 func (ser *baseSeries) PolarLabels(phiMin float64, phiMax float64, rMin float64,
-	rMax float64) (ls []*elements.ValueLabel) {
+	rMax float64) (ls []*elements.Label) {
 	return
 }
 
@@ -195,12 +185,10 @@ type Series interface {
 	CartesianBars(xMin float64, xMax float64, yMin float64, yMax float64) (fs []*elements.Bar)
 	CartesianBoxes(xMin float64, xMax float64, yMin float64, yMax float64) (bs []*elements.Box)
 	CartesianCandles(xMin float64, xMax float64, yMin float64, yMax float64) (cs []*elements.Candle)
-	CartesianTexts(xMin float64, xMax float64, yMin float64, yMax float64) (ts []elements.Label)
-	CartesianLabels(xMin float64, xMax float64, yMin float64, yMax float64) (ls []*elements.ValueLabel)
+	CartesianLabels(xMin float64, xMax float64, yMin float64, yMax float64) (ls []*elements.Label)
 	PolarDots(phiMin float64, phiMax float64, rMin float64, rMax float64) (ns []*elements.Dot)
 	PolarEdges(phiMin float64, phiMax float64, rMin float64, rMax float64) (es []elements.Edge)
-	PolarTexts(phiMin float64, phiMax float64, rMin float64, rMax float64) (es []elements.Label)
-	PolarLabels(phiMin float64, phiMax float64, rMin float64, rMax float64) (ls []*elements.ValueLabel)
+	PolarLabels(phiMin float64, phiMax float64, rMin float64, rMax float64) (ls []*elements.Label)
 	RasterColorCartesian(x float64, y float64) (col color.Color)
 	RasterColorPolar(phi float64, r float64, x float64, y float64) (col color.Color)
 	IsPartOfChartRaster() (b bool)

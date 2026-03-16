@@ -139,7 +139,7 @@ func (ser *StackedSeries) CartesianBars(xMin float64, xMax float64, yMin float64
 }
 
 func (ser *StackedSeries) CartesianLabels(xMin float64, xMax float64, yMin float64,
-	yMax float64) (ls []*elements.ValueLabel) {
+	yMax float64) (ls []*elements.Label) {
 	for i := range ser.stack {
 		ls = append(ls, ser.stack[i].CartesianLabels(xMin, xMax, yMin, yMax)...)
 	}
@@ -147,7 +147,7 @@ func (ser *StackedSeries) CartesianLabels(xMin float64, xMax float64, yMin float
 }
 
 func (ser *StackedSeries) PolarLabels(xMin float64, xMax float64, yMin float64,
-	yMax float64) (ls []*elements.ValueLabel) {
+	yMax float64) (ls []*elements.Label) {
 	for i := range ser.stack {
 		ls = append(ls, ser.stack[i].PolarLabels(xMin, xMax, yMin, yMax)...)
 	}
