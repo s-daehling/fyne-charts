@@ -210,8 +210,8 @@ func (point *proportionPoint) cartesianBars(xMin float64, xMax float64, yMin flo
 }
 
 func (point *proportionPoint) cartesianLabels(xMin float64, xMax float64, yMin float64,
-	yMax float64) (ls []*elements.Label) {
-	if !point.highlighted {
+	yMax float64, labelIfHighlighted bool) (ls []*elements.Label) {
+	if !point.highlighted || !labelIfHighlighted {
 		return
 	}
 	if point.valOffset+point.n < xMin || point.valOffset > xMax {
@@ -248,8 +248,8 @@ func (point *proportionPoint) RasterColorPolar(phi float64, r float64) (col colo
 }
 
 func (point *proportionPoint) polarLabels(phiMin float64, phiMax float64, rMin float64,
-	rMax float64) (ls []*elements.Label) {
-	if !point.highlighted {
+	rMax float64, labelIfHighlighted bool) (ls []*elements.Label) {
+	if !point.highlighted || !labelIfHighlighted {
 		return
 	}
 	if point.valOffset+point.n < phiMin || point.valOffset > phiMax {
@@ -343,12 +343,12 @@ func (ser *Series) Bars(xMin float64, xMax float64, yMin float64,
 }
 
 func (ser *Series) Labels(nMin float64, nMax float64, valMin float64,
-	valMax float64) (ls []*elements.Label) {
+	valMax float64, labelIfHighlighted bool) (ls []*elements.Label) {
 	for i := range ser.data {
 		if ser.chart.IsPolar() {
-			ls = append(ls, ser.data[i].polarLabels(nMin, nMax, valMin, valMax)...)
+			ls = append(ls, ser.data[i].polarLabels(nMin, nMax, valMin, valMax, labelIfHighlighted)...)
 		} else {
-			ls = append(ls, ser.data[i].cartesianLabels(nMin, nMax, valMin, valMax)...)
+			ls = append(ls, ser.data[i].cartesianLabels(nMin, nMax, valMin, valMax, labelIfHighlighted)...)
 		}
 	}
 	return

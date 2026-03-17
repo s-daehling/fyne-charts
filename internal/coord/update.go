@@ -201,15 +201,19 @@ func (base *BaseChart) RefreshTheme() {
 }
 
 func (base *BaseChart) Highlight() {
-	for i := range base.series {
-		base.series[i].FadeUnhighlighted()
+	if base.onHoverHighlight {
+		for i := range base.series {
+			base.series[i].FadeUnhighlighted()
+		}
 	}
 	base.Refresh()
 }
 
 func (base *BaseChart) Unhighlight() {
-	for i := range base.series {
-		base.series[i].UnFade()
+	if base.onHoverHighlight {
+		for i := range base.series {
+			base.series[i].UnFade()
+		}
 	}
 	base.Refresh()
 }

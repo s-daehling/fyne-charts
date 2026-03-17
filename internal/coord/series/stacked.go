@@ -139,9 +139,9 @@ func (ser *StackedSeries) Bars(nMin float64, nMax float64, valMin float64,
 }
 
 func (ser *StackedSeries) Labels(nMin float64, nMax float64, valMin float64,
-	valMax float64) (ls []*elements.Label) {
+	valMax float64, labelIfHighlighted bool) (ls []*elements.Label) {
 	for i := range ser.stack {
-		ls = append(ls, ser.stack[i].Labels(nMin, nMax, valMin, valMax)...)
+		ls = append(ls, ser.stack[i].Labels(nMin, nMax, valMin, valMax, labelIfHighlighted)...)
 	}
 	return
 }

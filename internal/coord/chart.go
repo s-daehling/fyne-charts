@@ -47,6 +47,8 @@ type BaseChart struct {
 	legend            *interact.Legend
 	planeType         PlaneType
 	transposed        bool
+	onHoverHighlight  bool
+	onHoverValueLabel bool
 	fromType          FromType
 	area              *elements.Area
 	areaSeries        []series.Series
@@ -72,6 +74,8 @@ func EmptyBaseChart(pType PlaneType, fType FromType) (base *BaseChart) {
 		legend:            interact.NewLegend(),
 		planeType:         pType,
 		transposed:        false,
+		onHoverHighlight:  true,
+		onHoverValueLabel: false,
 		fromType:          fType,
 		hLabelCont:        container.NewHBox(),
 		hLabelLeftSpacer:  canvas.NewRectangle(color.Alpha16{}),
@@ -248,7 +252,7 @@ func (base *BaseChart) Labels() (ts []*elements.Label) {
 	nMin, xMax := base.fromAx.NRange()
 	valMin, valMax := base.toAx.NRange()
 	for i := range base.series {
-		ts = append(ts, base.series[i].Labels(nMin, xMax, valMin, valMax)...)
+		ts = append(ts, base.series[i].Labels(nMin, xMax, valMin, valMax, base.onHoverValueLabel)...)
 	}
 	return
 }

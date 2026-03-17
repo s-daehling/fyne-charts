@@ -229,6 +229,9 @@ func (ser *BoxSeries) ConvertTtoN(tToN func(t time.Time) (n float64)) {
 
 func (ser *BoxSeries) Dots(nMin float64, nMax float64, valMin float64,
 	valMax float64) (ns []*elements.Dot) {
+	if ser.cont == nil {
+		return
+	}
 	if ser.cont.IsPolar() {
 		return
 	}
@@ -240,6 +243,9 @@ func (ser *BoxSeries) Dots(nMin float64, nMax float64, valMin float64,
 
 func (ser *BoxSeries) Boxes(nMin float64, nMax float64, valMin float64,
 	valMax float64) (bs []*elements.Box) {
+	if ser.cont == nil {
+		return
+	}
 	if ser.cont.IsPolar() {
 		return
 	}

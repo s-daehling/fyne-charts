@@ -186,6 +186,9 @@ func (ser *CandleStickSeries) ConvertTtoN(tToN func(t time.Time) (n float64)) {
 
 func (ser *CandleStickSeries) Candles(nMin float64, nMax float64, valMin float64,
 	valMax float64) (cs []*elements.Candle) {
+	if ser.cont == nil {
+		return
+	}
 	if ser.cont.IsPolar() {
 		return
 	}

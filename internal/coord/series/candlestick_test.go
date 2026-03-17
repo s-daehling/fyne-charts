@@ -173,6 +173,7 @@ func TestCandleStickRects(t *testing.T) {
 		app.New()
 		ser := EmptyCandleStickSeries("test")
 		ser.AddNumericalData(tt.input)
+		ser.BindToChart(chartDummy{false})
 		cns := ser.Candles(tt.xMin, tt.xMax, tt.yMin, tt.yMax)
 		if len(cns) != tt.expRects {
 			t.Errorf("wrong number of rects, set %d, num %d, exp %d", i, len(cns), tt.expRects)

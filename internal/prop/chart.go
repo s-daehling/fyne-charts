@@ -25,42 +25,46 @@ const (
 
 type BaseChart struct {
 	widget.BaseWidget
-	title         *canvas.Text
-	titleStyle    style.ChartTextStyle
-	series        []*Series
-	changed       bool
-	legend        *interact.Legend
-	legendVisible bool
-	planeType     PlaneType
-	transposed    bool
-	area          *elements.Area
-	render        fyne.WidgetRenderer
-	fromMin       float64
-	fromMax       float64
-	toMin         float64
-	toMax         float64
-	mainCont      *fyne.Container
-	rLegendCont   *fyne.Container
-	lLegendCont   *fyne.Container
-	bLegendCont   *fyne.Container
-	tLegendCont   *fyne.Container
+	title             *canvas.Text
+	titleStyle        style.ChartTextStyle
+	series            []*Series
+	changed           bool
+	legend            *interact.Legend
+	legendVisible     bool
+	planeType         PlaneType
+	transposed        bool
+	onHoverHighlight  bool
+	onHoverValueLabel bool
+	area              *elements.Area
+	render            fyne.WidgetRenderer
+	fromMin           float64
+	fromMax           float64
+	toMin             float64
+	toMax             float64
+	mainCont          *fyne.Container
+	rLegendCont       *fyne.Container
+	lLegendCont       *fyne.Container
+	bLegendCont       *fyne.Container
+	tLegendCont       *fyne.Container
 }
 
 func EmptyBaseChart(pType PlaneType) (base *BaseChart) {
 	base = &BaseChart{
-		title:         canvas.NewText("", theme.Color(theme.ColorNameForeground)),
-		changed:       false,
-		legend:        interact.NewLegend(),
-		legendVisible: true,
-		planeType:     pType,
-		transposed:    false,
-		fromMin:       0,
-		toMin:         0,
-		toMax:         100,
-		rLegendCont:   container.NewCenter(),
-		lLegendCont:   container.NewCenter(),
-		bLegendCont:   container.NewStack(),
-		tLegendCont:   container.NewStack(),
+		title:             canvas.NewText("", theme.Color(theme.ColorNameForeground)),
+		changed:           false,
+		legend:            interact.NewLegend(),
+		legendVisible:     true,
+		planeType:         pType,
+		transposed:        false,
+		onHoverHighlight:  true,
+		onHoverValueLabel: true,
+		fromMin:           0,
+		toMin:             0,
+		toMax:             100,
+		rLegendCont:       container.NewCenter(),
+		lLegendCont:       container.NewCenter(),
+		bLegendCont:       container.NewStack(),
+		tLegendCont:       container.NewStack(),
 	}
 	base.mainCont = container.NewBorder(
 		container.NewVBox(
@@ -158,7 +162,7 @@ func (base *BaseChart) Candles() (ns []*elements.Candle) {
 
 func (base *BaseChart) Labels() (ls []*elements.Label) {
 	for i := range base.series {
-		ls = append(ls, base.series[i].Labels(base.fromMin, base.fromMax, base.toMin, base.toMax)...)
+		ls = append(ls, base.series[i].Labels(base.fromMin, base.fromMax, base.toMin, base.toMax, base.onHoverValueLabel)...)
 	}
 	return
 }

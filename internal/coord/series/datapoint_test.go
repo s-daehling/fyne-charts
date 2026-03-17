@@ -363,10 +363,14 @@ func TestDataPointNodes(t *testing.T) {
 		ser := EmptyPointSeries("test", theme.ColorNameBackground)
 		ser.showDot = true
 		ser.AddNumericalData(tt.input)
+		ser.BindToChart(chartDummy{false})
 		cns := ser.Dots(tt.xMin, tt.xMax, tt.yMin, tt.yMax)
 		if len(cns) != tt.expCartNodes {
 			t.Errorf("wrong number of cartesian nodes, set %d, num %d, exp %d", i, len(cns), tt.expCartNodes)
 		}
+		ser.Release()
+		ser.MakeScatter()
+		ser.BindToChart(chartDummy{true})
 		pns := ser.Dots(tt.xMin, tt.xMax, tt.yMin, tt.yMax)
 		if len(pns) != tt.expPolNodes {
 			t.Errorf("wrong number of polar nodes, set %d, num %d, exp %d", i, len(pns), tt.expPolNodes)
@@ -402,10 +406,15 @@ func TestDataPointEdges(t *testing.T) {
 			ser.sortPoints = true
 		}
 		ser.AddNumericalData(tt.input)
+		ser.BindToChart(chartDummy{false})
 		ces := ser.Edges(tt.xMin, tt.xMax, tt.yMin, tt.yMax)
 		if len(ces) != tt.expCartEdges {
 			t.Errorf("wrong number of cartesian edges, set %d, num %d, exp %d", i, len(ces), tt.expCartEdges)
 		}
+		ser.Release()
+		ser.MakeLollipop()
+		ser.MakeLine(false)
+		ser.baseSeries.BindToChart(chartDummy{true})
 		pes := ser.Edges(tt.xMin, tt.xMax, tt.yMin, tt.yMax)
 		if len(pes) != tt.expPolEdges {
 			t.Errorf("wrong number of polar edges, set %d, num %d, exp %d", i, len(pes), tt.expPolEdges)
@@ -434,6 +443,7 @@ func TestDataPointRects(t *testing.T) {
 		ser := EmptyPointSeries("test", theme.ColorNameBackground)
 		ser.showBar = true
 		ser.AddNumericalData(tt.input)
+		ser.BindToChart(chartDummy{false})
 		crs := ser.Bars(tt.xMin, tt.xMax, tt.yMin, tt.yMax)
 		if len(crs) != tt.expCartRects {
 			t.Errorf("wrong number of cartesian rects, set %d, num %d, exp %d", i, len(crs), tt.expCartRects)

@@ -122,7 +122,7 @@ func (ser *baseSeries) Candles(nMin float64, nMax float64, valMin float64,
 }
 
 func (ser *baseSeries) Labels(nMin float64, nMax float64, valMin float64,
-	valMax float64) (ls []*elements.Label) {
+	valMax float64, labelIfHighlighted bool) (ls []*elements.Label) {
 	return
 }
 
@@ -170,7 +170,7 @@ type Series interface {
 	Bars(nMin float64, nMax float64, valMin float64, valMax float64) (fs []*elements.Bar)
 	Boxes(nMin float64, nMax float64, valMin float64, valMax float64) (bs []*elements.Box)
 	Candles(nMin float64, nMax float64, valMin float64, valMax float64) (cs []*elements.Candle)
-	Labels(nMin float64, nMax float64, valMin float64, valMax float64) (ls []*elements.Label)
+	Labels(nMin float64, nMax float64, valMin float64, valMax float64, labelIfHighlighted bool) (ls []*elements.Label)
 	RasterColorCartesian(x float64, y float64) (col color.Color)
 	RasterColorPolar(phi float64, r float64, x float64, y float64) (col color.Color)
 	IsPartOfChartRaster() (b bool)

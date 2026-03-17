@@ -57,15 +57,19 @@ func (base *BaseChart) ptoN(p float64) (n float64) {
 }
 
 func (base *BaseChart) Highlight() {
-	for i := range base.series {
-		base.series[i].fadeUnhighlighted()
+	if base.onHoverHighlight {
+		for i := range base.series {
+			base.series[i].fadeUnhighlighted()
+		}
 	}
 	base.Refresh()
 }
 
 func (base *BaseChart) Unhighlight() {
-	for i := range base.series {
-		base.series[i].unFade()
+	if base.onHoverHighlight {
+		for i := range base.series {
+			base.series[i].unFade()
+		}
 	}
 	base.Refresh()
 }

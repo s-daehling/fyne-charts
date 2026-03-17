@@ -264,14 +264,14 @@ func (point *dataPoint) cartesianBars(xMin float64, xMax float64, yMin float64,
 }
 
 func (point *dataPoint) labels(nMin float64, nMax float64, valMin float64,
-	valMax float64) (ls []*elements.Label) {
+	valMax float64, labelIfHighlighted bool) (ls []*elements.Label) {
 	if point.n < nMin || point.n > nMax {
 		return
 	}
 	if point.showDot && (point.val < valMin || point.val > valMax) {
 		return
 	}
-	if point.highlighted {
+	if point.highlighted && labelIfHighlighted {
 		point.label.N = point.n
 		if point.showBar {
 			point.label.N += point.nBarShift
@@ -518,6 +518,9 @@ func (ser *PointSeries) Dots(nMin float64, nMax float64, valMin float64,
 
 func (ser *PointSeries) Edges(nMin float64, nMax float64, valMin float64,
 	valMax float64) (es []elements.Edge) {
+	if ser.cont == nil {
+		return
+	}
 	for i := range ser.data {
 		if ser.cont.IsPolar() {
 			if i == 0 {
@@ -540,6 +543,9 @@ func (ser *PointSeries) Edges(nMin float64, nMax float64, valMin float64,
 
 func (ser *PointSeries) Bars(nMin float64, nMax float64, valMin float64,
 	valMax float64) (fs []*elements.Bar) {
+	if ser.cont == nil {
+		return
+	}
 	if ser.cont.IsPolar() {
 		return
 	}
@@ -550,9 +556,9 @@ func (ser *PointSeries) Bars(nMin float64, nMax float64, valMin float64,
 }
 
 func (ser *PointSeries) Labels(nMin float64, nMax float64, valMin float64,
-	valMax float64) (ls []*elements.Label) {
+	valMax float64, labelIfHighlighted bool) (ls []*elements.Label) {
 	for i := range ser.data {
-		ls = append(ls, ser.data[i].labels(nMin, nMax, valMin, valMax)...)
+		ls = append(ls, ser.data[i].labels(nMin, nMax, valMin, valMax, labelIfHighlighted)...)
 	}
 	return
 }
