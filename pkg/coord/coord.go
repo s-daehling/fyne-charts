@@ -82,3 +82,10 @@ func (chart *coordChart) SetLegendStyle(loc style.LegendLocation, labelStyle sty
 	}
 	chart.base.SetLegendStyle(loc, labelStyle, interactive)
 }
+
+func (chart *coordChart) SetHoverBehavior(highlight bool, valueLabel bool) {
+	if chart.base == nil {
+		return
+	}
+	chart.base.SetHoverBehavior(highlight, valueLabel)
+}

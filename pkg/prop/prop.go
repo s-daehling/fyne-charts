@@ -99,3 +99,10 @@ func (chart *propChart) SetLegendStyle(loc style.LegendLocation, labelStyle styl
 	}
 	chart.base.SetLegendStyle(loc, labelStyle, interactive)
 }
+
+func (chart *propChart) SetHoverBehavior(highlight bool, valueLabel bool) {
+	if chart.base == nil {
+		return
+	}
+	chart.base.SetHoverBehavior(highlight, valueLabel)
+}

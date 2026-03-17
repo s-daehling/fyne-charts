@@ -74,7 +74,7 @@ func EmptyBaseChart(pType PlaneType, fType FromType) (base *BaseChart) {
 		legend:            interact.NewLegend(),
 		planeType:         pType,
 		transposed:        false,
-		onHoverHighlight:  true,
+		onHoverHighlight:  false,
 		onHoverValueLabel: false,
 		fromType:          fType,
 		hLabelCont:        container.NewHBox(),
@@ -306,6 +306,11 @@ func (base *BaseChart) SetTitleStyle(ts style.ChartTextStyle) {
 	base.title.Color = theme.Color(ts.ColorName)
 	base.title.TextStyle = ts.TextStyle
 	base.title.Refresh()
+}
+
+func (base *BaseChart) SetHoverBehavior(highlight bool, valueLabel bool) {
+	base.onHoverHighlight = highlight
+	base.onHoverValueLabel = valueLabel
 }
 
 func (base *BaseChart) MouseMove(pX, pY, w, h, absX, absY float32) {

@@ -56,8 +56,8 @@ func EmptyBaseChart(pType PlaneType) (base *BaseChart) {
 		legendVisible:     true,
 		planeType:         pType,
 		transposed:        false,
-		onHoverHighlight:  true,
-		onHoverValueLabel: true,
+		onHoverHighlight:  false,
+		onHoverValueLabel: false,
 		fromMin:           0,
 		toMin:             0,
 		toMax:             100,
@@ -215,6 +215,11 @@ func (base *BaseChart) SetTitleStyle(ts style.ChartTextStyle) {
 	base.title.Color = theme.Color(ts.ColorName)
 	base.title.TextStyle = ts.TextStyle
 	base.title.Refresh()
+}
+
+func (base *BaseChart) SetHoverBehavior(highlight bool, valueLabel bool) {
+	base.onHoverHighlight = highlight
+	base.onHoverValueLabel = valueLabel
 }
 
 func (base *BaseChart) FromAxisElements() (min float64, max float64, origin float64,
