@@ -11,6 +11,7 @@ import (
 	"github.com/s-daehling/fyne-charts/internal/elements"
 	"github.com/s-daehling/fyne-charts/internal/style"
 	"github.com/s-daehling/fyne-charts/pkg/data"
+	pubstyle "github.com/s-daehling/fyne-charts/pkg/style"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
@@ -51,7 +52,7 @@ func emptyDataPoint(col color.Color, showDot bool, showFromBase bool, showFromPr
 	point = &dataPoint{
 		fromValBase:         canvas.NewLine(col),
 		fromPrev:            canvas.NewLine(col),
-		label:               elements.NewLabel(),
+		label:               elements.NewLabel(pubstyle.DefaultValueLabelStyle()),
 		col:                 col,
 		showDot:             showDot,
 		showFromValBaseLine: showFromBase,

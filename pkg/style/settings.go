@@ -45,14 +45,6 @@ func DefaultLegendTextStyle() (legendTextStyle ChartTextStyle) {
 	return
 }
 
-func DefaultValueTextStyle() (valueTextStyle ChartTextStyle) {
-	valueTextStyle.Alignment = fyne.TextAlignCenter
-	valueTextStyle.ColorName = theme.ColorNameBackground
-	valueTextStyle.SizeName = theme.SizeNameText
-	valueTextStyle.TextStyle = fyne.TextStyle{}
-	return
-}
-
 type AxisStyle struct {
 	LineColorName        fyne.ThemeColorName
 	LineWidth            float32
@@ -73,5 +65,23 @@ func DefaultAxisStyle() (axisStyle AxisStyle) {
 	axisStyle.TickColorName = theme.ColorNameForeground
 	axisStyle.TickSizeName = theme.SizeNameText
 	axisStyle.TickTextStyle = fyne.TextStyle{}
+	return
+}
+
+type ValueLabelStyle struct {
+	ValueTextStyle      ChartTextStyle
+	BackgroundColorName fyne.ThemeColorName
+	StrokeColorName     fyne.ThemeColorName
+	StrokeWidth         float32
+}
+
+func DefaultValueLabelStyle() (labelStyle ValueLabelStyle) {
+	labelStyle.ValueTextStyle.Alignment = fyne.TextAlignCenter
+	labelStyle.ValueTextStyle.ColorName = theme.ColorNameForeground
+	labelStyle.ValueTextStyle.SizeName = theme.SizeNameText
+	labelStyle.ValueTextStyle.TextStyle = fyne.TextStyle{}
+	labelStyle.BackgroundColorName = theme.ColorNameBackground
+	labelStyle.StrokeColorName = theme.ColorNameForeground
+	labelStyle.StrokeWidth = 1
 	return
 }

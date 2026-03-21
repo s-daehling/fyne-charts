@@ -17,14 +17,13 @@ type Label struct {
 	widget.BaseWidget
 }
 
-func NewLabel() (vl *Label) {
+func NewLabel(labelStyle style.ValueLabelStyle) (vl *Label) {
 	vl = &Label{
 		frame: canvas.NewRectangle(theme.Color(theme.ColorNameBackground)),
 		text:  canvas.NewText("", theme.Color(theme.ColorNameForeground)),
 	}
+	vl.SetStyle(labelStyle)
 	vl.frame.CornerRadius = 5
-	vl.frame.StrokeColor = theme.Color(theme.ColorNameForeground)
-	vl.frame.StrokeWidth = 0.5
 	vl.text.Alignment = fyne.TextAlignCenter
 	vl.ExtendBaseWidget(vl)
 	return
@@ -37,6 +36,15 @@ func (vl *Label) CreateRenderer() (r fyne.WidgetRenderer) {
 
 func (vl *Label) SetText(t string) {
 	vl.text.Text = t
+}
+
+func (vl *Label) SetStyle(labelStyle style.ValueLabelStyle) {
+	vl.text.Color = theme.Color(labelStyle.ValueTextStyle.ColorName)
+	vl.text.TextSize = theme.Size(labelStyle.ValueTextStyle.SizeName)
+	vl.text.TextStyle = labelStyle.ValueTextStyle.TextStyle
+	vl.frame.FillColor = theme.Color(labelStyle.BackgroundColorName)
+	vl.frame.StrokeColor = theme.Color(labelStyle.StrokeColorName)
+	vl.frame.StrokeWidth = labelStyle.StrokeWidth
 }
 
 type labelRenderer struct {

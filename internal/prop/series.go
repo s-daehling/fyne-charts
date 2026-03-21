@@ -7,7 +7,6 @@ import (
 	"strconv"
 
 	"fyne.io/fyne/v2"
-	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/theme"
 	"github.com/s-daehling/fyne-charts/internal/elements"
 	"github.com/s-daehling/fyne-charts/internal/interact"
@@ -68,8 +67,6 @@ type proportionPoint struct {
 	valOffset   float64
 	bar         *elements.Bar
 	label       *elements.Label
-	text        *canvas.Text
-	textStyle   style.ChartTextStyle
 	visible     bool
 	colName     fyne.ThemeColorName
 	col         color.Color
@@ -80,9 +77,9 @@ type proportionPoint struct {
 	ser         *Series
 }
 
-func emptyProportionPoint(c string, colName fyne.ThemeColorName, ser *Series) (point *proportionPoint) {
+func emptyProportionPoint(c string, colName fyne.ThemeColorName, labelStyle style.ValueLabelStyle, ser *Series) (point *proportionPoint) {
 	point = &proportionPoint{
-		label:       elements.NewLabel(),
+		label:       elements.NewLabel(labelStyle),
 		c:           c,
 		visible:     true,
 		ser:         ser,
@@ -94,9 +91,6 @@ func emptyProportionPoint(c string, colName fyne.ThemeColorName, ser *Series) (p
 	point.colFaded = intstyle.MakeFaded(point.col)
 	point.bar = elements.NewBar(theme.Color(colName), point.highlight, point.unhighlight)
 	point.legendEntry = interact.NewLegendEntry(c, ser.name, true, point.col, point.toggleView, point.highlight, point.unhighlight)
-	if ser.showText {
-		point.text = canvas.NewText("", theme.Color(theme.ColorNameForeground))
-	}
 	return
 }
 
@@ -113,9 +107,6 @@ func (point *proportionPoint) hide() {
 		return
 	}
 	point.bar.Hide()
-	if point.text != nil {
-		point.text.Hide()
-	}
 	point.visible = false
 	point.legendEntry.Hide()
 	if point.ser != nil {
@@ -128,23 +119,12 @@ func (point *proportionPoint) show() {
 		return
 	}
 	point.bar.Show()
-	if point.text != nil {
-		point.text.Show()
-	}
 	point.visible = true
 	point.ser.visible = true
 	point.legendEntry.Show()
 	if point.ser != nil {
 		point.ser.pointVisibilityUpdate(point.val)
 	}
-}
-
-func (point *proportionPoint) setTextStyle(ts style.ChartTextStyle) {
-	point.textStyle = ts
-	point.text.TextSize = theme.Size(ts.SizeName)
-	point.text.Color = theme.Color(ts.ColorName)
-	point.text.TextStyle = ts.TextStyle
-	point.text.Refresh()
 }
 
 func (point *proportionPoint) refreshTheme() {
@@ -154,10 +134,12 @@ func (point *proportionPoint) refreshTheme() {
 	if point.isFaded {
 		col = point.colFaded
 	}
-	point.text.Color = theme.Color(point.textStyle.ColorName)
-	point.text.TextSize = theme.Size(point.textStyle.SizeName)
 	point.bar.SetColor(col)
 	point.legendEntry.SetColor(col)
+}
+
+func (point *proportionPoint) setLabelStyle(labelStyle style.ValueLabelStyle) {
+	point.label.SetStyle(labelStyle)
 }
 
 func (point *proportionPoint) checkIfHoveringPolarBar(phi float64, r float64) {
@@ -210,8 +192,8 @@ func (point *proportionPoint) cartesianBars(xMin float64, xMax float64, yMin flo
 }
 
 func (point *proportionPoint) cartesianLabels(xMin float64, xMax float64, yMin float64,
-	yMax float64, labelIfHighlighted bool) (ls []*elements.Label) {
-	if !point.highlighted || !labelIfHighlighted {
+	yMax float64, labelIfHighlighted bool, permLabel bool) (ls []*elements.Label) {
+	if !point.visible || ((!point.highlighted || !labelIfHighlighted) && !permLabel) {
 		return
 	}
 	if point.valOffset+point.n < xMin || point.valOffset > xMax {
@@ -248,8 +230,8 @@ func (point *proportionPoint) RasterColorPolar(phi float64, r float64) (col colo
 }
 
 func (point *proportionPoint) polarLabels(phiMin float64, phiMax float64, rMin float64,
-	rMax float64, labelIfHighlighted bool) (ls []*elements.Label) {
-	if !point.highlighted || !labelIfHighlighted {
+	rMax float64, labelIfHighlighted bool, permLabel bool) (ls []*elements.Label) {
+	if !point.visible || ((!point.highlighted || !labelIfHighlighted) && !permLabel) {
 		return
 	}
 	if point.valOffset+point.n < phiMin || point.valOffset > phiMax {
@@ -266,25 +248,27 @@ func (point *proportionPoint) polarLabels(phiMin float64, phiMax float64, rMin f
 }
 
 type Series struct {
-	showText    bool
-	data        []*proportionPoint
-	tot         float64
-	name        string
-	visible     bool
-	legendEntry *interact.LegendEntry
-	textStyle   style.ChartTextStyle
-	chart       *BaseChart
-	height      float64
-	hOffset     float64
+	showText       bool
+	data           []*proportionPoint
+	tot            float64
+	name           string
+	visible        bool
+	legendEntry    *interact.LegendEntry
+	labelStyle     style.ValueLabelStyle
+	permanentLabel bool
+	chart          *BaseChart
+	height         float64
+	hOffset        float64
 }
 
 func EmptyProportionalSeries(name string) (ser *Series) {
 	ser = &Series{
-		name:     name,
-		visible:  true,
-		showText: true,
+		name:           name,
+		visible:        true,
+		showText:       true,
+		permanentLabel: false,
+		labelStyle:     style.DefaultValueLabelStyle(),
 	}
-	ser.SetValTextStyle(style.DefaultValueTextStyle())
 	ser.legendEntry = interact.NewLegendEntry(name, "", false, theme.Color(theme.ColorNameForeground), ser.toggleView, nil, nil)
 	return
 }
@@ -346,9 +330,9 @@ func (ser *Series) Labels(nMin float64, nMax float64, valMin float64,
 	valMax float64, labelIfHighlighted bool) (ls []*elements.Label) {
 	for i := range ser.data {
 		if ser.chart.IsPolar() {
-			ls = append(ls, ser.data[i].polarLabels(nMin, nMax, valMin, valMax, labelIfHighlighted)...)
+			ls = append(ls, ser.data[i].polarLabels(nMin, nMax, valMin, valMax, labelIfHighlighted, ser.permanentLabel)...)
 		} else {
-			ls = append(ls, ser.data[i].cartesianLabels(nMin, nMax, valMin, valMax, labelIfHighlighted)...)
+			ls = append(ls, ser.data[i].cartesianLabels(nMin, nMax, valMin, valMax, labelIfHighlighted, ser.permanentLabel)...)
 		}
 	}
 	return
@@ -374,6 +358,7 @@ func (ser *Series) RasterColorPolar(phi float64, r float64) (col color.Color, us
 func (ser *Series) RefreshTheme() {
 	for i := range ser.data {
 		ser.data[i].refreshTheme()
+		ser.data[i].setLabelStyle(ser.labelStyle)
 	}
 }
 
@@ -389,10 +374,11 @@ func (ser *Series) Hover(n float64, val float64) {
 	}
 }
 
-func (ser *Series) SetValTextStyle(ts style.ChartTextStyle) {
-	ser.textStyle = ts
+func (ser *Series) SetValueLabelStyle(permLabel bool, labelStyle style.ValueLabelStyle) {
+	ser.permanentLabel = permLabel
+	ser.labelStyle = labelStyle
 	for i := range ser.data {
-		ser.data[i].setTextStyle(ts)
+		ser.data[i].setLabelStyle(labelStyle)
 	}
 }
 
@@ -538,8 +524,7 @@ func (ser *Series) AddData(input []data.ProportionalPoint) (err error) {
 		if catExist {
 			continue
 		}
-		pPoint := emptyProportionPoint(input[i].C, input[i].ColName, ser)
-		pPoint.setTextStyle(ser.textStyle)
+		pPoint := emptyProportionPoint(input[i].C, input[i].ColName, ser.labelStyle, ser)
 		pPoint.val = input[i].Val
 		ser.data = append(ser.data, pPoint)
 		ser.tot += pPoint.val
