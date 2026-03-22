@@ -48,7 +48,7 @@ type dataPoint struct {
 }
 
 func emptyDataPoint(col color.Color, showDot bool, showFromBase bool, showFromPrev bool,
-	showBar bool, ser *PointSeries) (point *dataPoint) {
+	showBar bool, labelStyle pubstyle.ValueLabelStyle, ser *PointSeries) (point *dataPoint) {
 	point = &dataPoint{
 		fromValBase:         canvas.NewLine(col),
 		fromPrev:            canvas.NewLine(col),
@@ -109,6 +109,10 @@ func (point *dataPoint) setLineWidth(lw float32) {
 func (point *dataPoint) setDotSize(ds float32) {
 	point.dot.SetMinSize(ds)
 	point.dot.Resize(fyne.NewSize(ds, ds))
+}
+
+func (point *dataPoint) setLabelStyle(labelStyle pubstyle.ValueLabelStyle) {
+	point.label.SetStyle(labelStyle)
 }
 
 func (point *dataPoint) setValBase(vb float64) {
@@ -265,14 +269,14 @@ func (point *dataPoint) cartesianBars(xMin float64, xMax float64, yMin float64,
 }
 
 func (point *dataPoint) labels(nMin float64, nMax float64, valMin float64,
-	valMax float64, labelIfHighlighted bool) (ls []*elements.Label) {
+	valMax float64, labelIfHighlighted bool, permLabel bool) (ls []*elements.Label) {
 	if point.n < nMin || point.n > nMax {
 		return
 	}
 	if point.showDot && (point.val < valMin || point.val > valMax) {
 		return
 	}
-	if point.highlighted && labelIfHighlighted {
+	if (point.highlighted && labelIfHighlighted) || permLabel {
 		point.label.N = point.n
 		if point.showBar {
 			point.label.N += point.nBarShift
@@ -322,6 +326,8 @@ type PointSeries struct {
 	isStacked           bool
 	valMin              float64
 	valMax              float64
+	labelStyle          pubstyle.ValueLabelStyle
+	permanentLabel      bool
 }
 
 func EmptyPointSeries(name string, colName fyne.ThemeColorName) (ser *PointSeries) {
@@ -338,6 +344,8 @@ func EmptyPointSeries(name string, colName fyne.ThemeColorName) (ser *PointSerie
 		showArea:            false,
 		isStacked:           false,
 		sortPoints:          true,
+		permanentLabel:      false,
+		labelStyle:          pubstyle.DefaultValueLabelStyle(),
 	}
 	ser.baseSeries = emptyBaseSeries(name, colName, ser.toggleView, ser.highlight, ser.unhighlight)
 	return
@@ -559,7 +567,7 @@ func (ser *PointSeries) Bars(nMin float64, nMax float64, valMin float64,
 func (ser *PointSeries) Labels(nMin float64, nMax float64, valMin float64,
 	valMax float64, labelIfHighlighted bool) (ls []*elements.Label) {
 	for i := range ser.data {
-		ls = append(ls, ser.data[i].labels(nMin, nMax, valMin, valMax, labelIfHighlighted)...)
+		ls = append(ls, ser.data[i].labels(nMin, nMax, valMin, valMax, labelIfHighlighted, ser.permanentLabel)...)
 	}
 	return
 }
@@ -654,8 +662,17 @@ func (ser *PointSeries) RefreshTheme() {
 	}
 	for i := range ser.data {
 		ser.data[i].setColor(col)
+		ser.data[i].setLabelStyle(ser.labelStyle)
 	}
 	ser.legendEntry.SetColor(col)
+}
+
+func (ser *PointSeries) SetValueLabelStyle(permLabel bool, labelStyle pubstyle.ValueLabelStyle) {
+	ser.permanentLabel = permLabel
+	ser.labelStyle = labelStyle
+	for i := range ser.data {
+		ser.data[i].setLabelStyle(labelStyle)
+	}
 }
 
 func (ser *PointSeries) IsPartOfChartRaster() (b bool) {
@@ -972,7 +989,7 @@ func (ser *PointSeries) AddNumericalData(input []data.NumericalPoint) (err error
 	}
 	for i := range newData {
 		dPoint := emptyDataPoint(ser.col, ser.showDot, ser.showFromValBaseLine,
-			ser.showFromPrevLine, ser.showBar, ser)
+			ser.showFromPrevLine, ser.showBar, ser.labelStyle, ser)
 		dPoint.n = newData[i].N
 		dPoint.val = newData[i].Val
 		if ser.showBar {
@@ -1040,7 +1057,7 @@ func (ser *PointSeries) AddTemporalData(input []data.TemporalPoint) (err error) 
 	}
 	for i := range newData {
 		dPoint := emptyDataPoint(ser.col, ser.showDot, ser.showFromValBaseLine,
-			ser.showFromPrevLine, ser.showBar, ser)
+			ser.showFromPrevLine, ser.showBar, ser.labelStyle, ser)
 		dPoint.t = newData[i].T
 		dPoint.val = newData[i].Val
 		if ser.showBar {
@@ -1114,7 +1131,7 @@ func (ser *PointSeries) AddCategoricalData(input []data.CategoricalPoint) (err e
 			continue
 		}
 		dPoint := emptyDataPoint(ser.col, ser.showDot, ser.showFromValBaseLine,
-			ser.showFromPrevLine, ser.showBar, ser)
+			ser.showFromPrevLine, ser.showBar, ser.labelStyle, ser)
 		dPoint.c = input[i].C
 		dPoint.val = input[i].Val
 		if ser.showFromValBaseLine {

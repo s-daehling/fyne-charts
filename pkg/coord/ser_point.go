@@ -7,6 +7,7 @@ import (
 	"github.com/s-daehling/fyne-charts/internal/coord/series"
 
 	"github.com/s-daehling/fyne-charts/pkg/data"
+	"github.com/s-daehling/fyne-charts/pkg/style"
 )
 
 type pointSeries struct {
@@ -60,6 +61,11 @@ func (ps *pointSeries) SetDotSize(ds float32) {
 		return
 	}
 	ps.ser.SetDotSize(ds)
+}
+
+// SetValueLabelStyle changes the style of value labels
+func (ps *pointSeries) SetValueLabelStyle(showPermanent bool, labelStyle style.ValueLabelStyle) {
+	ps.ser.SetValueLabelStyle(showPermanent, labelStyle)
 }
 
 // Clear deletes all data

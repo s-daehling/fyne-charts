@@ -36,7 +36,7 @@ func (ps *Series) Name() (n string) {
 	return
 }
 
-// SetValTextColor changes the style of value labels
+// SetValueLabelStyle changes the style of value labels
 func (ps *Series) SetValueLabelStyle(showPermanent bool, labelStyle style.ValueLabelStyle) {
 	ps.ser.SetValueLabelStyle(showPermanent, labelStyle)
 }
