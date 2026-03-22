@@ -52,7 +52,7 @@ func emptyDataPoint(col color.Color, showDot bool, showFromBase bool, showFromPr
 	point = &dataPoint{
 		fromValBase:         canvas.NewLine(col),
 		fromPrev:            canvas.NewLine(col),
-		label:               elements.NewLabel(pubstyle.DefaultValueLabelStyle()),
+		label:               elements.NewLabel(true, labelStyle),
 		col:                 col,
 		showDot:             showDot,
 		showFromValBaseLine: showFromBase,
@@ -77,6 +77,7 @@ func (point *dataPoint) refresh() {
 	point.fromValBase.Refresh()
 	point.fromPrev.Refresh()
 	point.bar.Refresh()
+	point.label.Refresh()
 }
 
 func (point *dataPoint) hide() {
@@ -84,6 +85,7 @@ func (point *dataPoint) hide() {
 	point.fromValBase.Hide()
 	point.fromPrev.Hide()
 	point.bar.Hide()
+	point.label.Hide()
 }
 
 func (point *dataPoint) show() {
@@ -91,6 +93,7 @@ func (point *dataPoint) show() {
 	point.fromValBase.Show()
 	point.fromPrev.Show()
 	point.bar.Show()
+	point.label.Show()
 }
 
 func (point *dataPoint) setColor(col color.Color) {

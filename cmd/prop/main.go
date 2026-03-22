@@ -91,6 +91,7 @@ func barChart() (propChart *prop.BarChart, err error) {
 	if err != nil {
 		return
 	}
+	propChart.SetHoverBehavior(true, true)
 	return
 }
 
@@ -147,13 +148,15 @@ func pieChart() (propChart *prop.PieChart, err error) {
 	if err != nil {
 		return
 	}
-	ts := style.DefaultValueTextStyle()
-	ts.ColorName = theme.ColorNameBackground
-	ts.TextStyle.Italic = true
-	ts.TextStyle.Bold = true
-	ps.SetValueTextStyle(ts)
+	ls := style.DefaultValueLabelStyle()
+	ls.ValueTextStyle.ColorName = theme.ColorNameError
+	ls.ValueTextStyle.TextStyle.Italic = true
+	ls.ValueTextStyle.TextStyle.Bold = true
+	ls.StrokeWidth = 0
+	ps.SetValueLabelStyle(true, ls)
 
 	propChart.SetTitle("Proportional Pie/Doughnut Chart")
+	propChart.SetHoverBehavior(false, true)
 
 	go func() {
 		time.Sleep(time.Second * 2)

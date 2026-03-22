@@ -76,7 +76,7 @@ func polarCharts() (obj fyne.CanvasObject, err error) {
 
 // Cartesian Numerical Chart
 func cartNumChart() (numChart *coord.CartesianNumericalChart, err error) {
-	numChart = coord.NewCartesianNumericalChart("Cartesian Numerical Chart")
+	numChart = coord.NewCartesianNumericalChart("")
 	colPal := style.NewPaletteTriadic(theme.ColorNamePrimary)
 
 	// Area Series
@@ -177,7 +177,7 @@ func cartTempChart() (tempChart *coord.CartesianTemporalChart, err error) {
 	if err != nil {
 		return
 	}
-	tps.SetDotSize(6)
+	tps.SetDotSize(10)
 	tps.SetLineWidth(2)
 
 	// Examples of methods for altering the chart appearance
@@ -185,6 +185,7 @@ func cartTempChart() (tempChart *coord.CartesianTemporalChart, err error) {
 	tempChart.SetTAxisLabel("T axis")
 	tempChart.SetYAxisLabel("Y axis")
 	tempChart.SetTitle("Cartesian Temporal Chart")
+	tempChart.SetHoverBehavior(true, true)
 	as := style.DefaultAxisLabelStyle()
 	as.SizeName = theme.SizeNameText
 	as.Alignment = fyne.TextAlignLeading
@@ -262,6 +263,8 @@ func cartCatChart() (catChart *coord.CartesianCategoricalChart, err error) {
 	if err != nil {
 		return
 	}
+
+	bs.SetValueLabelStyle(true, style.DefaultValueLabelStyle())
 
 	// Box Series
 	data4 := []data.CategoricalBox{

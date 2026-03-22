@@ -209,20 +209,26 @@ func (r *Polar) Layout(size fyne.Size) {
 	ls := r.chart.Labels()
 	for i := range ls {
 		ls[i].Resize(ls[i].MinSize())
-		lPos := polarCoordinatesToPosition(ls[i].N, ls[i].Val+5.0/float64(area.coordToPos), area)
-		aLabelAbs := absAngle(ls[i].N, r.mathPos, r.rot)
-		if aLabelAbs > math.Pi/8 && aLabelAbs < 7*math.Pi/8 {
-			lPos = lPos.AddXY(0, -ls[i].Size().Height)
-		} else if aLabelAbs < math.Pi/8 || aLabelAbs > 15*math.Pi/8 || (aLabelAbs > 7*math.Pi/8 && aLabelAbs < 9*math.Pi/8) {
-			lPos = lPos.AddXY(0, -ls[i].Size().Height/2)
-		}
-		if aLabelAbs < 3*math.Pi/8 || aLabelAbs > 13*math.Pi/8 {
-		} else if aLabelAbs > 5*math.Pi/8 && aLabelAbs < 11*math.Pi/8 {
-			lPos = lPos.AddXY(-ls[i].Size().Width, 0)
+		if ls[i].Shift {
+			lPos := polarCoordinatesToPosition(ls[i].N, ls[i].Val+5.0/float64(area.coordToPos), area)
+			aLabelAbs := absAngle(ls[i].N, r.mathPos, r.rot)
+			if aLabelAbs > math.Pi/8 && aLabelAbs < 7*math.Pi/8 {
+				lPos = lPos.AddXY(0, -ls[i].Size().Height)
+			} else if aLabelAbs < math.Pi/8 || aLabelAbs > 15*math.Pi/8 || (aLabelAbs > 7*math.Pi/8 && aLabelAbs < 9*math.Pi/8) {
+				lPos = lPos.AddXY(0, -ls[i].Size().Height/2)
+			}
+			if aLabelAbs < 3*math.Pi/8 || aLabelAbs > 13*math.Pi/8 {
+			} else if aLabelAbs > 5*math.Pi/8 && aLabelAbs < 11*math.Pi/8 {
+				lPos = lPos.AddXY(-ls[i].Size().Width, 0)
+			} else {
+				lPos = lPos.AddXY(-ls[i].Size().Width/2, 0)
+			}
+			ls[i].Move(lPos)
 		} else {
-			lPos = lPos.AddXY(-ls[i].Size().Width/2, 0)
+			lPos := polarCoordinatesToPosition(ls[i].N, ls[i].Val, area)
+			lPos = lPos.SubtractXY(ls[i].Size().Width/2, ls[i].Size().Height/2)
+			ls[i].Move(lPos)
 		}
-		ls[i].Move(lPos)
 	}
 
 	// place area

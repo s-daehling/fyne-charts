@@ -223,24 +223,32 @@ func (r *Cartesian) Layout(size fyne.Size) {
 	for i := range ls {
 		ls[i].Resize(ls[i].MinSize())
 		if r.transposed {
-			xShift := float32(0)
-			if ls[i].Val > hOrigin {
-				xShift = 5
-			} else {
-				xShift = -ls[i].Size().Width - 5
-			}
 			lPos := cartesianCoordinatesToPosition(ls[i].Val, ls[i].N, area)
-			lPos = lPos.SubtractXY(-xShift, ls[i].MinSize().Height/2)
+			if ls[i].Shift {
+				xShift := float32(0)
+				if ls[i].Val > hOrigin {
+					xShift = 5
+				} else {
+					xShift = -ls[i].Size().Width - 5
+				}
+				lPos = lPos.SubtractXY(-xShift, ls[i].MinSize().Height/2)
+			} else {
+				lPos = lPos.SubtractXY(ls[i].Size().Width/2, ls[i].Size().Height/2)
+			}
 			ls[i].Move(lPos)
 		} else {
-			yShift := float32(0)
-			if ls[i].Val > vOrigin {
-				yShift = -ls[i].Size().Height - 5
-			} else {
-				yShift = 5
-			}
 			lPos := cartesianCoordinatesToPosition(ls[i].N, ls[i].Val, area)
-			lPos = lPos.SubtractXY(ls[i].MinSize().Width/2, -yShift)
+			if ls[i].Shift {
+				yShift := float32(0)
+				if ls[i].Val > vOrigin {
+					yShift = -ls[i].Size().Height - 5
+				} else {
+					yShift = 5
+				}
+				lPos = lPos.SubtractXY(ls[i].MinSize().Width/2, -yShift)
+			} else {
+				lPos = lPos.SubtractXY(ls[i].Size().Width/2, ls[i].Size().Height/2)
+			}
 			ls[i].Move(lPos)
 		}
 	}

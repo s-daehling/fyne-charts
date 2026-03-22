@@ -9,18 +9,19 @@ import (
 )
 
 type Label struct {
-	N         float64
-	Val       float64
-	frame     *canvas.Rectangle
-	text      *canvas.Text
-	textStyle style.ChartTextStyle
+	N     float64
+	Val   float64
+	Shift bool
+	frame *canvas.Rectangle
+	text  *canvas.Text
 	widget.BaseWidget
 }
 
-func NewLabel(labelStyle style.ValueLabelStyle) (vl *Label) {
+func NewLabel(shift bool, labelStyle style.ValueLabelStyle) (vl *Label) {
 	vl = &Label{
 		frame: canvas.NewRectangle(theme.Color(theme.ColorNameBackground)),
 		text:  canvas.NewText("", theme.Color(theme.ColorNameForeground)),
+		Shift: shift,
 	}
 	vl.SetStyle(labelStyle)
 	vl.frame.CornerRadius = 5

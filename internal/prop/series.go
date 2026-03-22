@@ -79,7 +79,7 @@ type proportionPoint struct {
 
 func emptyProportionPoint(c string, colName fyne.ThemeColorName, labelStyle style.ValueLabelStyle, ser *Series) (point *proportionPoint) {
 	point = &proportionPoint{
-		label:       elements.NewLabel(labelStyle),
+		label:       elements.NewLabel(false, labelStyle),
 		c:           c,
 		visible:     true,
 		ser:         ser,
