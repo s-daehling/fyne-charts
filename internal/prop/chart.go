@@ -46,6 +46,10 @@ type BaseChart struct {
 	lLegendCont       *fyne.Container
 	bLegendCont       *fyne.Container
 	tLegendCont       *fyne.Container
+	tBorder           *canvas.Rectangle
+	bBorder           *canvas.Rectangle
+	lBorder           *canvas.Rectangle
+	rBorder           *canvas.Rectangle
 }
 
 func EmptyBaseChart(pType PlaneType) (base *BaseChart) {
@@ -65,15 +69,30 @@ func EmptyBaseChart(pType PlaneType) (base *BaseChart) {
 		lLegendCont:       container.NewCenter(),
 		bLegendCont:       container.NewStack(),
 		tLegendCont:       container.NewStack(),
+		tBorder:           canvas.NewRectangle(color.Alpha16{}),
+		bBorder:           canvas.NewRectangle(color.Alpha16{}),
+		lBorder:           canvas.NewRectangle(color.Alpha16{}),
+		rBorder:           canvas.NewRectangle(color.Alpha16{}),
 	}
 	base.mainCont = container.NewBorder(
 		container.NewVBox(
+			base.tBorder,
 			base.title,
 			base.tLegendCont),
-		base.bLegendCont,
-		base.lLegendCont,
-		base.rLegendCont,
+		container.NewVBox(
+			base.bLegendCont,
+			base.bBorder),
+		container.NewHBox(
+			base.lBorder,
+			base.lLegendCont),
+		container.NewHBox(
+			base.rLegendCont,
+			base.rBorder),
 		base)
+	base.tBorder.SetMinSize(fyne.NewSize(0, 0))
+	base.bBorder.SetMinSize(fyne.NewSize(0, 0))
+	base.lBorder.SetMinSize(fyne.NewSize(0, 0))
+	base.rBorder.SetMinSize(fyne.NewSize(0, 0))
 	base.SetTitleStyle(style.DefaultTitleStyle())
 	base.SetLegendStyle(style.LegendLocationRight, style.DefaultLegendTextStyle(), true)
 	if pType == CartesianPlane {

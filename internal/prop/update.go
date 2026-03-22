@@ -1,6 +1,7 @@
 package prop
 
 import (
+	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/theme"
 )
 
@@ -44,6 +45,10 @@ func (base *BaseChart) updateSeriesVariables() {
 }
 
 func (base *BaseChart) RefreshTheme() {
+	base.tBorder.SetMinSize(fyne.NewSize(1, theme.Size(theme.SizeNamePadding)))
+	base.bBorder.SetMinSize(fyne.NewSize(1, theme.Size(theme.SizeNamePadding)))
+	base.lBorder.SetMinSize(fyne.NewSize(theme.Size(theme.SizeNamePadding), 1))
+	base.rBorder.SetMinSize(fyne.NewSize(theme.Size(theme.SizeNamePadding), 1))
 	base.title.TextSize = theme.Size(base.titleStyle.SizeName)
 	base.title.Color = theme.Color(base.titleStyle.ColorName)
 	for i := range base.series {

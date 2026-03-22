@@ -215,6 +215,7 @@ func (ax *Axis) RefreshTheme() {
 	ax.arrowTwo.StrokeColor = theme.Color(ax.style.LineColorName)
 	ax.line.StrokeColor = theme.Color(ax.style.LineColorName)
 	ax.circle.StrokeColor = theme.Color(ax.style.LineColorName)
+	ax.SetAxisLabelStyle(ax.labelStyle)
 	for i := range ax.ticks {
 		ax.ticks[i].labelText.Color = theme.Color(ax.style.TickColorName)
 		ax.ticks[i].labelText.TextSize = theme.Size(ax.style.TickSizeName)

@@ -170,11 +170,11 @@ func (base *BaseChart) refreshAxisLabels() {
 	if (base.planeType == CartesianPlane && base.transposed) || base.planeType == PolarPlane {
 		base.fromAx.AddLabelToContainer(base.vLabelCont)
 		base.toAx.AddLabelToContainer(base.hLabelCont)
-		lSpace += base.fromAx.Label().Size().Width
+		lSpace += base.fromAx.Label().MinSize().Width
 	} else {
 		base.fromAx.AddLabelToContainer(base.hLabelCont)
 		base.toAx.AddLabelToContainer(base.vLabelCont)
-		lSpace += base.toAx.Label().Size().Width
+		lSpace += base.toAx.Label().MinSize().Width
 	}
 	base.hLabelCont.Add(base.hLabelRightSpacer)
 	if !base.legend.Hidden {
@@ -184,8 +184,10 @@ func (base *BaseChart) refreshAxisLabels() {
 			rSpace += base.legend.MinSize().Width
 		}
 	}
-	base.hLabelLeftSpacer.SetMinSize(fyne.NewSize(lSpace, 0))
-	base.hLabelRightSpacer.SetMinSize(fyne.NewSize(rSpace, 0))
+	lSpace += theme.Size(theme.SizeNamePadding)
+	rSpace += theme.Size(theme.SizeNamePadding)
+	base.hLabelLeftSpacer.SetMinSize(fyne.NewSize(lSpace, 1))
+	base.hLabelRightSpacer.SetMinSize(fyne.NewSize(rSpace, 1))
 	base.vLabelCont.Refresh()
 	base.hLabelCont.Refresh()
 }
@@ -193,6 +195,10 @@ func (base *BaseChart) refreshAxisLabels() {
 func (base *BaseChart) RefreshTheme() {
 	base.fromAx.RefreshTheme()
 	base.toAx.RefreshTheme()
+	base.tBorder.SetMinSize(fyne.NewSize(1, theme.Size(theme.SizeNamePadding)))
+	base.bBorder.SetMinSize(fyne.NewSize(1, theme.Size(theme.SizeNamePadding)))
+	base.lBorder.SetMinSize(fyne.NewSize(theme.Size(theme.SizeNamePadding), 1))
+	base.rBorder.SetMinSize(fyne.NewSize(theme.Size(theme.SizeNamePadding), 1))
 	base.title.TextSize = theme.Size(base.titleStyle.SizeName)
 	base.title.Color = theme.Color(base.titleStyle.ColorName)
 	for i := range base.series {

@@ -62,6 +62,10 @@ type BaseChart struct {
 	lLegendCont       *fyne.Container
 	bLegendCont       *fyne.Container
 	tLegendCont       *fyne.Container
+	tBorder           *canvas.Rectangle
+	bBorder           *canvas.Rectangle
+	lBorder           *canvas.Rectangle
+	rBorder           *canvas.Rectangle
 }
 
 func EmptyBaseChart(pType PlaneType, fType FromType) (base *BaseChart) {
@@ -85,21 +89,34 @@ func EmptyBaseChart(pType PlaneType, fType FromType) (base *BaseChart) {
 		lLegendCont:       container.NewCenter(),
 		bLegendCont:       container.NewStack(),
 		tLegendCont:       container.NewStack(),
+		tBorder:           canvas.NewRectangle(color.Alpha16{}),
+		bBorder:           canvas.NewRectangle(color.Alpha16{}),
+		lBorder:           canvas.NewRectangle(color.Alpha16{}),
+		rBorder:           canvas.NewRectangle(color.Alpha16{}),
 	}
 	base.mainCont = container.NewBorder(
 		container.NewVBox(
+			base.tBorder,
 			base.title,
 			base.tLegendCont),
 		container.NewVBox(
 			base.hLabelCont,
-			base.bLegendCont),
+			base.bLegendCont,
+			base.bBorder),
 		container.NewHBox(
+			base.lBorder,
 			base.lLegendCont,
 			base.vLabelCont),
-		base.rLegendCont,
+		container.NewHBox(
+			base.rLegendCont,
+			base.rBorder),
 		base)
 	base.hLabelLeftSpacer.SetMinSize(fyne.NewSize(0, 0))
 	base.hLabelRightSpacer.SetMinSize(fyne.NewSize(0, 0))
+	base.tBorder.SetMinSize(fyne.NewSize(0, 0))
+	base.bBorder.SetMinSize(fyne.NewSize(0, 0))
+	base.lBorder.SetMinSize(fyne.NewSize(0, 0))
+	base.rBorder.SetMinSize(fyne.NewSize(0, 0))
 	if pType == CartesianPlane {
 		base.fromAx = axis.EmptyAxis("", axis.CartesianHorAxis)
 		base.toAx = axis.EmptyAxis("", axis.CartesianVertAxis)
