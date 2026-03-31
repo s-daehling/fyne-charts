@@ -208,14 +208,15 @@ func (base *BaseChart) Objects() (canObj []fyne.CanvasObject) {
 	for i := range dots {
 		canObj = append(canObj, dots[i])
 	}
-	labels := base.Labels()
-	for i := range labels {
-		canObj = append(canObj, labels[i])
-	}
 
 	// add axis elements
 	canObj = append(canObj, base.fromAx.Objects()...)
 	canObj = append(canObj, base.toAx.Objects()...)
+
+	labels := base.Labels()
+	for i := range labels {
+		canObj = append(canObj, labels[i])
+	}
 
 	return
 }
