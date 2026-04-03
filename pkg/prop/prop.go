@@ -100,6 +100,9 @@ func (chart *propChart) SetLegendStyle(loc style.LegendLocation, labelStyle styl
 	chart.base.SetLegendStyle(loc, labelStyle, interactive)
 }
 
+// SetHoverBehavior sets the behavior for hovering over series elements
+// if highlight is true, all series elements of the series being hovered over are highlighted
+// if valueLabel is true, a label with the value of the data point being hovered over is displayed
 func (chart *propChart) SetHoverBehavior(highlight bool, valueLabel bool) {
 	if chart.base == nil {
 		return

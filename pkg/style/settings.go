@@ -14,6 +14,7 @@ const (
 	LegendLocationRight  LegendLocation = "right"
 )
 
+// ChartTextStyle for styling of various text elements in a chart
 type ChartTextStyle struct {
 	Alignment fyne.TextAlign
 	ColorName fyne.ThemeColorName
@@ -21,6 +22,7 @@ type ChartTextStyle struct {
 	TextStyle fyne.TextStyle
 }
 
+// DefaultTitleStyle returns the default style of the chart title
 func DefaultTitleStyle() (titleStyle ChartTextStyle) {
 	titleStyle.Alignment = fyne.TextAlignCenter
 	titleStyle.ColorName = theme.ColorNameForeground
@@ -29,6 +31,7 @@ func DefaultTitleStyle() (titleStyle ChartTextStyle) {
 	return
 }
 
+// DefaultAxisLabelStyle returns the default style of axis labels
 func DefaultAxisLabelStyle() (axisLabelStyle ChartTextStyle) {
 	axisLabelStyle.Alignment = fyne.TextAlignCenter
 	axisLabelStyle.ColorName = theme.ColorNameForeground
@@ -37,6 +40,7 @@ func DefaultAxisLabelStyle() (axisLabelStyle ChartTextStyle) {
 	return
 }
 
+// DefaultLegendTextStyle returns the default style of legend entries
 func DefaultLegendTextStyle() (legendTextStyle ChartTextStyle) {
 	legendTextStyle.Alignment = fyne.TextAlignLeading
 	legendTextStyle.ColorName = theme.ColorNameForeground
@@ -45,6 +49,7 @@ func DefaultLegendTextStyle() (legendTextStyle ChartTextStyle) {
 	return
 }
 
+// AxisStyle for styling axes
 type AxisStyle struct {
 	LineColorName        fyne.ThemeColorName
 	LineWidth            float32
@@ -56,6 +61,7 @@ type AxisStyle struct {
 	TickTextStyle        fyne.TextStyle
 }
 
+// DefaultAxisStyle returns the default style of axes
 func DefaultAxisStyle() (axisStyle AxisStyle) {
 	axisStyle.LineColorName = theme.ColorNameForeground
 	axisStyle.LineWidth = 1
@@ -68,6 +74,7 @@ func DefaultAxisStyle() (axisStyle AxisStyle) {
 	return
 }
 
+// ValueLabelStyle for styling of labels showing the value of data points
 type ValueLabelStyle struct {
 	ValueTextStyle      ChartTextStyle
 	BackgroundColorName fyne.ThemeColorName
@@ -75,6 +82,7 @@ type ValueLabelStyle struct {
 	StrokeWidth         float32
 }
 
+// DefaultValueLabelStyle returns the default style of value labels
 func DefaultValueLabelStyle() (labelStyle ValueLabelStyle) {
 	labelStyle.ValueTextStyle.Alignment = fyne.TextAlignCenter
 	labelStyle.ValueTextStyle.ColorName = theme.ColorNameForeground

@@ -37,6 +37,7 @@ func (ps *Series) Name() (n string) {
 }
 
 // SetValueLabelStyle changes the style of value labels
+// if showPermanent is true, value labels for all points are shown permanently
 func (ps *Series) SetValueLabelStyle(showPermanent bool, labelStyle style.ValueLabelStyle) {
 	ps.ser.SetValueLabelStyle(showPermanent, labelStyle)
 }

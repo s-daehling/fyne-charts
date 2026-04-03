@@ -64,6 +64,7 @@ func (ps *pointSeries) SetDotSize(ds float32) {
 }
 
 // SetValueLabelStyle changes the style of value labels
+// if showPermanent is true, value labels for all points are shown permanently
 func (ps *pointSeries) SetValueLabelStyle(showPermanent bool, labelStyle style.ValueLabelStyle) {
 	ps.ser.SetValueLabelStyle(showPermanent, labelStyle)
 }

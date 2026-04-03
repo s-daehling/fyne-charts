@@ -152,6 +152,21 @@ For example, the legend can be moved to the bottom of the chart with the followi
 chart.SetLegendStyle(style.LegendLocationBottom, style.DefaultLegendTextStyle(), true)
 ```
 
+### Hovering Behavior
+
+When hovering over series elements (like points or bars) the chart can have two behaviors:
+
+- displaying a label with the value of the data point being hovered over
+- highlighting the series by making all other series transparent
+
+The behavior can be set calling
+
+```go
+chart..SetHoverBehavior(true, true)
+```
+
+with the first argument activating the highlighting and the second activation the display of value labels.
+
 ## Automatic or manual data range and axis ticks (only `coord`)
 
 By default the range of the axes (minimum and maximum value) is determined automatically.

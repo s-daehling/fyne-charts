@@ -104,7 +104,15 @@ nps.SetDotSize(2)
 Note that these changes will only have an effect if the series is displayed in a way that shows lines or dots.
 In our example, changing the line width will not change the appearance of the series, since it is displayed as a scatter plot (dots only).
 
-Other series types can provide different methods.
+Some series allow to display value labels.
+These can be displayed upon hovering over data points if this is activated for the chart.
+Alternatively, value labels can be displayed permanently for all data points of a series.
+
+In order to activate that and set the style of the value labels, call
+
+```go
+nps.SetValueLabelStyle(true, style.DefaultValueLabelStyle())
+```
 
 ## Dynamic data manipulation
 
