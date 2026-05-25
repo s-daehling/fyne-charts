@@ -53,6 +53,21 @@ func (catChart *CartesianCategoricalChart) AddBarSeries(cps *CategoricalPointSer
 	return
 }
 
+// AddIncrementalBarSeries adds a series of data which is visualized as incremental bar chart.
+// The series must have a unique name throughout the chart.
+// An error is returned,if another series with the same name exists or if the series is already added to another chart
+func (catChart *CartesianCategoricalChart) AddIncrementalBarSeries(cps *CategoricalPointSeries) (err error) {
+	if catChart.base == nil || cps == nil {
+		return
+	}
+	if cps.ser == nil {
+		err = errors.New("series not initialized")
+		return
+	}
+	err = catChart.base.AddIncrementalBarSeries(cps.ser)
+	return
+}
+
 // AddStackedBarSeries adds a series of data which is visualized as stacked bar chart.
 // The series must have a unique name throughout the chart.
 // An error is returned,if another series with the same name exists or if the series is already added to another chart

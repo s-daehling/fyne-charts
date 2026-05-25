@@ -327,6 +327,7 @@ type PointSeries struct {
 	showArea            bool
 	sortPoints          bool
 	isStacked           bool
+	isIncremental       bool
 	valMin              float64
 	valMax              float64
 	labelStyle          pubstyle.ValueLabelStyle
@@ -346,6 +347,7 @@ func EmptyPointSeries(name string, colName fyne.ThemeColorName) (ser *PointSerie
 		showBar:             false,
 		showArea:            false,
 		isStacked:           false,
+		isIncremental:       false,
 		sortPoints:          true,
 		permanentLabel:      false,
 		labelStyle:          pubstyle.DefaultValueLabelStyle(),
@@ -359,6 +361,11 @@ func (ser *PointSeries) MakeBar() {
 	for i := range ser.data {
 		ser.data[i].showBar = true
 	}
+}
+
+func (ser *PointSeries) MakeIncrementalBar() {
+	ser.isIncremental = true
+	ser.MakeBar()
 }
 
 func (ser *PointSeries) MakeArea(showDot bool) {
@@ -725,6 +732,19 @@ func (ser *PointSeries) SetAndUpdateValBaseCategorical(in []catOffset) (out []ca
 	return
 }
 
+func (ser *PointSeries) SetIncrementalValBaseCategorical(cats []string) {
+	valBase := 0.0
+	for i := range cats {
+		for j := range ser.data {
+			if cats[i] == ser.data[j].c {
+				ser.data[j].valBase = valBase
+				valBase += ser.data[j].val
+				break
+			}
+		}
+	}
+}
+
 func (ser *PointSeries) SetValBaseNumerical(vb float64) {
 	ser.valBase = vb
 	for i := range ser.data {
@@ -881,6 +901,11 @@ func (ser *PointSeries) IsBarSeries() (b bool) {
 	return
 }
 
+func (ser *PointSeries) IsIncrementalBarSeries() (b bool) {
+	b = ser.isIncremental
+	return
+}
+
 func (ser *PointSeries) IsLollipopSeries() (b bool) {
 	b = ser.showFromValBaseLine && ser.showDot
 	return
@@ -924,6 +949,7 @@ func (ser *PointSeries) Release() {
 	ser.showBar = false
 	ser.showArea = false
 	ser.isStacked = false
+	ser.isIncremental = false
 	ser.legendEntry.SetSuper("")
 	ser.super = ""
 	for i := range ser.data {

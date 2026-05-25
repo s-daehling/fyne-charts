@@ -16,8 +16,9 @@ func (base *BaseChart) Refresh() {
 
 func (base *BaseChart) DataChange() {
 	base.updateRangeAndOrigin()
-	base.updateAxTicks()
 	base.updateSeriesVariables()
+	base.updateRangeAndOrigin()
+	base.updateAxTicks()
 	base.Refresh()
 }
 
@@ -132,6 +133,9 @@ func (base *BaseChart) updateSeriesVariables() {
 				}
 				if base.planeType == CartesianPlane {
 					ser.SetValBaseNumerical(base.toAx.NOrigin())
+				}
+				if ser.IsIncrementalBarSeries() {
+					ser.SetIncrementalValBaseCategorical(base.fromAx.CRange())
 				}
 			} else if ser.IsLollipopSeries() && base.planeType == CartesianPlane {
 				ser.SetValBaseNumerical(base.toAx.NOrigin())

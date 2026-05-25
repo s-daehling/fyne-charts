@@ -39,6 +39,12 @@ func (base *BaseChart) AddBarSeries(ls *series.PointSeries) (err error) {
 	return
 }
 
+func (base *BaseChart) AddIncrementalBarSeries(ls *series.PointSeries) (err error) {
+	ls.MakeIncrementalBar()
+	err = base.addSeriesIfNotExist(ls)
+	return
+}
+
 func (base *BaseChart) AddAreaSeries(ls *series.PointSeries, showDot bool) (err error) {
 	ls.MakeArea(showDot)
 	err = base.addSeriesIfNotExist(ls)

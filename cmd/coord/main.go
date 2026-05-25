@@ -259,7 +259,7 @@ func cartCatChart() (catChart *coord.CartesianCategoricalChart, err error) {
 	if err != nil {
 		return
 	}
-	err = catChart.AddBarSeries(bs)
+	err = catChart.AddIncrementalBarSeries(bs)
 	if err != nil {
 		return
 	}
@@ -452,21 +452,24 @@ func polCatChart() (catChart *coord.PolarCategoricalChart, err error) {
 		{
 			C:   "One",
 			Val: rand.Float64() * 30,
+			// Val: 15,
 		},
 		{
 			C:   "Two",
 			Val: rand.Float64() * 30,
+			// Val: 15,
 		},
 		{
 			C:   "Three",
 			Val: rand.Float64() * 30,
+			// Val: 15,
 		},
 	}
 	bs, err := coord.NewCategoricalPointSeries("bar", colPal.Next(), data3)
 	if err != nil {
 		return
 	}
-	err = catChart.AddBarSeries(bs)
+	err = catChart.AddIncrementalBarSeries(bs)
 	if err != nil {
 		return
 	}
