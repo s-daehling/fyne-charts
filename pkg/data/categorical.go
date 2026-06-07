@@ -6,6 +6,14 @@ type CategoricalPoint struct {
 	Val float64
 }
 
+type CategoricalPointList = boundList[CategoricalPoint]
+
+func NewCategoricalPointList() (l ConstrainedList[CategoricalPoint]) {
+	t := newList[CategoricalPoint]()
+	l = &t
+	return
+}
+
 // CategoricalBox represents one box in a box series with a categorical coordinate
 type CategoricalBox struct {
 	C             string

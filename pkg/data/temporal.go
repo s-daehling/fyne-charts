@@ -1,6 +1,7 @@
 package data
 
 import (
+	"sort"
 	"time"
 )
 
@@ -21,6 +22,30 @@ func (m DpByTValue) Less(i, j int) bool { return m[i].T.Before(m[i].T) }
 
 // Swap swaps the points on positions i and j
 func (m DpByTValue) Swap(i, j int) { m[i], m[j] = m[j], m[i] }
+
+type TemporalPointList struct {
+	boundList[TemporalPoint]
+}
+
+func NewTemporalPointList() (l ConstrainedList[TemporalPoint]) {
+	l = &TemporalPointList{boundList: newList[TemporalPoint]()}
+	return
+}
+
+func (tpl *TemporalPointList) Add(val TemporalPoint) (err error) {
+	tpl.lock.Lock()
+	v := *tpl.val
+	tpl.lock.Unlock()
+	v = append(v, val)
+	err = tpl.Set(v)
+	return
+}
+
+func (tpl *TemporalPointList) Set(l []TemporalPoint) (err error) {
+	sort.Sort(DpByTValue(l))
+	err = tpl.boundList.Set(l)
+	return
+}
 
 // TemporalCandleStick represents one canlde in a candlestick series over a temoral axis
 type TemporalCandleStick struct {

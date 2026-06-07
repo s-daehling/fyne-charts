@@ -1,5 +1,7 @@
 package data
 
+import "sort"
+
 // NumericalPoint represents one data point with a numerical coordinate
 type NumericalPoint struct {
 	N   float64
@@ -17,6 +19,30 @@ func (m DpByNValue) Less(i, j int) bool { return m[i].N < m[j].N }
 
 // Swap swaps the points on positions i and j
 func (m DpByNValue) Swap(i, j int) { m[i], m[j] = m[j], m[i] }
+
+type NumericalPointList struct {
+	boundList[NumericalPoint]
+}
+
+func NewNumericalPointList() (l ConstrainedList[NumericalPoint]) {
+	l = &NumericalPointList{boundList: newList[NumericalPoint]()}
+	return
+}
+
+func (npl *NumericalPointList) Add(val NumericalPoint) (err error) {
+	npl.lock.Lock()
+	v := *npl.val
+	npl.lock.Unlock()
+	v = append(v, val)
+	err = npl.Set(v)
+	return
+}
+
+func (npl *NumericalPointList) Set(l []NumericalPoint) (err error) {
+	sort.Sort(DpByNValue(l))
+	err = npl.boundList.Set(l)
+	return
+}
 
 // NumericalCandleStick represents one canlde in a candlestick series over a numerical axis
 type NumericalCandleStick struct {
