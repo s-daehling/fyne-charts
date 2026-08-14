@@ -91,14 +91,16 @@ func (r *Cartesian) Layout(size fyne.Size) {
 	area.hCoordToPos = (area.maxPos.X - area.minPos.X) / float32(hMax-hMin)
 	area.vCoordToPos = (area.minPos.Y - area.maxPos.Y) / float32(vMax-vMin)
 
+	var halfLineWidth float32 = 0.5
+
 	// Place horizontal-Axis from hMin to hMax
 	if hShow {
 		hArrow.Line.Position1 = cartesianCoordinatesToPosition(hMin, vOrigin, area)
 		hArrow.Line.Position2 = cartesianCoordinatesToPosition(hMax, vOrigin, area)
-		hArrow.HeadOne.Position1 = fyne.NewPos(hArrow.Line.Position2.X-10, hArrow.Line.Position2.Y-5)
-		hArrow.HeadOne.Position2 = hArrow.Line.Position2
-		hArrow.HeadTwo.Position1 = fyne.NewPos(hArrow.Line.Position2.X-10, hArrow.Line.Position2.Y+5)
-		hArrow.HeadTwo.Position2 = hArrow.Line.Position2
+		hArrow.HeadOne.Position1 = fyne.NewPos(hArrow.Line.Position2.X-10, hArrow.Line.Position2.Y-5).SubtractXY(0, halfLineWidth)
+		hArrow.HeadOne.Position2 = hArrow.Line.Position2.SubtractXY(0, halfLineWidth)
+		hArrow.HeadTwo.Position1 = fyne.NewPos(hArrow.Line.Position2.X-10, hArrow.Line.Position2.Y+5).SubtractXY(0, halfLineWidth)
+		hArrow.HeadTwo.Position2 = hArrow.Line.Position2.SubtractXY(0, halfLineWidth)
 
 		// place horizontal ticks
 		for i := range hTicks {
@@ -120,10 +122,10 @@ func (r *Cartesian) Layout(size fyne.Size) {
 	if vShow {
 		vArrow.Line.Position1 = cartesianCoordinatesToPosition(hOrigin, vMin, area)
 		vArrow.Line.Position2 = cartesianCoordinatesToPosition(hOrigin, vMax, area)
-		vArrow.HeadOne.Position1 = fyne.NewPos(vArrow.Line.Position2.X-5, vArrow.Line.Position2.Y+10)
-		vArrow.HeadOne.Position2 = vArrow.Line.Position2
-		vArrow.HeadTwo.Position1 = fyne.NewPos(vArrow.Line.Position2.X+5, vArrow.Line.Position2.Y+10)
-		vArrow.HeadTwo.Position2 = vArrow.Line.Position2
+		vArrow.HeadOne.Position1 = fyne.NewPos(vArrow.Line.Position2.X-5, vArrow.Line.Position2.Y+10).SubtractXY(halfLineWidth, 0)
+		vArrow.HeadOne.Position2 = vArrow.Line.Position2.SubtractXY(halfLineWidth, 0)
+		vArrow.HeadTwo.Position1 = fyne.NewPos(vArrow.Line.Position2.X+5, vArrow.Line.Position2.Y+10).SubtractXY(halfLineWidth, 0)
+		vArrow.HeadTwo.Position2 = vArrow.Line.Position2.SubtractXY(halfLineWidth, 0)
 
 		// place vertical ticks
 		for i := range vTicks {
