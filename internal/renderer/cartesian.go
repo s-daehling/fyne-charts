@@ -38,6 +38,10 @@ func EmptyCartesianRenderer(chart CartesianChart) (r *Cartesian) {
 
 // Layout is responsible for redrawing the chart widget; here the horizontal and vertical numerical coordinates are converted to fyne positions and objects are placed accordingly
 func (r *Cartesian) Layout(size fyne.Size) {
+	if size.Width <= 0 || size.Height <= 0 {
+		return
+	}
+
 	r.transposed = r.chart.CartesianOrientation()
 
 	vAxisTickLabelWidth := float32(0.0)
@@ -283,7 +287,6 @@ func (r *Cartesian) Refresh() {
 		obj[i].Refresh()
 	}
 
-	r.Layout(r.chart.Size())
 	// 	r.chart.resetHasChanged()
 	// }
 }
